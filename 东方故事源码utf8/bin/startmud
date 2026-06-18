@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# get dir of this shell
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# config.ES2 with absolute path
+ROOT_DIR="$(dirname "$DIR")"
+sed -e "s%__ROOT__%${ROOT_DIR}%g" ${DIR}/config.ES2.in > ${DIR}/config.ES2
+
+# check OS and run MudOS / fluffos
+unamestr=`uname`
+if [[ $unamestr == 'Linux' ]]; then
+  ${DIR}/linux/driver ${DIR}/config.ES2 &
+elif [[ $unamestr == 'Darwin' ]]; then
+  ${DIR}/osx/driver ${DIR}/config.ES2 &
+fi
+echo $! > ${DIR}/mudos.pid
+
+WEBMUD=${ROOT_DIR}/webmud
+
+# run webmud to proxy telnet to web
+# another option:
+# forever start ${WEBMUD}/main.js 8080 4000 -w ${WEBMUD}/www
+node ${WEBMUD}/main.js 8080 4000  -w ${WEBMUD}/www &
+echo $! > ${DIR}/webtelnet.pid

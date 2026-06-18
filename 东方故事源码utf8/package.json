@@ -1,0 +1,44 @@
+{
+  "name": "es2-webmud",
+  "version": "0.9.8",
+  "description": "WebMUD with ES2 mudlib",
+  "bin": {
+    "webmud": "./webmud/main.js"
+  },
+  "scripts": {
+    "start": "node ./webmud/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mudchina/es2-webmud.git"
+  },
+  "keywords": [
+    "telnet",
+    "webtelnet",
+    "proxy",
+    "mud",
+    "es2",
+    "mudlib",
+    "webmud"
+  ],
+  "author": {
+    "name": "Raymond Xie",
+    "email": "rjfun.mobile@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mudchina/es2-webmud/issues"
+  },
+  "homepage": "https://github.com/mudchina/es2-webmud#README.md",
+  "dependencies": {
+    "express": "^4.13.4",
+    "minimist": "^1.2.0",
+    "mixin-pro": "^0.6.6",
+    "socket.io": "^1.4.4",
+    "underscore": "^1.8.3",
+    "webrpc.js": "^0.9.7",
+    "webtelnet": "^1.0.1"
+  },
+  "devDependencies": {
+  }
+}

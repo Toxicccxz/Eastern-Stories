@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="msapplication-tap-highlight" content="no" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta http-equiv="pragma" content="no-cache" />
+
+  <!-- to avoid the warning of content security policy -->
+  <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'"/>
+
+<script>
+  // fix wp8 view port issue, see:
+  // https://github.com/floatinghotpot/cordova-admob-pro/issues/109
+  // https://coderwall.com/p/zk_2la/responsive-design-in-ie-10-on-windows-phone-8
+  // http://stackoverflow.com/questions/24007577/windows-phone-8-viewport-issue
+(function() {
+  if ("-ms-user-select" in document.documentElement.style && navigator.userAgent.match(/IEMobile\/10\.0/)) {
+    var msViewportStyle = document.createElement("style");
+    msViewportStyle.appendChild(
+      document.createTextNode("@-ms-viewport{width:auto!important}")
+    );
+    document.getElementsByTagName("head")[0].appendChild(msViewportStyle);
+  }
+})();
+</script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/jquery-1.12.0.min.js"></script>
+  <script src='js/underscore-min.js'></script>
+  <script src="js/jquery.cookie.js"></script>
+  <script src="js/ansi_up.js"></script>
+  <script src="js/utf8-util.js"></script>
+  <script src="explore.js"></script>
+  <script src="chat.js"></script>
+  <script src="mapdata.js"></script>
+  <script src="maprender.js"></script>
+  <script src="main.js"></script>
+  <link rel="stylesheet" href="main.css"/>
+  <title>新东方故事II</title>
+</head>
+
+<body>
+  <div id="page">
+    <div id="room"><div id="roomname"></div><div id="out1"></div><div id="out2box"><div id="out2"></div><button id="out2x">X</button></div></div>
+    <div id="in">
+      <div id='targets'><div id='targetsleft'><a id='cmdtarget' href='#'>目标:</a><a id='cmditem' href='#'>物品/技能:</a></div><div id='targetsright'><a id='chatchannel' href='#'>频道:</a></div></div>
+      <div id="menu"><input id='str' type="text" value=""><button id='explore' pad='explore' class='menu'>探索</button><button id='map' pad='explore' class='menu'>地图</button><button id='martial' pad='martial' class='menu'>武功</button><button id='chat' pad='chat' class='menu'>聊天</button><button id='others' pad='others' class='menu'>其它</button></div>
+      <div id="explore" class="pad">
+        <table class='pad' cellspacing=5 cellpadding=0 border=0>
+          <tr><td>
+            <div id='expkeys'></div>
+            <div id="map"><canvas id='map' width=240 height=190></canvas></div>
+            </td><td>
+          <table id='go' class='go' cellspacing=0 cellpadding=0 border=0>
+            <tr>
+              <td><button class='go nw' id='nw' macro='nw'>西北</button></td>
+              <td><button class='go' id='n' macro='n'>北</button></td>
+              <td><button class='go ne' id='ne' macro='ne'>东北</button></td>
+            </tr>
+            <tr>
+              <td><button class='go' id='w' macro='w'>西</button></td>
+              <td><button class='status' id='look' macro='l'>看</button></td>
+              <td><button class='go' id='e' macro='e'>东</button></td>
+            </tr>
+            <tr>
+              <td><button class='go sw' id='sw' macro='sw'>西南</button></td>
+              <td><button class='go' id='s' macro='s'>南</button></td>
+              <td><button class='go se' id='se' macro='se'>东南</button></td>
+            </tr>
+            <tr>
+              <td><button class='go' id='up' macro='up'>上</button></td>
+              <td><button class='go' id='d' macro='d'>下</button></td>
+              <td><button class='go' id='opendoor' macro='open door\nlook'>开门</button></td>
+            </tr>
+          </table>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div id="martial" class="pad">
+        <table class='pad' cellspacing=5 cellpadding=0>
+          <tr><td><div id='markeys'></div></td><td>
+          <table class='go' cellspacing=0 cellpadding=0>
+            <tr>
+              <td><button class='go attack' macro='cast $skill on $char'>念咒</button></td>
+              <td><button class='go attack' macro='conjure $skill on $char'>施法</button></td>
+              <td><button class='go attack' macro='perform %skilltype.$skill $char'>发功</button></td>
+            </tr>
+            <tr>
+              <td><button class='go exert nw' macro='exert regenerate'>聚精</button></td>
+              <td><button class='go exert' macro='exert recover'>提气</button></td>
+              <td><button class='go exert ne' macro='exert refresh'>凝神</button></td>
+            </tr>
+            <tr>
+              <td><button class='go exert sw' macro='exert slowpoison'>缓毒</button></td>
+              <td><button class='go exert' macro='exert break'>震毁</button></td>
+              <td><button class='go exert se' macro='exert roar'>狮吼</button></td>
+            </tr>
+          </table>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div id="chat" class="pad">
+        <table class='pad' cellspacing=5 cellpadding=0>
+          <tr><td><div id='chatkeys'></div></td><td style='vertical-align:top'>
+          <table class='go' cellspacing=0 cellpadding=0>
+            <tr><td><button class='channel emote' id='say' c='say'>说</button></td></tr>
+            <tr><td><button class='channel whisper' id='whisper' c='whisper'>密语</button></td></tr>
+            <tr><td><button class='channel chat' id='chat' c='chat'>闲聊</button></td></tr>
+            <tr><td><button class='channel rumor' id='rumor' c='rumor'>谣言</button></td></tr>
+          </table>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div id="others" class="pad">
+        <table id='explore' cellspacing=5 cellpadding=0>
+          <tr><td><div id='otherkeys'></div></td></tr>
+        </table>
+      </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
