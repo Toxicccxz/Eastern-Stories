@@ -153,7 +153,7 @@ class GameController extends ChangeNotifier {
 
     final completesQuestId = option.completesQuestId;
     if (completesQuestId != null) {
-      _completeQuest(completesQuestId);
+      _completeQuestWithExperience(completesQuestId);
       return;
     }
 
@@ -273,12 +273,11 @@ class GameController extends ChangeNotifier {
     final nextEnemyHp = activeCombat.enemyHp - playerDamage;
 
     if (nextEnemyHp <= 0) {
-      _state = _state.copyWith(
-        combat: null,
-        player: _state.player.copyWith(
-          silver: _state.player.silver + combat.rewardSilver,
-        ),
-        log: _state.logWith('你击退了${npc.name}。获得银两 +${combat.rewardSilver}。'),
+      _state = _state.copyWith(combat: null);
+      _awardRewards(
+        silver: combat.rewardSilver,
+        experience: combat.rewardExperience,
+        logPrefix: '你击退了${npc.name}',
       );
       notifyListeners();
       return;
@@ -346,7 +345,31 @@ class GameController extends ChangeNotifier {
     return quest.requiredFlags.every(_state.questFlags.contains);
   }
 
-  void _completeQuest(String questId) {
+  void _completeQuestWithExperience(String questId) {
+    final quest = _repository.quest(questId);
+    if (_questStatus(questId) != QuestStatus.active) {
+      _appendLog('现在还没有这项委托。');
+      return;
+    }
+    if (!_isQuestReady(quest)) {
+      _appendLog('这件事还没办妥。');
+      return;
+    }
+
+    _state = _state.copyWith(
+      inventoryItemIds: [..._state.inventoryItemIds, ...quest.rewardItemIds],
+      questStatuses: {..._state.questStatuses, questId: QuestStatus.completed},
+    );
+    _awardRewards(
+      silver: quest.rewardSilver,
+      experience: quest.rewardExperience,
+      itemIds: quest.rewardItemIds,
+      logPrefix: '完成委托：${quest.title}',
+    );
+    notifyListeners();
+  }
+
+  void completeQuestLegacy(String questId) {
     final quest = _repository.quest(questId);
     if (_questStatus(questId) != QuestStatus.active) {
       _appendLog('现在还没有这项委托。');
@@ -377,6 +400,64 @@ class GameController extends ChangeNotifier {
       ),
     );
     notifyListeners();
+  }
+
+  void _awardRewards({
+    required int silver,
+    required int experience,
+    required String logPrefix,
+    List<String> itemIds = const [],
+  }) {
+    final rewardNames = itemIds
+        .map(_repository.item)
+        .map((item) => item.name)
+        .join('、');
+    final rewardText = [
+      if (silver > 0) '银两 +$silver',
+      if (experience > 0) '经验 +$experience',
+      if (rewardNames.isNotEmpty) rewardNames,
+    ].join('，');
+
+    final previousLevel = _state.player.level;
+    final playerWithSilver = _state.player.copyWith(
+      silver: _state.player.silver + silver,
+    );
+    final nextPlayer = _applyExperience(playerWithSilver, experience);
+    final log = [
+      ..._state.logWith(
+        rewardText.isEmpty ? logPrefix : '$logPrefix。获得$rewardText。',
+      ),
+      if (nextPlayer.level > previousLevel)
+        '你升到了 Lv.${nextPlayer.level}，气血和内力更加充沛。',
+    ];
+
+    _state = _state.copyWith(player: nextPlayer, log: log);
+  }
+
+  PlayerState _applyExperience(PlayerState player, int gainedExperience) {
+    var level = player.level;
+    var experience = player.experience + gainedExperience;
+    var nextLevelExperience = player.nextLevelExperience;
+    var maxHp = player.maxHp;
+    var maxInnerPower = player.maxInnerPower;
+
+    while (experience >= nextLevelExperience) {
+      experience -= nextLevelExperience;
+      level += 1;
+      maxHp += 12;
+      maxInnerPower += 6;
+      nextLevelExperience += 60;
+    }
+
+    return player.copyWith(
+      level: level,
+      experience: experience,
+      nextLevelExperience: nextLevelExperience,
+      hp: maxHp,
+      maxHp: maxHp,
+      innerPower: maxInnerPower,
+      maxInnerPower: maxInnerPower,
+    );
   }
 }
 

@@ -54,6 +54,7 @@ void main() {
     expect(controller.state.inventoryItemIds, contains('hengbing_sword'));
     expect(controller.state.inventoryItemIds, contains('parry_book'));
     expect(controller.state.player.silver, 50);
+    expect(controller.state.player.experience, 60);
     expect(controller.state.log.last, contains('完成委托'));
   });
 
@@ -127,7 +128,10 @@ void main() {
     expect(controller.state.learnedSkillIds, contains('parry'));
     expect(controller.state.combat, isNull);
     expect(controller.state.player.silver, 130);
-    expect(controller.state.player.hp, 74);
-    expect(controller.state.log.last, contains('白鳞冰龙'));
+    expect(controller.state.player.level, 2);
+    expect(controller.state.player.experience, 30);
+    expect(controller.state.player.hp, 92);
+    expect(controller.state.log, contains(contains('白鳞冰龙')));
+    expect(controller.state.log.last, contains('Lv.2'));
   });
 }

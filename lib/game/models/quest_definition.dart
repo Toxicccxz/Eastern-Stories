@@ -6,6 +6,7 @@ class QuestDefinition {
     required this.steps,
     required this.requiredFlags,
     this.rewardSilver = 0,
+    this.rewardExperience = 0,
     this.rewardItemIds = const [],
   });
 
@@ -15,6 +16,7 @@ class QuestDefinition {
   final List<String> steps;
   final Set<String> requiredFlags;
   final int rewardSilver;
+  final int rewardExperience;
   final List<String> rewardItemIds;
 }
 

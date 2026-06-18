@@ -24,12 +24,14 @@ class CombatDefinition {
     required this.attack,
     required this.defense,
     this.rewardSilver = 0,
+    this.rewardExperience = 0,
   });
 
   final int maxHp;
   final int attack;
   final int defense;
   final int rewardSilver;
+  final int rewardExperience;
 }
 
 class DialogueOption {

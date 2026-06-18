@@ -111,6 +111,13 @@ class _PlayerStatusBar extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 8),
+          _StatusMeter(
+            label: '经验',
+            value: player.experience,
+            maxValue: player.nextLevelExperience,
+            color: const Color(0xFF6F7F3F),
+          ),
         ],
       ),
     );

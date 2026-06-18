@@ -21,6 +21,8 @@ class GameState {
       player: const PlayerState(
         name: '少侠',
         level: 1,
+        experience: 0,
+        nextLevelExperience: 100,
         hp: 80,
         maxHp: 80,
         innerPower: 30,
@@ -91,6 +93,8 @@ class PlayerState {
   const PlayerState({
     required this.name,
     required this.level,
+    required this.experience,
+    required this.nextLevelExperience,
     required this.hp,
     required this.maxHp,
     required this.innerPower,
@@ -100,20 +104,33 @@ class PlayerState {
 
   final String name;
   final int level;
+  final int experience;
+  final int nextLevelExperience;
   final int hp;
   final int maxHp;
   final int innerPower;
   final int maxInnerPower;
   final int silver;
 
-  PlayerState copyWith({int? hp, int? silver}) {
+  PlayerState copyWith({
+    int? level,
+    int? experience,
+    int? nextLevelExperience,
+    int? hp,
+    int? maxHp,
+    int? innerPower,
+    int? maxInnerPower,
+    int? silver,
+  }) {
     return PlayerState(
       name: name,
-      level: level,
+      level: level ?? this.level,
+      experience: experience ?? this.experience,
+      nextLevelExperience: nextLevelExperience ?? this.nextLevelExperience,
       hp: hp ?? this.hp,
-      maxHp: maxHp,
-      innerPower: innerPower,
-      maxInnerPower: maxInnerPower,
+      maxHp: maxHp ?? this.maxHp,
+      innerPower: innerPower ?? this.innerPower,
+      maxInnerPower: maxInnerPower ?? this.maxInnerPower,
       silver: silver ?? this.silver,
     );
   }
