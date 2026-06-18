@@ -25,6 +25,8 @@ class GameController extends ChangeNotifier {
         _move(direction);
       case LookAction():
         _look();
+      case PerformRoomAction(:final actionId):
+        _performRoomAction(actionId);
       case TalkAction(:final npcId):
         _talk(npcId);
       case SelectDialogueAction(:final npcId, :final optionId):
@@ -73,6 +75,24 @@ class GameController extends ChangeNotifier {
   void _look() {
     final room = _repository.room(_state.currentRoomId);
     _appendLog(room.description);
+  }
+
+  void _performRoomAction(String actionId) {
+    final room = _repository.room(_state.currentRoomId);
+    final action =
+        room.actions.where((item) => item.id == actionId).firstOrNull;
+    if (action == null) {
+      _appendLog('这里暂时不能这样做。');
+      return;
+    }
+
+    final nextRoom = _repository.room(action.resultRoomId);
+    _state = _state.copyWith(
+      currentRoomId: nextRoom.id,
+      visitedRoomIds: {..._state.visitedRoomIds, nextRoom.id},
+      log: _state.logWith(action.log),
+    );
+    notifyListeners();
   }
 
   void _talk(String npcId) {

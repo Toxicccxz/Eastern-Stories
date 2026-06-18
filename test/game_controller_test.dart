@@ -56,4 +56,19 @@ void main() {
     expect(controller.state.player.silver, 50);
     expect(controller.state.log.last, contains('完成委托'));
   });
+
+  test('room actions can move the player through lake scenes', () {
+    final controller = GameController(
+      repository: GameDefinitionRepository.demo(),
+    );
+
+    controller.dispatch(const GameAction.move(Direction.east));
+    controller.dispatch(const GameAction.move(Direction.east));
+    controller.dispatch(const GameAction.performRoomAction('paddle_to_lake'));
+    controller.dispatch(const GameAction.performRoomAction('dive_into_lake'));
+
+    expect(controller.state.currentRoomId, 'underwater_cave');
+    expect(controller.state.visitedRoomIds, contains('jade_snail_lake_center'));
+    expect(controller.state.log.last, contains('岩洞'));
+  });
 }

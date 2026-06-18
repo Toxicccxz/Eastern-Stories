@@ -12,6 +12,7 @@ class RoomDefinition {
     required this.exits,
     this.npcIds = const [],
     this.itemIds = const [],
+    this.actions = const [],
   });
 
   final String id;
@@ -23,8 +24,25 @@ class RoomDefinition {
   final Map<Direction, String> exits;
   final List<String> npcIds;
   final List<String> itemIds;
+  final List<RoomActionDefinition> actions;
 
   List<String> visibleItemIds(GameState state) {
     return state.roomItemOverrides[id] ?? itemIds;
   }
+}
+
+class RoomActionDefinition {
+  const RoomActionDefinition({
+    required this.id,
+    required this.label,
+    required this.description,
+    required this.resultRoomId,
+    required this.log,
+  });
+
+  final String id;
+  final String label;
+  final String description;
+  final String resultRoomId;
+  final String log;
 }

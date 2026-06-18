@@ -302,6 +302,22 @@ class _LocationInfoPanel extends StatelessWidget {
                 ),
             ],
           ),
+          const SizedBox(height: 8),
+          _ChipRow(
+            label: '行动',
+            emptyText: '无',
+            children: [
+              for (final action in room.actions)
+                ActionChip(
+                  avatar: const Icon(Icons.touch_app, size: 18),
+                  label: Text(action.label),
+                  onPressed:
+                      () => controller.dispatch(
+                        GameAction.performRoomAction(action.id),
+                      ),
+                ),
+            ],
+          ),
         ],
       ),
     );

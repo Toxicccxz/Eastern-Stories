@@ -7,6 +7,9 @@ sealed class GameAction {
 
   const factory GameAction.look() = LookAction;
 
+  const factory GameAction.performRoomAction(String actionId) =
+      PerformRoomAction;
+
   const factory GameAction.talk(String npcId) = TalkAction;
 
   const factory GameAction.selectDialogue(String npcId, String optionId) =
@@ -23,6 +26,12 @@ class MoveAction extends GameAction {
 
 class LookAction extends GameAction {
   const LookAction();
+}
+
+class PerformRoomAction extends GameAction {
+  const PerformRoomAction(this.actionId);
+
+  final String actionId;
 }
 
 class TalkAction extends GameAction {
