@@ -4,6 +4,7 @@ import '../models/direction.dart';
 import '../models/game_state.dart';
 import '../models/npc_definition.dart';
 import '../models/quest_definition.dart';
+import '../models/skill_definition.dart';
 import '../repositories/game_definition_repository.dart';
 import 'game_action.dart';
 
@@ -35,6 +36,8 @@ class GameController extends ChangeNotifier {
         _pickUp(itemId);
       case EquipItemAction(:final itemId):
         _equipItem(itemId);
+      case StudyItemAction(:final itemId):
+        _studyItem(itemId);
       case StartCombatAction(:final npcId):
         _startCombat(npcId);
       case AttackAction():
@@ -60,6 +63,12 @@ class GameController extends ChangeNotifier {
     return [
       for (final option in npc.dialogueOptions)
         if (_canShowDialogueOption(option)) option,
+    ];
+  }
+
+  List<SkillDefinition> learnedSkills() {
+    return [
+      for (final skillId in _state.learnedSkillIds) _repository.skill(skillId),
     ];
   }
 
@@ -191,6 +200,31 @@ class GameController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _studyItem(String itemId) {
+    if (!_state.inventoryItemIds.contains(itemId)) {
+      _appendLog('你还没有这个东西。');
+      return;
+    }
+
+    final item = _repository.item(itemId);
+    final skillId = item.studySkillId;
+    if (skillId == null) {
+      _appendLog('${item.name}无法研读。');
+      return;
+    }
+    if (_state.learnedSkillIds.contains(skillId)) {
+      _appendLog('你已经领会了${_repository.skill(skillId).name}。');
+      return;
+    }
+
+    final skill = _repository.skill(skillId);
+    _state = _state.copyWith(
+      learnedSkillIds: {..._state.learnedSkillIds, skillId},
+      log: _state.logWith('你研读${item.name}，领会了${skill.name}。'),
+    );
+    notifyListeners();
+  }
+
   void _startCombat(String npcId) {
     if (_state.combat != null) {
       _appendLog('你已经在战斗中。');
@@ -250,7 +284,7 @@ class GameController extends ChangeNotifier {
       return;
     }
 
-    final enemyDamage = (combat.attack - 2).clamp(1, 999);
+    final enemyDamage = (combat.attack - 2 - _damageReduction()).clamp(1, 999);
     final nextPlayerHp = (_state.player.hp - enemyDamage).clamp(
       1,
       _state.player.maxHp,
@@ -282,6 +316,12 @@ class GameController extends ChangeNotifier {
       log: _state.logWith('你避开${npc.name}，暂时退到一旁。'),
     );
     notifyListeners();
+  }
+
+  int _damageReduction() {
+    return _state.learnedSkillIds
+        .map((skillId) => _repository.skill(skillId).damageReduction)
+        .fold(0, (total, reduction) => total + reduction);
   }
 
   void _appendLog(String message) {

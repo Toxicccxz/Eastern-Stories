@@ -3,6 +3,7 @@ import '../models/item_definition.dart';
 import '../models/npc_definition.dart';
 import '../models/quest_definition.dart';
 import '../models/room_definition.dart';
+import '../models/skill_definition.dart';
 
 class GameDefinitionRepository {
   const GameDefinitionRepository({
@@ -11,10 +12,12 @@ class GameDefinitionRepository {
     required Map<String, NpcDefinition> npcs,
     required Map<String, ItemDefinition> items,
     required Map<String, QuestDefinition> quests,
+    required Map<String, SkillDefinition> skills,
   }) : _rooms = rooms,
        _npcs = npcs,
        _items = items,
-       _quests = quests;
+       _quests = quests,
+       _skills = skills;
 
   factory GameDefinitionRepository.demo() {
     return GameDefinitionRepository(
@@ -209,8 +212,9 @@ class GameDefinitionRepository {
         ),
         'parry_book': ItemDefinition(
           id: 'parry_book',
-          name: '招架入门',
-          description: '薄薄一本手抄书，讲的是最基础的拆招与格挡。',
+          name: '过招要门',
+          description: '一本介绍拆招卸力之法的入门书。',
+          studySkillId: 'parry',
         ),
       },
       quests: const {
@@ -224,6 +228,14 @@ class GameDefinitionRepository {
           rewardItemIds: ['hengbing_sword', 'parry_book'],
         ),
       },
+      skills: const {
+        'parry': SkillDefinition(
+          id: 'parry',
+          name: '基础招架',
+          description: '从过招要门中领会的拆招卸力之法，可略微降低受到的伤害。',
+          damageReduction: 2,
+        ),
+      },
     );
   }
 
@@ -232,6 +244,7 @@ class GameDefinitionRepository {
   final Map<String, NpcDefinition> _npcs;
   final Map<String, ItemDefinition> _items;
   final Map<String, QuestDefinition> _quests;
+  final Map<String, SkillDefinition> _skills;
 
   Iterable<RoomDefinition> get rooms => _rooms.values;
 
@@ -267,5 +280,13 @@ class GameDefinitionRepository {
       throw StateError('Unknown quest id: $id');
     }
     return quest;
+  }
+
+  SkillDefinition skill(String id) {
+    final skill = _skills[id];
+    if (skill == null) {
+      throw StateError('Unknown skill id: $id');
+    }
+    return skill;
   }
 }

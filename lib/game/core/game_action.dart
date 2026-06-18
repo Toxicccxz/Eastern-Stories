@@ -19,6 +19,8 @@ sealed class GameAction {
 
   const factory GameAction.equipItem(String itemId) = EquipItemAction;
 
+  const factory GameAction.studyItem(String itemId) = StudyItemAction;
+
   const factory GameAction.startCombat(String npcId) = StartCombatAction;
 
   const factory GameAction.attack() = AttackAction;
@@ -63,6 +65,12 @@ class PickUpAction extends GameAction {
 
 class EquipItemAction extends GameAction {
   const EquipItemAction(this.itemId);
+
+  final String itemId;
+}
+
+class StudyItemAction extends GameAction {
+  const StudyItemAction(this.itemId);
 
   final String itemId;
 }

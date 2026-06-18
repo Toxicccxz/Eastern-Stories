@@ -57,6 +57,28 @@ void main() {
     expect(controller.state.log.last, contains('完成委托'));
   });
 
+  test('player can study parry book to learn basic parry', () {
+    final controller = GameController(
+      repository: GameDefinitionRepository.demo(),
+    );
+
+    controller.dispatch(
+      const GameAction.selectDialogue('old_liu', 'ask_daughter'),
+    );
+    controller.dispatch(const GameAction.move(Direction.south));
+    controller.dispatch(
+      const GameAction.selectDialogue('flower_girl', 'found_girl'),
+    );
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(
+      const GameAction.selectDialogue('old_liu', 'report_daughter'),
+    );
+    controller.dispatch(const GameAction.studyItem('parry_book'));
+
+    expect(controller.state.learnedSkillIds, contains('parry'));
+    expect(controller.learnedSkills().single.name, '基础招架');
+  });
+
   test('room actions can move the player through lake scenes', () {
     final controller = GameController(
       repository: GameDefinitionRepository.demo(),
@@ -89,6 +111,7 @@ void main() {
       const GameAction.selectDialogue('old_liu', 'report_daughter'),
     );
     controller.dispatch(const GameAction.equipItem('hengbing_sword'));
+    controller.dispatch(const GameAction.studyItem('parry_book'));
 
     controller.dispatch(const GameAction.move(Direction.east));
     controller.dispatch(const GameAction.move(Direction.east));
@@ -101,8 +124,10 @@ void main() {
     controller.dispatch(const GameAction.attack());
 
     expect(controller.state.equippedWeaponId, 'hengbing_sword');
+    expect(controller.state.learnedSkillIds, contains('parry'));
     expect(controller.state.combat, isNull);
     expect(controller.state.player.silver, 130);
+    expect(controller.state.player.hp, 74);
     expect(controller.state.log.last, contains('白鳞冰龙'));
   });
 }

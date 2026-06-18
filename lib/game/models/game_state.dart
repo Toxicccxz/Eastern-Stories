@@ -7,6 +7,7 @@ class GameState {
     required this.visitedRoomIds,
     required this.inventoryItemIds,
     required this.equippedWeaponId,
+    required this.learnedSkillIds,
     required this.roomItemOverrides,
     required this.questStatuses,
     required this.questFlags,
@@ -29,6 +30,7 @@ class GameState {
       visitedRoomIds: {startingRoomId},
       inventoryItemIds: const [],
       equippedWeaponId: null,
+      learnedSkillIds: const {},
       roomItemOverrides: const {},
       questStatuses: const {},
       questFlags: const {},
@@ -42,6 +44,7 @@ class GameState {
   final Set<String> visitedRoomIds;
   final List<String> inventoryItemIds;
   final String? equippedWeaponId;
+  final Set<String> learnedSkillIds;
   final Map<String, List<String>> roomItemOverrides;
   final Map<String, QuestStatus> questStatuses;
   final Set<String> questFlags;
@@ -54,6 +57,7 @@ class GameState {
     Set<String>? visitedRoomIds,
     List<String>? inventoryItemIds,
     Object? equippedWeaponId = _unchanged,
+    Set<String>? learnedSkillIds,
     Map<String, List<String>>? roomItemOverrides,
     Map<String, QuestStatus>? questStatuses,
     Set<String>? questFlags,
@@ -69,6 +73,7 @@ class GameState {
           equippedWeaponId == _unchanged
               ? this.equippedWeaponId
               : equippedWeaponId as String?,
+      learnedSkillIds: learnedSkillIds ?? this.learnedSkillIds,
       roomItemOverrides: roomItemOverrides ?? this.roomItemOverrides,
       questStatuses: questStatuses ?? this.questStatuses,
       questFlags: questFlags ?? this.questFlags,

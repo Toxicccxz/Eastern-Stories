@@ -528,6 +528,11 @@ class _ActionBar extends StatelessWidget {
         icon: Icons.assignment_outlined,
         onPressed: () => _showQuests(context, controller),
       ),
+      _ActionButton(
+        label: '武学',
+        icon: Icons.menu_book_outlined,
+        onPressed: () => _showSkills(context, controller),
+      ),
     ];
 
     return Container(
@@ -549,6 +554,7 @@ class _ActionBar extends StatelessWidget {
       builder: (context) {
         final itemIds = controller.state.inventoryItemIds;
         final equippedWeaponId = controller.state.equippedWeaponId;
+        final learnedSkillIds = controller.state.learnedSkillIds;
 
         return Padding(
           padding: const EdgeInsets.all(16),
@@ -568,23 +574,12 @@ class _ActionBar extends StatelessWidget {
                     subtitle: Text(
                       controller.repository.item(itemId).description,
                     ),
-                    trailing:
-                        controller.repository.item(itemId).canEquip
-                            ? FilledButton(
-                              onPressed:
-                                  equippedWeaponId == itemId
-                                      ? null
-                                      : () {
-                                        controller.dispatch(
-                                          GameAction.equipItem(itemId),
-                                        );
-                                        Navigator.of(context).pop();
-                                      },
-                              child: Text(
-                                equippedWeaponId == itemId ? '已装备' : '装备',
-                              ),
-                            )
-                            : null,
+                    trailing: _InventoryAction(
+                      itemId: itemId,
+                      controller: controller,
+                      equippedWeaponId: equippedWeaponId,
+                      learnedSkillIds: learnedSkillIds,
+                    ),
                   ),
             ],
           ),
@@ -632,6 +627,84 @@ class _ActionBar extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _showSkills(BuildContext context, GameController controller) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) {
+        final skills = controller.learnedSkills();
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('武学', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 12),
+              if (skills.isEmpty)
+                const Text('还没有领会武学。')
+              else
+                for (final skill in skills)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(skill.name),
+                    subtitle: Text(skill.description),
+                  ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _InventoryAction extends StatelessWidget {
+  const _InventoryAction({
+    required this.itemId,
+    required this.controller,
+    required this.equippedWeaponId,
+    required this.learnedSkillIds,
+  });
+
+  final String itemId;
+  final GameController controller;
+  final String? equippedWeaponId;
+  final Set<String> learnedSkillIds;
+
+  @override
+  Widget build(BuildContext context) {
+    final item = controller.repository.item(itemId);
+    if (item.canEquip) {
+      return FilledButton(
+        onPressed:
+            equippedWeaponId == itemId
+                ? null
+                : () {
+                  controller.dispatch(GameAction.equipItem(itemId));
+                  Navigator.of(context).pop();
+                },
+        child: Text(equippedWeaponId == itemId ? '已装备' : '装备'),
+      );
+    }
+
+    final skillId = item.studySkillId;
+    if (skillId != null) {
+      return FilledButton(
+        onPressed:
+            learnedSkillIds.contains(skillId)
+                ? null
+                : () {
+                  controller.dispatch(GameAction.studyItem(itemId));
+                  Navigator.of(context).pop();
+                },
+        child: Text(learnedSkillIds.contains(skillId) ? '已领会' : '研读'),
+      );
+    }
+
+    return const SizedBox.shrink();
   }
 }
 
