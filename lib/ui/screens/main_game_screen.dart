@@ -711,6 +711,16 @@ class _InventoryAction extends StatelessWidget {
       );
     }
 
+    if (item.canUse) {
+      return FilledButton(
+        onPressed: () {
+          controller.dispatch(GameAction.useItem(itemId));
+          Navigator.of(context).pop();
+        },
+        child: const Text('使用'),
+      );
+    }
+
     return const SizedBox.shrink();
   }
 }

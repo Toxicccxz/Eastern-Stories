@@ -66,10 +66,22 @@ class GameDefinitionRepository {
           mapX: 2,
           mapY: 1,
           exits: {
+            Direction.north: 'melon_farm',
             Direction.west: 'liu_home',
             Direction.south: 'little_garden',
             Direction.east: 'jade_snail_lake',
           },
+        ),
+        'melon_farm': RoomDefinition(
+          id: 'melon_farm',
+          name: '瓜地',
+          areaName: '小村',
+          description: '这是一片很大的西瓜地，沙质土壤里长出的瓜想来又甜又脆。几个熟透的西瓜已经离开瓜蔓，静静躺在田垄边。',
+          mapX: 2,
+          mapY: 0,
+          exits: {Direction.south: 'village_road'},
+          npcIds: ['meloner'],
+          itemIds: ['water_melon'],
         ),
         'jade_snail_lake': RoomDefinition(
           id: 'jade_snail_lake',
@@ -180,6 +192,12 @@ class GameDefinitionRepository {
           description: '一个精壮汉子，头戴斗笠，身披蓑衣，望向湖面时眼神格外锐利。',
           greeting: '不知这水怪又吃了几个人。',
         ),
+        'meloner': NpcDefinition(
+          id: 'meloner',
+          name: '瓜农',
+          description: '一个中年瓜农，脸被阳光晒得黝黑，身形结实，看着很是警觉。',
+          greeting: '这位少侠，要不要买个西瓜解解渴？',
+        ),
         'white_ice_dragon': NpcDefinition(
           id: 'white_ice_dragon',
           name: '白鳞冰龙',
@@ -204,6 +222,13 @@ class GameDefinitionRepository {
           id: 'wild_flower',
           name: '野花',
           description: '花园里随处可见的小花，带着清新的草木气味。',
+        ),
+        'water_melon': ItemDefinition(
+          id: 'water_melon',
+          name: '西瓜',
+          description: '一个绿皮墨纹的大西瓜，不但解渴，还能填肚子。',
+          restoreHp: 16,
+          restoreInnerPower: 6,
         ),
         'hengbing_sword': ItemDefinition(
           id: 'hengbing_sword',

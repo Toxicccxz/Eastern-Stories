@@ -38,6 +38,8 @@ class GameController extends ChangeNotifier {
         _equipItem(itemId);
       case StudyItemAction(:final itemId):
         _studyItem(itemId);
+      case UseItemAction(:final itemId):
+        _useItem(itemId);
       case StartCombatAction(:final npcId):
         _startCombat(npcId);
       case AttackAction():
@@ -221,6 +223,35 @@ class GameController extends ChangeNotifier {
     _state = _state.copyWith(
       learnedSkillIds: {..._state.learnedSkillIds, skillId},
       log: _state.logWith('你研读${item.name}，领会了${skill.name}。'),
+    );
+    notifyListeners();
+  }
+
+  void _useItem(String itemId) {
+    if (!_state.inventoryItemIds.contains(itemId)) {
+      _appendLog('你还没有这个东西。');
+      return;
+    }
+
+    final item = _repository.item(itemId);
+    if (!item.canUse) {
+      _appendLog('${item.name}现在不能使用。');
+      return;
+    }
+
+    final nextHp = (_state.player.hp + item.restoreHp).clamp(
+      0,
+      _state.player.maxHp,
+    );
+    final nextInnerPower = (_state.player.innerPower + item.restoreInnerPower)
+        .clamp(0, _state.player.maxInnerPower);
+    final inventory = [..._state.inventoryItemIds];
+    inventory.remove(itemId);
+
+    _state = _state.copyWith(
+      player: _state.player.copyWith(hp: nextHp, innerPower: nextInnerPower),
+      inventoryItemIds: inventory,
+      log: _state.logWith('你用了${item.name}，精神稍振。'),
     );
     notifyListeners();
   }
