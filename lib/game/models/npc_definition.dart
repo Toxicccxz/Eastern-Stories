@@ -7,6 +7,7 @@ class NpcDefinition {
     required this.description,
     required this.greeting,
     this.dialogueOptions = const [],
+    this.combat,
   });
 
   final String id;
@@ -14,6 +15,21 @@ class NpcDefinition {
   final String description;
   final String greeting;
   final List<DialogueOption> dialogueOptions;
+  final CombatDefinition? combat;
+}
+
+class CombatDefinition {
+  const CombatDefinition({
+    required this.maxHp,
+    required this.attack,
+    required this.defense,
+    this.rewardSilver = 0,
+  });
+
+  final int maxHp;
+  final int attack;
+  final int defense;
+  final int rewardSilver;
 }
 
 class DialogueOption {

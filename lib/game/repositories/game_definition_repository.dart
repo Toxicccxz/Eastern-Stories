@@ -182,6 +182,12 @@ class GameDefinitionRepository {
           name: '白鳞冰龙',
           description: '一只浑身长满白鳞的巨龙，盘踞在寒冰之间。',
           greeting: '冰龙缓缓睁眼，寒气沿着冰面蔓延开来。',
+          combat: CombatDefinition(
+            maxHp: 36,
+            attack: 7,
+            defense: 4,
+            rewardSilver: 80,
+          ),
         ),
       },
       items: const {
@@ -199,6 +205,7 @@ class GameDefinitionRepository {
           id: 'hengbing_sword',
           name: '横冰剑',
           description: '刘老农赠予的短剑，剑身寒光很淡，却颇为坚韧。',
+          attackPower: 10,
         ),
         'parry_book': ItemDefinition(
           id: 'parry_book',

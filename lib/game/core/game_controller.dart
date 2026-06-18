@@ -33,6 +33,14 @@ class GameController extends ChangeNotifier {
         _selectDialogue(npcId, optionId);
       case PickUpAction(:final itemId):
         _pickUp(itemId);
+      case EquipItemAction(:final itemId):
+        _equipItem(itemId);
+      case StartCombatAction(:final npcId):
+        _startCombat(npcId);
+      case AttackAction():
+        _attack();
+      case FleeCombatAction():
+        _fleeCombat();
     }
   }
 
@@ -160,6 +168,118 @@ class GameController extends ChangeNotifier {
       },
       inventoryItemIds: [..._state.inventoryItemIds, itemId],
       log: _state.logWith('你拾起了${item.name}。'),
+    );
+    notifyListeners();
+  }
+
+  void _equipItem(String itemId) {
+    if (!_state.inventoryItemIds.contains(itemId)) {
+      _appendLog('你还没有这个东西。');
+      return;
+    }
+
+    final item = _repository.item(itemId);
+    if (!item.canEquip) {
+      _appendLog('${item.name}不能装备。');
+      return;
+    }
+
+    _state = _state.copyWith(
+      equippedWeaponId: itemId,
+      log: _state.logWith('你装备了${item.name}。'),
+    );
+    notifyListeners();
+  }
+
+  void _startCombat(String npcId) {
+    if (_state.combat != null) {
+      _appendLog('你已经在战斗中。');
+      return;
+    }
+
+    final room = _repository.room(_state.currentRoomId);
+    if (!room.npcIds.contains(npcId)) {
+      _appendLog('这里没有这个目标。');
+      return;
+    }
+
+    final npc = _repository.npc(npcId);
+    final combat = npc.combat;
+    if (combat == null) {
+      _appendLog('${npc.name}并无敌意。');
+      return;
+    }
+
+    _state = _state.copyWith(
+      combat: CombatState(npcId: npcId, enemyHp: combat.maxHp),
+      log: _state.logWith('${npc.name}逼近过来，战斗开始。'),
+    );
+    notifyListeners();
+  }
+
+  void _attack() {
+    final activeCombat = _state.combat;
+    if (activeCombat == null) {
+      _appendLog('现在没有敌人。');
+      return;
+    }
+
+    final npc = _repository.npc(activeCombat.npcId);
+    final combat = npc.combat;
+    if (combat == null) {
+      _state = _state.copyWith(combat: null);
+      notifyListeners();
+      return;
+    }
+
+    final weaponId = _state.equippedWeaponId;
+    final weaponPower =
+        weaponId == null ? 0 : _repository.item(weaponId).attackPower;
+    final playerDamage = (8 + weaponPower - combat.defense).clamp(1, 999);
+    final nextEnemyHp = activeCombat.enemyHp - playerDamage;
+
+    if (nextEnemyHp <= 0) {
+      _state = _state.copyWith(
+        combat: null,
+        player: _state.player.copyWith(
+          silver: _state.player.silver + combat.rewardSilver,
+        ),
+        log: _state.logWith('你击退了${npc.name}。获得银两 +${combat.rewardSilver}。'),
+      );
+      notifyListeners();
+      return;
+    }
+
+    final enemyDamage = (combat.attack - 2).clamp(1, 999);
+    final nextPlayerHp = (_state.player.hp - enemyDamage).clamp(
+      1,
+      _state.player.maxHp,
+    );
+    final wasDefeated = nextPlayerHp == 1;
+    final log = [
+      ..._state.logWith('你向${npc.name}出手，造成$playerDamage点伤害。'),
+      '${npc.name}反击，你受到$enemyDamage点伤害。',
+    ];
+
+    _state = _state.copyWith(
+      player: _state.player.copyWith(hp: nextPlayerHp),
+      combat: wasDefeated ? null : activeCombat.copyWith(enemyHp: nextEnemyHp),
+      log: wasDefeated ? [...log, '你勉强脱离战斗，气血只剩一线。'] : log,
+    );
+    notifyListeners();
+  }
+
+  void _fleeCombat() {
+    final activeCombat = _state.combat;
+    if (activeCombat == null) {
+      _appendLog('现在没有敌人。');
+      return;
+    }
+
+    final npc = _repository.npc(activeCombat.npcId);
+    _state = _state.copyWith(
+      combat: null,
+      log: _state.logWith('你避开${npc.name}，暂时退到一旁。'),
     );
     notifyListeners();
   }

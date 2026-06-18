@@ -16,6 +16,14 @@ sealed class GameAction {
       SelectDialogueAction;
 
   const factory GameAction.pickUp(String itemId) = PickUpAction;
+
+  const factory GameAction.equipItem(String itemId) = EquipItemAction;
+
+  const factory GameAction.startCombat(String npcId) = StartCombatAction;
+
+  const factory GameAction.attack() = AttackAction;
+
+  const factory GameAction.fleeCombat() = FleeCombatAction;
 }
 
 class MoveAction extends GameAction {
@@ -51,4 +59,24 @@ class PickUpAction extends GameAction {
   const PickUpAction(this.itemId);
 
   final String itemId;
+}
+
+class EquipItemAction extends GameAction {
+  const EquipItemAction(this.itemId);
+
+  final String itemId;
+}
+
+class StartCombatAction extends GameAction {
+  const StartCombatAction(this.npcId);
+
+  final String npcId;
+}
+
+class AttackAction extends GameAction {
+  const AttackAction();
+}
+
+class FleeCombatAction extends GameAction {
+  const FleeCombatAction();
 }

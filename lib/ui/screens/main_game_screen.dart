@@ -40,6 +40,10 @@ class MainGameScreen extends StatelessWidget {
                         state: state,
                       ),
                       const SizedBox(height: 12),
+                      if (state.combat != null) ...[
+                        _CombatPanel(controller: controller, state: state),
+                        const SizedBox(height: 12),
+                      ],
                       _EventLogPanel(messages: state.log),
                     ],
                   ),
@@ -360,10 +364,83 @@ class _LocationInfoPanel extends StatelessWidget {
                       Navigator.of(context).pop();
                     },
                   ),
+              if (npc.combat != null) ...[
+                const SizedBox(height: 8),
+                FilledButton.icon(
+                  onPressed: () {
+                    controller.dispatch(GameAction.startCombat(npc.id));
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(Icons.local_fire_department),
+                  label: const Text('迎战'),
+                ),
+              ],
             ],
           ),
         );
       },
+    );
+  }
+}
+
+class _CombatPanel extends StatelessWidget {
+  const _CombatPanel({required this.controller, required this.state});
+
+  final GameController controller;
+  final GameState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final combat = state.combat;
+    if (combat == null) {
+      return const SizedBox.shrink();
+    }
+
+    final npc = controller.repository.npc(combat.npcId);
+    final combatDefinition = npc.combat;
+    if (combatDefinition == null) {
+      return const SizedBox.shrink();
+    }
+
+    return _Panel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('战斗', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 10),
+          Text(
+            npc.name,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 8),
+          _StatusMeter(
+            label: '敌方气血',
+            value: combat.enemyHp,
+            maxValue: combatDefinition.maxHp,
+            color: const Color(0xFF7B5FA4),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              FilledButton.icon(
+                onPressed: () => controller.dispatch(const GameAction.attack()),
+                icon: const Icon(Icons.flash_on, size: 18),
+                label: const Text('攻击'),
+              ),
+              OutlinedButton.icon(
+                onPressed:
+                    () => controller.dispatch(const GameAction.fleeCombat()),
+                icon: const Icon(Icons.directions_run, size: 18),
+                label: const Text('退避'),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -471,6 +548,7 @@ class _ActionBar extends StatelessWidget {
       context: context,
       builder: (context) {
         final itemIds = controller.state.inventoryItemIds;
+        final equippedWeaponId = controller.state.equippedWeaponId;
 
         return Padding(
           padding: const EdgeInsets.all(16),
@@ -490,6 +568,23 @@ class _ActionBar extends StatelessWidget {
                     subtitle: Text(
                       controller.repository.item(itemId).description,
                     ),
+                    trailing:
+                        controller.repository.item(itemId).canEquip
+                            ? FilledButton(
+                              onPressed:
+                                  equippedWeaponId == itemId
+                                      ? null
+                                      : () {
+                                        controller.dispatch(
+                                          GameAction.equipItem(itemId),
+                                        );
+                                        Navigator.of(context).pop();
+                                      },
+                              child: Text(
+                                equippedWeaponId == itemId ? '已装备' : '装备',
+                              ),
+                            )
+                            : null,
                   ),
             ],
           ),
