@@ -1,6 +1,7 @@
 import 'package:eastern_stories/game/core/game_action.dart';
 import 'package:eastern_stories/game/core/game_controller.dart';
 import 'package:eastern_stories/game/models/direction.dart';
+import 'package:eastern_stories/game/models/quest_definition.dart';
 import 'package:eastern_stories/game/repositories/game_definition_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -42,10 +43,20 @@ void main() {
     controller.dispatch(
       const GameAction.selectDialogue('old_liu', 'ask_daughter'),
     );
+    expect(controller.questViews().single.steps.map((step) => step.status), [
+      QuestStepStatus.completed,
+      QuestStepStatus.current,
+      QuestStepStatus.pending,
+    ]);
     controller.dispatch(const GameAction.move(Direction.south));
     controller.dispatch(
       const GameAction.selectDialogue('flower_girl', 'found_girl'),
     );
+    expect(controller.questViews().single.steps.map((step) => step.status), [
+      QuestStepStatus.completed,
+      QuestStepStatus.completed,
+      QuestStepStatus.current,
+    ]);
     controller.dispatch(const GameAction.move(Direction.north));
     controller.dispatch(
       const GameAction.selectDialogue('old_liu', 'report_daughter'),
@@ -55,6 +66,11 @@ void main() {
     expect(controller.state.inventoryItemIds, contains('parry_book'));
     expect(controller.state.player.silver, 50);
     expect(controller.state.player.experience, 60);
+    expect(controller.questViews().single.steps.map((step) => step.status), [
+      QuestStepStatus.completed,
+      QuestStepStatus.completed,
+      QuestStepStatus.completed,
+    ]);
     expect(controller.state.log.last, contains('完成委托'));
   });
 

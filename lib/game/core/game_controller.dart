@@ -56,6 +56,7 @@ class GameController extends ChangeNotifier {
           definition: quest,
           status: _questStatus(quest.id),
           isReadyToComplete: _isQuestReady(quest),
+          steps: _questStepViews(quest),
         ),
     ];
   }
@@ -374,6 +375,53 @@ class GameController extends ChangeNotifier {
 
   bool _isQuestReady(QuestDefinition quest) {
     return quest.requiredFlags.every(_state.questFlags.contains);
+  }
+
+  List<QuestStepView> _questStepViews(QuestDefinition quest) {
+    final status = _questStatus(quest.id);
+    if (status == QuestStatus.completed) {
+      return [
+        for (final step in quest.steps)
+          QuestStepView(
+            description: step.description,
+            status: QuestStepStatus.completed,
+          ),
+      ];
+    }
+
+    var foundCurrentStep = false;
+    final views = <QuestStepView>[];
+    for (var index = 0; index < quest.steps.length; index += 1) {
+      final step = quest.steps[index];
+      final isLastStep = index == quest.steps.length - 1;
+      final stepStatus =
+          status == QuestStatus.active && _isQuestReady(quest) && isLastStep
+              ? QuestStepStatus.current
+              : _stepStatus(step, status, foundCurrentStep);
+      if (stepStatus == QuestStepStatus.current) {
+        foundCurrentStep = true;
+      }
+      views.add(
+        QuestStepView(description: step.description, status: stepStatus),
+      );
+    }
+    return views;
+  }
+
+  QuestStepStatus _stepStatus(
+    QuestStepDefinition step,
+    QuestStatus questStatus,
+    bool hasCurrentStep,
+  ) {
+    if (questStatus == QuestStatus.notStarted) {
+      return QuestStepStatus.pending;
+    }
+
+    final requiredFlag = step.requiredFlag;
+    if (requiredFlag == null || _state.questFlags.contains(requiredFlag)) {
+      return QuestStepStatus.completed;
+    }
+    return hasCurrentStep ? QuestStepStatus.pending : QuestStepStatus.current;
   }
 
   void _completeQuestWithExperience(String questId) {

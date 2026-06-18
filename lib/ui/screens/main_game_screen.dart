@@ -617,18 +617,7 @@ class _ActionBar extends StatelessWidget {
               if (visibleQuests.isEmpty)
                 const Text('还没有接到委托。')
               else
-                for (final quest in visibleQuests)
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(quest.definition.title),
-                    subtitle: Text(
-                      quest.status == QuestStatus.completed
-                          ? '已完成'
-                          : quest.isReadyToComplete
-                          ? '可回报'
-                          : quest.definition.steps.join('\n'),
-                    ),
-                  ),
+                for (final quest in visibleQuests) _QuestTile(quest: quest),
             ],
           ),
         );
@@ -664,6 +653,77 @@ class _ActionBar extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _QuestTile extends StatelessWidget {
+  const _QuestTile({required this.quest});
+
+  final QuestView quest;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            quest.definition.title,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 4),
+          Text(_statusText, style: Theme.of(context).textTheme.bodySmall),
+          const SizedBox(height: 8),
+          for (final step in quest.steps) _QuestStepRow(step: step),
+        ],
+      ),
+    );
+  }
+
+  String get _statusText {
+    return switch (quest.status) {
+      QuestStatus.completed => '已完成',
+      QuestStatus.active when quest.isReadyToComplete => '可回报',
+      QuestStatus.active => '进行中',
+      QuestStatus.notStarted => '未接取',
+    };
+  }
+}
+
+class _QuestStepRow extends StatelessWidget {
+  const _QuestStepRow({required this.step});
+
+  final QuestStepView step;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final (icon, color) = switch (step.status) {
+      QuestStepStatus.completed => (Icons.check_circle, colorScheme.primary),
+      QuestStepStatus.current => (
+        Icons.radio_button_checked,
+        colorScheme.tertiary,
+      ),
+      QuestStepStatus.pending => (
+        Icons.radio_button_unchecked,
+        colorScheme.outline,
+      ),
+    };
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 8),
+          Expanded(child: Text(step.description)),
+        ],
+      ),
     );
   }
 }

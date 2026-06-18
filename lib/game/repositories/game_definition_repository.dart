@@ -248,7 +248,17 @@ class GameDefinitionRepository {
           id: 'find_flower_girl',
           title: '老刘寻女',
           description: '刘老农正在寻找在屋后花园玩耍的小女娃。',
-          steps: ['向刘老农询问小女娃的去向。', '到屋后花园找到采花女。', '回到刘家小房告诉刘老农。'],
+          steps: [
+            QuestStepDefinition(description: '向刘老农询问小女娃的去向。'),
+            QuestStepDefinition(
+              description: '到屋后花园找到采花女。',
+              requiredFlag: 'found_flower_girl',
+            ),
+            QuestStepDefinition(
+              description: '回到刘家小房告诉刘老农。',
+              requiredFlag: 'found_flower_girl',
+            ),
+          ],
           requiredFlags: {'found_flower_girl'},
           rewardSilver: 30,
           rewardExperience: 60,
