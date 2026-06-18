@@ -1,3 +1,5 @@
+import 'quest_definition.dart';
+
 class GameState {
   const GameState({
     required this.currentRoomId,
@@ -5,6 +7,8 @@ class GameState {
     required this.visitedRoomIds,
     required this.inventoryItemIds,
     required this.roomItemOverrides,
+    required this.questStatuses,
+    required this.questFlags,
     required this.log,
   });
 
@@ -23,6 +27,8 @@ class GameState {
       visitedRoomIds: {startingRoomId},
       inventoryItemIds: const [],
       roomItemOverrides: const {},
+      questStatuses: const {},
+      questFlags: const {},
       log: const ['你在晨雾中醒来，东方故事就此开始。'],
     );
   }
@@ -32,6 +38,8 @@ class GameState {
   final Set<String> visitedRoomIds;
   final List<String> inventoryItemIds;
   final Map<String, List<String>> roomItemOverrides;
+  final Map<String, QuestStatus> questStatuses;
+  final Set<String> questFlags;
   final List<String> log;
 
   GameState copyWith({
@@ -40,6 +48,8 @@ class GameState {
     Set<String>? visitedRoomIds,
     List<String>? inventoryItemIds,
     Map<String, List<String>>? roomItemOverrides,
+    Map<String, QuestStatus>? questStatuses,
+    Set<String>? questFlags,
     List<String>? log,
   }) {
     return GameState(
@@ -48,6 +58,8 @@ class GameState {
       visitedRoomIds: visitedRoomIds ?? this.visitedRoomIds,
       inventoryItemIds: inventoryItemIds ?? this.inventoryItemIds,
       roomItemOverrides: roomItemOverrides ?? this.roomItemOverrides,
+      questStatuses: questStatuses ?? this.questStatuses,
+      questFlags: questFlags ?? this.questFlags,
       log: log ?? this.log,
     );
   }
@@ -75,6 +87,18 @@ class PlayerState {
   final int innerPower;
   final int maxInnerPower;
   final int silver;
+
+  PlayerState copyWith({int? silver}) {
+    return PlayerState(
+      name: name,
+      level: level,
+      hp: hp,
+      maxHp: maxHp,
+      innerPower: innerPower,
+      maxInnerPower: maxInnerPower,
+      silver: silver ?? this.silver,
+    );
+  }
 }
 
 extension _RecentItems<T> on List<T> {

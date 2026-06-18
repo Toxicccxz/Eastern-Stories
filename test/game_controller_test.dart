@@ -10,11 +10,11 @@ void main() {
       repository: GameDefinitionRepository.demo(),
     );
 
-    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(const GameAction.move(Direction.south));
 
-    expect(controller.state.currentRoomId, 'north_gate');
-    expect(controller.state.visitedRoomIds, contains('north_gate'));
-    expect(controller.state.log.last, contains('北门'));
+    expect(controller.state.currentRoomId, 'little_garden');
+    expect(controller.state.visitedRoomIds, contains('little_garden'));
+    expect(controller.state.log.last, contains('花园'));
   });
 
   test('picking up an item moves it into inventory', () {
@@ -22,14 +22,38 @@ void main() {
       repository: GameDefinitionRepository.demo(),
     );
 
-    controller.dispatch(const GameAction.pickUp('notice'));
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(const GameAction.pickUp('old_book'));
 
-    expect(controller.state.inventoryItemIds, contains('notice'));
+    expect(controller.state.inventoryItemIds, contains('old_book'));
     expect(
       controller.repository
           .room(controller.state.currentRoomId)
           .visibleItemIds(controller.state),
-      isNot(contains('notice')),
+      isNot(contains('old_book')),
     );
+  });
+
+  test('old liu quest can be started, progressed, and completed', () {
+    final controller = GameController(
+      repository: GameDefinitionRepository.demo(),
+    );
+
+    controller.dispatch(
+      const GameAction.selectDialogue('old_liu', 'ask_daughter'),
+    );
+    controller.dispatch(const GameAction.move(Direction.south));
+    controller.dispatch(
+      const GameAction.selectDialogue('flower_girl', 'found_girl'),
+    );
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(
+      const GameAction.selectDialogue('old_liu', 'report_daughter'),
+    );
+
+    expect(controller.state.inventoryItemIds, contains('hengbing_sword'));
+    expect(controller.state.inventoryItemIds, contains('parry_book'));
+    expect(controller.state.player.silver, 50);
+    expect(controller.state.log.last, contains('完成委托'));
   });
 }

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../game/core/game_action.dart';
 import '../../game/core/game_controller.dart';
 import '../../game/models/game_state.dart';
+import '../../game/models/npc_definition.dart';
+import '../../game/models/quest_definition.dart';
 import '../../game/models/room_definition.dart';
 
 class MainGameScreen extends StatelessWidget {
@@ -156,7 +158,10 @@ class _AreaMapView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const size = 3;
+    final columns =
+        rooms.map((room) => room.mapX).reduce((a, b) => a > b ? a : b) + 1;
+    final rows =
+        rooms.map((room) => room.mapY).reduce((a, b) => a > b ? a : b) + 1;
     final roomByPoint = {
       for (final room in rooms) '${room.mapX},${room.mapY}': room,
     };
@@ -165,21 +170,21 @@ class _AreaMapView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('柳溪镇', style: Theme.of(context).textTheme.titleMedium),
+          Text('小村', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 10),
           AspectRatio(
             aspectRatio: 1.8,
             child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: size,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columns,
                 mainAxisSpacing: 8,
                 crossAxisSpacing: 8,
               ),
-              itemCount: size * size,
+              itemCount: columns * rows,
               itemBuilder: (context, index) {
-                final x = index % size;
-                final y = index ~/ size;
+                final x = index % columns;
+                final y = index ~/ columns;
                 final room = roomByPoint['$x,$y'];
                 final isCurrent = room?.id == state.currentRoomId;
                 final isVisited =
@@ -280,7 +285,7 @@ class _LocationInfoPanel extends StatelessWidget {
               for (final npc in npcs)
                 ActionChip(
                   label: Text(npc.name),
-                  onPressed: () => controller.dispatch(GameAction.talk(npc.id)),
+                  onPressed: () => _showDialogue(context, controller, npc),
                 ),
             ],
           ),
@@ -299,6 +304,50 @@ class _LocationInfoPanel extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showDialogue(
+    BuildContext context,
+    GameController controller,
+    NpcDefinition npc,
+  ) {
+    controller.dispatch(GameAction.talk(npc.id));
+    final options = controller.dialogueOptionsFor(npc.id);
+
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(npc.name, style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 8),
+              Text(npc.description),
+              const SizedBox(height: 12),
+              if (options.isEmpty)
+                const Text('暂时没有更多话可说。')
+              else
+                for (final option in options)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(option.label),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      controller.dispatch(
+                        GameAction.selectDialogue(npc.id, option.id),
+                      );
+                      Navigator.of(context).pop();
+                    },
+                  ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -381,6 +430,11 @@ class _ActionBar extends StatelessWidget {
         icon: Icons.inventory_2_outlined,
         onPressed: () => _showInventory(context, controller),
       ),
+      _ActionButton(
+        label: '委托',
+        icon: Icons.assignment_outlined,
+        onPressed: () => _showQuests(context, controller),
+      ),
     ];
 
     return Container(
@@ -419,6 +473,47 @@ class _ActionBar extends StatelessWidget {
                     title: Text(controller.repository.item(itemId).name),
                     subtitle: Text(
                       controller.repository.item(itemId).description,
+                    ),
+                  ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showQuests(BuildContext context, GameController controller) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) {
+        final quests = controller.questViews();
+        final visibleQuests =
+            quests
+                .where((quest) => quest.status != QuestStatus.notStarted)
+                .toList();
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('委托', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 12),
+              if (visibleQuests.isEmpty)
+                const Text('还没有接到委托。')
+              else
+                for (final quest in visibleQuests)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(quest.definition.title),
+                    subtitle: Text(
+                      quest.status == QuestStatus.completed
+                          ? '已完成'
+                          : quest.isReadyToComplete
+                          ? '可回报'
+                          : quest.definition.steps.join('\n'),
                     ),
                   ),
             ],
