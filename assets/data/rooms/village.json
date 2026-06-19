@@ -2,30 +2,30 @@
   {
     "id": "liu_home",
     "name": "刘家小房",
-    "areaName": "小村",
+    "areaId": "village",
     "description": "这是一所破旧的木屋。山风吹来时，屋梁会发出轻响。屋后有一座小花园，北面通向一间小仓房。",
     "mapX": 1,
-    "mapY": 1,
+    "mapY": 2,
     "exits": {"north": "small_storage", "south": "little_garden", "east": "village_road"},
     "npcIds": ["old_liu"]
   },
   {
     "id": "small_storage",
     "name": "小仓房",
-    "areaName": "小村",
+    "areaId": "village",
     "description": "仓房里堆着旧农具和几捆干草，角落里有一本薄薄的旧书。",
     "mapX": 1,
-    "mapY": 0,
+    "mapY": 1,
     "exits": {"south": "liu_home"},
     "itemIds": ["old_book"]
   },
   {
     "id": "little_garden",
     "name": "花园",
-    "areaName": "小村",
+    "areaId": "village",
     "description": "屋后的花园里有许多盛开的花。春夏时节，常有小姑娘在花丛间玩耍。",
     "mapX": 1,
-    "mapY": 2,
+    "mapY": 3,
     "exits": {"north": "liu_home", "east": "village_road"},
     "npcIds": ["flower_girl"],
     "itemIds": ["wild_flower"]
@@ -33,30 +33,39 @@
   {
     "id": "village_road",
     "name": "村中小路",
-    "areaName": "小村",
+    "areaId": "village",
     "description": "一条弯弯曲曲的小路穿过村子，向西可回刘家小房，向东能走到玉螺湖畔。",
     "mapX": 2,
-    "mapY": 1,
+    "mapY": 2,
     "exits": {"north": "melon_farm", "west": "liu_home", "south": "little_garden", "east": "jade_snail_lake"}
   },
   {
     "id": "melon_farm",
     "name": "瓜地",
-    "areaName": "小村",
+    "areaId": "village",
     "description": "这是一片很大的西瓜地，沙质土壤里长出的瓜又甜又脆。几个熟透的西瓜静静躺在田垄边。",
     "mapX": 2,
-    "mapY": 0,
-    "exits": {"south": "village_road"},
+    "mapY": 1,
+    "exits": {"south": "village_road", "north": "yellow_road"},
     "npcIds": ["meloner"],
     "itemIds": ["water_melon"]
   },
   {
+    "id": "yellow_road",
+    "name": "黄土大道",
+    "areaId": "village",
+    "description": "宽阔的黄土大道足够八架马车并行。南面回到傅家坡，北面通往地势险峻的天驼关。",
+    "mapX": 2,
+    "mapY": 0,
+    "exits": {"south": "melon_farm", "north": "canyon_gate"}
+  },
+  {
     "id": "jade_snail_lake",
     "name": "玉螺湖畔",
-    "areaName": "小村",
+    "areaId": "village",
     "description": "玉螺湖因湖中螺贝洁白如玉而得名。几名渔夫站在岸边，湖边还散落着几只木船。",
     "mapX": 3,
-    "mapY": 1,
+    "mapY": 2,
     "exits": {"west": "village_road"},
     "npcIds": ["fisher"],
     "actions": [
@@ -72,10 +81,10 @@
   {
     "id": "jade_snail_lake_center",
     "name": "玉螺湖",
-    "areaName": "小村",
+    "areaId": "village",
     "description": "这里是玉螺湖的湖心，湖面雾气蒸腾。你俯身望向湖底，仿佛看见一道白光闪过。",
     "mapX": 4,
-    "mapY": 1,
+    "mapY": 2,
     "exits": {},
     "actions": [
       {
@@ -97,19 +106,19 @@
   {
     "id": "underwater_cave",
     "name": "水下岩洞",
-    "areaName": "小村",
+    "areaId": "village",
     "description": "岩洞中全是洁白的冰，寒意从四周袭来，发光的藻类让洞内显得异常明亮。",
     "mapX": 4,
-    "mapY": 2,
+    "mapY": 3,
     "exits": {"west": "ice_cave"}
   },
   {
     "id": "ice_cave",
     "name": "冰洞深处",
-    "areaName": "小村",
+    "areaId": "village",
     "description": "洞窟忽然变得宽阔，几道巨大的白影盘踞在冰面与水流之间。",
     "mapX": 3,
-    "mapY": 2,
+    "mapY": 3,
     "exits": {"east": "underwater_cave"},
     "npcIds": ["white_ice_dragon"]
   }

@@ -5,7 +5,7 @@ class RoomDefinition {
   const RoomDefinition({
     required this.id,
     required this.name,
-    required this.areaName,
+    required this.areaId,
     required this.description,
     required this.mapX,
     required this.mapY,
@@ -19,7 +19,7 @@ class RoomDefinition {
     return RoomDefinition(
       id: json['id'] as String,
       name: json['name'] as String,
-      areaName: json['areaName'] as String,
+      areaId: json['areaId'] as String,
       description: json['description'] as String,
       mapX: json['mapX'] as int,
       mapY: json['mapY'] as int,
@@ -38,7 +38,7 @@ class RoomDefinition {
 
   final String id;
   final String name;
-  final String areaName;
+  final String areaId;
   final String description;
   final int mapX;
   final int mapY;

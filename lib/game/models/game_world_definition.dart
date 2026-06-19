@@ -1,3 +1,4 @@
+import 'area_definition.dart';
 import 'item_definition.dart';
 import 'npc_definition.dart';
 import 'quest_definition.dart';
@@ -7,6 +8,7 @@ import 'skill_definition.dart';
 class GameWorldDefinition {
   const GameWorldDefinition({
     required this.startingRoomId,
+    required this.areas,
     required this.rooms,
     required this.npcs,
     required this.items,
@@ -15,6 +17,10 @@ class GameWorldDefinition {
   });
 
   factory GameWorldDefinition.fromJson(Map<String, Object?> json) {
+    final areas = [
+      for (final value in json['areas'] as List<Object?>)
+        AreaDefinition.fromJson(value as Map<String, Object?>),
+    ];
     final rooms = [
       for (final value in json['rooms'] as List<Object?>)
         RoomDefinition.fromJson(value as Map<String, Object?>),
@@ -38,6 +44,7 @@ class GameWorldDefinition {
 
     return GameWorldDefinition(
       startingRoomId: json['startingRoomId'] as String,
+      areas: {for (final area in areas) area.id: area},
       rooms: {for (final room in rooms) room.id: room},
       npcs: {for (final npc in npcs) npc.id: npc},
       items: {for (final item in items) item.id: item},
@@ -47,6 +54,7 @@ class GameWorldDefinition {
   }
 
   final String startingRoomId;
+  final Map<String, AreaDefinition> areas;
   final Map<String, RoomDefinition> rooms;
   final Map<String, NpcDefinition> npcs;
   final Map<String, ItemDefinition> items;

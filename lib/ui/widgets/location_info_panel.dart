@@ -10,11 +10,13 @@ import 'shared/panel.dart';
 class LocationInfoPanel extends StatelessWidget {
   const LocationInfoPanel({
     super.key,
+    required this.areaName,
     required this.room,
     required this.controller,
     required this.state,
   });
 
+  final String areaName;
   final RoomDefinition room;
   final GameController controller;
   final GameState state;
@@ -30,7 +32,7 @@ class LocationInfoPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '${room.areaName} · ${room.name}',
+            '$areaName · ${room.name}',
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),

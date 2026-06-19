@@ -60,6 +60,7 @@ flutter:
   assets:
     - assets/data/demo_world.json
     - assets/data/areas/
+    - assets/data/rooms/
     - assets/data/npcs/
     - assets/data/items/
     - assets/data/quests/

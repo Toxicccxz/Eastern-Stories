@@ -9,10 +9,24 @@ void main() {
     final rooms = repository.rooms.toList();
 
     expect(repository.startingRoomId, 'liu_home');
-    expect(rooms, hasLength(9));
+    expect(repository.areas, hasLength(2));
+    expect(rooms, hasLength(13));
     expect(repository.quests, hasLength(1));
 
+    for (final area in repository.areas) {
+      expect(
+        repository.roomsInArea(area.id),
+        isNotEmpty,
+        reason: '${area.id} has no rooms',
+      );
+    }
+
     for (final room in rooms) {
+      expect(
+        () => repository.area(room.areaId),
+        returnsNormally,
+        reason: '${room.id} references unknown area ${room.areaId}',
+      );
       for (final targetRoomId in room.exits.values) {
         expect(
           () => repository.room(targetRoomId),

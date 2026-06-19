@@ -1,7 +1,11 @@
 {
   "startingRoomId": "liu_home",
   "sources": {
-    "rooms": ["assets/data/areas/village.json"],
+    "areas": ["assets/data/areas/areas.json"],
+    "rooms": [
+      "assets/data/rooms/village.json",
+      "assets/data/rooms/canyon.json"
+    ],
     "npcs": ["assets/data/npcs/village.json"],
     "items": ["assets/data/items/village.json"],
     "quests": ["assets/data/quests/village.json"],

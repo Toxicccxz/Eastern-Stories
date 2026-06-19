@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
+import '../models/area_definition.dart';
 import '../models/game_world_definition.dart';
 import '../models/item_definition.dart';
 import '../models/npc_definition.dart';
@@ -12,12 +13,14 @@ import '../models/skill_definition.dart';
 class GameDefinitionRepository {
   const GameDefinitionRepository({
     required this.startingRoomId,
+    required Map<String, AreaDefinition> areas,
     required Map<String, RoomDefinition> rooms,
     required Map<String, NpcDefinition> npcs,
     required Map<String, ItemDefinition> items,
     required Map<String, QuestDefinition> quests,
     required Map<String, SkillDefinition> skills,
-  }) : _rooms = rooms,
+  }) : _areas = areas,
+       _rooms = rooms,
        _npcs = npcs,
        _items = items,
        _quests = quests,
@@ -26,6 +29,7 @@ class GameDefinitionRepository {
   factory GameDefinitionRepository.fromWorld(GameWorldDefinition world) {
     return GameDefinitionRepository(
       startingRoomId: world.startingRoomId,
+      areas: world.areas,
       rooms: world.rooms,
       npcs: world.npcs,
       items: world.items,
@@ -57,6 +61,7 @@ class GameDefinitionRepository {
     final sources = manifest['sources'] as Map<String, Object?>;
 
     final definitions = await Future.wait([
+      _loadDefinitionFiles(assetBundle, sources, 'areas'),
       _loadDefinitionFiles(assetBundle, sources, 'rooms'),
       _loadDefinitionFiles(assetBundle, sources, 'npcs'),
       _loadDefinitionFiles(assetBundle, sources, 'items'),
@@ -67,23 +72,31 @@ class GameDefinitionRepository {
     return GameDefinitionRepository.fromWorld(
       GameWorldDefinition.fromJson({
         'startingRoomId': manifest['startingRoomId'],
-        'rooms': definitions[0],
-        'npcs': definitions[1],
-        'items': definitions[2],
-        'quests': definitions[3],
-        'skills': definitions[4],
+        'areas': definitions[0],
+        'rooms': definitions[1],
+        'npcs': definitions[2],
+        'items': definitions[3],
+        'quests': definitions[4],
+        'skills': definitions[5],
       }),
     );
   }
 
   final String startingRoomId;
+  final Map<String, AreaDefinition> _areas;
   final Map<String, RoomDefinition> _rooms;
   final Map<String, NpcDefinition> _npcs;
   final Map<String, ItemDefinition> _items;
   final Map<String, QuestDefinition> _quests;
   final Map<String, SkillDefinition> _skills;
 
+  Iterable<AreaDefinition> get areas => _areas.values;
+
   Iterable<RoomDefinition> get rooms => _rooms.values;
+
+  Iterable<RoomDefinition> roomsInArea(String areaId) {
+    return _rooms.values.where((room) => room.areaId == areaId);
+  }
 
   Iterable<NpcDefinition> get npcs => _npcs.values;
 
@@ -92,6 +105,14 @@ class GameDefinitionRepository {
   Iterable<QuestDefinition> get quests => _quests.values;
 
   Iterable<SkillDefinition> get skills => _skills.values;
+
+  AreaDefinition area(String id) {
+    final area = _areas[id];
+    if (area == null) {
+      throw StateError('Unknown area id: $id');
+    }
+    return area;
+  }
 
   RoomDefinition room(String id) {
     final room = _rooms[id];

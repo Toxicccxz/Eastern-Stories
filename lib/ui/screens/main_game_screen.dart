@@ -21,6 +21,8 @@ class MainGameScreen extends StatelessWidget {
       builder: (context, _) {
         final state = controller.state;
         final room = controller.repository.room(state.currentRoomId);
+        final area = controller.repository.area(room.areaId);
+        final areaRooms = controller.repository.roomsInArea(area.id).toList();
 
         return Scaffold(
           body: SafeArea(
@@ -31,12 +33,10 @@ class MainGameScreen extends StatelessWidget {
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
                     children: [
-                      AreaMapView(
-                        rooms: controller.repository.rooms.toList(),
-                        state: state,
-                      ),
+                      AreaMapView(area: area, rooms: areaRooms, state: state),
                       const SizedBox(height: 12),
                       LocationInfoPanel(
+                        areaName: area.name,
                         room: room,
                         controller: controller,
                         state: state,

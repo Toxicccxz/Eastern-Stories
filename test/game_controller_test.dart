@@ -109,6 +109,22 @@ void main() {
     expect(controller.state.log.last, contains('岩洞'));
   });
 
+  test('player can cross from village into canyon area', () {
+    final controller = GameController(repository: repository);
+
+    controller.dispatch(const GameAction.move(Direction.east));
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(const GameAction.move(Direction.north));
+
+    final room = repository.room(controller.state.currentRoomId);
+
+    expect(room.id, 'canyon_gate');
+    expect(repository.area(room.areaId).name, '天驼关');
+    expect(repository.roomsInArea(room.areaId), hasLength(3));
+    expect(controller.state.visitedRoomIds, contains('yellow_road'));
+  });
+
   test('player can pick up and use melon to recover', () {
     final controller = GameController(repository: repository);
 

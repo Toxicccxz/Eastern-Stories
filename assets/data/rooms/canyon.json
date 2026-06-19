@@ -1,0 +1,29 @@
+[
+  {
+    "id": "canyon_gate",
+    "name": "天驼关谷地",
+    "areaId": "canyon",
+    "description": "天驼关两边是悬崖，中间是谷地，形状很像骆驼的双峰。南下通往京师，北上便是关外。",
+    "mapX": 1,
+    "mapY": 2,
+    "exits": {"south": "yellow_road", "north": "canyon_pass"}
+  },
+  {
+    "id": "canyon_pass",
+    "name": "关内谷地",
+    "areaId": "canyon",
+    "description": "高耸的悬崖立在天驼关两侧，中间谷地狭窄，巨大的铁门和绞盘守住了北方通路。",
+    "mapX": 1,
+    "mapY": 1,
+    "exits": {"south": "canyon_gate", "north": "outside_road"}
+  },
+  {
+    "id": "outside_road",
+    "name": "关外小路",
+    "areaId": "canyon",
+    "description": "南边即为天驼关的关口，东西两侧尽是铁栅与光秃山壁，北方道路伸向荒凉的关外。",
+    "mapX": 1,
+    "mapY": 0,
+    "exits": {"south": "canyon_pass"}
+  }
+]
