@@ -10,6 +10,26 @@ class QuestDefinition {
     this.rewardItemIds = const [],
   });
 
+  factory QuestDefinition.fromJson(Map<String, Object?> json) {
+    return QuestDefinition(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      description: json['description'] as String,
+      steps: [
+        for (final step in json['steps'] as List<Object?>)
+          QuestStepDefinition.fromJson(step as Map<String, Object?>),
+      ],
+      requiredFlags:
+          (json['requiredFlags'] as List<Object?>? ?? const [])
+              .cast<String>()
+              .toSet(),
+      rewardSilver: json['rewardSilver'] as int? ?? 0,
+      rewardExperience: json['rewardExperience'] as int? ?? 0,
+      rewardItemIds:
+          (json['rewardItemIds'] as List<Object?>? ?? const []).cast<String>(),
+    );
+  }
+
   final String id;
   final String title;
   final String description;
@@ -26,6 +46,13 @@ enum QuestStepStatus { completed, current, pending }
 
 class QuestStepDefinition {
   const QuestStepDefinition({required this.description, this.requiredFlag});
+
+  factory QuestStepDefinition.fromJson(Map<String, Object?> json) {
+    return QuestStepDefinition(
+      description: json['description'] as String,
+      requiredFlag: json['requiredFlag'] as String?,
+    );
+  }
 
   final String description;
   final String? requiredFlag;

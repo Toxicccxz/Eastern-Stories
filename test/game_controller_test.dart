@@ -6,10 +6,16 @@ import 'package:eastern_stories/game/repositories/game_definition_repository.dar
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  late GameDefinitionRepository repository;
+
+  setUpAll(() async {
+    repository = await GameDefinitionRepository.loadDemo();
+  });
+
   test('moving through an exit updates current room and log', () {
-    final controller = GameController(
-      repository: GameDefinitionRepository.demo(),
-    );
+    final controller = GameController(repository: repository);
 
     controller.dispatch(const GameAction.move(Direction.south));
 
@@ -19,9 +25,7 @@ void main() {
   });
 
   test('picking up an item moves it into inventory', () {
-    final controller = GameController(
-      repository: GameDefinitionRepository.demo(),
-    );
+    final controller = GameController(repository: repository);
 
     controller.dispatch(const GameAction.move(Direction.north));
     controller.dispatch(const GameAction.pickUp('old_book'));
@@ -36,9 +40,7 @@ void main() {
   });
 
   test('old liu quest can be started, progressed, and completed', () {
-    final controller = GameController(
-      repository: GameDefinitionRepository.demo(),
-    );
+    final controller = GameController(repository: repository);
 
     controller.dispatch(
       const GameAction.selectDialogue('old_liu', 'ask_daughter'),
@@ -75,9 +77,7 @@ void main() {
   });
 
   test('player can study parry book to learn basic parry', () {
-    final controller = GameController(
-      repository: GameDefinitionRepository.demo(),
-    );
+    final controller = GameController(repository: repository);
 
     controller.dispatch(
       const GameAction.selectDialogue('old_liu', 'ask_daughter'),
@@ -97,9 +97,7 @@ void main() {
   });
 
   test('room actions can move the player through lake scenes', () {
-    final controller = GameController(
-      repository: GameDefinitionRepository.demo(),
-    );
+    final controller = GameController(repository: repository);
 
     controller.dispatch(const GameAction.move(Direction.east));
     controller.dispatch(const GameAction.move(Direction.east));
@@ -112,9 +110,7 @@ void main() {
   });
 
   test('player can pick up and use melon to recover', () {
-    final controller = GameController(
-      repository: GameDefinitionRepository.demo(),
-    );
+    final controller = GameController(repository: repository);
 
     controller.dispatch(const GameAction.move(Direction.east));
     controller.dispatch(const GameAction.move(Direction.north));
@@ -147,9 +143,7 @@ void main() {
   });
 
   test('player can equip a weapon and defeat the ice dragon', () {
-    final controller = GameController(
-      repository: GameDefinitionRepository.demo(),
-    );
+    final controller = GameController(repository: repository);
 
     controller.dispatch(
       const GameAction.selectDialogue('old_liu', 'ask_daughter'),

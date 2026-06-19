@@ -1,4 +1,7 @@
-import '../data/demo_world.dart';
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
+
 import '../models/game_world_definition.dart';
 import '../models/item_definition.dart';
 import '../models/npc_definition.dart';
@@ -31,8 +34,20 @@ class GameDefinitionRepository {
     );
   }
 
-  factory GameDefinitionRepository.demo() {
-    return GameDefinitionRepository.fromWorld(demoWorld);
+  factory GameDefinitionRepository.fromJson(String source) {
+    final json = jsonDecode(source) as Map<String, Object?>;
+    return GameDefinitionRepository.fromWorld(
+      GameWorldDefinition.fromJson(json),
+    );
+  }
+
+  static Future<GameDefinitionRepository> loadDemo({
+    AssetBundle? bundle,
+  }) async {
+    final source = await (bundle ?? rootBundle).loadString(
+      'assets/data/demo_world.json',
+    );
+    return GameDefinitionRepository.fromJson(source);
   }
 
   final String startingRoomId;
@@ -44,7 +59,13 @@ class GameDefinitionRepository {
 
   Iterable<RoomDefinition> get rooms => _rooms.values;
 
+  Iterable<NpcDefinition> get npcs => _npcs.values;
+
+  Iterable<ItemDefinition> get items => _items.values;
+
   Iterable<QuestDefinition> get quests => _quests.values;
+
+  Iterable<SkillDefinition> get skills => _skills.values;
 
   RoomDefinition room(String id) {
     final room = _rooms[id];

@@ -4,16 +4,19 @@ import 'game/repositories/game_definition_repository.dart';
 import 'game/repositories/save_game_repository.dart';
 import 'ui/screens/start_screen.dart';
 
-void main() {
-  runApp(const EasternStoriesApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final repository = await GameDefinitionRepository.loadDemo();
+  runApp(EasternStoriesApp(repository: repository));
 }
 
 class EasternStoriesApp extends StatelessWidget {
-  const EasternStoriesApp({super.key});
+  const EasternStoriesApp({super.key, required this.repository});
+
+  final GameDefinitionRepository repository;
 
   @override
   Widget build(BuildContext context) {
-    final repository = GameDefinitionRepository.demo();
     const saveRepository = SaveGameRepository();
 
     return MaterialApp(

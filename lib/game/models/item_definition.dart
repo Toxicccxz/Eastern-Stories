@@ -9,6 +9,18 @@ class ItemDefinition {
     this.studySkillId,
   });
 
+  factory ItemDefinition.fromJson(Map<String, Object?> json) {
+    return ItemDefinition(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String,
+      attackPower: json['attackPower'] as int? ?? 0,
+      restoreHp: json['restoreHp'] as int? ?? 0,
+      restoreInnerPower: json['restoreInnerPower'] as int? ?? 0,
+      studySkillId: json['studySkillId'] as String?,
+    );
+  }
+
   final String id;
   final String name;
   final String description;
