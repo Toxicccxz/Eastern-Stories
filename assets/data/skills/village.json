@@ -1,0 +1,8 @@
+[
+  {
+    "id": "parry",
+    "name": "基础招架",
+    "description": "从过招要门中领会的拆招卸力之法，可略微降低受到的伤害。",
+    "damageReduction": 2
+  }
+]

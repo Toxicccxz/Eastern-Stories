@@ -59,6 +59,11 @@ flutter:
 
   assets:
     - assets/data/demo_world.json
+    - assets/data/areas/
+    - assets/data/npcs/
+    - assets/data/items/
+    - assets/data/quests/
+    - assets/data/skills/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

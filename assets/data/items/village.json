@@ -1,0 +1,7 @@
+[
+  {"id": "old_book", "name": "旧书", "description": "一本旧旧的薄书，封皮上写着“招架入门”。"},
+  {"id": "wild_flower", "name": "野花", "description": "花园里随处可见的小花，带着清新的草木气味。"},
+  {"id": "water_melon", "name": "西瓜", "description": "一个绿皮墨纹的大西瓜，不但解渴，还能填肚子。", "restoreHp": 16, "restoreInnerPower": 6},
+  {"id": "hengbing_sword", "name": "横冰剑", "description": "刘老农赠予的短剑，剑身寒光很淡，却颇为坚韧。", "attackPower": 10},
+  {"id": "parry_book", "name": "过招要门", "description": "一本介绍拆招卸力之法的入门书。", "studySkillId": "parry"}
+]

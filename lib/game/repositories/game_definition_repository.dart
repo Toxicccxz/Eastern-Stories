@@ -44,10 +44,36 @@ class GameDefinitionRepository {
   static Future<GameDefinitionRepository> loadDemo({
     AssetBundle? bundle,
   }) async {
-    final source = await (bundle ?? rootBundle).loadString(
-      'assets/data/demo_world.json',
+    return loadFromManifest('assets/data/demo_world.json', bundle: bundle);
+  }
+
+  static Future<GameDefinitionRepository> loadFromManifest(
+    String assetPath, {
+    AssetBundle? bundle,
+  }) async {
+    final assetBundle = bundle ?? rootBundle;
+    final manifestSource = await assetBundle.loadString(assetPath);
+    final manifest = jsonDecode(manifestSource) as Map<String, Object?>;
+    final sources = manifest['sources'] as Map<String, Object?>;
+
+    final definitions = await Future.wait([
+      _loadDefinitionFiles(assetBundle, sources, 'rooms'),
+      _loadDefinitionFiles(assetBundle, sources, 'npcs'),
+      _loadDefinitionFiles(assetBundle, sources, 'items'),
+      _loadDefinitionFiles(assetBundle, sources, 'quests'),
+      _loadDefinitionFiles(assetBundle, sources, 'skills'),
+    ]);
+
+    return GameDefinitionRepository.fromWorld(
+      GameWorldDefinition.fromJson({
+        'startingRoomId': manifest['startingRoomId'],
+        'rooms': definitions[0],
+        'npcs': definitions[1],
+        'items': definitions[2],
+        'quests': definitions[3],
+        'skills': definitions[4],
+      }),
     );
-    return GameDefinitionRepository.fromJson(source);
   }
 
   final String startingRoomId;
@@ -106,4 +132,17 @@ class GameDefinitionRepository {
     }
     return skill;
   }
+}
+
+Future<List<Object?>> _loadDefinitionFiles(
+  AssetBundle bundle,
+  Map<String, Object?> sources,
+  String category,
+) async {
+  final paths = (sources[category] as List<Object?>).cast<String>();
+  final files = await Future.wait([
+    for (final path in paths) bundle.loadString(path),
+  ]);
+
+  return [for (final source in files) ...jsonDecode(source) as List<Object?>];
 }

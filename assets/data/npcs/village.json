@@ -1,0 +1,59 @@
+[
+  {
+    "id": "old_liu",
+    "name": "刘老农",
+    "description": "刘老农年近六十，手脚却还算灵活，眉间藏着焦急。",
+    "greeting": "这位少侠，可曾见到小女娃儿？",
+    "dialogueOptions": [
+      {
+        "id": "ask_daughter",
+        "label": "询问小女娃",
+        "response": "她常在屋后的花园玩耍，若少侠见着她，还请告诉老汉一声。",
+        "startsQuestId": "find_flower_girl"
+      },
+      {
+        "id": "report_daughter",
+        "label": "告知小姑娘平安",
+        "response": "多谢少侠搭救小女娃儿。这口剑和这本薄书，便赠予少侠防身。",
+        "requiredQuestId": "find_flower_girl",
+        "requiredQuestStatus": "active",
+        "completesQuestId": "find_flower_girl"
+      }
+    ]
+  },
+  {
+    "id": "flower_girl",
+    "name": "采花女",
+    "description": "天真的小女孩正在花丛间玩耍，手里拿着一枝新摘的小花。",
+    "greeting": "你是来找我的吗？爷爷是不是又担心我啦？",
+    "dialogueOptions": [
+      {
+        "id": "found_girl",
+        "label": "告诉她刘老农在找她",
+        "response": "我就在花园里，没有乱跑。你替我告诉爷爷，我马上回去。",
+        "requiredQuestId": "find_flower_girl",
+        "requiredQuestStatus": "active",
+        "setsQuestFlag": "found_flower_girl"
+      }
+    ]
+  },
+  {
+    "id": "fisher",
+    "name": "渔夫",
+    "description": "一个精壮汉子，头戴斗笠，望向湖面时眼神格外锐利。",
+    "greeting": "不知这水怪又吃了几个人。"
+  },
+  {
+    "id": "meloner",
+    "name": "瓜农",
+    "description": "一个中年瓜农，脸被阳光晒得黝黑，看着很是警觉。",
+    "greeting": "这位少侠，要不要买个西瓜解解渴？"
+  },
+  {
+    "id": "white_ice_dragon",
+    "name": "白鳞冰龙",
+    "description": "一只浑身长满白鳞的巨龙，盘踞在寒冰之间。",
+    "greeting": "冰龙缓缓睁眼，寒气沿着冰面蔓延开来。",
+    "combat": {"maxHp": 36, "attack": 7, "defense": 4, "rewardSilver": 80, "rewardExperience": 70}
+  }
+]
