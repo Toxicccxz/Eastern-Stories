@@ -101,7 +101,15 @@ class _StartScreenState extends State<StartScreen> {
   Future<void> _startNewGame() async {
     await _runBusy(() async {
       final state = widget.repository.createInitialState();
-      await widget.saveRepository.save(state);
+      try {
+        await widget.saveRepository.save(state);
+      } on Object {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('本地存档不可用，本次仍可继续游玩')));
+        }
+      }
       _openGame(state);
     });
   }
@@ -155,13 +163,16 @@ class _StartScreenState extends State<StartScreen> {
             (gameContext) => MainGameScreen(
               controller: controller,
               onSave: () async {
-                await widget.saveRepository.save(controller.state);
-                if (!gameContext.mounted) {
-                  return;
+                var message = '已保存';
+                try {
+                  await widget.saveRepository.save(controller.state);
+                } on Object {
+                  message = '保存失败，请检查浏览器存储权限';
                 }
+                if (!gameContext.mounted) return;
                 ScaffoldMessenger.of(
                   gameContext,
-                ).showSnackBar(const SnackBar(content: Text('已保存')));
+                ).showSnackBar(SnackBar(content: Text(message)));
               },
             ),
       ),
