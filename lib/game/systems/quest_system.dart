@@ -66,6 +66,17 @@ class QuestSystem {
       );
     }
 
+    final destinationRoomId = option.movesNpcToRoomId;
+    final npcState = nextState.npcStates[npcId];
+    if (destinationRoomId != null && npcState != null) {
+      nextState = nextState.copyWith(
+        npcStates: {
+          ...nextState.npcStates,
+          npcId: npcState.copyWith(roomId: destinationRoomId),
+        },
+      );
+    }
+
     final completesQuestId = option.completesQuestId;
     if (completesQuestId != null) {
       return _completeQuestWithExperience(nextState, completesQuestId);

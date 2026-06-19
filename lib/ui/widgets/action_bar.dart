@@ -244,8 +244,9 @@ class _InventoryAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final item = controller.repository.item(itemId);
+    Widget? primaryAction;
     if (item.canEquip) {
-      return FilledButton(
+      primaryAction = FilledButton(
         onPressed:
             equippedWeaponId == itemId
                 ? null
@@ -255,11 +256,8 @@ class _InventoryAction extends StatelessWidget {
                 },
         child: Text(equippedWeaponId == itemId ? '已装备' : '装备'),
       );
-    }
-
-    final skillId = item.studySkillId;
-    if (skillId != null) {
-      return FilledButton(
+    } else if (item.studySkillId case final skillId?) {
+      primaryAction = FilledButton(
         onPressed:
             learnedSkillIds.contains(skillId)
                 ? null
@@ -269,10 +267,8 @@ class _InventoryAction extends StatelessWidget {
                 },
         child: Text(learnedSkillIds.contains(skillId) ? '已领会' : '研读'),
       );
-    }
-
-    if (item.canUse) {
-      return FilledButton(
+    } else if (item.canUse) {
+      primaryAction = FilledButton(
         onPressed: () {
           controller.dispatch(GameAction.useItem(itemId));
           Navigator.of(context).pop();
@@ -281,9 +277,31 @@ class _InventoryAction extends StatelessWidget {
       );
     }
 
-    return const SizedBox.shrink();
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (primaryAction != null) primaryAction,
+        PopupMenuButton<_InventoryMenuAction>(
+          tooltip: '更多操作',
+          icon: const Icon(Icons.more_vert),
+          itemBuilder:
+              (context) => const [
+                PopupMenuItem(
+                  value: _InventoryMenuAction.drop,
+                  child: Text('丢弃'),
+                ),
+              ],
+          onSelected: (_) {
+            controller.dispatch(GameAction.dropItem(itemId));
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
   }
 }
+
+enum _InventoryMenuAction { drop }
 
 class _ActionButton extends StatelessWidget {
   const _ActionButton({

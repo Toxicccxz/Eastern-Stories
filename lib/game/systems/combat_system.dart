@@ -111,16 +111,30 @@ class CombatSystem {
     final npc = _repository.npc(npcId);
     final room = _repository.room(npcState.roomId);
     final currentItemIds = room.visibleItemIds(state);
-    final droppedItemIds = [
-      for (final itemId in combat.dropItemIds)
-        if (!currentItemIds.contains(itemId)) itemId,
-    ];
+    final droppedItemIds =
+        npcState.hasDroppedLoot
+            ? const <String>[]
+            : [
+              for (final itemId in combat.dropItemIds)
+                if (!currentItemIds.contains(itemId) &&
+                    !state.inventoryItemIds.contains(itemId))
+                  itemId,
+            ];
+    final respawnAfterMoves = combat.respawnAfterMoves;
 
     var nextState = state.copyWith(
       combat: null,
       npcStates: {
         ...state.npcStates,
-        npc.id: npcState.copyWith(currentHp: 0, isDefeated: true),
+        npc.id: npcState.copyWith(
+          currentHp: 0,
+          isDefeated: true,
+          respawnAtTurn:
+              respawnAfterMoves == null
+                  ? null
+                  : state.worldTurn + respawnAfterMoves,
+          hasDroppedLoot: npcState.hasDroppedLoot || droppedItemIds.isNotEmpty,
+        ),
       },
       roomItemOverrides: {
         ...state.roomItemOverrides,

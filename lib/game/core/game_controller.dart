@@ -10,6 +10,7 @@ import '../systems/inventory_system.dart';
 import '../systems/movement_system.dart';
 import '../systems/progression_system.dart';
 import '../systems/quest_system.dart';
+import '../systems/world_system.dart';
 import 'game_action.dart';
 
 class GameController extends ChangeNotifier {
@@ -26,6 +27,7 @@ class GameController extends ChangeNotifier {
     _inventorySystem = InventorySystem(repository);
     _questSystem = QuestSystem(repository, progressionSystem);
     _combatSystem = CombatSystem(repository, progressionSystem);
+    _worldSystem = WorldSystem(repository);
   }
 
   final GameDefinitionRepository _repository;
@@ -33,6 +35,7 @@ class GameController extends ChangeNotifier {
   late final InventorySystem _inventorySystem;
   late final QuestSystem _questSystem;
   late final CombatSystem _combatSystem;
+  late final WorldSystem _worldSystem;
   GameState _state;
 
   GameDefinitionRepository get repository => _repository;
@@ -51,11 +54,14 @@ class GameController extends ChangeNotifier {
 
   void dispatch(GameAction action) {
     _state = switch (action) {
-      MoveAction(:final direction) => _movementSystem.move(_state, direction),
-      LookAction() => _movementSystem.look(_state),
-      PerformRoomAction(:final actionId) => _movementSystem.performRoomAction(
+      MoveAction(:final direction) => _worldSystem.advanceAfterTravel(
         _state,
-        actionId,
+        _movementSystem.move(_state, direction),
+      ),
+      LookAction() => _movementSystem.look(_state),
+      PerformRoomAction(:final actionId) => _worldSystem.advanceAfterTravel(
+        _state,
+        _movementSystem.performRoomAction(_state, actionId),
       ),
       TalkAction(:final npcId) => _questSystem.talk(_state, npcId),
       SelectDialogueAction(:final npcId, :final optionId) => _questSystem
@@ -70,6 +76,10 @@ class GameController extends ChangeNotifier {
         itemId,
       ),
       UseItemAction(:final itemId) => _inventorySystem.useItem(_state, itemId),
+      DropItemAction(:final itemId) => _inventorySystem.dropItem(
+        _state,
+        itemId,
+      ),
       StartCombatAction(:final npcId) => _combatSystem.startCombat(
         _state,
         npcId,

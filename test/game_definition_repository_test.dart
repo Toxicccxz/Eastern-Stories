@@ -71,6 +71,16 @@ void main() {
         }
       }
       for (final option in npc.dialogueOptions) {
+        final destinationRoomId = option.movesNpcToRoomId;
+        if (destinationRoomId != null) {
+          expect(
+            () => repository.room(destinationRoomId),
+            returnsNormally,
+            reason:
+                '${npc.id} dialogue ${option.id} references unknown room '
+                '$destinationRoomId',
+          );
+        }
         final questIds =
             [
               option.requiredQuestId,

@@ -93,6 +93,26 @@ class InventorySystem {
     );
   }
 
+  GameState dropItem(GameState state, String itemId) {
+    if (!state.inventoryItemIds.contains(itemId)) {
+      return _withLog(state, '你还没有这个东西。');
+    }
+
+    final room = _repository.room(state.currentRoomId);
+    final item = _repository.item(itemId);
+    final inventory = [...state.inventoryItemIds]..remove(itemId);
+    return state.copyWith(
+      inventoryItemIds: inventory,
+      equippedWeaponId:
+          state.equippedWeaponId == itemId ? null : state.equippedWeaponId,
+      roomItemOverrides: {
+        ...state.roomItemOverrides,
+        room.id: [...room.visibleItemIds(state), itemId],
+      },
+      log: state.logWith('你放下了${item.name}。'),
+    );
+  }
+
   GameState _withLog(GameState state, String message) {
     return state.copyWith(log: state.logWith(message));
   }

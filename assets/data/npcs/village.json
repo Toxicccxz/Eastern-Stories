@@ -33,7 +33,8 @@
         "response": "我就在花园里，没有乱跑。你替我告诉爷爷，我马上回去。",
         "requiredQuestId": "find_flower_girl",
         "requiredQuestStatus": "active",
-        "setsQuestFlag": "found_flower_girl"
+        "setsQuestFlag": "found_flower_girl",
+        "movesNpcToRoomId": "liu_home"
       }
     ]
   },
@@ -60,7 +61,8 @@
       "defense": 4,
       "rewardSilver": 80,
       "rewardExperience": 70,
-      "dropItemIds": ["ice_dragon_scale"]
+      "dropItemIds": ["ice_dragon_scale"],
+      "respawnAfterMoves": 6
     }
   }
 ]

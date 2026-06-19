@@ -20,6 +20,7 @@ void main() {
     final repository = SaveGameRepository(file: file);
     final state = GameState.initial(startingRoomId: 'liu_home').copyWith(
       currentRoomId: 'little_garden',
+      worldTurn: 9,
       visitedRoomIds: {'liu_home', 'little_garden'},
       inventoryItemIds: ['old_book'],
       equippedWeaponId: 'hengbing_sword',
@@ -29,6 +30,8 @@ void main() {
           roomId: 'ice_cave',
           currentHp: 12,
           isDefeated: false,
+          respawnAtTurn: 15,
+          hasDroppedLoot: true,
         ),
       },
       questStatuses: {'old_liu_daughter': QuestStatus.active},
@@ -44,12 +47,15 @@ void main() {
 
     expect(loaded, isNotNull);
     expect(loaded?.currentRoomId, 'little_garden');
+    expect(loaded?.worldTurn, 9);
     expect(loaded?.inventoryItemIds, ['old_book']);
     expect(loaded?.equippedWeaponId, 'hengbing_sword');
     expect(loaded?.learnedSkillIds, {'parry'});
     expect(loaded?.npcStates['white_ice_dragon']?.roomId, 'ice_cave');
     expect(loaded?.npcStates['white_ice_dragon']?.currentHp, 12);
     expect(loaded?.npcStates['white_ice_dragon']?.isDefeated, isFalse);
+    expect(loaded?.npcStates['white_ice_dragon']?.respawnAtTurn, 15);
+    expect(loaded?.npcStates['white_ice_dragon']?.hasDroppedLoot, isTrue);
     expect(loaded?.questStatuses['old_liu_daughter'], QuestStatus.active);
     expect(loaded?.questFlags, {'flower_girl_found'});
     expect(loaded?.combat?.npcId, 'white_ice_dragon');

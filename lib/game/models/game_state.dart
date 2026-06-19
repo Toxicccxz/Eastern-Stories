@@ -3,6 +3,7 @@ import 'quest_definition.dart';
 class GameState {
   const GameState({
     required this.currentRoomId,
+    required this.worldTurn,
     required this.player,
     required this.visitedRoomIds,
     required this.inventoryItemIds,
@@ -22,6 +23,7 @@ class GameState {
   }) {
     return GameState(
       currentRoomId: startingRoomId,
+      worldTurn: 0,
       player: const PlayerState(
         name: '少侠',
         level: 1,
@@ -49,6 +51,7 @@ class GameState {
   factory GameState.fromJson(Map<String, Object?> json) {
     return GameState(
       currentRoomId: json['currentRoomId'] as String,
+      worldTurn: json['worldTurn'] as int? ?? 0,
       player: PlayerState.fromJson(json['player'] as Map<String, Object?>),
       visitedRoomIds:
           (json['visitedRoomIds'] as List<Object?>).cast<String>().toSet(),
@@ -81,6 +84,7 @@ class GameState {
   }
 
   final String currentRoomId;
+  final int worldTurn;
   final PlayerState player;
   final Set<String> visitedRoomIds;
   final List<String> inventoryItemIds;
@@ -96,6 +100,7 @@ class GameState {
   Map<String, Object?> toJson() {
     return {
       'currentRoomId': currentRoomId,
+      'worldTurn': worldTurn,
       'player': player.toJson(),
       'visitedRoomIds': visitedRoomIds.toList(),
       'inventoryItemIds': inventoryItemIds,
@@ -116,6 +121,7 @@ class GameState {
 
   GameState copyWith({
     String? currentRoomId,
+    int? worldTurn,
     PlayerState? player,
     Set<String>? visitedRoomIds,
     List<String>? inventoryItemIds,
@@ -130,6 +136,7 @@ class GameState {
   }) {
     return GameState(
       currentRoomId: currentRoomId ?? this.currentRoomId,
+      worldTurn: worldTurn ?? this.worldTurn,
       player: player ?? this.player,
       visitedRoomIds: visitedRoomIds ?? this.visitedRoomIds,
       inventoryItemIds: inventoryItemIds ?? this.inventoryItemIds,
@@ -157,6 +164,8 @@ class NpcRuntimeState {
     required this.roomId,
     required this.currentHp,
     required this.isDefeated,
+    this.respawnAtTurn,
+    this.hasDroppedLoot = false,
   });
 
   factory NpcRuntimeState.fromJson(Map<String, Object?> json) {
@@ -164,22 +173,43 @@ class NpcRuntimeState {
       roomId: json['roomId'] as String,
       currentHp: json['currentHp'] as int,
       isDefeated: json['isDefeated'] as bool,
+      respawnAtTurn: json['respawnAtTurn'] as int?,
+      hasDroppedLoot: json['hasDroppedLoot'] as bool? ?? false,
     );
   }
 
   final String roomId;
   final int currentHp;
   final bool isDefeated;
+  final int? respawnAtTurn;
+  final bool hasDroppedLoot;
 
   Map<String, Object?> toJson() {
-    return {'roomId': roomId, 'currentHp': currentHp, 'isDefeated': isDefeated};
+    return {
+      'roomId': roomId,
+      'currentHp': currentHp,
+      'isDefeated': isDefeated,
+      'respawnAtTurn': respawnAtTurn,
+      'hasDroppedLoot': hasDroppedLoot,
+    };
   }
 
-  NpcRuntimeState copyWith({String? roomId, int? currentHp, bool? isDefeated}) {
+  NpcRuntimeState copyWith({
+    String? roomId,
+    int? currentHp,
+    bool? isDefeated,
+    Object? respawnAtTurn = _unchanged,
+    bool? hasDroppedLoot,
+  }) {
     return NpcRuntimeState(
       roomId: roomId ?? this.roomId,
       currentHp: currentHp ?? this.currentHp,
       isDefeated: isDefeated ?? this.isDefeated,
+      respawnAtTurn:
+          respawnAtTurn == _unchanged
+              ? this.respawnAtTurn
+              : respawnAtTurn as int?,
+      hasDroppedLoot: hasDroppedLoot ?? this.hasDroppedLoot,
     );
   }
 }

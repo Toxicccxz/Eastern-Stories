@@ -46,6 +46,7 @@ class CombatDefinition {
     this.rewardSilver = 0,
     this.rewardExperience = 0,
     this.dropItemIds = const [],
+    this.respawnAfterMoves,
   });
 
   factory CombatDefinition.fromJson(Map<String, Object?> json) {
@@ -57,6 +58,7 @@ class CombatDefinition {
       rewardExperience: json['rewardExperience'] as int? ?? 0,
       dropItemIds:
           (json['dropItemIds'] as List<Object?>? ?? const []).cast<String>(),
+      respawnAfterMoves: json['respawnAfterMoves'] as int?,
     );
   }
 
@@ -66,6 +68,7 @@ class CombatDefinition {
   final int rewardSilver;
   final int rewardExperience;
   final List<String> dropItemIds;
+  final int? respawnAfterMoves;
 }
 
 class DialogueOption {
@@ -78,6 +81,7 @@ class DialogueOption {
     this.startsQuestId,
     this.setsQuestFlag,
     this.completesQuestId,
+    this.movesNpcToRoomId,
   });
 
   factory DialogueOption.fromJson(Map<String, Object?> json) {
@@ -92,6 +96,7 @@ class DialogueOption {
       startsQuestId: json['startsQuestId'] as String?,
       setsQuestFlag: json['setsQuestFlag'] as String?,
       completesQuestId: json['completesQuestId'] as String?,
+      movesNpcToRoomId: json['movesNpcToRoomId'] as String?,
     );
   }
 
@@ -103,4 +108,5 @@ class DialogueOption {
   final String? startsQuestId;
   final String? setsQuestFlag;
   final String? completesQuestId;
+  final String? movesNpcToRoomId;
 }

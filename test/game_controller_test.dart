@@ -39,6 +39,22 @@ void main() {
     );
   });
 
+  test('dropping an item moves it into the current room', () {
+    final controller = GameController(repository: repository);
+
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(const GameAction.pickUp('old_book'));
+    controller.dispatch(const GameAction.move(Direction.south));
+    controller.dispatch(const GameAction.dropItem('old_book'));
+
+    expect(controller.state.inventoryItemIds, isNot(contains('old_book')));
+    expect(
+      repository.room('liu_home').visibleItemIds(controller.state),
+      contains('old_book'),
+    );
+    expect(controller.state.log.last, contains('放下'));
+  });
+
   test('old liu quest can be started, progressed, and completed', () {
     final controller = GameController(repository: repository);
 
@@ -54,6 +70,7 @@ void main() {
     controller.dispatch(
       const GameAction.selectDialogue('flower_girl', 'found_girl'),
     );
+    expect(controller.state.npcStates['flower_girl']?.roomId, 'liu_home');
     expect(controller.questViews().single.steps.map((step) => step.status), [
       QuestStepStatus.completed,
       QuestStepStatus.completed,
@@ -215,6 +232,19 @@ void main() {
 
     expect(controller.state.inventoryItemIds, contains('ice_dragon_scale'));
     expect(controller.state.combat, isNull);
+
+    for (var index = 0; index < 3; index += 1) {
+      controller.dispatch(const GameAction.move(Direction.east));
+      controller.dispatch(const GameAction.move(Direction.west));
+    }
+
+    expect(controller.state.npcStates['white_ice_dragon']?.isDefeated, isFalse);
+    expect(
+      controller.state.npcStates['white_ice_dragon']?.hasDroppedLoot,
+      isTrue,
+    );
+    controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
+    expect(controller.state.combat, isNotNull);
   });
 
   test('enemy damage persists after fleeing and restarting combat', () {
