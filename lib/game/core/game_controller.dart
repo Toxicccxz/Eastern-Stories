@@ -9,9 +9,13 @@ import '../repositories/game_definition_repository.dart';
 import 'game_action.dart';
 
 class GameController extends ChangeNotifier {
-  GameController({required GameDefinitionRepository repository})
-    : _repository = repository,
-      _state = GameState.initial(startingRoomId: repository.startingRoomId);
+  GameController({
+    required GameDefinitionRepository repository,
+    GameState? initialState,
+  }) : _repository = repository,
+       _state =
+           initialState ??
+           GameState.initial(startingRoomId: repository.startingRoomId);
 
   final GameDefinitionRepository _repository;
   GameState _state;
@@ -19,6 +23,16 @@ class GameController extends ChangeNotifier {
   GameDefinitionRepository get repository => _repository;
 
   GameState get state => _state;
+
+  void replaceState(GameState state) {
+    _state = state;
+    notifyListeners();
+  }
+
+  void reset() {
+    _state = GameState.initial(startingRoomId: _repository.startingRoomId);
+    notifyListeners();
+  }
 
   void dispatch(GameAction action) {
     switch (action) {

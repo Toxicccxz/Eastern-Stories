@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'game/core/game_controller.dart';
 import 'game/repositories/game_definition_repository.dart';
-import 'ui/screens/main_game_screen.dart';
+import 'game/repositories/save_game_repository.dart';
+import 'ui/screens/start_screen.dart';
 
 void main() {
   runApp(const EasternStoriesApp());
@@ -14,6 +14,7 @@ class EasternStoriesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final repository = GameDefinitionRepository.demo();
+    const saveRepository = SaveGameRepository();
 
     return MaterialApp(
       title: '东方故事',
@@ -26,7 +27,7 @@ class EasternStoriesApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFFF8F5EF),
         useMaterial3: true,
       ),
-      home: MainGameScreen(controller: GameController(repository: repository)),
+      home: StartScreen(repository: repository, saveRepository: saveRepository),
     );
   }
 }

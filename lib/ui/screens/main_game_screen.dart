@@ -9,9 +9,10 @@ import '../widgets/location_info_panel.dart';
 import '../widgets/player_status_bar.dart';
 
 class MainGameScreen extends StatelessWidget {
-  const MainGameScreen({super.key, required this.controller});
+  const MainGameScreen({super.key, required this.controller, this.onSave});
 
   final GameController controller;
+  final Future<void> Function()? onSave;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class MainGameScreen extends StatelessWidget {
           body: SafeArea(
             child: Column(
               children: [
-                PlayerStatusBar(state: state),
+                PlayerStatusBar(state: state, onSave: _save),
                 Expanded(
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
@@ -56,5 +57,12 @@ class MainGameScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _save() {
+    final save = onSave;
+    if (save != null) {
+      save();
+    }
   }
 }

@@ -41,6 +41,34 @@ class GameState {
     );
   }
 
+  factory GameState.fromJson(Map<String, Object?> json) {
+    return GameState(
+      currentRoomId: json['currentRoomId'] as String,
+      player: PlayerState.fromJson(json['player'] as Map<String, Object?>),
+      visitedRoomIds:
+          (json['visitedRoomIds'] as List<Object?>).cast<String>().toSet(),
+      inventoryItemIds:
+          (json['inventoryItemIds'] as List<Object?>).cast<String>(),
+      equippedWeaponId: json['equippedWeaponId'] as String?,
+      learnedSkillIds:
+          (json['learnedSkillIds'] as List<Object?>).cast<String>().toSet(),
+      roomItemOverrides: (json['roomItemOverrides'] as Map<String, Object?>)
+          .map(
+            (roomId, itemIds) =>
+                MapEntry(roomId, (itemIds as List<Object?>).cast<String>()),
+          ),
+      questStatuses: (json['questStatuses'] as Map<String, Object?>).map(
+        (questId, status) => MapEntry(questId, _questStatusFromName(status)),
+      ),
+      questFlags: (json['questFlags'] as List<Object?>).cast<String>().toSet(),
+      combat:
+          json['combat'] == null
+              ? null
+              : CombatState.fromJson(json['combat'] as Map<String, Object?>),
+      log: (json['log'] as List<Object?>).cast<String>(),
+    );
+  }
+
   final String currentRoomId;
   final PlayerState player;
   final Set<String> visitedRoomIds;
@@ -52,6 +80,24 @@ class GameState {
   final Set<String> questFlags;
   final CombatState? combat;
   final List<String> log;
+
+  Map<String, Object?> toJson() {
+    return {
+      'currentRoomId': currentRoomId,
+      'player': player.toJson(),
+      'visitedRoomIds': visitedRoomIds.toList(),
+      'inventoryItemIds': inventoryItemIds,
+      'equippedWeaponId': equippedWeaponId,
+      'learnedSkillIds': learnedSkillIds.toList(),
+      'roomItemOverrides': roomItemOverrides,
+      'questStatuses': questStatuses.map(
+        (questId, status) => MapEntry(questId, status.name),
+      ),
+      'questFlags': questFlags.toList(),
+      'combat': combat?.toJson(),
+      'log': log,
+    };
+  }
 
   GameState copyWith({
     String? currentRoomId,
@@ -112,6 +158,34 @@ class PlayerState {
   final int maxInnerPower;
   final int silver;
 
+  factory PlayerState.fromJson(Map<String, Object?> json) {
+    return PlayerState(
+      name: json['name'] as String,
+      level: json['level'] as int,
+      experience: json['experience'] as int,
+      nextLevelExperience: json['nextLevelExperience'] as int,
+      hp: json['hp'] as int,
+      maxHp: json['maxHp'] as int,
+      innerPower: json['innerPower'] as int,
+      maxInnerPower: json['maxInnerPower'] as int,
+      silver: json['silver'] as int,
+    );
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'name': name,
+      'level': level,
+      'experience': experience,
+      'nextLevelExperience': nextLevelExperience,
+      'hp': hp,
+      'maxHp': maxHp,
+      'innerPower': innerPower,
+      'maxInnerPower': maxInnerPower,
+      'silver': silver,
+    };
+  }
+
   PlayerState copyWith({
     int? level,
     int? experience,
@@ -139,8 +213,19 @@ class PlayerState {
 class CombatState {
   const CombatState({required this.npcId, required this.enemyHp});
 
+  factory CombatState.fromJson(Map<String, Object?> json) {
+    return CombatState(
+      npcId: json['npcId'] as String,
+      enemyHp: json['enemyHp'] as int,
+    );
+  }
+
   final String npcId;
   final int enemyHp;
+
+  Map<String, Object?> toJson() {
+    return {'npcId': npcId, 'enemyHp': enemyHp};
+  }
 
   CombatState copyWith({int? enemyHp}) {
     return CombatState(npcId: npcId, enemyHp: enemyHp ?? this.enemyHp);
@@ -148,6 +233,13 @@ class CombatState {
 }
 
 const Object _unchanged = Object();
+
+QuestStatus _questStatusFromName(Object? name) {
+  return QuestStatus.values.firstWhere(
+    (status) => status.name == name,
+    orElse: () => QuestStatus.notStarted,
+  );
+}
 
 extension _RecentItems<T> on List<T> {
   List<T> takeLast(int count) {

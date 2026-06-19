@@ -4,9 +4,10 @@ import '../../game/models/game_state.dart';
 import 'shared/status_meter.dart';
 
 class PlayerStatusBar extends StatelessWidget {
-  const PlayerStatusBar({super.key, required this.state});
+  const PlayerStatusBar({super.key, required this.state, this.onSave});
 
   final GameState state;
+  final VoidCallback? onSave;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +33,14 @@ class PlayerStatusBar extends StatelessWidget {
                 ),
               ),
               Text('银两 ${player.silver}'),
+              if (onSave != null) ...[
+                const SizedBox(width: 8),
+                IconButton(
+                  tooltip: '保存',
+                  onPressed: onSave,
+                  icon: const Icon(Icons.save_outlined),
+                ),
+              ],
             ],
           ),
           const SizedBox(height: 8),
