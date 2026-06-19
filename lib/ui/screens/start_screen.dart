@@ -100,9 +100,7 @@ class _StartScreenState extends State<StartScreen> {
 
   Future<void> _startNewGame() async {
     await _runBusy(() async {
-      final state = GameState.initial(
-        startingRoomId: widget.repository.startingRoomId,
-      );
+      final state = widget.repository.createInitialState();
       await widget.saveRepository.save(state);
       _openGame(state);
     });

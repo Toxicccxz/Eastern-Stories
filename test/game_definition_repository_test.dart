@@ -60,6 +60,16 @@ void main() {
     }
 
     for (final npc in repository.npcs) {
+      final combat = npc.combat;
+      if (combat != null) {
+        for (final itemId in combat.dropItemIds) {
+          expect(
+            () => repository.item(itemId),
+            returnsNormally,
+            reason: '${npc.id} drops unknown item $itemId',
+          );
+        }
+      }
       for (final option in npc.dialogueOptions) {
         final questIds =
             [

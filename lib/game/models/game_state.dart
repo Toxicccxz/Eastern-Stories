@@ -9,13 +9,17 @@ class GameState {
     required this.equippedWeaponId,
     required this.learnedSkillIds,
     required this.roomItemOverrides,
+    required this.npcStates,
     required this.questStatuses,
     required this.questFlags,
     required this.combat,
     required this.log,
   });
 
-  factory GameState.initial({required String startingRoomId}) {
+  factory GameState.initial({
+    required String startingRoomId,
+    Map<String, NpcRuntimeState> npcStates = const {},
+  }) {
     return GameState(
       currentRoomId: startingRoomId,
       player: const PlayerState(
@@ -34,6 +38,7 @@ class GameState {
       equippedWeaponId: null,
       learnedSkillIds: const {},
       roomItemOverrides: const {},
+      npcStates: npcStates,
       questStatuses: const {},
       questFlags: const {},
       combat: null,
@@ -57,6 +62,12 @@ class GameState {
             (roomId, itemIds) =>
                 MapEntry(roomId, (itemIds as List<Object?>).cast<String>()),
           ),
+      npcStates: (json['npcStates'] as Map<String, Object?>? ?? const {}).map(
+        (npcId, npcState) => MapEntry(
+          npcId,
+          NpcRuntimeState.fromJson(npcState as Map<String, Object?>),
+        ),
+      ),
       questStatuses: (json['questStatuses'] as Map<String, Object?>).map(
         (questId, status) => MapEntry(questId, _questStatusFromName(status)),
       ),
@@ -76,6 +87,7 @@ class GameState {
   final String? equippedWeaponId;
   final Set<String> learnedSkillIds;
   final Map<String, List<String>> roomItemOverrides;
+  final Map<String, NpcRuntimeState> npcStates;
   final Map<String, QuestStatus> questStatuses;
   final Set<String> questFlags;
   final CombatState? combat;
@@ -90,6 +102,9 @@ class GameState {
       'equippedWeaponId': equippedWeaponId,
       'learnedSkillIds': learnedSkillIds.toList(),
       'roomItemOverrides': roomItemOverrides,
+      'npcStates': npcStates.map(
+        (npcId, npcState) => MapEntry(npcId, npcState.toJson()),
+      ),
       'questStatuses': questStatuses.map(
         (questId, status) => MapEntry(questId, status.name),
       ),
@@ -107,6 +122,7 @@ class GameState {
     Object? equippedWeaponId = _unchanged,
     Set<String>? learnedSkillIds,
     Map<String, List<String>>? roomItemOverrides,
+    Map<String, NpcRuntimeState>? npcStates,
     Map<String, QuestStatus>? questStatuses,
     Set<String>? questFlags,
     Object? combat = _unchanged,
@@ -123,6 +139,7 @@ class GameState {
               : equippedWeaponId as String?,
       learnedSkillIds: learnedSkillIds ?? this.learnedSkillIds,
       roomItemOverrides: roomItemOverrides ?? this.roomItemOverrides,
+      npcStates: npcStates ?? this.npcStates,
       questStatuses: questStatuses ?? this.questStatuses,
       questFlags: questFlags ?? this.questFlags,
       combat: combat == _unchanged ? this.combat : combat as CombatState?,
@@ -132,6 +149,38 @@ class GameState {
 
   List<String> logWith(String message) {
     return [...log, message].takeLast(20);
+  }
+}
+
+class NpcRuntimeState {
+  const NpcRuntimeState({
+    required this.roomId,
+    required this.currentHp,
+    required this.isDefeated,
+  });
+
+  factory NpcRuntimeState.fromJson(Map<String, Object?> json) {
+    return NpcRuntimeState(
+      roomId: json['roomId'] as String,
+      currentHp: json['currentHp'] as int,
+      isDefeated: json['isDefeated'] as bool,
+    );
+  }
+
+  final String roomId;
+  final int currentHp;
+  final bool isDefeated;
+
+  Map<String, Object?> toJson() {
+    return {'roomId': roomId, 'currentHp': currentHp, 'isDefeated': isDefeated};
+  }
+
+  NpcRuntimeState copyWith({String? roomId, int? currentHp, bool? isDefeated}) {
+    return NpcRuntimeState(
+      roomId: roomId ?? this.roomId,
+      currentHp: currentHp ?? this.currentHp,
+      isDefeated: isDefeated ?? this.isDefeated,
+    );
   }
 }
 

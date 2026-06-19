@@ -1,4 +1,5 @@
 import '../models/game_state.dart';
+import '../models/npc_definition.dart';
 import '../repositories/game_definition_repository.dart';
 import 'progression_system.dart';
 
@@ -13,8 +14,10 @@ class CombatSystem {
       return _withLog(state, '你已经在战斗中。');
     }
 
-    final room = _repository.room(state.currentRoomId);
-    if (!room.npcIds.contains(npcId)) {
+    final npcState = state.npcStates[npcId];
+    if (npcState == null ||
+        npcState.roomId != state.currentRoomId ||
+        npcState.isDefeated) {
       return _withLog(state, '这里没有这个目标。');
     }
 
@@ -24,8 +27,13 @@ class CombatSystem {
       return _withLog(state, '${npc.name}并无敌意。');
     }
 
+    final enemyHp = npcState.currentHp <= 0 ? combat.maxHp : npcState.currentHp;
     return state.copyWith(
-      combat: CombatState(npcId: npcId, enemyHp: combat.maxHp),
+      combat: CombatState(npcId: npcId, enemyHp: enemyHp),
+      npcStates: {
+        ...state.npcStates,
+        npcId: npcState.copyWith(currentHp: enemyHp),
+      },
       log: state.logWith('${npc.name}逼近过来，战斗开始。'),
     );
   }
@@ -38,7 +46,8 @@ class CombatSystem {
 
     final npc = _repository.npc(activeCombat.npcId);
     final combat = npc.combat;
-    if (combat == null) {
+    final npcState = state.npcStates[activeCombat.npcId];
+    if (combat == null || npcState == null || npcState.isDefeated) {
       return state.copyWith(combat: null);
     }
 
@@ -49,12 +58,7 @@ class CombatSystem {
     final nextEnemyHp = activeCombat.enemyHp - playerDamage;
 
     if (nextEnemyHp <= 0) {
-      return _progressionSystem.awardRewards(
-        state.copyWith(combat: null),
-        silver: combat.rewardSilver,
-        experience: combat.rewardExperience,
-        logPrefix: '你击退了${npc.name}',
-      );
+      return _defeatNpc(state, npc.id, npcState, combat);
     }
 
     final enemyDamage = (combat.attack - 2 - _damageReduction(state)).clamp(
@@ -65,7 +69,7 @@ class CombatSystem {
       1,
       state.player.maxHp,
     );
-    final wasDefeated = nextPlayerHp == 1;
+    final wasPlayerDefeated = nextPlayerHp == 1;
     final log = [
       ...state.logWith('你向${npc.name}出手，造成$playerDamage点伤害。'),
       '${npc.name}反击，你受到$enemyDamage点伤害。',
@@ -73,8 +77,15 @@ class CombatSystem {
 
     return state.copyWith(
       player: state.player.copyWith(hp: nextPlayerHp),
-      combat: wasDefeated ? null : activeCombat.copyWith(enemyHp: nextEnemyHp),
-      log: wasDefeated ? [...log, '你勉强脱离战斗，气血只剩一线。'] : log,
+      npcStates: {
+        ...state.npcStates,
+        npc.id: npcState.copyWith(currentHp: nextEnemyHp),
+      },
+      combat:
+          wasPlayerDefeated
+              ? null
+              : activeCombat.copyWith(enemyHp: nextEnemyHp),
+      log: wasPlayerDefeated ? [...log, '你勉强脱离战斗，气血只剩一线。'] : log,
     );
   }
 
@@ -88,6 +99,50 @@ class CombatSystem {
     return state.copyWith(
       combat: null,
       log: state.logWith('你避开${npc.name}，暂时退到一旁。'),
+    );
+  }
+
+  GameState _defeatNpc(
+    GameState state,
+    String npcId,
+    NpcRuntimeState npcState,
+    CombatDefinition combat,
+  ) {
+    final npc = _repository.npc(npcId);
+    final room = _repository.room(npcState.roomId);
+    final currentItemIds = room.visibleItemIds(state);
+    final droppedItemIds = [
+      for (final itemId in combat.dropItemIds)
+        if (!currentItemIds.contains(itemId)) itemId,
+    ];
+
+    var nextState = state.copyWith(
+      combat: null,
+      npcStates: {
+        ...state.npcStates,
+        npc.id: npcState.copyWith(currentHp: 0, isDefeated: true),
+      },
+      roomItemOverrides: {
+        ...state.roomItemOverrides,
+        room.id: [...currentItemIds, ...droppedItemIds],
+      },
+    );
+    nextState = _progressionSystem.awardRewards(
+      nextState,
+      silver: combat.rewardSilver,
+      experience: combat.rewardExperience,
+      logPrefix: '你击退了${npc.name}',
+    );
+
+    if (droppedItemIds.isEmpty) {
+      return nextState;
+    }
+    final dropNames = droppedItemIds
+        .map(_repository.item)
+        .map((item) => item.name)
+        .join('、');
+    return nextState.copyWith(
+      log: nextState.logWith('${npc.name}留下了$dropNames。'),
     );
   }
 

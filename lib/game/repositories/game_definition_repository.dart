@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 
 import '../models/area_definition.dart';
+import '../models/game_state.dart';
 import '../models/game_world_definition.dart';
 import '../models/item_definition.dart';
 import '../models/npc_definition.dart';
@@ -106,6 +107,35 @@ class GameDefinitionRepository {
 
   Iterable<SkillDefinition> get skills => _skills.values;
 
+  GameState createInitialState() {
+    return GameState.initial(
+      startingRoomId: startingRoomId,
+      npcStates: _initialNpcStates(),
+    );
+  }
+
+  GameState hydrateState(GameState state) {
+    final npcStates = {..._initialNpcStates(), ...state.npcStates};
+    final combat = state.combat;
+    final activeNpcState = combat == null ? null : npcStates[combat.npcId];
+    if (combat != null &&
+        activeNpcState != null &&
+        !activeNpcState.isDefeated) {
+      npcStates[combat.npcId] = activeNpcState.copyWith(
+        currentHp: combat.enemyHp,
+      );
+    }
+    return state.copyWith(npcStates: npcStates);
+  }
+
+  Iterable<NpcDefinition> visibleNpcsInRoom(GameState state, String roomId) {
+    return state.npcStates.entries
+        .where(
+          (entry) => entry.value.roomId == roomId && !entry.value.isDefeated,
+        )
+        .map((entry) => npc(entry.key));
+  }
+
   AreaDefinition area(String id) {
     final area = _areas[id];
     if (area == null) {
@@ -152,6 +182,18 @@ class GameDefinitionRepository {
       throw StateError('Unknown skill id: $id');
     }
     return skill;
+  }
+
+  Map<String, NpcRuntimeState> _initialNpcStates() {
+    return {
+      for (final room in _rooms.values)
+        for (final npcId in room.npcIds)
+          npcId: NpcRuntimeState(
+            roomId: room.id,
+            currentHp: _npcs[npcId]?.combat?.maxHp ?? 0,
+            isDefeated: false,
+          ),
+    };
   }
 }
 

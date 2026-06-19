@@ -54,6 +54,13 @@
     "name": "白鳞冰龙",
     "description": "一只浑身长满白鳞的巨龙，盘踞在寒冰之间。",
     "greeting": "冰龙缓缓睁眼，寒气沿着冰面蔓延开来。",
-    "combat": {"maxHp": 36, "attack": 7, "defense": 4, "rewardSilver": 80, "rewardExperience": 70}
+    "combat": {
+      "maxHp": 36,
+      "attack": 7,
+      "defense": 4,
+      "rewardSilver": 80,
+      "rewardExperience": 70,
+      "dropItemIds": ["ice_dragon_scale"]
+    }
   }
 ]

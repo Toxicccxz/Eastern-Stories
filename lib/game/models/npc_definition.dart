@@ -45,6 +45,7 @@ class CombatDefinition {
     required this.defense,
     this.rewardSilver = 0,
     this.rewardExperience = 0,
+    this.dropItemIds = const [],
   });
 
   factory CombatDefinition.fromJson(Map<String, Object?> json) {
@@ -54,6 +55,8 @@ class CombatDefinition {
       defense: json['defense'] as int,
       rewardSilver: json['rewardSilver'] as int? ?? 0,
       rewardExperience: json['rewardExperience'] as int? ?? 0,
+      dropItemIds:
+          (json['dropItemIds'] as List<Object?>? ?? const []).cast<String>(),
     );
   }
 
@@ -62,6 +65,7 @@ class CombatDefinition {
   final int defense;
   final int rewardSilver;
   final int rewardExperience;
+  final List<String> dropItemIds;
 }
 
 class DialogueOption {

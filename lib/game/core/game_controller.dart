@@ -18,8 +18,9 @@ class GameController extends ChangeNotifier {
     GameState? initialState,
   }) : _repository = repository,
        _state =
-           initialState ??
-           GameState.initial(startingRoomId: repository.startingRoomId) {
+           initialState == null
+               ? repository.createInitialState()
+               : repository.hydrateState(initialState) {
     final progressionSystem = ProgressionSystem(repository);
     _movementSystem = MovementSystem(repository);
     _inventorySystem = InventorySystem(repository);
@@ -44,7 +45,7 @@ class GameController extends ChangeNotifier {
   }
 
   void reset() {
-    _state = GameState.initial(startingRoomId: _repository.startingRoomId);
+    _state = _repository.createInitialState();
     notifyListeners();
   }
 

@@ -24,6 +24,13 @@ void main() {
       inventoryItemIds: ['old_book'],
       equippedWeaponId: 'hengbing_sword',
       learnedSkillIds: {'parry'},
+      npcStates: {
+        'white_ice_dragon': const NpcRuntimeState(
+          roomId: 'ice_cave',
+          currentHp: 12,
+          isDefeated: false,
+        ),
+      },
       questStatuses: {'old_liu_daughter': QuestStatus.active},
       questFlags: {'flower_girl_found'},
       combat: const CombatState(npcId: 'white_ice_dragon', enemyHp: 12),
@@ -40,6 +47,9 @@ void main() {
     expect(loaded?.inventoryItemIds, ['old_book']);
     expect(loaded?.equippedWeaponId, 'hengbing_sword');
     expect(loaded?.learnedSkillIds, {'parry'});
+    expect(loaded?.npcStates['white_ice_dragon']?.roomId, 'ice_cave');
+    expect(loaded?.npcStates['white_ice_dragon']?.currentHp, 12);
+    expect(loaded?.npcStates['white_ice_dragon']?.isDefeated, isFalse);
     expect(loaded?.questStatuses['old_liu_daughter'], QuestStatus.active);
     expect(loaded?.questFlags, {'flower_girl_found'});
     expect(loaded?.combat?.npcId, 'white_ice_dragon');

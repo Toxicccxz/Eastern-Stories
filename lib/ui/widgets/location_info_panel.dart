@@ -23,7 +23,8 @@ class LocationInfoPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final npcs = room.npcIds.map(controller.repository.npc).toList();
+    final npcs =
+        controller.repository.visibleNpcsInRoom(state, room.id).toList();
     final items =
         room.visibleItemIds(state).map(controller.repository.item).toList();
 

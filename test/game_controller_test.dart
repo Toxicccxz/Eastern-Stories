@@ -192,7 +192,49 @@ void main() {
     expect(controller.state.player.level, 2);
     expect(controller.state.player.experience, 30);
     expect(controller.state.player.hp, 92);
+    expect(controller.state.npcStates['white_ice_dragon']?.isDefeated, isTrue);
+    expect(
+      controller.repository.visibleNpcsInRoom(
+        controller.state,
+        controller.state.currentRoomId,
+      ),
+      isEmpty,
+    );
+    expect(
+      controller.repository
+          .room(controller.state.currentRoomId)
+          .visibleItemIds(controller.state),
+      contains('ice_dragon_scale'),
+    );
     expect(controller.state.log, contains(contains('白鳞冰龙')));
-    expect(controller.state.log.last, contains('Lv.2'));
+    expect(controller.state.log, contains(contains('Lv.2')));
+    expect(controller.state.log.last, contains('冰龙白鳞'));
+
+    controller.dispatch(const GameAction.pickUp('ice_dragon_scale'));
+    controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
+
+    expect(controller.state.inventoryItemIds, contains('ice_dragon_scale'));
+    expect(controller.state.combat, isNull);
+  });
+
+  test('enemy damage persists after fleeing and restarting combat', () {
+    final controller = GameController(repository: repository);
+
+    controller.dispatch(const GameAction.move(Direction.east));
+    controller.dispatch(const GameAction.move(Direction.east));
+    controller.dispatch(const GameAction.performRoomAction('paddle_to_lake'));
+    controller.dispatch(const GameAction.performRoomAction('dive_into_lake'));
+    controller.dispatch(const GameAction.move(Direction.west));
+    controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
+    controller.dispatch(const GameAction.attack());
+    controller.dispatch(const GameAction.fleeCombat());
+
+    final remainingHp =
+        controller.state.npcStates['white_ice_dragon']?.currentHp;
+
+    controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
+
+    expect(remainingHp, 32);
+    expect(controller.state.combat?.enemyHp, remainingHp);
   });
 }
