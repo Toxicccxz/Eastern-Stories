@@ -45,17 +45,23 @@ enum QuestStatus { notStarted, active, completed }
 enum QuestStepStatus { completed, current, pending }
 
 class QuestStepDefinition {
-  const QuestStepDefinition({required this.description, this.requiredFlag});
+  const QuestStepDefinition({
+    required this.description,
+    this.requiredFlag,
+    this.requiredDefeatedNpcId,
+  });
 
   factory QuestStepDefinition.fromJson(Map<String, Object?> json) {
     return QuestStepDefinition(
       description: json['description'] as String,
       requiredFlag: json['requiredFlag'] as String?,
+      requiredDefeatedNpcId: json['requiredDefeatedNpcId'] as String?,
     );
   }
 
   final String description;
   final String? requiredFlag;
+  final String? requiredDefeatedNpcId;
 }
 
 class QuestStepView {

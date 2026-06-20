@@ -1,0 +1,29 @@
+[
+  {
+    "id": "black_pine_scout",
+    "name": "土匪探哨",
+    "description": "这人满脸匪气，提着一把粗制短剑，正百无聊赖地守着上山小路。",
+    "greeting": "探哨横剑挡在路中，喝道：“黑松山也是你能乱闯的地方？”",
+    "combat": {
+      "maxHp": 16,
+      "attack": 4,
+      "defense": 2,
+      "rewardSilver": 3,
+      "rewardExperience": 15,
+      "dropItemIds": ["rough_short_sword"]
+    }
+  },
+  {
+    "id": "black_pine_guard",
+    "name": "土匪喽罗",
+    "description": "这家伙满脸横肉，牢牢守住城墙下通往地牢的隐蔽入口。",
+    "greeting": "喽罗按住剑柄，恶狠狠地说道：“再往前一步，就把命留下！”",
+    "combat": {
+      "maxHp": 28,
+      "attack": 6,
+      "defense": 3,
+      "rewardSilver": 5,
+      "rewardExperience": 25
+    }
+  }
+]

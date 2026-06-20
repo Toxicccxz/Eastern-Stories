@@ -6,7 +6,9 @@
     "steps": [
       {"description": "向刘老农询问小娟的去向。"},
       {"description": "向花园里的采花妞打听线索。", "requiredFlag": "black_pine_clue"},
-      {"description": "从瓜地向北走上黄土大道，再向东前往黑松山，在山顶地牢救出小娟。", "requiredFlag": "xiao_juan_rescued"},
+      {"description": "从瓜地向北走上黄土大道，再向东前往黑松山。", "requiredDefeatedNpcId": "black_pine_scout"},
+      {"description": "击败花岗石街上把守地牢入口的土匪喽罗。", "requiredDefeatedNpcId": "black_pine_guard"},
+      {"description": "进入山顶地牢，救出小娟。", "requiredFlag": "xiao_juan_rescued"},
       {"description": "带小娟回刘家小房见父亲。", "requiredFlag": "xiao_juan_rescued"}
     ],
     "requiredFlags": ["xiao_juan_rescued"],

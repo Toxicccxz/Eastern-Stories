@@ -159,6 +159,16 @@ void main() {
     }
 
     for (final quest in repository.quests) {
+      for (final step in quest.steps) {
+        final npcId = step.requiredDefeatedNpcId;
+        if (npcId != null) {
+          expect(
+            () => repository.npc(npcId),
+            returnsNormally,
+            reason: '${quest.id} step references unknown NPC $npcId',
+          );
+        }
+      }
       for (final itemId in quest.rewardItemIds) {
         expect(
           () => repository.item(itemId),

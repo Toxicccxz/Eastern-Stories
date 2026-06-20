@@ -1,0 +1,10 @@
+[
+  {
+    "id": "rough_short_sword",
+    "name": "短剑",
+    "description": "一把粗制滥造的铁短剑，把手缠着几圈旧布，勉强还算趁手。",
+    "equipmentSlot": "weapon",
+    "attackPower": 7,
+    "sellPrice": 4
+  }
+]

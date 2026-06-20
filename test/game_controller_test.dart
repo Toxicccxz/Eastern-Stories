@@ -95,6 +95,8 @@ void main() {
       QuestStepStatus.current,
       QuestStepStatus.pending,
       QuestStepStatus.pending,
+      QuestStepStatus.pending,
+      QuestStepStatus.pending,
     ]);
     expect(
       repository
@@ -117,22 +119,33 @@ void main() {
           .room('granite_road')
           .availableExits(controller.state)
           .containsKey(Direction.east),
-      isTrue,
+      isFalse,
     );
     expect(controller.questViews().single.steps.map((step) => step.status), [
       QuestStepStatus.completed,
       QuestStepStatus.completed,
       QuestStepStatus.current,
       QuestStepStatus.pending,
+      QuestStepStatus.pending,
+      QuestStepStatus.pending,
     ]);
 
     _moveToDungeon(controller);
+    expect(
+      repository
+          .room('granite_road')
+          .availableExits(controller.state)
+          .containsKey(Direction.east),
+      isTrue,
+    );
     controller.dispatch(
       const GameAction.selectDialogue('xiao_juan', 'rescue_xiao_juan'),
     );
 
     expect(controller.state.npcStates['xiao_juan']?.isFollowing, isTrue);
     expect(controller.questViews().single.steps.map((step) => step.status), [
+      QuestStepStatus.completed,
+      QuestStepStatus.completed,
       QuestStepStatus.completed,
       QuestStepStatus.completed,
       QuestStepStatus.completed,
@@ -153,11 +166,14 @@ void main() {
 
     expect(controller.state.inventoryItemIds, contains('hengbing_sword'));
     expect(controller.state.inventoryItemIds, contains('parry_book'));
-    expect(controller.state.player.silver, 20);
-    expect(controller.state.player.experience, 0);
+    expect(controller.state.inventoryItemIds, contains('rough_short_sword'));
+    expect(controller.state.player.silver, 28);
+    expect(controller.state.player.experience, 40);
     expect(controller.state.npcStates['old_liu']?.isRemoved, isTrue);
     expect(controller.state.npcStates['xiao_juan']?.isRemoved, isTrue);
     expect(controller.questViews().single.steps.map((step) => step.status), [
+      QuestStepStatus.completed,
+      QuestStepStatus.completed,
       QuestStepStatus.completed,
       QuestStepStatus.completed,
       QuestStepStatus.completed,
@@ -331,10 +347,10 @@ void main() {
     expect(controller.characterStats().attack, 18);
     expect(controller.state.learnedSkillIds, contains('parry'));
     expect(controller.state.combat, isNull);
-    expect(controller.state.player.silver, 100);
-    expect(controller.state.player.level, 1);
-    expect(controller.state.player.experience, 70);
-    expect(controller.state.player.hp, 80);
+    expect(controller.state.player.silver, 108);
+    expect(controller.state.player.level, 2);
+    expect(controller.state.player.experience, 10);
+    expect(controller.state.player.hp, 92);
     expect(controller.state.npcStates['white_ice_dragon']?.isDefeated, isTrue);
     expect(
       controller.repository.visibleNpcsInRoom(
@@ -423,12 +439,22 @@ void _moveToDungeon(GameController controller) {
     Direction.north,
     Direction.north,
     Direction.up,
-    Direction.up,
-    Direction.east,
-    Direction.east,
   ]) {
     controller.dispatch(GameAction.move(direction));
   }
+  controller.dispatch(const GameAction.startCombat('black_pine_scout'));
+  for (var turn = 0; turn < 3; turn += 1) {
+    controller.dispatch(const GameAction.attack());
+  }
+  controller.dispatch(const GameAction.pickUp('rough_short_sword'));
+  controller.dispatch(const GameAction.equipItem('rough_short_sword'));
+  controller.dispatch(const GameAction.move(Direction.up));
+  controller.dispatch(const GameAction.startCombat('black_pine_guard'));
+  for (var turn = 0; turn < 3; turn += 1) {
+    controller.dispatch(const GameAction.attack());
+  }
+  controller.dispatch(const GameAction.move(Direction.east));
+  controller.dispatch(const GameAction.move(Direction.east));
 }
 
 void _moveHomeFromDungeonTunnel(GameController controller) {

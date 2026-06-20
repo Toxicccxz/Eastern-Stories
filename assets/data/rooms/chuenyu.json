@@ -33,7 +33,14 @@
     "description": "唯一通往山顶的小路十分难行，路边堆着面目狰狞的巨石，幼松从石缝中顽强地挤出来。",
     "mapX": 0,
     "mapY": 2,
-    "exits": {"down": "black_pine_foot", "up": "granite_road"}
+    "exits": {
+      "down": "black_pine_foot",
+      "up": {
+        "roomId": "granite_road",
+        "conditions": {"requiredDefeatedNpcIds": ["black_pine_scout"]}
+      }
+    },
+    "npcIds": ["black_pine_scout"]
   },
   {
     "id": "granite_road",
@@ -48,10 +55,12 @@
         "roomId": "dungeon_tunnel",
         "conditions": {
           "requiredFlags": ["black_pine_clue"],
-          "requiredQuestStatuses": {"rescue_xiao_juan": "active"}
+          "requiredQuestStatuses": {"rescue_xiao_juan": "active"},
+          "requiredDefeatedNpcIds": ["black_pine_guard"]
         }
       }
-    }
+    },
+    "npcIds": ["black_pine_guard"]
   },
   {
     "id": "dungeon_tunnel",

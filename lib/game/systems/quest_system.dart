@@ -227,8 +227,14 @@ class QuestSystem {
       return QuestStepStatus.pending;
     }
 
-    final requiredFlag = step.requiredFlag;
-    if (requiredFlag == null || state.questFlags.contains(requiredFlag)) {
+    final hasRequiredFlag =
+        step.requiredFlag == null ||
+        state.questFlags.contains(step.requiredFlag);
+    final requiredNpcId = step.requiredDefeatedNpcId;
+    final hasDefeatedRequiredNpc =
+        requiredNpcId == null ||
+        (state.npcStates[requiredNpcId]?.isDefeated ?? false);
+    if (hasRequiredFlag && hasDefeatedRequiredNpc) {
       return QuestStepStatus.completed;
     }
     return hasCurrentStep ? QuestStepStatus.pending : QuestStepStatus.current;
