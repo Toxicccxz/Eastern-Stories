@@ -47,8 +47,7 @@
     "mapX": 2,
     "mapY": 1,
     "exits": {"south": "village_road", "north": "yellow_road"},
-    "npcIds": ["meloner"],
-    "itemIds": ["water_melon"]
+    "npcIds": ["meloner"]
   },
   {
     "id": "yellow_road",

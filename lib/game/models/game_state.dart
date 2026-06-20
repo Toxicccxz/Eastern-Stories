@@ -11,6 +11,7 @@ class GameState {
     required this.learnedSkillIds,
     required this.roomItemOverrides,
     required this.npcStates,
+    required this.shopStates,
     required this.questStatuses,
     required this.questFlags,
     required this.combat,
@@ -20,6 +21,7 @@ class GameState {
   factory GameState.initial({
     required String startingRoomId,
     Map<String, NpcRuntimeState> npcStates = const {},
+    Map<String, ShopRuntimeState> shopStates = const {},
   }) {
     return GameState(
       currentRoomId: startingRoomId,
@@ -41,6 +43,7 @@ class GameState {
       learnedSkillIds: const {},
       roomItemOverrides: const {},
       npcStates: npcStates,
+      shopStates: shopStates,
       questStatuses: const {},
       questFlags: const {},
       combat: null,
@@ -71,6 +74,12 @@ class GameState {
           NpcRuntimeState.fromJson(npcState as Map<String, Object?>),
         ),
       ),
+      shopStates: (json['shopStates'] as Map<String, Object?>? ?? const {}).map(
+        (npcId, shopState) => MapEntry(
+          npcId,
+          ShopRuntimeState.fromJson(shopState as Map<String, Object?>),
+        ),
+      ),
       questStatuses: (json['questStatuses'] as Map<String, Object?>).map(
         (questId, status) => MapEntry(questId, _questStatusFromName(status)),
       ),
@@ -92,6 +101,7 @@ class GameState {
   final Set<String> learnedSkillIds;
   final Map<String, List<String>> roomItemOverrides;
   final Map<String, NpcRuntimeState> npcStates;
+  final Map<String, ShopRuntimeState> shopStates;
   final Map<String, QuestStatus> questStatuses;
   final Set<String> questFlags;
   final CombatState? combat;
@@ -109,6 +119,9 @@ class GameState {
       'roomItemOverrides': roomItemOverrides,
       'npcStates': npcStates.map(
         (npcId, npcState) => MapEntry(npcId, npcState.toJson()),
+      ),
+      'shopStates': shopStates.map(
+        (npcId, shopState) => MapEntry(npcId, shopState.toJson()),
       ),
       'questStatuses': questStatuses.map(
         (questId, status) => MapEntry(questId, status.name),
@@ -129,6 +142,7 @@ class GameState {
     Set<String>? learnedSkillIds,
     Map<String, List<String>>? roomItemOverrides,
     Map<String, NpcRuntimeState>? npcStates,
+    Map<String, ShopRuntimeState>? shopStates,
     Map<String, QuestStatus>? questStatuses,
     Set<String>? questFlags,
     Object? combat = _unchanged,
@@ -147,6 +161,7 @@ class GameState {
       learnedSkillIds: learnedSkillIds ?? this.learnedSkillIds,
       roomItemOverrides: roomItemOverrides ?? this.roomItemOverrides,
       npcStates: npcStates ?? this.npcStates,
+      shopStates: shopStates ?? this.shopStates,
       questStatuses: questStatuses ?? this.questStatuses,
       questFlags: questFlags ?? this.questFlags,
       combat: combat == _unchanged ? this.combat : combat as CombatState?,
@@ -156,6 +171,28 @@ class GameState {
 
   List<String> logWith(String message) {
     return [...log, message].takeLast(20);
+  }
+}
+
+class ShopRuntimeState {
+  const ShopRuntimeState({required this.stockByItemId});
+
+  factory ShopRuntimeState.fromJson(Map<String, Object?> json) {
+    return ShopRuntimeState(
+      stockByItemId: (json['stockByItemId'] as Map<String, Object?>).map(
+        (itemId, stock) => MapEntry(itemId, stock as int),
+      ),
+    );
+  }
+
+  final Map<String, int> stockByItemId;
+
+  Map<String, Object?> toJson() {
+    return {'stockByItemId': stockByItemId};
+  }
+
+  ShopRuntimeState copyWith({Map<String, int>? stockByItemId}) {
+    return ShopRuntimeState(stockByItemId: stockByItemId ?? this.stockByItemId);
   }
 }
 

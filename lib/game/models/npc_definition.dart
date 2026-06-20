@@ -12,6 +12,7 @@ class NpcDefinition {
     this.greetingVariants = const [],
     this.combat,
     this.conditions,
+    this.shop,
   });
 
   factory NpcDefinition.fromJson(Map<String, Object?> json) {
@@ -37,6 +38,10 @@ class NpcDefinition {
                 json['combat'] as Map<String, Object?>,
               ),
       conditions: worldConditionFromJson(json['conditions']),
+      shop:
+          json['shop'] == null
+              ? null
+              : ShopDefinition.fromJson(json['shop'] as Map<String, Object?>),
     );
   }
 
@@ -48,6 +53,7 @@ class NpcDefinition {
   final List<GreetingVariant> greetingVariants;
   final CombatDefinition? combat;
   final WorldCondition? conditions;
+  final ShopDefinition? shop;
 
   String greetingFor(GameState state) {
     for (final variant in greetingVariants) {
@@ -57,6 +63,49 @@ class NpcDefinition {
     }
     return greeting;
   }
+}
+
+class ShopDefinition {
+  const ShopDefinition({required this.products});
+
+  factory ShopDefinition.fromJson(Map<String, Object?> json) {
+    return ShopDefinition(
+      products: [
+        for (final product in json['products'] as List<Object?>)
+          ShopProductDefinition.fromJson(product as Map<String, Object?>),
+      ],
+    );
+  }
+
+  final List<ShopProductDefinition> products;
+
+  ShopProductDefinition? product(String itemId) {
+    for (final product in products) {
+      if (product.itemId == itemId) {
+        return product;
+      }
+    }
+    return null;
+  }
+}
+
+class ShopProductDefinition {
+  const ShopProductDefinition({
+    required this.itemId,
+    required this.initialStock,
+  });
+
+  factory ShopProductDefinition.fromJson(Map<String, Object?> json) {
+    return ShopProductDefinition(
+      itemId: json['itemId'] as String,
+      initialStock: json['initialStock'] as int? ?? -1,
+    );
+  }
+
+  final String itemId;
+  final int initialStock;
+
+  bool get hasInfiniteStock => initialStock < 0;
 }
 
 class GreetingVariant {

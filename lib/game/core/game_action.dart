@@ -25,6 +25,11 @@ sealed class GameAction {
 
   const factory GameAction.dropItem(String itemId) = DropItemAction;
 
+  const factory GameAction.buyItem(String npcId, String itemId) = BuyItemAction;
+
+  const factory GameAction.sellItem(String npcId, String itemId) =
+      SellItemAction;
+
   const factory GameAction.startCombat(String npcId) = StartCombatAction;
 
   const factory GameAction.attack() = AttackAction;
@@ -88,6 +93,20 @@ class UseItemAction extends GameAction {
 class DropItemAction extends GameAction {
   const DropItemAction(this.itemId);
 
+  final String itemId;
+}
+
+class BuyItemAction extends GameAction {
+  const BuyItemAction(this.npcId, this.itemId);
+
+  final String npcId;
+  final String itemId;
+}
+
+class SellItemAction extends GameAction {
+  const SellItemAction(this.npcId, this.itemId);
+
+  final String npcId;
   final String itemId;
 }
 

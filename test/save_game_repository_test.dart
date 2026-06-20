@@ -36,6 +36,9 @@ void main() {
           isRemoved: false,
         ),
       },
+      shopStates: {
+        'meloner': const ShopRuntimeState(stockByItemId: {'water_melon': 3}),
+      },
       questStatuses: {'old_liu_daughter': QuestStatus.active},
       questFlags: {'flower_girl_found'},
       combat: const CombatState(npcId: 'white_ice_dragon', enemyHp: 12),
@@ -60,6 +63,7 @@ void main() {
     expect(loaded?.npcStates['white_ice_dragon']?.hasDroppedLoot, isTrue);
     expect(loaded?.npcStates['white_ice_dragon']?.isFollowing, isTrue);
     expect(loaded?.npcStates['white_ice_dragon']?.isRemoved, isFalse);
+    expect(loaded?.shopStates['meloner']?.stockByItemId, {'water_melon': 3});
     expect(loaded?.questStatuses['old_liu_daughter'], QuestStatus.active);
     expect(loaded?.questFlags, {'flower_girl_found'});
     expect(loaded?.combat?.npcId, 'white_ice_dragon');

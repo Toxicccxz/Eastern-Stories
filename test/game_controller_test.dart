@@ -204,13 +204,26 @@ void main() {
     expect(controller.state.visitedRoomIds, contains('yellow_road'));
   });
 
-  test('player can pick up and use melon to recover', () {
+  test('player can buy, sell, and use melon', () {
     final controller = GameController(repository: repository);
 
     controller.dispatch(const GameAction.move(Direction.east));
     controller.dispatch(const GameAction.move(Direction.north));
-    controller.dispatch(const GameAction.pickUp('water_melon'));
+    controller.dispatch(const GameAction.buyItem('meloner', 'water_melon'));
+
+    expect(controller.state.player.silver, 14);
+    expect(controller.state.inventoryItemIds, contains('water_melon'));
+    expect(controller.state.shopStates['meloner']?.stockByItemId, {
+      'water_melon': -1,
+    });
+
+    controller.dispatch(const GameAction.sellItem('meloner', 'water_melon'));
+    expect(controller.state.player.silver, 17);
+    expect(controller.state.inventoryItemIds, isNot(contains('water_melon')));
+
+    controller.dispatch(const GameAction.buyItem('meloner', 'water_melon'));
     controller.dispatch(const GameAction.move(Direction.south));
+    controller.dispatch(const GameAction.move(Direction.west));
     _completeRescueQuest(controller);
     controller.dispatch(const GameAction.equipItem('hengbing_sword'));
     controller.dispatch(const GameAction.studyItem('parry_book'));
@@ -225,6 +238,33 @@ void main() {
 
     expect(controller.state.inventoryItemIds, isNot(contains('water_melon')));
     expect(controller.state.player.hp, 80);
+  });
+
+  test('finite shop stock prevents buying after sellout', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        shopStates: {
+          ...initialState.shopStates,
+          'meloner': const ShopRuntimeState(stockByItemId: {'water_melon': 1}),
+        },
+      ),
+    );
+
+    controller.dispatch(const GameAction.move(Direction.east));
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(const GameAction.buyItem('meloner', 'water_melon'));
+    controller.dispatch(const GameAction.buyItem('meloner', 'water_melon'));
+
+    expect(
+      controller.state.inventoryItemIds.where((id) => id == 'water_melon'),
+      hasLength(1),
+    );
+    expect(controller.state.shopStates['meloner']?.stockByItemId, {
+      'water_melon': 0,
+    });
+    expect(controller.state.log.last, contains('卖完'));
   });
 
   test('player can equip a weapon and defeat the ice dragon', () {

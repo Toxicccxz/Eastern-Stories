@@ -93,7 +93,12 @@
     "id": "meloner",
     "name": "瓜农",
     "description": "一个中年瓜农，脸被阳光晒得黝黑，看着很是警觉。",
-    "greeting": "这位少侠，要不要买个西瓜解解渴？"
+    "greeting": "这位少侠，要不要买个西瓜解解渴？",
+    "shop": {
+      "products": [
+        {"itemId": "water_melon", "initialStock": -1}
+      ]
+    }
   },
   {
     "id": "white_ice_dragon",

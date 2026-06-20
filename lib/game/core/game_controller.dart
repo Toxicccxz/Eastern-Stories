@@ -10,6 +10,7 @@ import '../systems/inventory_system.dart';
 import '../systems/movement_system.dart';
 import '../systems/progression_system.dart';
 import '../systems/quest_system.dart';
+import '../systems/trade_system.dart';
 import '../systems/world_system.dart';
 import 'game_action.dart';
 
@@ -28,6 +29,7 @@ class GameController extends ChangeNotifier {
     _questSystem = QuestSystem(repository, progressionSystem);
     _combatSystem = CombatSystem(repository, progressionSystem);
     _worldSystem = WorldSystem(repository);
+    _tradeSystem = TradeSystem(repository);
   }
 
   final GameDefinitionRepository _repository;
@@ -36,6 +38,7 @@ class GameController extends ChangeNotifier {
   late final QuestSystem _questSystem;
   late final CombatSystem _combatSystem;
   late final WorldSystem _worldSystem;
+  late final TradeSystem _tradeSystem;
   GameState _state;
 
   GameDefinitionRepository get repository => _repository;
@@ -78,6 +81,16 @@ class GameController extends ChangeNotifier {
       UseItemAction(:final itemId) => _inventorySystem.useItem(_state, itemId),
       DropItemAction(:final itemId) => _inventorySystem.dropItem(
         _state,
+        itemId,
+      ),
+      BuyItemAction(:final npcId, :final itemId) => _tradeSystem.buyItem(
+        _state,
+        npcId,
+        itemId,
+      ),
+      SellItemAction(:final npcId, :final itemId) => _tradeSystem.sellItem(
+        _state,
+        npcId,
         itemId,
       ),
       StartCombatAction(:final npcId) => _combatSystem.startCombat(

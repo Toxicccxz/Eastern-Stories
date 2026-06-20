@@ -10,6 +10,8 @@ class ItemDefinition {
     this.restoreInnerPower = 0,
     this.studySkillId,
     this.conditions,
+    this.buyPrice = 0,
+    this.sellPrice = 0,
   });
 
   factory ItemDefinition.fromJson(Map<String, Object?> json) {
@@ -22,6 +24,8 @@ class ItemDefinition {
       restoreInnerPower: json['restoreInnerPower'] as int? ?? 0,
       studySkillId: json['studySkillId'] as String?,
       conditions: worldConditionFromJson(json['conditions']),
+      buyPrice: json['buyPrice'] as int? ?? 0,
+      sellPrice: json['sellPrice'] as int? ?? 0,
     );
   }
 
@@ -33,6 +37,8 @@ class ItemDefinition {
   final int restoreInnerPower;
   final String? studySkillId;
   final WorldCondition? conditions;
+  final int buyPrice;
+  final int sellPrice;
 
   bool get canEquip => attackPower > 0;
 

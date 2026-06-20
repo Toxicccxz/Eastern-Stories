@@ -85,6 +85,22 @@ void main() {
           );
         }
       }
+      final shop = npc.shop;
+      if (shop != null) {
+        for (final product in shop.products) {
+          final item = repository.item(product.itemId);
+          expect(
+            item.buyPrice,
+            greaterThan(0),
+            reason: '${npc.id} sells ${item.id} without a buy price',
+          );
+          expect(
+            product.initialStock,
+            greaterThanOrEqualTo(-1),
+            reason: '${npc.id} has invalid stock for ${item.id}',
+          );
+        }
+      }
       for (final option in npc.dialogueOptions) {
         final optionCondition = option.conditions;
         if (optionCondition != null) {

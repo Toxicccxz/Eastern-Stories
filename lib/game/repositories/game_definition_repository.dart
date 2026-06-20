@@ -111,12 +111,14 @@ class GameDefinitionRepository {
     return GameState.initial(
       startingRoomId: startingRoomId,
       npcStates: _initialNpcStates(),
+      shopStates: _initialShopStates(),
     );
   }
 
   GameState hydrateState(GameState state) {
     final initialNpcStates = _initialNpcStates();
     final npcStates = {...initialNpcStates, ...state.npcStates};
+    final shopStates = {..._initialShopStates(), ...state.shopStates};
     final questStatuses = {...state.questStatuses};
     final questFlags = {...state.questFlags};
     final removedLegacyQuest = questStatuses.remove('find_flower_girl') != null;
@@ -139,6 +141,7 @@ class GameDefinitionRepository {
     }
     return state.copyWith(
       npcStates: npcStates,
+      shopStates: shopStates,
       questStatuses: questStatuses,
       questFlags: questFlags,
     );
@@ -219,6 +222,19 @@ class GameDefinitionRepository {
             roomId: room.id,
             currentHp: _npcs[npcId]?.combat?.maxHp ?? 0,
             isDefeated: false,
+          ),
+    };
+  }
+
+  Map<String, ShopRuntimeState> _initialShopStates() {
+    return {
+      for (final npc in _npcs.values)
+        if (npc.shop case final shop?)
+          npc.id: ShopRuntimeState(
+            stockByItemId: {
+              for (final product in shop.products)
+                product.itemId: product.initialStock,
+            },
           ),
     };
   }

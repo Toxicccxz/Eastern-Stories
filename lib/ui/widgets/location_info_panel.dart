@@ -6,6 +6,7 @@ import '../../game/models/game_state.dart';
 import '../../game/models/npc_definition.dart';
 import '../../game/models/room_definition.dart';
 import 'shared/panel.dart';
+import 'shop_sheet.dart';
 
 class LocationInfoPanel extends StatelessWidget {
   const LocationInfoPanel({
@@ -97,14 +98,17 @@ class LocationInfoPanel extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      builder: (context) {
+      builder: (sheetContext) {
         return Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(npc.name, style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                npc.name,
+                style: Theme.of(sheetContext).textTheme.titleLarge,
+              ),
               const SizedBox(height: 8),
               Text(npc.description),
               const SizedBox(height: 12),
@@ -120,7 +124,7 @@ class LocationInfoPanel extends StatelessWidget {
                       controller.dispatch(
                         GameAction.selectDialogue(npc.id, option.id),
                       );
-                      Navigator.of(context).pop();
+                      Navigator.of(sheetContext).pop();
                     },
                   ),
               if (npc.combat != null) ...[
@@ -128,10 +132,35 @@ class LocationInfoPanel extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: () {
                     controller.dispatch(GameAction.startCombat(npc.id));
-                    Navigator.of(context).pop();
+                    Navigator.of(sheetContext).pop();
                   },
                   icon: const Icon(Icons.local_fire_department),
                   label: const Text('迎战'),
+                ),
+              ],
+              if (npc.shop != null) ...[
+                const SizedBox(height: 8),
+                FilledButton.icon(
+                  onPressed: () {
+                    Navigator.of(sheetContext).pop();
+                    Future<void>.delayed(Duration.zero, () {
+                      if (!context.mounted) {
+                        return;
+                      }
+                      showModalBottomSheet<void>(
+                        context: context,
+                        isScrollControlled: true,
+                        showDragHandle: true,
+                        builder:
+                            (_) => ShopSheet(
+                              controller: controller,
+                              merchant: npc,
+                            ),
+                      );
+                    });
+                  },
+                  icon: const Icon(Icons.storefront_outlined),
+                  label: const Text('买卖'),
                 ),
               ],
             ],
