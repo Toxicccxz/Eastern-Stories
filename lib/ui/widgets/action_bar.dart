@@ -5,6 +5,7 @@ import '../../game/core/game_controller.dart';
 import '../../game/models/quest_definition.dart';
 import '../../game/models/room_definition.dart';
 import '../../game/models/equipment_slot.dart';
+import '../../game/models/skill_progress.dart';
 import 'character_sheet.dart';
 
 class ActionBar extends StatelessWidget {
@@ -68,7 +69,7 @@ class ActionBar extends StatelessWidget {
       builder: (context) {
         final itemIds = controller.state.inventoryItemIds;
         final equippedItemIds = controller.state.equippedItemIds;
-        final learnedSkillIds = controller.state.learnedSkillIds;
+        final skillProgress = controller.state.skillProgress;
 
         return Padding(
           padding: const EdgeInsets.all(16),
@@ -92,7 +93,7 @@ class ActionBar extends StatelessWidget {
                       itemId: itemId,
                       controller: controller,
                       equippedItemIds: equippedItemIds,
-                      learnedSkillIds: learnedSkillIds,
+                      skillProgress: skillProgress,
                     ),
                   ),
             ],
@@ -160,10 +161,38 @@ class ActionBar extends StatelessWidget {
                 const Text('还没有领会武学。')
               else
                 for (final skill in skills)
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(skill.name),
-                    subtitle: Text(skill.description),
+                  Builder(
+                    builder: (context) {
+                      final progress =
+                          controller.state.skillProgress[skill.id]!;
+                      final isMaxLevel = progress.level >= skill.maxLevel;
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text('${skill.name}  Lv.${progress.level}'),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(skill.description),
+                            const SizedBox(height: 6),
+                            LinearProgressIndicator(
+                              value:
+                                  isMaxLevel
+                                      ? 1
+                                      : progress.experience /
+                                          progress.experienceForNextLevel,
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              isMaxLevel
+                                  ? '已臻上限'
+                                  : '熟练度 ${progress.experience}/'
+                                      '${progress.experienceForNextLevel}',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
             ],
           ),
@@ -249,13 +278,13 @@ class _InventoryAction extends StatelessWidget {
     required this.itemId,
     required this.controller,
     required this.equippedItemIds,
-    required this.learnedSkillIds,
+    required this.skillProgress,
   });
 
   final String itemId;
   final GameController controller;
   final Map<EquipmentSlot, String> equippedItemIds;
-  final Set<String> learnedSkillIds;
+  final Map<String, SkillProgress> skillProgress;
 
   @override
   Widget build(BuildContext context) {
@@ -274,15 +303,28 @@ class _InventoryAction extends StatelessWidget {
         child: Text(isEquipped ? '已装备' : '装备'),
       );
     } else if (item.studySkillId case final skillId?) {
+      final progress = skillProgress[skillId];
+      final skill = controller.repository.skill(skillId);
+      final studyLimit =
+          item.studyMaxSkillLevel < skill.maxLevel
+              ? item.studyMaxSkillLevel
+              : skill.maxLevel;
+      final hasMasteredBook = progress != null && progress.level >= studyLimit;
       primaryAction = FilledButton(
         onPressed:
-            learnedSkillIds.contains(skillId)
+            hasMasteredBook
                 ? null
                 : () {
                   controller.dispatch(GameAction.studyItem(itemId));
                   Navigator.of(context).pop();
                 },
-        child: Text(learnedSkillIds.contains(skillId) ? '已领会' : '研读'),
+        child: Text(
+          hasMasteredBook
+              ? '已参透'
+              : progress == null
+              ? '研读'
+              : '研习',
+        ),
       );
     } else if (item.canUse) {
       primaryAction = FilledButton(

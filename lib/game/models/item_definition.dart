@@ -10,6 +10,8 @@ class ItemDefinition {
     this.restoreHp = 0,
     this.restoreInnerPower = 0,
     this.studySkillId,
+    this.studyMaxSkillLevel = 1,
+    this.studyExperience = 0,
     this.conditions,
     this.buyPrice = 0,
     this.sellPrice = 0,
@@ -28,6 +30,8 @@ class ItemDefinition {
       restoreHp: json['restoreHp'] as int? ?? 0,
       restoreInnerPower: json['restoreInnerPower'] as int? ?? 0,
       studySkillId: json['studySkillId'] as String?,
+      studyMaxSkillLevel: json['studyMaxSkillLevel'] as int? ?? 1,
+      studyExperience: json['studyExperience'] as int? ?? 0,
       conditions: worldConditionFromJson(json['conditions']),
       buyPrice: json['buyPrice'] as int? ?? 0,
       sellPrice: json['sellPrice'] as int? ?? 0,
@@ -45,6 +49,8 @@ class ItemDefinition {
   final int restoreHp;
   final int restoreInnerPower;
   final String? studySkillId;
+  final int studyMaxSkillLevel;
+  final int studyExperience;
   final WorldCondition? conditions;
   final int buyPrice;
   final int sellPrice;

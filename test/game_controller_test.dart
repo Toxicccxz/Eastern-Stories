@@ -253,8 +253,9 @@ void main() {
     );
     controller.dispatch(const GameAction.useCombatSkill('basic_sword'));
 
-    expect(controller.state.combat?.enemyHp, 16);
+    expect(controller.state.combat?.enemyHp, 15);
     expect(controller.state.player.innerPower, 25);
+    expect(controller.state.skillProgress['basic_sword']?.experience, 20);
     expect(controller.state.log, contains(contains('疾风劲竹')));
   });
 
@@ -274,7 +275,24 @@ void main() {
 
     expect(controller.state.player.hp, 80);
     expect(controller.state.combat?.round, 1);
+    expect(controller.state.skillProgress['parry']?.experience, 20);
     expect(controller.state.log.last, contains('挡下'));
+  });
+
+  test('repeated study raises skill level within the manual limit', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(inventoryItemIds: const ['old_book']),
+    );
+
+    for (var study = 0; study < 4; study += 1) {
+      controller.dispatch(const GameAction.studyItem('old_book'));
+    }
+
+    expect(controller.state.skillProgress['basic_sword']?.level, 2);
+    expect(controller.state.skillProgress['basic_sword']?.experience, 20);
+    expect(controller.state.log, contains(contains('Lv.2')));
   });
 
   test('enemy special move triggers on its configured round', () {
@@ -421,6 +439,11 @@ void main() {
       ).steps.every((step) => step.status == QuestStepStatus.completed),
       isTrue,
     );
+
+    controller.dispatch(const GameAction.studyItem('canyon_old_sword'));
+    controller.dispatch(const GameAction.studyItem('canyon_old_sword'));
+    expect(controller.state.skillProgress['basic_sword']?.level, 1);
+    expect(controller.state.skillProgress['basic_sword']?.experience, 60);
   });
 
   test('player can buy, sell, and use melon', () {

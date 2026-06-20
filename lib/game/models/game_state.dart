@@ -1,5 +1,6 @@
 import 'quest_definition.dart';
 import 'equipment_slot.dart';
+import 'skill_progress.dart';
 
 class GameState {
   const GameState({
@@ -9,7 +10,7 @@ class GameState {
     required this.visitedRoomIds,
     required this.inventoryItemIds,
     required this.equippedItemIds,
-    required this.learnedSkillIds,
+    required this.skillProgress,
     required this.roomItemOverrides,
     required this.npcStates,
     required this.shopStates,
@@ -41,7 +42,7 @@ class GameState {
       visitedRoomIds: {startingRoomId},
       inventoryItemIds: const [],
       equippedItemIds: const {},
-      learnedSkillIds: const {},
+      skillProgress: const {},
       roomItemOverrides: const {},
       npcStates: npcStates,
       shopStates: shopStates,
@@ -62,8 +63,7 @@ class GameState {
       inventoryItemIds:
           (json['inventoryItemIds'] as List<Object?>).cast<String>(),
       equippedItemIds: _equipmentFromJson(json),
-      learnedSkillIds:
-          (json['learnedSkillIds'] as List<Object?>).cast<String>().toSet(),
+      skillProgress: _skillProgressFromJson(json),
       roomItemOverrides: (json['roomItemOverrides'] as Map<String, Object?>)
           .map(
             (roomId, itemIds) =>
@@ -99,7 +99,7 @@ class GameState {
   final Set<String> visitedRoomIds;
   final List<String> inventoryItemIds;
   final Map<EquipmentSlot, String> equippedItemIds;
-  final Set<String> learnedSkillIds;
+  final Map<String, SkillProgress> skillProgress;
   final Map<String, List<String>> roomItemOverrides;
   final Map<String, NpcRuntimeState> npcStates;
   final Map<String, ShopRuntimeState> shopStates;
@@ -119,6 +119,9 @@ class GameState {
         (slot, itemId) => MapEntry(slot.name, itemId),
       ),
       'equippedWeaponId': equippedWeaponId,
+      'skillProgress': skillProgress.map(
+        (skillId, progress) => MapEntry(skillId, progress.toJson()),
+      ),
       'learnedSkillIds': learnedSkillIds.toList(),
       'roomItemOverrides': roomItemOverrides,
       'npcStates': npcStates.map(
@@ -144,6 +147,7 @@ class GameState {
     List<String>? inventoryItemIds,
     Map<EquipmentSlot, String>? equippedItemIds,
     Object? equippedWeaponId = _unchanged,
+    Map<String, SkillProgress>? skillProgress,
     Set<String>? learnedSkillIds,
     Map<String, List<String>>? roomItemOverrides,
     Map<String, NpcRuntimeState>? npcStates,
@@ -162,6 +166,15 @@ class GameState {
         nextEquipment[EquipmentSlot.weapon] = weaponId;
       }
     }
+    var nextSkillProgress = skillProgress ?? this.skillProgress;
+    if (learnedSkillIds != null) {
+      nextSkillProgress = {
+        for (final skillId in learnedSkillIds)
+          skillId:
+              nextSkillProgress[skillId] ??
+              const SkillProgress(level: 1, experience: 0),
+      };
+    }
 
     return GameState(
       currentRoomId: currentRoomId ?? this.currentRoomId,
@@ -170,7 +183,7 @@ class GameState {
       visitedRoomIds: visitedRoomIds ?? this.visitedRoomIds,
       inventoryItemIds: inventoryItemIds ?? this.inventoryItemIds,
       equippedItemIds: nextEquipment,
-      learnedSkillIds: learnedSkillIds ?? this.learnedSkillIds,
+      skillProgress: nextSkillProgress,
       roomItemOverrides: roomItemOverrides ?? this.roomItemOverrides,
       npcStates: npcStates ?? this.npcStates,
       shopStates: shopStates ?? this.shopStates,
@@ -186,6 +199,8 @@ class GameState {
   }
 
   String? get equippedWeaponId => equippedItemIds[EquipmentSlot.weapon];
+
+  Set<String> get learnedSkillIds => skillProgress.keys.toSet();
 }
 
 class ShopRuntimeState {
@@ -397,6 +412,24 @@ Map<EquipmentSlot, String> _equipmentFromJson(Map<String, Object?> json) {
     equipment.putIfAbsent(EquipmentSlot.weapon, () => legacyWeaponId);
   }
   return equipment;
+}
+
+Map<String, SkillProgress> _skillProgressFromJson(Map<String, Object?> json) {
+  final savedProgress = json['skillProgress'] as Map<String, Object?>?;
+  if (savedProgress != null) {
+    return savedProgress.map(
+      (skillId, progress) => MapEntry(
+        skillId,
+        SkillProgress.fromJson(progress as Map<String, Object?>),
+      ),
+    );
+  }
+  return {
+    for (final skillId
+        in (json['learnedSkillIds'] as List<Object?>? ?? const [])
+            .cast<String>())
+      skillId: const SkillProgress(level: 1, experience: 0),
+  };
 }
 
 QuestStatus _questStatusFromName(Object? name) {

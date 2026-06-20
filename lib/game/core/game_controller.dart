@@ -11,6 +11,7 @@ import '../systems/inventory_system.dart';
 import '../systems/movement_system.dart';
 import '../systems/progression_system.dart';
 import '../systems/quest_system.dart';
+import '../systems/skill_progression_system.dart';
 import '../systems/trade_system.dart';
 import '../systems/world_system.dart';
 import 'game_action.dart';
@@ -25,14 +26,20 @@ class GameController extends ChangeNotifier {
                ? repository.createInitialState()
                : repository.hydrateState(initialState) {
     _equipmentSystem = EquipmentSystem(repository);
+    final skillProgressionSystem = SkillProgressionSystem(repository);
     final progressionSystem = ProgressionSystem(repository, _equipmentSystem);
     _movementSystem = MovementSystem(repository);
-    _inventorySystem = InventorySystem(repository, _equipmentSystem);
+    _inventorySystem = InventorySystem(
+      repository,
+      _equipmentSystem,
+      skillProgressionSystem,
+    );
     _questSystem = QuestSystem(repository, progressionSystem);
     _combatSystem = CombatSystem(
       repository,
       progressionSystem,
       _equipmentSystem,
+      skillProgressionSystem,
     );
     _worldSystem = WorldSystem(repository);
     _tradeSystem = TradeSystem(repository, _equipmentSystem);

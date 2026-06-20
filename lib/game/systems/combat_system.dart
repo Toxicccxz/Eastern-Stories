@@ -4,17 +4,20 @@ import '../models/skill_definition.dart';
 import '../repositories/game_definition_repository.dart';
 import 'equipment_system.dart';
 import 'progression_system.dart';
+import 'skill_progression_system.dart';
 
 class CombatSystem {
   const CombatSystem(
     this._repository,
     this._progressionSystem,
     this._equipmentSystem,
+    this._skillProgressionSystem,
   );
 
   final GameDefinitionRepository _repository;
   final ProgressionSystem _progressionSystem;
   final EquipmentSystem _equipmentSystem;
+  final SkillProgressionSystem _skillProgressionSystem;
 
   GameState startCombat(GameState state, String npcId) {
     if (state.combat != null) {
@@ -58,6 +61,7 @@ class CombatSystem {
     }
 
     final skill = _repository.skill(skillId);
+    final skillLevel = state.skillProgress[skillId]?.level ?? 1;
     if (!skill.isActive) {
       return _withLog(state, '${skill.name}不是可以主动施展的招式。');
     }
@@ -67,24 +71,38 @@ class CombatSystem {
         !state.equippedItemIds.containsKey(requiredSlot)) {
       return _withLog(state, '施展${skill.moveName ?? skill.name}需要合适的兵器。');
     }
-    if (state.player.innerPower < skill.innerPowerCost) {
+    final innerPowerCost = skill.innerPowerCostAtLevel(skillLevel);
+    if (state.player.innerPower < innerPowerCost) {
       return _withLog(state, '内力不足，无法施展${skill.moveName ?? skill.name}。');
     }
 
     final preparedState = state.copyWith(
       player: state.player.copyWith(
-        innerPower: state.player.innerPower - skill.innerPowerCost,
+        innerPower: state.player.innerPower - innerPowerCost,
       ),
     );
-    return switch (skill.effectType) {
+    final result = switch (skill.effectType) {
       SkillEffectType.damage => _performPlayerAttack(
         preparedState,
-        damageBonus: skill.damageBonus,
+        damageBonus: skill.damageBonusAtLevel(skillLevel),
         skill: skill,
       ),
-      SkillEffectType.defend => _performDefensiveSkill(preparedState, skill),
-      SkillEffectType.heal => _performHealingSkill(preparedState, skill),
+      SkillEffectType.defend => _performDefensiveSkill(
+        preparedState,
+        skill,
+        skillLevel,
+      ),
+      SkillEffectType.heal => _performHealingSkill(
+        preparedState,
+        skill,
+        skillLevel,
+      ),
     };
+    return _skillProgressionSystem.gainExperience(
+      result,
+      skillId: skillId,
+      experience: skill.practiceExperience,
+    );
   }
 
   GameState _performPlayerAttack(
@@ -118,21 +136,27 @@ class CombatSystem {
     return _performEnemyTurn(attackState, enemyHp: nextEnemyHp);
   }
 
-  GameState _performDefensiveSkill(GameState state, SkillDefinition skill) {
+  GameState _performDefensiveSkill(
+    GameState state,
+    SkillDefinition skill,
+    int skillLevel,
+  ) {
     final message = skill.combatMessage ?? '你凝神守住门户，准备化解来势。';
     return _performEnemyTurn(
       _withLog(state, message),
-      defenseBonus: skill.defenseBonus,
+      defenseBonus: skill.defenseBonusAtLevel(skillLevel),
     );
   }
 
-  GameState _performHealingSkill(GameState state, SkillDefinition skill) {
+  GameState _performHealingSkill(
+    GameState state,
+    SkillDefinition skill,
+    int skillLevel,
+  ) {
     final stats = _equipmentSystem.statsFor(state);
-    final recoveredHp = (state.player.hp + skill.healAmount).clamp(
-      0,
-      stats.maxHp,
-    );
-    final message = skill.combatMessage ?? '你调匀呼吸，恢复了${skill.healAmount}点气血。';
+    final healAmount = skill.healAmountAtLevel(skillLevel);
+    final recoveredHp = (state.player.hp + healAmount).clamp(0, stats.maxHp);
+    final message = skill.combatMessage ?? '你调匀呼吸，恢复了$healAmount点气血。';
     return _performEnemyTurn(
       state.copyWith(
         player: state.player.copyWith(hp: recoveredHp),
@@ -304,8 +328,12 @@ class CombatSystem {
   }
 
   int _damageReduction(GameState state) {
-    return state.learnedSkillIds
-        .map((skillId) => _repository.skill(skillId).damageReduction)
+    return state.skillProgress.entries
+        .map(
+          (entry) => _repository
+              .skill(entry.key)
+              .damageReductionAtLevel(entry.value.level),
+        )
         .fold(0, (total, reduction) => total + reduction);
   }
 

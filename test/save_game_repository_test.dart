@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:eastern_stories/game/models/game_state.dart';
 import 'package:eastern_stories/game/models/equipment_slot.dart';
 import 'package:eastern_stories/game/models/quest_definition.dart';
+import 'package:eastern_stories/game/models/skill_progress.dart';
 import 'package:eastern_stories/game/repositories/save_game_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -25,7 +26,7 @@ void main() {
       visitedRoomIds: {'liu_home', 'little_garden'},
       inventoryItemIds: ['old_book'],
       equippedWeaponId: 'hengbing_sword',
-      learnedSkillIds: {'parry'},
+      skillProgress: {'parry': const SkillProgress(level: 3, experience: 45)},
       npcStates: {
         'white_ice_dragon': const NpcRuntimeState(
           roomId: 'ice_cave',
@@ -62,6 +63,8 @@ void main() {
     expect(loaded?.equippedWeaponId, 'hengbing_sword');
     expect(loaded?.equippedItemIds, {EquipmentSlot.weapon: 'hengbing_sword'});
     expect(loaded?.learnedSkillIds, {'parry'});
+    expect(loaded?.skillProgress['parry']?.level, 3);
+    expect(loaded?.skillProgress['parry']?.experience, 45);
     expect(loaded?.npcStates['white_ice_dragon']?.roomId, 'ice_cave');
     expect(loaded?.npcStates['white_ice_dragon']?.currentHp, 12);
     expect(loaded?.npcStates['white_ice_dragon']?.isDefeated, isFalse);
@@ -100,5 +103,18 @@ void main() {
     });
 
     expect(state.round, 0);
+  });
+
+  test('legacy learned skills migrate to level one progress', () {
+    final json =
+        GameState.initial(
+            startingRoomId: 'liu_home',
+          ).copyWith(learnedSkillIds: {'parry'}).toJson()
+          ..remove('skillProgress');
+
+    final state = GameState.fromJson(json);
+
+    expect(state.skillProgress['parry']?.level, 1);
+    expect(state.skillProgress['parry']?.experience, 0);
   });
 }

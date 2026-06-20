@@ -19,6 +19,8 @@ class SkillDefinition {
     this.healAmount = 0,
     this.requiredEquipmentSlot,
     this.combatMessage,
+    this.maxLevel = 50,
+    this.practiceExperience = 20,
   });
 
   factory SkillDefinition.fromJson(Map<String, Object?> json) {
@@ -45,6 +47,8 @@ class SkillDefinition {
                 json['requiredEquipmentSlot'] as String,
               ),
       combatMessage: json['combatMessage'] as String?,
+      maxLevel: json['maxLevel'] as int? ?? 50,
+      practiceExperience: json['practiceExperience'] as int? ?? 20,
     );
   }
 
@@ -61,6 +65,25 @@ class SkillDefinition {
   final int healAmount;
   final EquipmentSlot? requiredEquipmentSlot;
   final String? combatMessage;
+  final int maxLevel;
+  final int practiceExperience;
 
   bool get isActive => type == SkillType.active;
+
+  int damageBonusAtLevel(int level) => damageBonus + level;
+
+  int defenseBonusAtLevel(int level) => defenseBonus + level ~/ 3;
+
+  int healAmountAtLevel(int level) => healAmount + level * 2;
+
+  int innerPowerCostAtLevel(int level) {
+    if (innerPowerCost == 0) {
+      return 0;
+    }
+    return (innerPowerCost - level ~/ 10).clamp(1, innerPowerCost);
+  }
+
+  int damageReductionAtLevel(int level) {
+    return damageReduction + level ~/ 5;
+  }
 }

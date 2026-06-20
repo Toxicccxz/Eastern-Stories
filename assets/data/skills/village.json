@@ -8,7 +8,9 @@
     "moveName": "稳守门户",
     "defenseBonus": 5,
     "combatMessage": "你沉肩定步，使出“稳守门户”，凝神拆解来势。",
-    "damageReduction": 2
+    "damageReduction": 2,
+    "maxLevel": 50,
+    "practiceExperience": 20
   },
   {
     "id": "basic_sword",
@@ -19,6 +21,8 @@
     "innerPowerCost": 5,
     "damageBonus": 6,
     "requiredEquipmentSlot": "weapon",
-    "combatMessage": "你使出“疾风劲竹”，剑势骤急，向{enemy}造成凌厉一击。"
+    "combatMessage": "你使出“疾风劲竹”，剑势骤急，向{enemy}造成凌厉一击。",
+    "maxLevel": 50,
+    "practiceExperience": 20
   }
 ]

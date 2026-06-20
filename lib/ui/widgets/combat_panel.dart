@@ -148,9 +148,11 @@ class _SkillButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final requiredSlot = skill.requiredEquipmentSlot;
+    final skillLevel = state.skillProgress[skill.id]?.level ?? 1;
+    final innerPowerCost = skill.innerPowerCostAtLevel(skillLevel);
     final hasEquipment =
         requiredSlot == null || state.equippedItemIds.containsKey(requiredSlot);
-    final hasInnerPower = state.player.innerPower >= skill.innerPowerCost;
+    final hasInnerPower = state.player.innerPower >= innerPowerCost;
     final enabled = hasEquipment && hasInnerPower;
     final reason =
         !hasEquipment
@@ -166,7 +168,10 @@ class _SkillButton extends StatelessWidget {
         FilledButton.tonalIcon(
           onPressed: enabled ? onPressed : null,
           icon: Icon(_icon, size: 18),
-          label: Text('${skill.moveName ?? skill.name}$_costLabel'),
+          label: Text(
+            '${skill.moveName ?? skill.name} Lv.$skillLevel'
+            '${_costLabel(innerPowerCost)}',
+          ),
         ),
         if (reason != null)
           Padding(
@@ -190,7 +195,7 @@ class _SkillButton extends StatelessWidget {
     };
   }
 
-  String get _costLabel {
-    return skill.innerPowerCost == 0 ? '' : '  ${skill.innerPowerCost}内力';
+  String _costLabel(int innerPowerCost) {
+    return innerPowerCost == 0 ? '' : '  $innerPowerCost内力';
   }
 }

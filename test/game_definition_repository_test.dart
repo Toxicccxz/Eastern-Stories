@@ -185,6 +185,12 @@ void main() {
           returnsNormally,
           reason: '${item.id} references unknown skill $skillId',
         );
+        final skill = repository.skill(skillId);
+        expect(item.studyMaxSkillLevel, greaterThan(0));
+        expect(item.studyMaxSkillLevel, lessThanOrEqualTo(skill.maxLevel));
+        if (item.studyMaxSkillLevel > 1) {
+          expect(item.studyExperience, greaterThan(0));
+        }
       }
     }
 

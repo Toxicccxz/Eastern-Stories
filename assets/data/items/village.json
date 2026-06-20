@@ -1,9 +1,9 @@
 [
-  {"id": "old_book", "name": "古剑谱", "description": "书中写着“气聚于锋，缓动而瞬攻”，记载了用剑的入门法门。", "studySkillId": "basic_sword", "sellPrice": 1},
+  {"id": "old_book", "name": "古剑谱", "description": "书中写着“气聚于锋，缓动而瞬攻”，可研习基础剑法至十级。", "studySkillId": "basic_sword", "studyMaxSkillLevel": 10, "studyExperience": 40, "sellPrice": 1},
   {"id": "plain_cloth", "name": "布衣", "description": "一件普通的粗布衣服，不值什么钱。", "equipmentSlot": "body", "defensePower": 1, "sellPrice": 1},
   {"id": "wild_flower", "name": "野花", "description": "花园里随处可见的小花，带着清新的草木气味。", "sellPrice": 1},
   {"id": "water_melon", "name": "西瓜", "description": "一个绿皮墨纹的大西瓜，不但解渴，还能填肚子。", "restoreHp": 16, "restoreInnerPower": 6, "buyPrice": 6, "sellPrice": 3},
   {"id": "hengbing_sword", "name": "横冰剑", "description": "刘老农赠予的短剑，剑身寒光很淡，却颇为坚韧。", "equipmentSlot": "weapon", "attackPower": 10},
-  {"id": "parry_book", "name": "过招要门", "description": "一本介绍拆招卸力之法的入门书。", "studySkillId": "parry"},
+  {"id": "parry_book", "name": "过招要门", "description": "一本介绍拆招卸力之法的入门书，可研习基础招架至二十级。", "studySkillId": "parry", "studyMaxSkillLevel": 20, "studyExperience": 40},
   {"id": "ice_dragon_scale", "name": "冰龙白鳞", "description": "白鳞冰龙身上脱落的坚硬鳞片，触手冰凉。", "sellPrice": 20}
 ]

@@ -2,12 +2,18 @@ import '../models/game_state.dart';
 import '../models/skill_definition.dart';
 import '../repositories/game_definition_repository.dart';
 import 'equipment_system.dart';
+import 'skill_progression_system.dart';
 
 class InventorySystem {
-  const InventorySystem(this._repository, this._equipmentSystem);
+  const InventorySystem(
+    this._repository,
+    this._equipmentSystem,
+    this._skillProgressionSystem,
+  );
 
   final GameDefinitionRepository _repository;
   final EquipmentSystem _equipmentSystem;
+  final SkillProgressionSystem _skillProgressionSystem;
 
   List<SkillDefinition> learnedSkills(GameState state) {
     return [
@@ -46,14 +52,12 @@ class InventorySystem {
     if (skillId == null) {
       return _withLog(state, '${item.name}无法研读。');
     }
-    if (state.learnedSkillIds.contains(skillId)) {
-      return _withLog(state, '你已经领会了${_repository.skill(skillId).name}。');
-    }
-
-    final skill = _repository.skill(skillId);
-    return state.copyWith(
-      learnedSkillIds: {...state.learnedSkillIds, skillId},
-      log: state.logWith('你研读${item.name}，领会了${skill.name}。'),
+    return _skillProgressionSystem.study(
+      state,
+      skillId: skillId,
+      itemName: item.name,
+      experience: item.studyExperience,
+      studyLevelLimit: item.studyMaxSkillLevel,
     );
   }
 
