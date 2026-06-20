@@ -30,6 +30,16 @@ class QuestSystem {
     ];
   }
 
+  List<GiveItemOption> giveItemOptionsFor(GameState state, String npcId) {
+    final npc = _repository.npc(npcId);
+    return [
+      for (final option in npc.giveItemOptions)
+        if (state.inventoryItemIds.contains(option.itemId) &&
+            (option.conditions?.isSatisfiedBy(state) ?? true))
+          option,
+    ];
+  }
+
   GameState talk(GameState state, String npcId) {
     final npc = _repository.npc(npcId);
     return _withLog(state, '${npc.name}说道：“${npc.greetingFor(state)}”');
@@ -106,6 +116,43 @@ class QuestSystem {
     final completesQuestId = option.completesQuestId;
     if (completesQuestId != null) {
       return _completeQuestWithExperience(nextState, completesQuestId);
+    }
+    return nextState;
+  }
+
+  GameState giveItem(GameState state, String npcId, String itemId) {
+    final npc = _repository.npc(npcId);
+    final isPresent = _repository
+        .visibleNpcsInRoom(state, state.currentRoomId)
+        .any((item) => item.id == npcId);
+    if (!isPresent) {
+      return _withLog(state, '这里没有${npc.name}。');
+    }
+    final option =
+        giveItemOptionsFor(
+          state,
+          npcId,
+        ).where((item) => item.itemId == itemId).firstOrNull;
+    if (option == null) {
+      return _withLog(state, '${npc.name}不肯收下这个东西。');
+    }
+
+    final inventory = [...state.inventoryItemIds];
+    if (option.consumesItem) {
+      inventory.remove(itemId);
+    }
+    inventory.addAll(option.givesItemIds);
+    var nextState = state.copyWith(
+      inventoryItemIds: inventory,
+      questFlags:
+          option.setsQuestFlag == null
+              ? state.questFlags
+              : {...state.questFlags, option.setsQuestFlag!},
+      log: state.logWith('${npc.name}说道：“${option.response}”'),
+    );
+    final completesQuestId = option.completesQuestId;
+    if (completesQuestId != null) {
+      nextState = _completeQuestWithExperience(nextState, completesQuestId);
     }
     return nextState;
   }

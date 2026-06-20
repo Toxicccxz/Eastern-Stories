@@ -9,13 +9,18 @@
     ],
     "npcs": [
       "assets/data/npcs/village.json",
-      "assets/data/npcs/chuenyu.json"
+      "assets/data/npcs/chuenyu.json",
+      "assets/data/npcs/canyon.json"
     ],
     "items": [
       "assets/data/items/village.json",
-      "assets/data/items/chuenyu.json"
+      "assets/data/items/chuenyu.json",
+      "assets/data/items/canyon.json"
     ],
-    "quests": ["assets/data/quests/village.json"],
+    "quests": [
+      "assets/data/quests/village.json",
+      "assets/data/quests/canyon.json"
+    ],
     "skills": ["assets/data/skills/village.json"]
   }
 }

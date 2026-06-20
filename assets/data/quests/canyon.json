@@ -1,0 +1,17 @@
+[
+  {
+    "id": "recover_general_seal",
+    "title": "将军印鉴",
+    "description": "镇国大将军严廷殷遗失了印鉴，军营里的后备兵似乎知道内情。",
+    "steps": [
+      {"description": "向严廷殷询问遗失的印鉴。"},
+      {"description": "向军师赫造基打听兵器库的位置。", "requiredFlag": "canyon_armory_clue"},
+      {"description": "在隘口中道的光滑山壁前发誓，进入兵器库。", "requiredFlag": "entered_canyon_armory"},
+      {"description": "把买来的印鉴交给严廷殷辨认。", "requiredFlag": "fake_seal_rejected"},
+      {"description": "拿假印鉴质问后备兵，换回真正的印鉴。", "requiredFlag": "real_seal_obtained"},
+      {"description": "将真正的印鉴交还严廷殷。", "requiredFlag": "general_seal_returned"}
+    ],
+    "requiredFlags": ["general_seal_returned"],
+    "rewardItemIds": ["canyon_old_sword"]
+  }
+]

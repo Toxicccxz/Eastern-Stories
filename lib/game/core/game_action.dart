@@ -16,6 +16,9 @@ sealed class GameAction {
   const factory GameAction.selectDialogue(String npcId, String optionId) =
       SelectDialogueAction;
 
+  const factory GameAction.giveItem(String npcId, String itemId) =
+      GiveItemAction;
+
   const factory GameAction.pickUp(String itemId) = PickUpAction;
 
   const factory GameAction.equipItem(String itemId) = EquipItemAction;
@@ -70,6 +73,13 @@ class SelectDialogueAction extends GameAction {
 
   final String npcId;
   final String optionId;
+}
+
+class GiveItemAction extends GameAction {
+  const GiveItemAction(this.npcId, this.itemId);
+
+  final String npcId;
+  final String itemId;
 }
 
 class PickUpAction extends GameAction {

@@ -11,8 +11,8 @@ void main() {
 
     expect(repository.startingRoomId, 'liu_home');
     expect(repository.areas, hasLength(3));
-    expect(rooms, hasLength(20));
-    expect(repository.quests, hasLength(1));
+    expect(rooms, hasLength(25));
+    expect(repository.quests, hasLength(2));
 
     for (final area in repository.areas) {
       expect(
@@ -147,6 +147,28 @@ void main() {
                 '${npc.id} dialogue ${option.id} references unknown quest '
                 '$questId',
           );
+        }
+      }
+      for (final option in npc.giveItemOptions) {
+        expect(
+          () => repository.item(option.itemId),
+          returnsNormally,
+          reason: '${npc.id} accepts unknown item ${option.itemId}',
+        );
+        for (final itemId in option.givesItemIds) {
+          expect(
+            () => repository.item(itemId),
+            returnsNormally,
+            reason: '${npc.id} gives unknown item $itemId',
+          );
+        }
+        final condition = option.conditions;
+        if (condition != null) {
+          _expectValidCondition(repository, condition);
+        }
+        final questId = option.completesQuestId;
+        if (questId != null) {
+          expect(() => repository.quest(questId), returnsNormally);
         }
       }
     }

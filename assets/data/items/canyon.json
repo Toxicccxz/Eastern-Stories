@@ -1,0 +1,20 @@
+[
+  {
+    "id": "fake_general_seal",
+    "name": "印鉴",
+    "description": "上面刻着“镇国大将军”，分量很沉，却看不出真假。",
+    "buyPrice": 20
+  },
+  {
+    "id": "general_seal",
+    "name": "泛黄印鉴",
+    "description": "印鉴泛着淡淡黄光，上面刻着“镇国大将军”。"
+  },
+  {
+    "id": "canyon_old_sword",
+    "name": "古剑",
+    "description": "剑谱上写着：气聚于锋，缓动而瞬攻，徐如林，疾如风。",
+    "studySkillId": "basic_sword",
+    "sellPrice": 1
+  }
+]

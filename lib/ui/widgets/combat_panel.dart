@@ -53,6 +53,28 @@ class CombatPanel extends StatelessWidget {
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: StatusMeter(
+                  label: '气血',
+                  value: state.player.hp,
+                  maxValue: controller.characterStats().maxHp,
+                  color: const Color(0xFFB64B3C),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: StatusMeter(
+                  label: '内力',
+                  value: state.player.innerPower,
+                  maxValue: controller.characterStats().maxInnerPower,
+                  color: const Color(0xFF3E6E8F),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
           StatusMeter(
             label: '敌方气血',
             value: combat.enemyHp,

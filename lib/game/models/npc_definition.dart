@@ -9,6 +9,7 @@ class NpcDefinition {
     required this.description,
     required this.greeting,
     this.dialogueOptions = const [],
+    this.giveItemOptions = const [],
     this.greetingVariants = const [],
     this.combat,
     this.conditions,
@@ -25,6 +26,11 @@ class NpcDefinition {
         for (final option
             in json['dialogueOptions'] as List<Object?>? ?? const [])
           DialogueOption.fromJson(option as Map<String, Object?>),
+      ],
+      giveItemOptions: [
+        for (final option
+            in json['giveItemOptions'] as List<Object?>? ?? const [])
+          GiveItemOption.fromJson(option as Map<String, Object?>),
       ],
       greetingVariants: [
         for (final variant
@@ -50,6 +56,7 @@ class NpcDefinition {
   final String description;
   final String greeting;
   final List<DialogueOption> dialogueOptions;
+  final List<GiveItemOption> giveItemOptions;
   final List<GreetingVariant> greetingVariants;
   final CombatDefinition? combat;
   final WorldCondition? conditions;
@@ -63,6 +70,42 @@ class NpcDefinition {
     }
     return greeting;
   }
+}
+
+class GiveItemOption {
+  const GiveItemOption({
+    required this.itemId,
+    required this.label,
+    required this.response,
+    this.conditions,
+    this.consumesItem = true,
+    this.givesItemIds = const [],
+    this.setsQuestFlag,
+    this.completesQuestId,
+  });
+
+  factory GiveItemOption.fromJson(Map<String, Object?> json) {
+    return GiveItemOption(
+      itemId: json['itemId'] as String,
+      label: json['label'] as String,
+      response: json['response'] as String,
+      conditions: worldConditionFromJson(json['conditions']),
+      consumesItem: json['consumesItem'] as bool? ?? true,
+      givesItemIds:
+          (json['givesItemIds'] as List<Object?>? ?? const []).cast<String>(),
+      setsQuestFlag: json['setsQuestFlag'] as String?,
+      completesQuestId: json['completesQuestId'] as String?,
+    );
+  }
+
+  final String itemId;
+  final String label;
+  final String response;
+  final WorldCondition? conditions;
+  final bool consumesItem;
+  final List<String> givesItemIds;
+  final String? setsQuestFlag;
+  final String? completesQuestId;
 }
 
 class ShopDefinition {

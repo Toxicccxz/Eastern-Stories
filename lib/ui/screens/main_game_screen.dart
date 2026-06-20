@@ -3,26 +3,59 @@ import 'package:flutter/material.dart';
 import '../../game/core/game_controller.dart';
 import '../widgets/action_bar.dart';
 import '../widgets/area_map_view.dart';
-import '../widgets/combat_panel.dart';
+import '../widgets/combat_window.dart';
 import '../widgets/event_log_panel.dart';
 import '../widgets/location_info_panel.dart';
 import '../widgets/player_status_bar.dart';
 
-class MainGameScreen extends StatelessWidget {
+class MainGameScreen extends StatefulWidget {
   const MainGameScreen({super.key, required this.controller, this.onSave});
 
   final GameController controller;
   final Future<void> Function()? onSave;
 
   @override
+  State<MainGameScreen> createState() => _MainGameScreenState();
+}
+
+class _MainGameScreenState extends State<MainGameScreen> {
+  bool _combatWindowOpen = false;
+  bool _combatWindowScheduled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_handleControllerChanged);
+    _scheduleCombatWindow();
+  }
+
+  @override
+  void didUpdateWidget(MainGameScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller == widget.controller) {
+      return;
+    }
+    oldWidget.controller.removeListener(_handleControllerChanged);
+    widget.controller.addListener(_handleControllerChanged);
+    _scheduleCombatWindow();
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_handleControllerChanged);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: controller,
+      animation: widget.controller,
       builder: (context, _) {
-        final state = controller.state;
-        final room = controller.repository.room(state.currentRoomId);
-        final area = controller.repository.area(room.areaId);
-        final areaRooms = controller.repository.roomsInArea(area.id).toList();
+        final state = widget.controller.state;
+        final room = widget.controller.repository.room(state.currentRoomId);
+        final area = widget.controller.repository.area(room.areaId);
+        final areaRooms =
+            widget.controller.repository.roomsInArea(area.id).toList();
 
         return Scaffold(
           body: SafeArea(
@@ -30,7 +63,7 @@ class MainGameScreen extends StatelessWidget {
               children: [
                 PlayerStatusBar(
                   state: state,
-                  stats: controller.characterStats(),
+                  stats: widget.controller.characterStats(),
                   onSave: _save,
                 ),
                 Expanded(
@@ -42,19 +75,15 @@ class MainGameScreen extends StatelessWidget {
                       LocationInfoPanel(
                         areaName: area.name,
                         room: room,
-                        controller: controller,
+                        controller: widget.controller,
                         state: state,
                       ),
                       const SizedBox(height: 12),
-                      if (state.combat != null) ...[
-                        CombatPanel(controller: controller, state: state),
-                        const SizedBox(height: 12),
-                      ],
                       EventLogPanel(messages: state.log),
                     ],
                   ),
                 ),
-                ActionBar(room: room, controller: controller),
+                ActionBar(room: room, controller: widget.controller),
               ],
             ),
           ),
@@ -63,10 +92,42 @@ class MainGameScreen extends StatelessWidget {
     );
   }
 
-  void _save() {
-    final save = onSave;
-    if (save != null) {
-      save();
+  void _handleControllerChanged() {
+    _scheduleCombatWindow();
+  }
+
+  void _scheduleCombatWindow() {
+    if (_combatWindowOpen ||
+        _combatWindowScheduled ||
+        widget.controller.state.combat == null) {
+      return;
     }
+    _combatWindowScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _combatWindowScheduled = false;
+      if (!mounted ||
+          _combatWindowOpen ||
+          widget.controller.state.combat == null) {
+        return;
+      }
+      _showCombatWindow();
+    });
+  }
+
+  Future<void> _showCombatWindow() async {
+    _combatWindowOpen = true;
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => CombatWindow(controller: widget.controller),
+    );
+    _combatWindowOpen = false;
+    if (mounted) {
+      _scheduleCombatWindow();
+    }
+  }
+
+  void _save() {
+    widget.onSave?.call();
   }
 }

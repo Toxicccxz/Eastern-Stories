@@ -1,0 +1,86 @@
+[
+  {
+    "id": "general_yan",
+    "name": "严廷殷",
+    "description": "镇国大将军严廷殷身高七尺有余，虎背熊腰，腰间刀剑俱全，不怒自威。",
+    "greeting": "严廷殷端坐帐中，目光威严地扫了你一眼。",
+    "dialogueOptions": [
+      {
+        "id": "ask_about_seal",
+        "label": "询问遗失的印鉴",
+        "response": "你怎么知道的？替我把印鉴找回来，我自有礼物相赠。",
+        "conditions": {
+          "requiredQuestStatuses": {"recover_general_seal": "notStarted"}
+        },
+        "startsQuestId": "recover_general_seal"
+      }
+    ],
+    "giveItemOptions": [
+      {
+        "itemId": "fake_general_seal",
+        "label": "交出印鉴",
+        "response": "你拿来的是什么东西！竟敢用假印鉴骗我？快滚！",
+        "consumesItem": false,
+        "setsQuestFlag": "fake_seal_rejected",
+        "conditions": {
+          "forbiddenFlags": ["fake_seal_rejected"],
+          "requiredQuestStatuses": {"recover_general_seal": "active"}
+        }
+      },
+      {
+        "itemId": "general_seal",
+        "label": "交还真正的印鉴",
+        "response": "正是此物。你替我寻回印鉴，这把古剑便赠你作报酬。",
+        "setsQuestFlag": "general_seal_returned",
+        "completesQuestId": "recover_general_seal",
+        "conditions": {
+          "requiredFlags": ["real_seal_obtained"],
+          "requiredQuestStatuses": {"recover_general_seal": "active"}
+        }
+      }
+    ]
+  },
+  {
+    "id": "adviser_he",
+    "name": "赫造基",
+    "description": "军师赫造基手持羽扇，道骨仙风，目光里透着精明。",
+    "greeting": "军师轻摇羽扇，似乎早已看穿你的来意。",
+    "dialogueOptions": [
+      {
+        "id": "ask_about_armory",
+        "label": "询问兵器库",
+        "response": "在那片光滑山壁前发誓，或许会发现奇特之处。",
+        "setsQuestFlag": "canyon_armory_clue",
+        "conditions": {
+          "forbiddenFlags": ["canyon_armory_clue"],
+          "requiredQuestStatuses": {"recover_general_seal": "active"}
+        }
+      }
+    ]
+  },
+  {
+    "id": "reserve_soldier",
+    "name": "后备兵",
+    "description": "后备兵眼神锐利地环顾四周，一看便知道没有多少讨价还价的余地。",
+    "greeting": "后备兵压低声音说道：“内行人，自然知道该买什么。”",
+    "shop": {
+      "products": [
+        {"itemId": "fake_general_seal", "initialStock": 1}
+      ]
+    },
+    "giveItemOptions": [
+      {
+        "itemId": "fake_general_seal",
+        "label": "拿假印鉴质问他",
+        "response": "好吧，既然被你发现了，只好认栽。这个真的你拿去。",
+        "givesItemIds": ["general_seal"],
+        "setsQuestFlag": "real_seal_obtained",
+        "conditions": {
+          "requiredFlags": ["fake_seal_rejected"],
+          "forbiddenFlags": ["real_seal_obtained"],
+          "requiredQuestStatuses": {"recover_general_seal": "active"}
+        }
+      }
+    ]
+  }
+]

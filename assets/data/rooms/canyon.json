@@ -4,8 +4,8 @@
     "name": "天驼关谷地",
     "areaId": "canyon",
     "description": "天驼关两边是悬崖，中间是谷地，形状很像骆驼的双峰。南下通往京师，北上便是关外。",
-    "mapX": 1,
-    "mapY": 2,
+    "mapX": 2,
+    "mapY": 4,
     "exits": {"south": "yellow_road", "north": "canyon_pass"}
   },
   {
@@ -13,17 +13,78 @@
     "name": "关内谷地",
     "areaId": "canyon",
     "description": "高耸的悬崖立在天驼关两侧，中间谷地狭窄，巨大的铁门和绞盘守住了北方通路。",
-    "mapX": 1,
-    "mapY": 1,
+    "mapX": 2,
+    "mapY": 3,
     "exits": {"south": "canyon_gate", "north": "outside_road"}
   },
   {
     "id": "outside_road",
     "name": "关外小路",
     "areaId": "canyon",
-    "description": "南边即为天驼关的关口，东西两侧尽是铁栅与光秃山壁，北方道路伸向荒凉的关外。",
+    "description": "南边即为天驼关关口，东西两侧尽是铁栅与光秃山壁，北方道路通向黄石隘口驻军。",
+    "mapX": 2,
+    "mapY": 2,
+    "exits": {"south": "canyon_pass", "north": "canyon_middle_road"}
+  },
+  {
+    "id": "canyon_middle_road",
+    "name": "隘口中道",
+    "areaId": "canyon",
+    "description": "这里风势很大，东边是黄石隘口军营入口。西侧山壁异常光滑，似乎隐藏着什么秘密。",
+    "mapX": 2,
+    "mapY": 1,
+    "exits": {"south": "outside_road", "east": "canyon_camp_gate"},
+    "actions": [
+      {
+        "id": "swear_at_smooth_wall",
+        "label": "在光滑山壁前发誓",
+        "description": "按照军师暗示，在山壁前说出誓言。",
+        "resultRoomId": "canyon_armory",
+        "log": "你依照军师所言在山壁前发誓，石壁无声滑开，露出一条暗道。",
+        "setsQuestFlag": "entered_canyon_armory",
+        "conditions": {
+          "requiredFlags": ["canyon_armory_clue"],
+          "requiredQuestStatuses": {"recover_general_seal": "active"}
+        }
+      }
+    ]
+  },
+  {
+    "id": "canyon_armory",
+    "name": "兵器库",
+    "areaId": "canyon",
+    "description": "墙上挂满各式兵器，正中写着一个硕大的“武”字。一名后备兵警觉地守着这里。",
     "mapX": 1,
-    "mapY": 0,
-    "exits": {"south": "canyon_pass"}
+    "mapY": 1,
+    "exits": {"east": "canyon_middle_road"},
+    "npcIds": ["reserve_soldier"]
+  },
+  {
+    "id": "canyon_camp_gate",
+    "name": "军营入口",
+    "areaId": "canyon",
+    "description": "这里是黄石隘口驻军入口，铁栅围住营地，东方的营火旁散落着食物残渣。",
+    "mapX": 3,
+    "mapY": 1,
+    "exits": {"west": "canyon_middle_road", "east": "canyon_campfire"}
+  },
+  {
+    "id": "canyon_campfire",
+    "name": "营火区",
+    "areaId": "canyon",
+    "description": "营地中央燃着营火，旁边有一口水井。再往东便是将军与军师所在的大帐。",
+    "mapX": 4,
+    "mapY": 1,
+    "exits": {"west": "canyon_camp_gate", "east": "canyon_general_tent"}
+  },
+  {
+    "id": "canyon_general_tent",
+    "name": "将军营帐",
+    "areaId": "canyon",
+    "description": "虎头悬于帐顶，虎皮披在金椅之后，金银器皿和文墨章笔分列两侧，气势威严。",
+    "mapX": 5,
+    "mapY": 1,
+    "exits": {"west": "canyon_campfire"},
+    "npcIds": ["general_yan", "adviser_he"]
   }
 ]

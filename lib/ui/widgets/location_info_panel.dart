@@ -125,6 +125,7 @@ class LocationInfoPanel extends StatelessWidget {
   ) {
     controller.dispatch(GameAction.talk(npc.id));
     final options = controller.dialogueOptionsFor(npc.id);
+    final giveItemOptions = controller.giveItemOptionsFor(npc.id);
 
     showModalBottomSheet<void>(
       context: context,
@@ -158,6 +159,23 @@ class LocationInfoPanel extends StatelessWidget {
                       Navigator.of(sheetContext).pop();
                     },
                   ),
+              if (giveItemOptions.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text('给予', style: Theme.of(sheetContext).textTheme.labelLarge),
+                for (final option in giveItemOptions)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.redeem_outlined),
+                    title: Text(option.label),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      controller.dispatch(
+                        GameAction.giveItem(npc.id, option.itemId),
+                      );
+                      Navigator.of(sheetContext).pop();
+                    },
+                  ),
+              ],
               if (npc.combat != null) ...[
                 const SizedBox(height: 8),
                 FilledButton.icon(

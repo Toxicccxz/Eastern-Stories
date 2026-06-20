@@ -42,6 +42,10 @@ class MovementSystem {
     return state.copyWith(
       currentRoomId: nextRoom.id,
       visitedRoomIds: {...state.visitedRoomIds, nextRoom.id},
+      questFlags:
+          action.setsQuestFlag == null
+              ? state.questFlags
+              : {...state.questFlags, action.setsQuestFlag!},
       log: state.logWith(action.log),
     );
   }

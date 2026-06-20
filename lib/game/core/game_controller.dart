@@ -76,6 +76,11 @@ class GameController extends ChangeNotifier {
       TalkAction(:final npcId) => _questSystem.talk(_state, npcId),
       SelectDialogueAction(:final npcId, :final optionId) => _questSystem
           .selectDialogue(_state, npcId, optionId),
+      GiveItemAction(:final npcId, :final itemId) => _questSystem.giveItem(
+        _state,
+        npcId,
+        itemId,
+      ),
       PickUpAction(:final itemId) => _inventorySystem.pickUp(_state, itemId),
       EquipItemAction(:final itemId) => _equipmentSystem.equipItem(
         _state,
@@ -124,6 +129,10 @@ class GameController extends ChangeNotifier {
 
   List<DialogueOption> dialogueOptionsFor(String npcId) {
     return _questSystem.dialogueOptionsFor(_state, npcId);
+  }
+
+  List<GiveItemOption> giveItemOptionsFor(String npcId) {
+    return _questSystem.giveItemOptionsFor(_state, npcId);
   }
 
   List<SkillDefinition> learnedSkills() {

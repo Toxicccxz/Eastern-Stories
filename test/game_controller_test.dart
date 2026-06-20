@@ -90,14 +90,20 @@ void main() {
       controller.dialogueOptionsFor('old_liu').map((option) => option.id),
       isNot(contains('report_daughter')),
     );
-    expect(controller.questViews().single.steps.map((step) => step.status), [
-      QuestStepStatus.completed,
-      QuestStepStatus.current,
-      QuestStepStatus.pending,
-      QuestStepStatus.pending,
-      QuestStepStatus.pending,
-      QuestStepStatus.pending,
-    ]);
+    expect(
+      _questView(
+        controller,
+        'rescue_xiao_juan',
+      ).steps.map((step) => step.status),
+      [
+        QuestStepStatus.completed,
+        QuestStepStatus.current,
+        QuestStepStatus.pending,
+        QuestStepStatus.pending,
+        QuestStepStatus.pending,
+        QuestStepStatus.pending,
+      ],
+    );
     expect(
       repository
           .room('granite_road')
@@ -121,14 +127,20 @@ void main() {
           .containsKey(Direction.east),
       isFalse,
     );
-    expect(controller.questViews().single.steps.map((step) => step.status), [
-      QuestStepStatus.completed,
-      QuestStepStatus.completed,
-      QuestStepStatus.current,
-      QuestStepStatus.pending,
-      QuestStepStatus.pending,
-      QuestStepStatus.pending,
-    ]);
+    expect(
+      _questView(
+        controller,
+        'rescue_xiao_juan',
+      ).steps.map((step) => step.status),
+      [
+        QuestStepStatus.completed,
+        QuestStepStatus.completed,
+        QuestStepStatus.current,
+        QuestStepStatus.pending,
+        QuestStepStatus.pending,
+        QuestStepStatus.pending,
+      ],
+    );
 
     _moveToDungeon(controller);
     expect(
@@ -143,14 +155,20 @@ void main() {
     );
 
     expect(controller.state.npcStates['xiao_juan']?.isFollowing, isTrue);
-    expect(controller.questViews().single.steps.map((step) => step.status), [
-      QuestStepStatus.completed,
-      QuestStepStatus.completed,
-      QuestStepStatus.completed,
-      QuestStepStatus.completed,
-      QuestStepStatus.completed,
-      QuestStepStatus.current,
-    ]);
+    expect(
+      _questView(
+        controller,
+        'rescue_xiao_juan',
+      ).steps.map((step) => step.status),
+      [
+        QuestStepStatus.completed,
+        QuestStepStatus.completed,
+        QuestStepStatus.completed,
+        QuestStepStatus.completed,
+        QuestStepStatus.completed,
+        QuestStepStatus.current,
+      ],
+    );
 
     controller.dispatch(const GameAction.move(Direction.west));
     expect(controller.state.npcStates['xiao_juan']?.roomId, 'dungeon_tunnel');
@@ -171,14 +189,20 @@ void main() {
     expect(controller.state.player.experience, 40);
     expect(controller.state.npcStates['old_liu']?.isRemoved, isTrue);
     expect(controller.state.npcStates['xiao_juan']?.isRemoved, isTrue);
-    expect(controller.questViews().single.steps.map((step) => step.status), [
-      QuestStepStatus.completed,
-      QuestStepStatus.completed,
-      QuestStepStatus.completed,
-      QuestStepStatus.completed,
-      QuestStepStatus.completed,
-      QuestStepStatus.completed,
-    ]);
+    expect(
+      _questView(
+        controller,
+        'rescue_xiao_juan',
+      ).steps.map((step) => step.status),
+      [
+        QuestStepStatus.completed,
+        QuestStepStatus.completed,
+        QuestStepStatus.completed,
+        QuestStepStatus.completed,
+        QuestStepStatus.completed,
+        QuestStepStatus.completed,
+      ],
+    );
     expect(controller.state.log.last, contains('完成委托'));
   });
 
@@ -319,8 +343,84 @@ void main() {
 
     expect(room.id, 'canyon_gate');
     expect(repository.area(room.areaId).name, '天驼关');
-    expect(repository.roomsInArea(room.areaId), hasLength(3));
+    expect(repository.roomsInArea(room.areaId), hasLength(8));
     expect(controller.state.visitedRoomIds, contains('yellow_road'));
+  });
+
+  test('general seal quest follows the original fake seal exchange', () {
+    final controller = GameController(repository: repository);
+
+    _moveToGeneralTent(controller);
+    controller.dispatch(
+      const GameAction.selectDialogue('general_yan', 'ask_about_seal'),
+    );
+    controller.dispatch(
+      const GameAction.selectDialogue('adviser_he', 'ask_about_armory'),
+    );
+
+    expect(
+      controller.state.questStatuses['recover_general_seal'],
+      QuestStatus.active,
+    );
+    expect(controller.state.questFlags, contains('canyon_armory_clue'));
+
+    for (var step = 0; step < 3; step += 1) {
+      controller.dispatch(const GameAction.move(Direction.west));
+    }
+    controller.dispatch(
+      const GameAction.performRoomAction('swear_at_smooth_wall'),
+    );
+    controller.dispatch(
+      const GameAction.buyItem('reserve_soldier', 'fake_general_seal'),
+    );
+
+    expect(controller.state.currentRoomId, 'canyon_armory');
+    expect(controller.state.inventoryItemIds, contains('fake_general_seal'));
+    expect(controller.state.player.silver, 0);
+
+    _moveFromArmoryToGeneral(controller);
+    controller.dispatch(
+      const GameAction.giveItem('general_yan', 'fake_general_seal'),
+    );
+
+    expect(controller.state.questFlags, contains('fake_seal_rejected'));
+    expect(controller.state.inventoryItemIds, contains('fake_general_seal'));
+
+    for (var step = 0; step < 3; step += 1) {
+      controller.dispatch(const GameAction.move(Direction.west));
+    }
+    controller.dispatch(
+      const GameAction.performRoomAction('swear_at_smooth_wall'),
+    );
+    controller.dispatch(
+      const GameAction.giveItem('reserve_soldier', 'fake_general_seal'),
+    );
+
+    expect(
+      controller.state.inventoryItemIds,
+      isNot(contains('fake_general_seal')),
+    );
+    expect(controller.state.inventoryItemIds, contains('general_seal'));
+    expect(controller.state.questFlags, contains('real_seal_obtained'));
+
+    _moveFromArmoryToGeneral(controller);
+    controller.dispatch(
+      const GameAction.giveItem('general_yan', 'general_seal'),
+    );
+
+    expect(
+      controller.state.questStatuses['recover_general_seal'],
+      QuestStatus.completed,
+    );
+    expect(controller.state.inventoryItemIds, contains('canyon_old_sword'));
+    expect(controller.state.inventoryItemIds, isNot(contains('general_seal')));
+    expect(
+      _questView(
+        controller,
+        'recover_general_seal',
+      ).steps.every((step) => step.status == QuestStepStatus.completed),
+      isTrue,
+    );
   });
 
   test('player can buy, sell, and use melon', () {
@@ -528,6 +628,40 @@ void _moveHomeFromDungeonTunnel(GameController controller) {
     Direction.south,
     Direction.south,
     Direction.west,
+  ]) {
+    controller.dispatch(GameAction.move(direction));
+  }
+}
+
+QuestView _questView(GameController controller, String questId) {
+  return controller.questViews().firstWhere(
+    (quest) => quest.definition.id == questId,
+  );
+}
+
+void _moveToGeneralTent(GameController controller) {
+  for (final direction in const [
+    Direction.east,
+    Direction.north,
+    Direction.north,
+    Direction.north,
+    Direction.north,
+    Direction.north,
+    Direction.north,
+    Direction.east,
+    Direction.east,
+    Direction.east,
+  ]) {
+    controller.dispatch(GameAction.move(direction));
+  }
+}
+
+void _moveFromArmoryToGeneral(GameController controller) {
+  for (final direction in const [
+    Direction.east,
+    Direction.east,
+    Direction.east,
+    Direction.east,
   ]) {
     controller.dispatch(GameAction.move(direction));
   }
