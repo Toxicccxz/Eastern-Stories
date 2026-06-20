@@ -37,6 +37,9 @@ sealed class GameAction {
 
   const factory GameAction.attack() = AttackAction;
 
+  const factory GameAction.useCombatSkill(String skillId) =
+      UseCombatSkillAction;
+
   const factory GameAction.fleeCombat() = FleeCombatAction;
 }
 
@@ -127,6 +130,12 @@ class StartCombatAction extends GameAction {
 
 class AttackAction extends GameAction {
   const AttackAction();
+}
+
+class UseCombatSkillAction extends GameAction {
+  const UseCombatSkillAction(this.skillId);
+
+  final String skillId;
 }
 
 class FleeCombatAction extends GameAction {

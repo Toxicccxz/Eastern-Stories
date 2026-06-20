@@ -1,8 +1,9 @@
 import '../models/game_state.dart';
 import '../models/npc_definition.dart';
+import '../models/skill_definition.dart';
 import '../repositories/game_definition_repository.dart';
-import 'progression_system.dart';
 import 'equipment_system.dart';
+import 'progression_system.dart';
 
 class CombatSystem {
   const CombatSystem(
@@ -45,6 +46,48 @@ class CombatSystem {
   }
 
   GameState attack(GameState state) {
+    return _performPlayerAttack(state);
+  }
+
+  GameState useSkill(GameState state, String skillId) {
+    if (state.combat == null) {
+      return _withLog(state, '现在没有敌人。');
+    }
+    if (!state.learnedSkillIds.contains(skillId)) {
+      return _withLog(state, '你还没有领会这门武功。');
+    }
+
+    final skill = _repository.skill(skillId);
+    if (!skill.isActive) {
+      return _withLog(state, '${skill.name}不是可以主动施展的招式。');
+    }
+
+    final requiredSlot = skill.requiredEquipmentSlot;
+    if (requiredSlot != null &&
+        !state.equippedItemIds.containsKey(requiredSlot)) {
+      return _withLog(state, '施展${skill.moveName ?? skill.name}需要合适的兵器。');
+    }
+    if (state.player.innerPower < skill.innerPowerCost) {
+      return _withLog(state, '内力不足，无法施展${skill.moveName ?? skill.name}。');
+    }
+
+    final preparedState = state.copyWith(
+      player: state.player.copyWith(
+        innerPower: state.player.innerPower - skill.innerPowerCost,
+      ),
+    );
+    return _performPlayerAttack(
+      preparedState,
+      damageBonus: skill.damageBonus,
+      skill: skill,
+    );
+  }
+
+  GameState _performPlayerAttack(
+    GameState state, {
+    int damageBonus = 0,
+    SkillDefinition? skill,
+  }) {
     final activeCombat = state.combat;
     if (activeCombat == null) {
       return _withLog(state, '现在没有敌人。');
@@ -58,26 +101,33 @@ class CombatSystem {
     }
 
     final stats = _equipmentSystem.statsFor(state);
-    final playerDamage = (stats.attack - combat.defense).clamp(1, 999);
+    final playerDamage = (stats.attack + damageBonus - combat.defense).clamp(
+      1,
+      999,
+    );
     final nextEnemyHp = activeCombat.enemyHp - playerDamage;
 
     if (nextEnemyHp <= 0) {
-      return _defeatNpc(state, npc.id, npcState, combat);
+      final attackState = _appendAttackLog(
+        state,
+        npc.name,
+        playerDamage,
+        skill,
+      );
+      return _defeatNpc(attackState, npc.id, npcState, combat);
     }
 
     final enemyDamage =
         (combat.attack - stats.defense - _damageReduction(state)).clamp(1, 999);
     final nextPlayerHp = (state.player.hp - enemyDamage).clamp(1, stats.maxHp);
     final wasPlayerDefeated = nextPlayerHp == 1;
-    final log = [
-      ...state.logWith('你向${npc.name}出手，造成$playerDamage点伤害。'),
-      '${npc.name}反击，你受到$enemyDamage点伤害。',
-    ];
+    final attackState = _appendAttackLog(state, npc.name, playerDamage, skill);
+    final log = [...attackState.log, '${npc.name}反击，你受到$enemyDamage点伤害。'];
 
-    return state.copyWith(
-      player: state.player.copyWith(hp: nextPlayerHp),
+    return attackState.copyWith(
+      player: attackState.player.copyWith(hp: nextPlayerHp),
       npcStates: {
-        ...state.npcStates,
+        ...attackState.npcStates,
         npc.id: npcState.copyWith(currentHp: nextEnemyHp),
       },
       combat:
@@ -86,6 +136,20 @@ class CombatSystem {
               : activeCombat.copyWith(enemyHp: nextEnemyHp),
       log: wasPlayerDefeated ? [...log, '你勉强脱离战斗，气血只剩一线。'] : log,
     );
+  }
+
+  GameState _appendAttackLog(
+    GameState state,
+    String enemyName,
+    int damage,
+    SkillDefinition? skill,
+  ) {
+    final skillMessage = skill?.combatMessage?.replaceAll('{enemy}', enemyName);
+    final message =
+        skillMessage == null
+            ? '你向$enemyName出手，造成$damage点伤害。'
+            : '$skillMessage 造成$damage点伤害。';
+    return state.copyWith(log: state.logWith(message));
   }
 
   GameState fleeCombat(GameState state) {

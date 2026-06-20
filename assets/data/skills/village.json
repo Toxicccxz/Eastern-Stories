@@ -4,5 +4,16 @@
     "name": "基础招架",
     "description": "从过招要门中领会的拆招卸力之法，可略微降低受到的伤害。",
     "damageReduction": 2
+  },
+  {
+    "id": "basic_sword",
+    "name": "基础剑法",
+    "description": "从古剑谱中悟出的用剑根基，讲究气聚于锋、缓动瞬攻。",
+    "type": "active",
+    "moveName": "疾风劲竹",
+    "innerPowerCost": 5,
+    "damageBonus": 6,
+    "requiredEquipmentSlot": "weapon",
+    "combatMessage": "你使出“疾风劲竹”，剑势骤急，向{enemy}造成凌厉一击。"
   }
 ]

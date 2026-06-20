@@ -28,6 +28,7 @@ class LocationInfoPanel extends StatelessWidget {
         controller.repository.visibleNpcsInRoom(state, room.id).toList();
     final items =
         controller.repository.visibleItemsInRoom(state, room.id).toList();
+    final exits = room.availableExits(state);
 
     return Panel(
       child: Column(
@@ -42,6 +43,22 @@ class LocationInfoPanel extends StatelessWidget {
           const SizedBox(height: 8),
           Text(room.description),
           const SizedBox(height: 12),
+          _ChipRow(
+            label: '出口',
+            emptyText: '无路可走',
+            children: [
+              for (final exit in exits.entries)
+                ActionChip(
+                  avatar: const Icon(Icons.directions, size: 18),
+                  label: Text(
+                    _exitLabel(controller, room, exit.key.label, exit.value),
+                  ),
+                  onPressed:
+                      () => controller.dispatch(GameAction.move(exit.key)),
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
           _ChipRow(
             label: '人物',
             emptyText: '无人',
@@ -85,6 +102,20 @@ class LocationInfoPanel extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _exitLabel(
+    GameController controller,
+    RoomDefinition currentRoom,
+    String direction,
+    String destinationRoomId,
+  ) {
+    final destination = controller.repository.room(destinationRoomId);
+    if (destination.areaId == currentRoom.areaId) {
+      return '$direction · ${destination.name}';
+    }
+    final destinationArea = controller.repository.area(destination.areaId);
+    return '$direction · ${destinationArea.name} · ${destination.name}';
   }
 
   void _showDialogue(

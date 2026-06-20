@@ -109,6 +109,10 @@ class GameController extends ChangeNotifier {
         npcId,
       ),
       AttackAction() => _combatSystem.attack(_state),
+      UseCombatSkillAction(:final skillId) => _combatSystem.useSkill(
+        _state,
+        skillId,
+      ),
       FleeCombatAction() => _combatSystem.fleeCombat(_state),
     };
     notifyListeners();
@@ -124,6 +128,10 @@ class GameController extends ChangeNotifier {
 
   List<SkillDefinition> learnedSkills() {
     return _inventorySystem.learnedSkills(_state);
+  }
+
+  List<SkillDefinition> activeCombatSkills() {
+    return learnedSkills().where((skill) => skill.isActive).toList();
   }
 
   CharacterStats characterStats() {

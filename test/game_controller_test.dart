@@ -1,6 +1,7 @@
 import 'package:eastern_stories/game/core/game_action.dart';
 import 'package:eastern_stories/game/core/game_controller.dart';
 import 'package:eastern_stories/game/models/direction.dart';
+import 'package:eastern_stories/game/models/equipment_slot.dart';
 import 'package:eastern_stories/game/models/game_state.dart';
 import 'package:eastern_stories/game/models/quest_definition.dart';
 import 'package:eastern_stories/game/repositories/game_definition_repository.dart';
@@ -173,6 +174,48 @@ void main() {
 
     expect(controller.state.learnedSkillIds, contains('parry'));
     expect(controller.learnedSkills().single.name, '基础招架');
+  });
+
+  test('player can study the ancient sword manual', () {
+    final controller = GameController(repository: repository);
+
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(const GameAction.pickUp('old_book'));
+    controller.dispatch(const GameAction.studyItem('old_book'));
+
+    expect(controller.state.learnedSkillIds, contains('basic_sword'));
+    expect(controller.activeCombatSkills().single.moveName, '疾风劲竹');
+  });
+
+  test('active sword move requires a weapon and consumes inner power', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'ice_cave',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'ice_cave'},
+        inventoryItemIds: const ['hengbing_sword'],
+        learnedSkillIds: {'basic_sword'},
+      ),
+    );
+
+    controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
+    controller.dispatch(const GameAction.useCombatSkill('basic_sword'));
+
+    expect(controller.state.combat?.enemyHp, 36);
+    expect(controller.state.player.innerPower, 30);
+    expect(controller.state.log.last, contains('需要合适的兵器'));
+
+    controller.dispatch(const GameAction.equipItem('hengbing_sword'));
+    expect(
+      controller.state.equippedItemIds[EquipmentSlot.weapon],
+      'hengbing_sword',
+    );
+    controller.dispatch(const GameAction.useCombatSkill('basic_sword'));
+
+    expect(controller.state.combat?.enemyHp, 16);
+    expect(controller.state.player.innerPower, 25);
+    expect(controller.state.log, contains(contains('疾风劲竹')));
   });
 
   test('room actions can move the player through lake scenes', () {

@@ -1,9 +1,19 @@
+import 'equipment_slot.dart';
+
+enum SkillType { passive, active }
+
 class SkillDefinition {
   const SkillDefinition({
     required this.id,
     required this.name,
     required this.description,
+    this.type = SkillType.passive,
     this.damageReduction = 0,
+    this.moveName,
+    this.innerPowerCost = 0,
+    this.damageBonus = 0,
+    this.requiredEquipmentSlot,
+    this.combatMessage,
   });
 
   factory SkillDefinition.fromJson(Map<String, Object?> json) {
@@ -11,12 +21,33 @@ class SkillDefinition {
       id: json['id'] as String,
       name: json['name'] as String,
       description: json['description'] as String,
+      type: SkillType.values.byName(
+        json['type'] as String? ?? SkillType.passive.name,
+      ),
       damageReduction: json['damageReduction'] as int? ?? 0,
+      moveName: json['moveName'] as String?,
+      innerPowerCost: json['innerPowerCost'] as int? ?? 0,
+      damageBonus: json['damageBonus'] as int? ?? 0,
+      requiredEquipmentSlot:
+          json['requiredEquipmentSlot'] == null
+              ? null
+              : EquipmentSlot.values.byName(
+                json['requiredEquipmentSlot'] as String,
+              ),
+      combatMessage: json['combatMessage'] as String?,
     );
   }
 
   final String id;
   final String name;
   final String description;
+  final SkillType type;
   final int damageReduction;
+  final String? moveName;
+  final int innerPowerCost;
+  final int damageBonus;
+  final EquipmentSlot? requiredEquipmentSlot;
+  final String? combatMessage;
+
+  bool get isActive => type == SkillType.active;
 }
