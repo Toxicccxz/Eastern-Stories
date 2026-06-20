@@ -4,7 +4,8 @@
     "areas": ["assets/data/areas/areas.json"],
     "rooms": [
       "assets/data/rooms/village.json",
-      "assets/data/rooms/canyon.json"
+      "assets/data/rooms/canyon.json",
+      "assets/data/rooms/chuenyu.json"
     ],
     "npcs": ["assets/data/npcs/village.json"],
     "items": ["assets/data/items/village.json"],

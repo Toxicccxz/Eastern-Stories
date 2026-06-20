@@ -1,4 +1,5 @@
 import 'package:eastern_stories/game/repositories/game_definition_repository.dart';
+import 'package:eastern_stories/game/models/world_condition.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -9,8 +10,8 @@ void main() {
     final rooms = repository.rooms.toList();
 
     expect(repository.startingRoomId, 'liu_home');
-    expect(repository.areas, hasLength(2));
-    expect(rooms, hasLength(13));
+    expect(repository.areas, hasLength(3));
+    expect(rooms, hasLength(20));
     expect(repository.quests, hasLength(1));
 
     for (final area in repository.areas) {
@@ -34,6 +35,9 @@ void main() {
           reason: '${room.id} has an invalid exit to $targetRoomId',
         );
       }
+      for (final condition in room.exitConditions.values) {
+        _expectValidCondition(repository, condition);
+      }
       for (final action in room.actions) {
         expect(
           () => repository.room(action.resultRoomId),
@@ -42,6 +46,10 @@ void main() {
               '${room.id} action ${action.id} references unknown room '
               '${action.resultRoomId}',
         );
+        final condition = action.conditions;
+        if (condition != null) {
+          _expectValidCondition(repository, condition);
+        }
       }
       for (final npcId in room.npcIds) {
         expect(
@@ -60,6 +68,13 @@ void main() {
     }
 
     for (final npc in repository.npcs) {
+      final npcCondition = npc.conditions;
+      if (npcCondition != null) {
+        _expectValidCondition(repository, npcCondition);
+      }
+      for (final greeting in npc.greetingVariants) {
+        _expectValidCondition(repository, greeting.conditions);
+      }
       final combat = npc.combat;
       if (combat != null) {
         for (final itemId in combat.dropItemIds) {
@@ -71,6 +86,10 @@ void main() {
         }
       }
       for (final option in npc.dialogueOptions) {
+        final optionCondition = option.conditions;
+        if (optionCondition != null) {
+          _expectValidCondition(repository, optionCondition);
+        }
         final destinationRoomId = option.movesNpcToRoomId;
         if (destinationRoomId != null) {
           expect(
@@ -79,6 +98,15 @@ void main() {
             reason:
                 '${npc.id} dialogue ${option.id} references unknown room '
                 '$destinationRoomId',
+          );
+        }
+        for (final removedNpcId in option.despawnNpcIds) {
+          expect(
+            () => repository.npc(removedNpcId),
+            returnsNormally,
+            reason:
+                '${npc.id} dialogue ${option.id} removes unknown NPC '
+                '$removedNpcId',
           );
         }
         final questIds =
@@ -100,6 +128,10 @@ void main() {
     }
 
     for (final item in repository.items) {
+      final itemCondition = item.conditions;
+      if (itemCondition != null) {
+        _expectValidCondition(repository, itemCondition);
+      }
       final skillId = item.studySkillId;
       if (skillId != null) {
         expect(
@@ -120,4 +152,19 @@ void main() {
       }
     }
   });
+}
+
+void _expectValidCondition(
+  GameDefinitionRepository repository,
+  WorldCondition condition,
+) {
+  for (final questId in condition.requiredQuestStatuses.keys) {
+    expect(() => repository.quest(questId), returnsNormally);
+  }
+  for (final npcId in {
+    ...condition.requiredDefeatedNpcIds,
+    ...condition.forbiddenDefeatedNpcIds,
+  }) {
+    expect(() => repository.npc(npcId), returnsNormally);
+  }
 }

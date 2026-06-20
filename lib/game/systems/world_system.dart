@@ -14,28 +14,41 @@ class WorldSystem {
     final worldTurn = previous.worldTurn + 1;
     final npcStates = {
       for (final entry in next.npcStates.entries)
-        entry.key: _refreshNpc(entry.key, entry.value, worldTurn),
+        entry.key: _advanceNpc(
+          entry.key,
+          entry.value,
+          worldTurn,
+          next.currentRoomId,
+        ),
     };
     return next.copyWith(worldTurn: worldTurn, npcStates: npcStates);
   }
 
-  NpcRuntimeState _refreshNpc(
+  NpcRuntimeState _advanceNpc(
     String npcId,
     NpcRuntimeState state,
     int worldTurn,
+    String playerRoomId,
   ) {
-    final respawnAtTurn = state.respawnAtTurn;
-    if (!state.isDefeated ||
-        respawnAtTurn == null ||
-        respawnAtTurn > worldTurn) {
+    if (state.isRemoved) {
       return state;
     }
 
-    final maxHp = _repository.npc(npcId).combat?.maxHp ?? 0;
-    return state.copyWith(
-      currentHp: maxHp,
-      isDefeated: false,
-      respawnAtTurn: null,
-    );
+    var nextState = state;
+    final respawnAtTurn = state.respawnAtTurn;
+    if (state.isDefeated &&
+        respawnAtTurn != null &&
+        respawnAtTurn <= worldTurn) {
+      final maxHp = _repository.npc(npcId).combat?.maxHp ?? 0;
+      nextState = state.copyWith(
+        currentHp: maxHp,
+        isDefeated: false,
+        respawnAtTurn: null,
+      );
+    }
+
+    return nextState.isFollowing
+        ? nextState.copyWith(roomId: playerRoomId)
+        : nextState;
   }
 }

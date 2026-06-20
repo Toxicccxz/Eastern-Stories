@@ -32,7 +32,7 @@ class QuestSystem {
 
   GameState talk(GameState state, String npcId) {
     final npc = _repository.npc(npcId);
-    return _withLog(state, '${npc.name}说道：“${npc.greeting}”');
+    return _withLog(state, '${npc.name}说道：“${npc.greetingFor(state)}”');
   }
 
   GameState selectDialogue(GameState state, String npcId, String optionId) {
@@ -75,6 +75,32 @@ class QuestSystem {
           npcId: npcState.copyWith(roomId: destinationRoomId),
         },
       );
+    }
+
+    if (option.startsFollowing && npcState != null) {
+      nextState = nextState.copyWith(
+        npcStates: {
+          ...nextState.npcStates,
+          npcId: npcState.copyWith(
+            roomId: nextState.currentRoomId,
+            isFollowing: true,
+          ),
+        },
+      );
+    }
+
+    if (option.despawnNpcIds.isNotEmpty) {
+      final npcStates = {...nextState.npcStates};
+      for (final removedNpcId in option.despawnNpcIds) {
+        final removedNpcState = npcStates[removedNpcId];
+        if (removedNpcState != null) {
+          npcStates[removedNpcId] = removedNpcState.copyWith(
+            isFollowing: false,
+            isRemoved: true,
+          );
+        }
+      }
+      nextState = nextState.copyWith(npcStates: npcStates);
     }
 
     final completesQuestId = option.completesQuestId;
@@ -139,6 +165,9 @@ class QuestSystem {
   }
 
   bool _canShowDialogueOption(GameState state, DialogueOption option) {
+    if (!(option.conditions?.isSatisfiedBy(state) ?? true)) {
+      return false;
+    }
     final requiredQuestId = option.requiredQuestId;
     final requiredQuestStatus = option.requiredQuestStatus;
     if (requiredQuestId == null || requiredQuestStatus == null) {

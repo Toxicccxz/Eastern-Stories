@@ -115,7 +115,19 @@ class GameDefinitionRepository {
   }
 
   GameState hydrateState(GameState state) {
-    final npcStates = {..._initialNpcStates(), ...state.npcStates};
+    final initialNpcStates = _initialNpcStates();
+    final npcStates = {...initialNpcStates, ...state.npcStates};
+    final questStatuses = {...state.questStatuses};
+    final questFlags = {...state.questFlags};
+    final removedLegacyQuest = questStatuses.remove('find_flower_girl') != null;
+    final removedLegacyFlag = questFlags.remove('found_flower_girl');
+    final hasLegacyRescueState = removedLegacyQuest || removedLegacyFlag;
+    if (hasLegacyRescueState) {
+      final flowerGirlState = initialNpcStates['flower_girl'];
+      if (flowerGirlState != null) {
+        npcStates['flower_girl'] = flowerGirlState;
+      }
+    }
     final combat = state.combat;
     final activeNpcState = combat == null ? null : npcStates[combat.npcId];
     if (combat != null &&
@@ -125,15 +137,30 @@ class GameDefinitionRepository {
         currentHp: combat.enemyHp,
       );
     }
-    return state.copyWith(npcStates: npcStates);
+    return state.copyWith(
+      npcStates: npcStates,
+      questStatuses: questStatuses,
+      questFlags: questFlags,
+    );
   }
 
   Iterable<NpcDefinition> visibleNpcsInRoom(GameState state, String roomId) {
     return state.npcStates.entries
         .where(
-          (entry) => entry.value.roomId == roomId && !entry.value.isDefeated,
+          (entry) =>
+              entry.value.roomId == roomId &&
+              !entry.value.isDefeated &&
+              !entry.value.isRemoved,
         )
-        .map((entry) => npc(entry.key));
+        .map((entry) => npc(entry.key))
+        .where((npc) => npc.conditions?.isSatisfiedBy(state) ?? true);
+  }
+
+  Iterable<ItemDefinition> visibleItemsInRoom(GameState state, String roomId) {
+    return room(roomId)
+        .visibleItemIds(state)
+        .map(item)
+        .where((item) => item.conditions?.isSatisfiedBy(state) ?? true);
   }
 
   AreaDefinition area(String id) {

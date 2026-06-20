@@ -1,0 +1,75 @@
+[
+  {
+    "id": "chuenyu_crossroad",
+    "name": "路口",
+    "areaId": "chuenyu",
+    "description": "这里是个交叉路口，过往行人很多。路边有一间供行人歇息的茶馆，北方可见阴森的黑松山。",
+    "mapX": 0,
+    "mapY": 5,
+    "exits": {"west": "yellow_road", "north": "sunny_fields"}
+  },
+  {
+    "id": "sunny_fields",
+    "name": "山脚乡田",
+    "areaId": "chuenyu",
+    "description": "两侧是茂盛的稻田，还有一条清澈见底的小溪。再往北是黑松山，山顶城堡的大旗上绣着“淳于”二字。",
+    "mapX": 0,
+    "mapY": 4,
+    "exits": {"south": "chuenyu_crossroad", "north": "black_pine_foot"}
+  },
+  {
+    "id": "black_pine_foot",
+    "name": "黑松山脚",
+    "areaId": "chuenyu",
+    "description": "一座高而险的山峰耸立在面前。上山小路盘旋曲折，黑湮湮的松林给人一种不祥的感觉。",
+    "mapX": 0,
+    "mapY": 3,
+    "exits": {"south": "sunny_fields", "up": "black_pine_slope"}
+  },
+  {
+    "id": "black_pine_slope",
+    "name": "黑松山腰",
+    "areaId": "chuenyu",
+    "description": "唯一通往山顶的小路十分难行，路边堆着面目狰狞的巨石，幼松从石缝中顽强地挤出来。",
+    "mapX": 0,
+    "mapY": 2,
+    "exits": {"down": "black_pine_foot", "up": "granite_road"}
+  },
+  {
+    "id": "granite_road",
+    "name": "花岗石街",
+    "areaId": "chuenyu",
+    "description": "通往城堡的石街全由巨大的花岗岩砌成。城墙下有一道不起眼的阴影，似乎藏着通往地下的入口。",
+    "mapX": 0,
+    "mapY": 1,
+    "exits": {
+      "down": "black_pine_slope",
+      "east": {
+        "roomId": "dungeon_tunnel",
+        "conditions": {
+          "requiredFlags": ["black_pine_clue"],
+          "requiredQuestStatuses": {"rescue_xiao_juan": "active"}
+        }
+      }
+    }
+  },
+  {
+    "id": "dungeon_tunnel",
+    "name": "地牢甬道",
+    "areaId": "chuenyu",
+    "description": "这里黑暗得几乎伸手不见五指。墙上松油灯忽明忽暗，暗红血痕与远处的哀嚎令人毛骨悚然。",
+    "mapX": 1,
+    "mapY": 1,
+    "exits": {"west": "granite_road", "east": "chuenyu_dungeon"}
+  },
+  {
+    "id": "chuenyu_dungeon",
+    "name": "刑房",
+    "areaId": "chuenyu",
+    "description": "阴湿地牢的角落堆着沾满暗红血迹的干草，生锈铁链锁在墙上，黑暗中不时传来老鼠的尖叫。",
+    "mapX": 2,
+    "mapY": 1,
+    "exits": {"west": "dungeon_tunnel"},
+    "npcIds": ["xiao_juan"]
+  }
+]

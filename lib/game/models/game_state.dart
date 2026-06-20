@@ -166,6 +166,8 @@ class NpcRuntimeState {
     required this.isDefeated,
     this.respawnAtTurn,
     this.hasDroppedLoot = false,
+    this.isFollowing = false,
+    this.isRemoved = false,
   });
 
   factory NpcRuntimeState.fromJson(Map<String, Object?> json) {
@@ -175,6 +177,8 @@ class NpcRuntimeState {
       isDefeated: json['isDefeated'] as bool,
       respawnAtTurn: json['respawnAtTurn'] as int?,
       hasDroppedLoot: json['hasDroppedLoot'] as bool? ?? false,
+      isFollowing: json['isFollowing'] as bool? ?? false,
+      isRemoved: json['isRemoved'] as bool? ?? false,
     );
   }
 
@@ -183,6 +187,8 @@ class NpcRuntimeState {
   final bool isDefeated;
   final int? respawnAtTurn;
   final bool hasDroppedLoot;
+  final bool isFollowing;
+  final bool isRemoved;
 
   Map<String, Object?> toJson() {
     return {
@@ -191,6 +197,8 @@ class NpcRuntimeState {
       'isDefeated': isDefeated,
       'respawnAtTurn': respawnAtTurn,
       'hasDroppedLoot': hasDroppedLoot,
+      'isFollowing': isFollowing,
+      'isRemoved': isRemoved,
     };
   }
 
@@ -200,6 +208,8 @@ class NpcRuntimeState {
     bool? isDefeated,
     Object? respawnAtTurn = _unchanged,
     bool? hasDroppedLoot,
+    bool? isFollowing,
+    bool? isRemoved,
   }) {
     return NpcRuntimeState(
       roomId: roomId ?? this.roomId,
@@ -210,6 +220,8 @@ class NpcRuntimeState {
               ? this.respawnAtTurn
               : respawnAtTurn as int?,
       hasDroppedLoot: hasDroppedLoot ?? this.hasDroppedLoot,
+      isFollowing: isFollowing ?? this.isFollowing,
+      isRemoved: isRemoved ?? this.isRemoved,
     );
   }
 }

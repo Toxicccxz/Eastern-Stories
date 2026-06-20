@@ -3,38 +3,83 @@
     "id": "old_liu",
     "name": "刘老农",
     "description": "刘老农年近六十，手脚却还算灵活，眉间藏着焦急。",
-    "greeting": "这位少侠，可曾见到小女娃儿？",
+    "greeting": "这位少侠，可否见到小女娟儿？",
+    "greetingVariants": [
+      {
+        "text": "娟儿，你可算平安回来了！多谢少侠搭救。",
+        "conditions": {
+          "requiredFlags": ["xiao_juan_rescued"],
+          "requiredQuestStatuses": {"rescue_xiao_juan": "active"}
+        }
+      }
+    ],
     "dialogueOptions": [
       {
         "id": "ask_daughter",
-        "label": "询问小女娃",
-        "response": "她常在屋后的花园玩耍，若少侠见着她，还请告诉老汉一声。",
-        "startsQuestId": "find_flower_girl"
+        "label": "询问娟儿的去向",
+        "response": "小女娟儿数日前失踪，村里有人说黑松山常抓年轻男女。还请少侠替老汉寻一寻她。",
+        "conditions": {
+          "requiredQuestStatuses": {"rescue_xiao_juan": "notStarted"}
+        },
+        "startsQuestId": "rescue_xiao_juan"
       },
       {
         "id": "report_daughter",
-        "label": "告知小姑娘平安",
-        "response": "多谢少侠搭救小女娃儿。这口剑和这本薄书，便赠予少侠防身。",
-        "requiredQuestId": "find_flower_girl",
-        "requiredQuestStatus": "active",
-        "completesQuestId": "find_flower_girl"
+        "label": "带小娟拜见父亲",
+        "response": "这口剑和这本秘籍赠予少侠。这处非久留之地，我等去也。刘老农领着娟儿匆匆离去。",
+        "conditions": {
+          "requiredFlags": ["xiao_juan_rescued"],
+          "requiredQuestStatuses": {"rescue_xiao_juan": "active"}
+        },
+        "completesQuestId": "rescue_xiao_juan",
+        "despawnNpcIds": ["old_liu", "xiao_juan"]
       }
     ]
   },
   {
     "id": "flower_girl",
-    "name": "采花女",
-    "description": "天真的小女孩正在花丛间玩耍，手里拿着一枝新摘的小花。",
-    "greeting": "你是来找我的吗？爷爷是不是又担心我啦？",
+    "name": "采花妞",
+    "description": "一个九岁左右的小女孩正在花园里玩耍，手中握着一枝新摘的花。",
+    "greeting": "花园里的花开得正好，你也是来看花的吗？",
     "dialogueOptions": [
       {
-        "id": "found_girl",
-        "label": "告诉她刘老农在找她",
-        "response": "我就在花园里，没有乱跑。你替我告诉爷爷，我马上回去。",
-        "requiredQuestId": "find_flower_girl",
-        "requiredQuestStatus": "active",
-        "setsQuestFlag": "found_flower_girl",
-        "movesNpcToRoomId": "liu_home"
+        "id": "ask_about_xiao_juan",
+        "label": "打听小娟",
+        "response": "小娟姐姐吗？这要到黑松山去问。",
+        "conditions": {
+          "forbiddenFlags": ["black_pine_clue"],
+          "requiredQuestStatuses": {"rescue_xiao_juan": "active"}
+        },
+        "setsQuestFlag": "black_pine_clue"
+      }
+    ]
+  },
+  {
+    "id": "xiao_juan",
+    "name": "小娟",
+    "description": "小娟是刘老农的独生女，已经被折磨得遍体鳞伤，气息十分虚弱。",
+    "greeting": "救我……求你带我离开这里。",
+    "greetingVariants": [
+      {
+        "text": "这里太可怕了，请带我回去见爹爹。",
+        "conditions": {"requiredFlags": ["xiao_juan_rescued"]}
+      }
+    ],
+    "conditions": {
+      "requiredQuestStatuses": {"rescue_xiao_juan": "active"}
+    },
+    "dialogueOptions": [
+      {
+        "id": "rescue_xiao_juan",
+        "label": "解开绳索并带她离开",
+        "response": "多谢少侠相救，我爹爹还在等我。",
+        "conditions": {
+          "requiredFlags": ["black_pine_clue"],
+          "forbiddenFlags": ["xiao_juan_rescued"],
+          "requiredQuestStatuses": {"rescue_xiao_juan": "active"}
+        },
+        "setsQuestFlag": "xiao_juan_rescued",
+        "startsFollowing": true
       }
     ]
   },

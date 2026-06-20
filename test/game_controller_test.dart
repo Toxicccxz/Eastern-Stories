@@ -1,6 +1,7 @@
 import 'package:eastern_stories/game/core/game_action.dart';
 import 'package:eastern_stories/game/core/game_controller.dart';
 import 'package:eastern_stories/game/models/direction.dart';
+import 'package:eastern_stories/game/models/game_state.dart';
 import 'package:eastern_stories/game/models/quest_definition.dart';
 import 'package:eastern_stories/game/repositories/game_definition_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -55,37 +56,108 @@ void main() {
     expect(controller.state.log.last, contains('放下'));
   });
 
+  test('legacy flower girl quest state is reset during load', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        npcStates: {
+          ...initialState.npcStates,
+          'flower_girl': const NpcRuntimeState(
+            roomId: 'liu_home',
+            currentHp: 0,
+            isDefeated: false,
+          ),
+        },
+        questStatuses: {'find_flower_girl': QuestStatus.completed},
+        questFlags: {'found_flower_girl'},
+      ),
+    );
+
+    expect(controller.state.npcStates['flower_girl']?.roomId, 'little_garden');
+    expect(controller.state.questStatuses, isNot(contains('find_flower_girl')));
+    expect(controller.state.questFlags, isNot(contains('found_flower_girl')));
+  });
+
   test('old liu quest can be started, progressed, and completed', () {
     final controller = GameController(repository: repository);
 
     controller.dispatch(
       const GameAction.selectDialogue('old_liu', 'ask_daughter'),
     );
+    expect(
+      controller.dialogueOptionsFor('old_liu').map((option) => option.id),
+      isNot(contains('report_daughter')),
+    );
     expect(controller.questViews().single.steps.map((step) => step.status), [
       QuestStepStatus.completed,
       QuestStepStatus.current,
       QuestStepStatus.pending,
+      QuestStepStatus.pending,
     ]);
+    expect(
+      repository
+          .room('granite_road')
+          .availableExits(controller.state)
+          .containsKey(Direction.east),
+      isFalse,
+    );
     controller.dispatch(const GameAction.move(Direction.south));
     controller.dispatch(
-      const GameAction.selectDialogue('flower_girl', 'found_girl'),
+      const GameAction.selectDialogue('flower_girl', 'ask_about_xiao_juan'),
     );
-    expect(controller.state.npcStates['flower_girl']?.roomId, 'liu_home');
+    expect(controller.state.npcStates['flower_girl']?.roomId, 'little_garden');
+    expect(
+      controller.dialogueOptionsFor('flower_girl').map((option) => option.id),
+      isNot(contains('ask_about_xiao_juan')),
+    );
+    expect(
+      repository
+          .room('granite_road')
+          .availableExits(controller.state)
+          .containsKey(Direction.east),
+      isTrue,
+    );
     expect(controller.questViews().single.steps.map((step) => step.status), [
       QuestStepStatus.completed,
       QuestStepStatus.completed,
       QuestStepStatus.current,
+      QuestStepStatus.pending,
     ]);
-    controller.dispatch(const GameAction.move(Direction.north));
+
+    _moveToDungeon(controller);
+    controller.dispatch(
+      const GameAction.selectDialogue('xiao_juan', 'rescue_xiao_juan'),
+    );
+
+    expect(controller.state.npcStates['xiao_juan']?.isFollowing, isTrue);
+    expect(controller.questViews().single.steps.map((step) => step.status), [
+      QuestStepStatus.completed,
+      QuestStepStatus.completed,
+      QuestStepStatus.completed,
+      QuestStepStatus.current,
+    ]);
+
+    controller.dispatch(const GameAction.move(Direction.west));
+    expect(controller.state.npcStates['xiao_juan']?.roomId, 'dungeon_tunnel');
+    _moveHomeFromDungeonTunnel(controller);
+    expect(controller.state.npcStates['xiao_juan']?.roomId, 'liu_home');
+    expect(
+      controller.dialogueOptionsFor('old_liu').map((option) => option.id),
+      contains('report_daughter'),
+    );
     controller.dispatch(
       const GameAction.selectDialogue('old_liu', 'report_daughter'),
     );
 
     expect(controller.state.inventoryItemIds, contains('hengbing_sword'));
     expect(controller.state.inventoryItemIds, contains('parry_book'));
-    expect(controller.state.player.silver, 50);
-    expect(controller.state.player.experience, 60);
+    expect(controller.state.player.silver, 20);
+    expect(controller.state.player.experience, 0);
+    expect(controller.state.npcStates['old_liu']?.isRemoved, isTrue);
+    expect(controller.state.npcStates['xiao_juan']?.isRemoved, isTrue);
     expect(controller.questViews().single.steps.map((step) => step.status), [
+      QuestStepStatus.completed,
       QuestStepStatus.completed,
       QuestStepStatus.completed,
       QuestStepStatus.completed,
@@ -96,17 +168,7 @@ void main() {
   test('player can study parry book to learn basic parry', () {
     final controller = GameController(repository: repository);
 
-    controller.dispatch(
-      const GameAction.selectDialogue('old_liu', 'ask_daughter'),
-    );
-    controller.dispatch(const GameAction.move(Direction.south));
-    controller.dispatch(
-      const GameAction.selectDialogue('flower_girl', 'found_girl'),
-    );
-    controller.dispatch(const GameAction.move(Direction.north));
-    controller.dispatch(
-      const GameAction.selectDialogue('old_liu', 'report_daughter'),
-    );
+    _completeRescueQuest(controller);
     controller.dispatch(const GameAction.studyItem('parry_book'));
 
     expect(controller.state.learnedSkillIds, contains('parry'));
@@ -149,17 +211,7 @@ void main() {
     controller.dispatch(const GameAction.move(Direction.north));
     controller.dispatch(const GameAction.pickUp('water_melon'));
     controller.dispatch(const GameAction.move(Direction.south));
-    controller.dispatch(
-      const GameAction.selectDialogue('old_liu', 'ask_daughter'),
-    );
-    controller.dispatch(const GameAction.move(Direction.south));
-    controller.dispatch(
-      const GameAction.selectDialogue('flower_girl', 'found_girl'),
-    );
-    controller.dispatch(const GameAction.move(Direction.north));
-    controller.dispatch(
-      const GameAction.selectDialogue('old_liu', 'report_daughter'),
-    );
+    _completeRescueQuest(controller);
     controller.dispatch(const GameAction.equipItem('hengbing_sword'));
     controller.dispatch(const GameAction.studyItem('parry_book'));
     controller.dispatch(const GameAction.move(Direction.east));
@@ -178,17 +230,7 @@ void main() {
   test('player can equip a weapon and defeat the ice dragon', () {
     final controller = GameController(repository: repository);
 
-    controller.dispatch(
-      const GameAction.selectDialogue('old_liu', 'ask_daughter'),
-    );
-    controller.dispatch(const GameAction.move(Direction.south));
-    controller.dispatch(
-      const GameAction.selectDialogue('flower_girl', 'found_girl'),
-    );
-    controller.dispatch(const GameAction.move(Direction.north));
-    controller.dispatch(
-      const GameAction.selectDialogue('old_liu', 'report_daughter'),
-    );
+    _completeRescueQuest(controller);
     controller.dispatch(const GameAction.equipItem('hengbing_sword'));
     controller.dispatch(const GameAction.studyItem('parry_book'));
 
@@ -205,10 +247,10 @@ void main() {
     expect(controller.state.equippedWeaponId, 'hengbing_sword');
     expect(controller.state.learnedSkillIds, contains('parry'));
     expect(controller.state.combat, isNull);
-    expect(controller.state.player.silver, 130);
-    expect(controller.state.player.level, 2);
-    expect(controller.state.player.experience, 30);
-    expect(controller.state.player.hp, 92);
+    expect(controller.state.player.silver, 100);
+    expect(controller.state.player.level, 1);
+    expect(controller.state.player.experience, 70);
+    expect(controller.state.player.hp, 80);
     expect(controller.state.npcStates['white_ice_dragon']?.isDefeated, isTrue);
     expect(
       controller.repository.visibleNpcsInRoom(
@@ -224,7 +266,6 @@ void main() {
       contains('ice_dragon_scale'),
     );
     expect(controller.state.log, contains(contains('白鳞冰龙')));
-    expect(controller.state.log, contains(contains('Lv.2')));
     expect(controller.state.log.last, contains('冰龙白鳞'));
 
     controller.dispatch(const GameAction.pickUp('ice_dragon_scale'));
@@ -267,4 +308,57 @@ void main() {
     expect(remainingHp, 32);
     expect(controller.state.combat?.enemyHp, remainingHp);
   });
+}
+
+void _completeRescueQuest(GameController controller) {
+  controller.dispatch(
+    const GameAction.selectDialogue('old_liu', 'ask_daughter'),
+  );
+  controller.dispatch(const GameAction.move(Direction.south));
+  controller.dispatch(
+    const GameAction.selectDialogue('flower_girl', 'ask_about_xiao_juan'),
+  );
+  _moveToDungeon(controller);
+  controller.dispatch(
+    const GameAction.selectDialogue('xiao_juan', 'rescue_xiao_juan'),
+  );
+  controller.dispatch(const GameAction.move(Direction.west));
+  _moveHomeFromDungeonTunnel(controller);
+  controller.dispatch(
+    const GameAction.selectDialogue('old_liu', 'report_daughter'),
+  );
+}
+
+void _moveToDungeon(GameController controller) {
+  for (final direction in const [
+    Direction.north,
+    Direction.east,
+    Direction.north,
+    Direction.north,
+    Direction.east,
+    Direction.north,
+    Direction.north,
+    Direction.up,
+    Direction.up,
+    Direction.east,
+    Direction.east,
+  ]) {
+    controller.dispatch(GameAction.move(direction));
+  }
+}
+
+void _moveHomeFromDungeonTunnel(GameController controller) {
+  for (final direction in const [
+    Direction.west,
+    Direction.down,
+    Direction.down,
+    Direction.south,
+    Direction.south,
+    Direction.west,
+    Direction.south,
+    Direction.south,
+    Direction.west,
+  ]) {
+    controller.dispatch(GameAction.move(direction));
+  }
 }

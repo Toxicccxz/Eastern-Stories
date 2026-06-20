@@ -15,7 +15,9 @@ class InventorySystem {
 
   GameState pickUp(GameState state, String itemId) {
     final room = _repository.room(state.currentRoomId);
-    if (!room.visibleItemIds(state).contains(itemId) ||
+    if (!_repository
+            .visibleItemsInRoom(state, room.id)
+            .any((item) => item.id == itemId) ||
         state.inventoryItemIds.contains(itemId)) {
       return _withLog(state, '这里没有这个东西。');
     }

@@ -1,4 +1,6 @@
+import 'game_state.dart';
 import 'quest_definition.dart';
+import 'world_condition.dart';
 
 class NpcDefinition {
   const NpcDefinition({
@@ -7,7 +9,9 @@ class NpcDefinition {
     required this.description,
     required this.greeting,
     this.dialogueOptions = const [],
+    this.greetingVariants = const [],
     this.combat,
+    this.conditions,
   });
 
   factory NpcDefinition.fromJson(Map<String, Object?> json) {
@@ -21,12 +25,18 @@ class NpcDefinition {
             in json['dialogueOptions'] as List<Object?>? ?? const [])
           DialogueOption.fromJson(option as Map<String, Object?>),
       ],
+      greetingVariants: [
+        for (final variant
+            in json['greetingVariants'] as List<Object?>? ?? const [])
+          GreetingVariant.fromJson(variant as Map<String, Object?>),
+      ],
       combat:
           json['combat'] == null
               ? null
               : CombatDefinition.fromJson(
                 json['combat'] as Map<String, Object?>,
               ),
+      conditions: worldConditionFromJson(json['conditions']),
     );
   }
 
@@ -35,7 +45,34 @@ class NpcDefinition {
   final String description;
   final String greeting;
   final List<DialogueOption> dialogueOptions;
+  final List<GreetingVariant> greetingVariants;
   final CombatDefinition? combat;
+  final WorldCondition? conditions;
+
+  String greetingFor(GameState state) {
+    for (final variant in greetingVariants) {
+      if (variant.conditions.isSatisfiedBy(state)) {
+        return variant.text;
+      }
+    }
+    return greeting;
+  }
+}
+
+class GreetingVariant {
+  const GreetingVariant({required this.text, required this.conditions});
+
+  factory GreetingVariant.fromJson(Map<String, Object?> json) {
+    return GreetingVariant(
+      text: json['text'] as String,
+      conditions: WorldCondition.fromJson(
+        json['conditions'] as Map<String, Object?>,
+      ),
+    );
+  }
+
+  final String text;
+  final WorldCondition conditions;
 }
 
 class CombatDefinition {
@@ -82,6 +119,9 @@ class DialogueOption {
     this.setsQuestFlag,
     this.completesQuestId,
     this.movesNpcToRoomId,
+    this.conditions,
+    this.startsFollowing = false,
+    this.despawnNpcIds = const [],
   });
 
   factory DialogueOption.fromJson(Map<String, Object?> json) {
@@ -97,6 +137,10 @@ class DialogueOption {
       setsQuestFlag: json['setsQuestFlag'] as String?,
       completesQuestId: json['completesQuestId'] as String?,
       movesNpcToRoomId: json['movesNpcToRoomId'] as String?,
+      conditions: worldConditionFromJson(json['conditions']),
+      startsFollowing: json['startsFollowing'] as bool? ?? false,
+      despawnNpcIds:
+          (json['despawnNpcIds'] as List<Object?>? ?? const []).cast<String>(),
     );
   }
 
@@ -109,4 +153,7 @@ class DialogueOption {
   final String? setsQuestFlag;
   final String? completesQuestId;
   final String? movesNpcToRoomId;
+  final WorldCondition? conditions;
+  final bool startsFollowing;
+  final List<String> despawnNpcIds;
 }

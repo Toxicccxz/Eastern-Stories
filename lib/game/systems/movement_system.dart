@@ -9,7 +9,7 @@ class MovementSystem {
 
   GameState move(GameState state, Direction direction) {
     final room = _repository.room(state.currentRoomId);
-    final nextRoomId = room.exits[direction];
+    final nextRoomId = room.availableExits(state)[direction];
     if (nextRoomId == null) {
       return _withLog(state, '这个方向没有路。');
     }
@@ -30,7 +30,10 @@ class MovementSystem {
   GameState performRoomAction(GameState state, String actionId) {
     final room = _repository.room(state.currentRoomId);
     final action =
-        room.actions.where((item) => item.id == actionId).firstOrNull;
+        room
+            .availableActions(state)
+            .where((item) => item.id == actionId)
+            .firstOrNull;
     if (action == null) {
       return _withLog(state, '这里暂时不能这样做。');
     }

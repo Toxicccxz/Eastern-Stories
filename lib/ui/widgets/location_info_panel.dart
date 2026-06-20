@@ -26,7 +26,7 @@ class LocationInfoPanel extends StatelessWidget {
     final npcs =
         controller.repository.visibleNpcsInRoom(state, room.id).toList();
     final items =
-        room.visibleItemIds(state).map(controller.repository.item).toList();
+        controller.repository.visibleItemsInRoom(state, room.id).toList();
 
     return Panel(
       child: Column(
@@ -70,7 +70,7 @@ class LocationInfoPanel extends StatelessWidget {
             label: '行动',
             emptyText: '无',
             children: [
-              for (final action in room.actions)
+              for (final action in room.availableActions(state))
                 ActionChip(
                   avatar: const Icon(Icons.touch_app, size: 18),
                   label: Text(action.label),

@@ -1,3 +1,5 @@
+import 'world_condition.dart';
+
 class ItemDefinition {
   const ItemDefinition({
     required this.id,
@@ -7,6 +9,7 @@ class ItemDefinition {
     this.restoreHp = 0,
     this.restoreInnerPower = 0,
     this.studySkillId,
+    this.conditions,
   });
 
   factory ItemDefinition.fromJson(Map<String, Object?> json) {
@@ -18,6 +21,7 @@ class ItemDefinition {
       restoreHp: json['restoreHp'] as int? ?? 0,
       restoreInnerPower: json['restoreInnerPower'] as int? ?? 0,
       studySkillId: json['studySkillId'] as String?,
+      conditions: worldConditionFromJson(json['conditions']),
     );
   }
 
@@ -28,6 +32,7 @@ class ItemDefinition {
   final int restoreHp;
   final int restoreInnerPower;
   final String? studySkillId;
+  final WorldCondition? conditions;
 
   bool get canEquip => attackPower > 0;
 

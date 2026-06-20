@@ -14,7 +14,7 @@ class ActionBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final buttons = [
-      for (final entry in room.exits.entries)
+      for (final entry in room.availableExits(controller.state).entries)
         _ActionButton(
           label: entry.key.label,
           icon: Icons.navigation,
