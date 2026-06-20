@@ -234,6 +234,66 @@ void main() {
     expect(controller.state.log, contains(contains('疾风劲竹')));
   });
 
+  test('active parry stance blocks the next enemy attack', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'ice_cave',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'ice_cave'},
+        learnedSkillIds: {'parry'},
+      ),
+    );
+
+    controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
+    controller.dispatch(const GameAction.useCombatSkill('parry'));
+
+    expect(controller.state.player.hp, 80);
+    expect(controller.state.combat?.round, 1);
+    expect(controller.state.log.last, contains('挡下'));
+  });
+
+  test('enemy special move triggers on its configured round', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'ice_cave',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'ice_cave'},
+      ),
+    );
+
+    controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
+    controller.dispatch(const GameAction.attack());
+    controller.dispatch(const GameAction.attack());
+
+    expect(controller.state.combat?.round, 2);
+    expect(controller.state.player.hp, 66);
+    expect(controller.state.log.last, contains('寒息'));
+  });
+
+  test('defeated player recovers at the starting room', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'ice_cave',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'ice_cave'},
+        player: initialState.player.copyWith(hp: 1),
+      ),
+    );
+
+    controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
+    controller.dispatch(const GameAction.attack());
+
+    expect(controller.state.combat, isNull);
+    expect(controller.state.currentRoomId, 'liu_home');
+    expect(controller.state.player.hp, 40);
+    expect(controller.state.player.innerPower, 15);
+    expect(controller.state.npcStates['white_ice_dragon']?.currentHp, 32);
+    expect(controller.state.log.last, contains('昏迷'));
+  });
+
   test('room actions can move the player through lake scenes', () {
     final controller = GameController(repository: repository);
 

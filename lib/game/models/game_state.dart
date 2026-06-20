@@ -353,24 +353,34 @@ class PlayerState {
 }
 
 class CombatState {
-  const CombatState({required this.npcId, required this.enemyHp});
+  const CombatState({
+    required this.npcId,
+    required this.enemyHp,
+    this.round = 0,
+  });
 
   factory CombatState.fromJson(Map<String, Object?> json) {
     return CombatState(
       npcId: json['npcId'] as String,
       enemyHp: json['enemyHp'] as int,
+      round: json['round'] as int? ?? 0,
     );
   }
 
   final String npcId;
   final int enemyHp;
+  final int round;
 
   Map<String, Object?> toJson() {
-    return {'npcId': npcId, 'enemyHp': enemyHp};
+    return {'npcId': npcId, 'enemyHp': enemyHp, 'round': round};
   }
 
-  CombatState copyWith({int? enemyHp}) {
-    return CombatState(npcId: npcId, enemyHp: enemyHp ?? this.enemyHp);
+  CombatState copyWith({int? enemyHp, int? round}) {
+    return CombatState(
+      npcId: npcId,
+      enemyHp: enemyHp ?? this.enemyHp,
+      round: round ?? this.round,
+    );
   }
 }
 

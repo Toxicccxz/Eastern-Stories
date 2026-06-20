@@ -112,7 +112,13 @@
       "rewardSilver": 80,
       "rewardExperience": 70,
       "dropItemIds": ["ice_dragon_scale"],
-      "respawnAfterMoves": 6
+      "respawnAfterMoves": 6,
+      "specialMove": {
+        "name": "寒息",
+        "interval": 2,
+        "damageBonus": 4,
+        "message": "白鳞冰龙昂首吐出森寒气息，冰雾瞬间将你笼罩。"
+      }
     }
   }
 ]

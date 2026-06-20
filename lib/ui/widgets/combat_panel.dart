@@ -31,7 +31,20 @@ class CombatPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('战斗', style: Theme.of(context).textTheme.titleMedium),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '战斗',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              Text(
+                '第 ${combat.round + 1} 回合',
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+            ],
+          ),
           const SizedBox(height: 10),
           Text(
             npc.name,
@@ -46,6 +59,15 @@ class CombatPanel extends StatelessWidget {
             maxValue: combatDefinition.maxHp,
             color: const Color(0xFF7B5FA4),
           ),
+          if (combatDefinition.specialMove case final specialMove?) ...[
+            const SizedBox(height: 8),
+            Text(
+              '${specialMove.name}：每 ${specialMove.interval} 回合发动',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
+          ],
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
@@ -121,10 +143,8 @@ class _SkillButton extends StatelessWidget {
       children: [
         FilledButton.tonalIcon(
           onPressed: enabled ? onPressed : null,
-          icon: const Icon(Icons.auto_fix_high, size: 18),
-          label: Text(
-            '${skill.moveName ?? skill.name}  ${skill.innerPowerCost}内力',
-          ),
+          icon: Icon(_icon, size: 18),
+          label: Text('${skill.moveName ?? skill.name}$_costLabel'),
         ),
         if (reason != null)
           Padding(
@@ -138,5 +158,17 @@ class _SkillButton extends StatelessWidget {
           ),
       ],
     );
+  }
+
+  IconData get _icon {
+    return switch (skill.effectType) {
+      SkillEffectType.damage => Icons.auto_fix_high,
+      SkillEffectType.defend => Icons.shield_outlined,
+      SkillEffectType.heal => Icons.favorite_outline,
+    };
+  }
+
+  String get _costLabel {
+    return skill.innerPowerCost == 0 ? '' : '  ${skill.innerPowerCost}内力';
   }
 }

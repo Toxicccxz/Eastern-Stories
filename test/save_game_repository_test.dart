@@ -42,7 +42,11 @@ void main() {
       },
       questStatuses: {'old_liu_daughter': QuestStatus.active},
       questFlags: {'flower_girl_found'},
-      combat: const CombatState(npcId: 'white_ice_dragon', enemyHp: 12),
+      combat: const CombatState(
+        npcId: 'white_ice_dragon',
+        enemyHp: 12,
+        round: 4,
+      ),
     );
 
     await repository.save(state);
@@ -70,6 +74,7 @@ void main() {
     expect(loaded?.questFlags, {'flower_girl_found'});
     expect(loaded?.combat?.npcId, 'white_ice_dragon');
     expect(loaded?.combat?.enemyHp, 12);
+    expect(loaded?.combat?.round, 4);
 
     await repository.delete();
 
@@ -86,5 +91,14 @@ void main() {
     final state = GameState.fromJson(json);
 
     expect(state.equippedItemIds, {EquipmentSlot.weapon: 'hengbing_sword'});
+  });
+
+  test('legacy combat state defaults to round zero', () {
+    final state = CombatState.fromJson({
+      'npcId': 'white_ice_dragon',
+      'enemyHp': 12,
+    });
+
+    expect(state.round, 0);
   });
 }

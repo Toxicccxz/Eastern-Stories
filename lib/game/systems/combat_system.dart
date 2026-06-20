@@ -76,11 +76,15 @@ class CombatSystem {
         innerPower: state.player.innerPower - skill.innerPowerCost,
       ),
     );
-    return _performPlayerAttack(
-      preparedState,
-      damageBonus: skill.damageBonus,
-      skill: skill,
-    );
+    return switch (skill.effectType) {
+      SkillEffectType.damage => _performPlayerAttack(
+        preparedState,
+        damageBonus: skill.damageBonus,
+        skill: skill,
+      ),
+      SkillEffectType.defend => _performDefensiveSkill(preparedState, skill),
+      SkillEffectType.heal => _performHealingSkill(preparedState, skill),
+    };
   }
 
   GameState _performPlayerAttack(
@@ -106,35 +110,111 @@ class CombatSystem {
       999,
     );
     final nextEnemyHp = activeCombat.enemyHp - playerDamage;
+    final attackState = _appendAttackLog(state, npc.name, playerDamage, skill);
 
     if (nextEnemyHp <= 0) {
-      final attackState = _appendAttackLog(
-        state,
-        npc.name,
-        playerDamage,
-        skill,
-      );
       return _defeatNpc(attackState, npc.id, npcState, combat);
     }
+    return _performEnemyTurn(attackState, enemyHp: nextEnemyHp);
+  }
 
-    final enemyDamage =
-        (combat.attack - stats.defense - _damageReduction(state)).clamp(1, 999);
-    final nextPlayerHp = (state.player.hp - enemyDamage).clamp(1, stats.maxHp);
-    final wasPlayerDefeated = nextPlayerHp == 1;
-    final attackState = _appendAttackLog(state, npc.name, playerDamage, skill);
-    final log = [...attackState.log, '${npc.name}反击，你受到$enemyDamage点伤害。'];
+  GameState _performDefensiveSkill(GameState state, SkillDefinition skill) {
+    final message = skill.combatMessage ?? '你凝神守住门户，准备化解来势。';
+    return _performEnemyTurn(
+      _withLog(state, message),
+      defenseBonus: skill.defenseBonus,
+    );
+  }
 
-    return attackState.copyWith(
-      player: attackState.player.copyWith(hp: nextPlayerHp),
+  GameState _performHealingSkill(GameState state, SkillDefinition skill) {
+    final stats = _equipmentSystem.statsFor(state);
+    final recoveredHp = (state.player.hp + skill.healAmount).clamp(
+      0,
+      stats.maxHp,
+    );
+    final message = skill.combatMessage ?? '你调匀呼吸，恢复了${skill.healAmount}点气血。';
+    return _performEnemyTurn(
+      state.copyWith(
+        player: state.player.copyWith(hp: recoveredHp),
+        log: state.logWith(message),
+      ),
+    );
+  }
+
+  GameState _performEnemyTurn(
+    GameState state, {
+    int? enemyHp,
+    int defenseBonus = 0,
+  }) {
+    final activeCombat = state.combat;
+    if (activeCombat == null) {
+      return state;
+    }
+    final npc = _repository.npc(activeCombat.npcId);
+    final combat = npc.combat;
+    final npcState = state.npcStates[activeCombat.npcId];
+    if (combat == null || npcState == null || npcState.isDefeated) {
+      return state.copyWith(combat: null);
+    }
+
+    final nextRound = activeCombat.round + 1;
+    final specialMove = combat.specialMove;
+    final usesSpecialMove =
+        specialMove != null &&
+        specialMove.interval > 0 &&
+        nextRound % specialMove.interval == 0;
+    final attackBonus = usesSpecialMove ? specialMove.damageBonus : 0;
+    final stats = _equipmentSystem.statsFor(state);
+    final enemyDamage = (combat.attack +
+            attackBonus -
+            stats.defense -
+            _damageReduction(state) -
+            defenseBonus)
+        .clamp(0, 999);
+    final nextPlayerHp = (state.player.hp - enemyDamage).clamp(0, stats.maxHp);
+    final nextEnemyHp = enemyHp ?? activeCombat.enemyHp;
+    final attackMessage =
+        usesSpecialMove
+            ? '【${specialMove.name}】${specialMove.message} '
+                '你受到$enemyDamage点伤害。'
+            : enemyDamage == 0
+            ? '你挡下了${npc.name}的攻势，没有受到伤害。'
+            : '${npc.name}反击，你受到$enemyDamage点伤害。';
+    final nextState = state.copyWith(
+      player: state.player.copyWith(hp: nextPlayerHp),
       npcStates: {
-        ...attackState.npcStates,
+        ...state.npcStates,
         npc.id: npcState.copyWith(currentHp: nextEnemyHp),
       },
-      combat:
-          wasPlayerDefeated
-              ? null
-              : activeCombat.copyWith(enemyHp: nextEnemyHp),
-      log: wasPlayerDefeated ? [...log, '你勉强脱离战斗，气血只剩一线。'] : log,
+      combat: activeCombat.copyWith(enemyHp: nextEnemyHp, round: nextRound),
+      log: state.logWith(attackMessage),
+    );
+
+    if (nextPlayerHp > 0) {
+      return nextState;
+    }
+    return _recoverFromDefeat(nextState, npc.name);
+  }
+
+  GameState _recoverFromDefeat(GameState state, String enemyName) {
+    final stats = _equipmentSystem.statsFor(state);
+    final startingRoomId = _repository.startingRoomId;
+    final npcStates = {...state.npcStates};
+    for (final entry in npcStates.entries) {
+      if (entry.value.isFollowing) {
+        npcStates[entry.key] = entry.value.copyWith(roomId: startingRoomId);
+      }
+    }
+    return state.copyWith(
+      currentRoomId: startingRoomId,
+      visitedRoomIds: {...state.visitedRoomIds, startingRoomId},
+      player: state.player.copyWith(
+        hp: (stats.maxHp ~/ 2).clamp(1, stats.maxHp),
+        innerPower: (stats.maxInnerPower ~/ 2).clamp(0, stats.maxInnerPower),
+      ),
+      npcStates: npcStates,
+      combat: null,
+      log: state.logWith('你不敌$enemyName，昏迷后被人送回刘家小房。'),
     );
   }
 
@@ -149,7 +229,7 @@ class CombatSystem {
         skillMessage == null
             ? '你向$enemyName出手，造成$damage点伤害。'
             : '$skillMessage 造成$damage点伤害。';
-    return state.copyWith(log: state.logWith(message));
+    return _withLog(state, message);
   }
 
   GameState fleeCombat(GameState state) {

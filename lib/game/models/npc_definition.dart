@@ -133,6 +133,7 @@ class CombatDefinition {
     this.rewardExperience = 0,
     this.dropItemIds = const [],
     this.respawnAfterMoves,
+    this.specialMove,
   });
 
   factory CombatDefinition.fromJson(Map<String, Object?> json) {
@@ -145,6 +146,12 @@ class CombatDefinition {
       dropItemIds:
           (json['dropItemIds'] as List<Object?>? ?? const []).cast<String>(),
       respawnAfterMoves: json['respawnAfterMoves'] as int?,
+      specialMove:
+          json['specialMove'] == null
+              ? null
+              : EnemyMoveDefinition.fromJson(
+                json['specialMove'] as Map<String, Object?>,
+              ),
     );
   }
 
@@ -155,6 +162,30 @@ class CombatDefinition {
   final int rewardExperience;
   final List<String> dropItemIds;
   final int? respawnAfterMoves;
+  final EnemyMoveDefinition? specialMove;
+}
+
+class EnemyMoveDefinition {
+  const EnemyMoveDefinition({
+    required this.name,
+    required this.interval,
+    required this.damageBonus,
+    required this.message,
+  });
+
+  factory EnemyMoveDefinition.fromJson(Map<String, Object?> json) {
+    return EnemyMoveDefinition(
+      name: json['name'] as String,
+      interval: json['interval'] as int,
+      damageBonus: json['damageBonus'] as int? ?? 0,
+      message: json['message'] as String,
+    );
+  }
+
+  final String name;
+  final int interval;
+  final int damageBonus;
+  final String message;
 }
 
 class DialogueOption {

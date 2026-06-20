@@ -10,7 +10,13 @@
       "defense": 2,
       "rewardSilver": 3,
       "rewardExperience": 15,
-      "dropItemIds": ["rough_short_sword"]
+      "dropItemIds": ["rough_short_sword"],
+      "specialMove": {
+        "name": "乱剑",
+        "interval": 3,
+        "damageBonus": 1,
+        "message": "土匪探哨胡乱舞动短剑，一阵乱剑迎面劈来。"
+      }
     }
   },
   {
@@ -23,7 +29,13 @@
       "attack": 6,
       "defense": 3,
       "rewardSilver": 5,
-      "rewardExperience": 25
+      "rewardExperience": 25,
+      "specialMove": {
+        "name": "重劈",
+        "interval": 3,
+        "damageBonus": 3,
+        "message": "土匪喽罗双手抡起短剑，使出一记势大力沉的重劈。"
+      }
     }
   }
 ]

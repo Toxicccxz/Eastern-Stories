@@ -2,7 +2,12 @@
   {
     "id": "parry",
     "name": "基础招架",
-    "description": "从过招要门中领会的拆招卸力之法，可略微降低受到的伤害。",
+    "description": "从过招要门中领会的拆招卸力之法，可略微降低受到的伤害，也能主动稳守门户。",
+    "type": "active",
+    "effectType": "defend",
+    "moveName": "稳守门户",
+    "defenseBonus": 5,
+    "combatMessage": "你沉肩定步，使出“稳守门户”，凝神拆解来势。",
     "damageReduction": 2
   },
   {

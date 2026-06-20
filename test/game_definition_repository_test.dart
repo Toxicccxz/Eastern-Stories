@@ -77,6 +77,14 @@ void main() {
       }
       final combat = npc.combat;
       if (combat != null) {
+        final specialMove = combat.specialMove;
+        if (specialMove != null) {
+          expect(
+            specialMove.interval,
+            greaterThan(0),
+            reason: '${npc.id} has an invalid special move interval',
+          );
+        }
         for (final itemId in combat.dropItemIds) {
           expect(
             () => repository.item(itemId),
