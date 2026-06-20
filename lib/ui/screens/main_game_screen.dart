@@ -28,7 +28,11 @@ class MainGameScreen extends StatelessWidget {
           body: SafeArea(
             child: Column(
               children: [
-                PlayerStatusBar(state: state, onSave: _save),
+                PlayerStatusBar(
+                  state: state,
+                  stats: controller.characterStats(),
+                  onSave: _save,
+                ),
                 Expanded(
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),

@@ -285,6 +285,7 @@ void main() {
     controller.dispatch(const GameAction.attack());
 
     expect(controller.state.equippedWeaponId, 'hengbing_sword');
+    expect(controller.characterStats().attack, 18);
     expect(controller.state.learnedSkillIds, contains('parry'));
     expect(controller.state.combat, isNull);
     expect(controller.state.player.silver, 100);

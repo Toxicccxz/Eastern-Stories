@@ -1,11 +1,13 @@
 import '../models/game_state.dart';
 import '../models/skill_definition.dart';
 import '../repositories/game_definition_repository.dart';
+import 'equipment_system.dart';
 
 class InventorySystem {
-  const InventorySystem(this._repository);
+  const InventorySystem(this._repository, this._equipmentSystem);
 
   final GameDefinitionRepository _repository;
+  final EquipmentSystem _equipmentSystem;
 
   List<SkillDefinition> learnedSkills(GameState state) {
     return [
@@ -31,22 +33,6 @@ class InventorySystem {
       },
       inventoryItemIds: [...state.inventoryItemIds, itemId],
       log: state.logWith('你捡起了${item.name}。'),
-    );
-  }
-
-  GameState equipItem(GameState state, String itemId) {
-    if (!state.inventoryItemIds.contains(itemId)) {
-      return _withLog(state, '你还没有这个东西。');
-    }
-
-    final item = _repository.item(itemId);
-    if (!item.canEquip) {
-      return _withLog(state, '${item.name}不能装备。');
-    }
-
-    return state.copyWith(
-      equippedWeaponId: itemId,
-      log: state.logWith('你装备了${item.name}。'),
     );
   }
 
@@ -82,12 +68,13 @@ class InventorySystem {
     }
 
     final inventory = [...state.inventoryItemIds]..remove(itemId);
+    final stats = _equipmentSystem.statsFor(state);
     return state.copyWith(
       player: state.player.copyWith(
-        hp: (state.player.hp + item.restoreHp).clamp(0, state.player.maxHp),
+        hp: (state.player.hp + item.restoreHp).clamp(0, stats.maxHp),
         innerPower: (state.player.innerPower + item.restoreInnerPower).clamp(
           0,
-          state.player.maxInnerPower,
+          stats.maxInnerPower,
         ),
       ),
       inventoryItemIds: inventory,
@@ -103,15 +90,17 @@ class InventorySystem {
     final room = _repository.room(state.currentRoomId);
     final item = _repository.item(itemId);
     final inventory = [...state.inventoryItemIds]..remove(itemId);
-    return state.copyWith(
+    final unequippedState = _equipmentSystem.removeItemFromEquipment(
+      state,
+      itemId,
+    );
+    return unequippedState.copyWith(
       inventoryItemIds: inventory,
-      equippedWeaponId:
-          state.equippedWeaponId == itemId ? null : state.equippedWeaponId,
       roomItemOverrides: {
-        ...state.roomItemOverrides,
-        room.id: [...room.visibleItemIds(state), itemId],
+        ...unequippedState.roomItemOverrides,
+        room.id: [...room.visibleItemIds(unequippedState), itemId],
       },
-      log: state.logWith('你放下了${item.name}。'),
+      log: unequippedState.logWith('你放下了${item.name}。'),
     );
   }
 

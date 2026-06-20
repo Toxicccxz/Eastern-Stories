@@ -17,7 +17,7 @@
     "mapX": 1,
     "mapY": 1,
     "exits": {"south": "liu_home"},
-    "itemIds": ["old_book"]
+    "itemIds": ["old_book", "plain_cloth"]
   },
   {
     "id": "little_garden",

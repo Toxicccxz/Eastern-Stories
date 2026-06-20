@@ -2,12 +2,18 @@ import '../models/game_state.dart';
 import '../models/npc_definition.dart';
 import '../repositories/game_definition_repository.dart';
 import 'progression_system.dart';
+import 'equipment_system.dart';
 
 class CombatSystem {
-  const CombatSystem(this._repository, this._progressionSystem);
+  const CombatSystem(
+    this._repository,
+    this._progressionSystem,
+    this._equipmentSystem,
+  );
 
   final GameDefinitionRepository _repository;
   final ProgressionSystem _progressionSystem;
+  final EquipmentSystem _equipmentSystem;
 
   GameState startCombat(GameState state, String npcId) {
     if (state.combat != null) {
@@ -51,24 +57,17 @@ class CombatSystem {
       return state.copyWith(combat: null);
     }
 
-    final weaponId = state.equippedWeaponId;
-    final weaponPower =
-        weaponId == null ? 0 : _repository.item(weaponId).attackPower;
-    final playerDamage = (8 + weaponPower - combat.defense).clamp(1, 999);
+    final stats = _equipmentSystem.statsFor(state);
+    final playerDamage = (stats.attack - combat.defense).clamp(1, 999);
     final nextEnemyHp = activeCombat.enemyHp - playerDamage;
 
     if (nextEnemyHp <= 0) {
       return _defeatNpc(state, npc.id, npcState, combat);
     }
 
-    final enemyDamage = (combat.attack - 2 - _damageReduction(state)).clamp(
-      1,
-      999,
-    );
-    final nextPlayerHp = (state.player.hp - enemyDamage).clamp(
-      1,
-      state.player.maxHp,
-    );
+    final enemyDamage =
+        (combat.attack - stats.defense - _damageReduction(state)).clamp(1, 999);
+    final nextPlayerHp = (state.player.hp - enemyDamage).clamp(1, stats.maxHp);
     final wasPlayerDefeated = nextPlayerHp == 1;
     final log = [
       ...state.logWith('你向${npc.name}出手，造成$playerDamage点伤害。'),

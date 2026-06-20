@@ -1,4 +1,5 @@
 import 'quest_definition.dart';
+import 'equipment_slot.dart';
 
 class GameState {
   const GameState({
@@ -7,7 +8,7 @@ class GameState {
     required this.player,
     required this.visitedRoomIds,
     required this.inventoryItemIds,
-    required this.equippedWeaponId,
+    required this.equippedItemIds,
     required this.learnedSkillIds,
     required this.roomItemOverrides,
     required this.npcStates,
@@ -39,7 +40,7 @@ class GameState {
       ),
       visitedRoomIds: {startingRoomId},
       inventoryItemIds: const [],
-      equippedWeaponId: null,
+      equippedItemIds: const {},
       learnedSkillIds: const {},
       roomItemOverrides: const {},
       npcStates: npcStates,
@@ -60,7 +61,7 @@ class GameState {
           (json['visitedRoomIds'] as List<Object?>).cast<String>().toSet(),
       inventoryItemIds:
           (json['inventoryItemIds'] as List<Object?>).cast<String>(),
-      equippedWeaponId: json['equippedWeaponId'] as String?,
+      equippedItemIds: _equipmentFromJson(json),
       learnedSkillIds:
           (json['learnedSkillIds'] as List<Object?>).cast<String>().toSet(),
       roomItemOverrides: (json['roomItemOverrides'] as Map<String, Object?>)
@@ -97,7 +98,7 @@ class GameState {
   final PlayerState player;
   final Set<String> visitedRoomIds;
   final List<String> inventoryItemIds;
-  final String? equippedWeaponId;
+  final Map<EquipmentSlot, String> equippedItemIds;
   final Set<String> learnedSkillIds;
   final Map<String, List<String>> roomItemOverrides;
   final Map<String, NpcRuntimeState> npcStates;
@@ -114,6 +115,9 @@ class GameState {
       'player': player.toJson(),
       'visitedRoomIds': visitedRoomIds.toList(),
       'inventoryItemIds': inventoryItemIds,
+      'equippedItemIds': equippedItemIds.map(
+        (slot, itemId) => MapEntry(slot.name, itemId),
+      ),
       'equippedWeaponId': equippedWeaponId,
       'learnedSkillIds': learnedSkillIds.toList(),
       'roomItemOverrides': roomItemOverrides,
@@ -138,6 +142,7 @@ class GameState {
     PlayerState? player,
     Set<String>? visitedRoomIds,
     List<String>? inventoryItemIds,
+    Map<EquipmentSlot, String>? equippedItemIds,
     Object? equippedWeaponId = _unchanged,
     Set<String>? learnedSkillIds,
     Map<String, List<String>>? roomItemOverrides,
@@ -148,16 +153,23 @@ class GameState {
     Object? combat = _unchanged,
     List<String>? log,
   }) {
+    final nextEquipment = {...(equippedItemIds ?? this.equippedItemIds)};
+    if (equippedWeaponId != _unchanged) {
+      final weaponId = equippedWeaponId as String?;
+      if (weaponId == null) {
+        nextEquipment.remove(EquipmentSlot.weapon);
+      } else {
+        nextEquipment[EquipmentSlot.weapon] = weaponId;
+      }
+    }
+
     return GameState(
       currentRoomId: currentRoomId ?? this.currentRoomId,
       worldTurn: worldTurn ?? this.worldTurn,
       player: player ?? this.player,
       visitedRoomIds: visitedRoomIds ?? this.visitedRoomIds,
       inventoryItemIds: inventoryItemIds ?? this.inventoryItemIds,
-      equippedWeaponId:
-          equippedWeaponId == _unchanged
-              ? this.equippedWeaponId
-              : equippedWeaponId as String?,
+      equippedItemIds: nextEquipment,
       learnedSkillIds: learnedSkillIds ?? this.learnedSkillIds,
       roomItemOverrides: roomItemOverrides ?? this.roomItemOverrides,
       npcStates: npcStates ?? this.npcStates,
@@ -172,6 +184,8 @@ class GameState {
   List<String> logWith(String message) {
     return [...log, message].takeLast(20);
   }
+
+  String? get equippedWeaponId => equippedItemIds[EquipmentSlot.weapon];
 }
 
 class ShopRuntimeState {
@@ -361,6 +375,19 @@ class CombatState {
 }
 
 const Object _unchanged = Object();
+
+Map<EquipmentSlot, String> _equipmentFromJson(Map<String, Object?> json) {
+  final equipment =
+      (json['equippedItemIds'] as Map<String, Object?>? ?? const {}).map(
+        (slot, itemId) =>
+            MapEntry(EquipmentSlot.values.byName(slot), itemId as String),
+      );
+  final legacyWeaponId = json['equippedWeaponId'] as String?;
+  if (legacyWeaponId != null) {
+    equipment.putIfAbsent(EquipmentSlot.weapon, () => legacyWeaponId);
+  }
+  return equipment;
+}
 
 QuestStatus _questStatusFromName(Object? name) {
   return QuestStatus.values.firstWhere(

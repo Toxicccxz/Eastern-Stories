@@ -6,6 +6,7 @@ import '../models/quest_definition.dart';
 import '../models/skill_definition.dart';
 import '../repositories/game_definition_repository.dart';
 import '../systems/combat_system.dart';
+import '../systems/equipment_system.dart';
 import '../systems/inventory_system.dart';
 import '../systems/movement_system.dart';
 import '../systems/progression_system.dart';
@@ -23,17 +24,23 @@ class GameController extends ChangeNotifier {
            initialState == null
                ? repository.createInitialState()
                : repository.hydrateState(initialState) {
-    final progressionSystem = ProgressionSystem(repository);
+    _equipmentSystem = EquipmentSystem(repository);
+    final progressionSystem = ProgressionSystem(repository, _equipmentSystem);
     _movementSystem = MovementSystem(repository);
-    _inventorySystem = InventorySystem(repository);
+    _inventorySystem = InventorySystem(repository, _equipmentSystem);
     _questSystem = QuestSystem(repository, progressionSystem);
-    _combatSystem = CombatSystem(repository, progressionSystem);
+    _combatSystem = CombatSystem(
+      repository,
+      progressionSystem,
+      _equipmentSystem,
+    );
     _worldSystem = WorldSystem(repository);
-    _tradeSystem = TradeSystem(repository);
+    _tradeSystem = TradeSystem(repository, _equipmentSystem);
   }
 
   final GameDefinitionRepository _repository;
   late final MovementSystem _movementSystem;
+  late final EquipmentSystem _equipmentSystem;
   late final InventorySystem _inventorySystem;
   late final QuestSystem _questSystem;
   late final CombatSystem _combatSystem;
@@ -70,9 +77,13 @@ class GameController extends ChangeNotifier {
       SelectDialogueAction(:final npcId, :final optionId) => _questSystem
           .selectDialogue(_state, npcId, optionId),
       PickUpAction(:final itemId) => _inventorySystem.pickUp(_state, itemId),
-      EquipItemAction(:final itemId) => _inventorySystem.equipItem(
+      EquipItemAction(:final itemId) => _equipmentSystem.equipItem(
         _state,
         itemId,
+      ),
+      UnequipItemAction(:final slot) => _equipmentSystem.unequipItem(
+        _state,
+        slot,
       ),
       StudyItemAction(:final itemId) => _inventorySystem.studyItem(
         _state,
@@ -113,6 +124,10 @@ class GameController extends ChangeNotifier {
 
   List<SkillDefinition> learnedSkills() {
     return _inventorySystem.learnedSkills(_state);
+  }
+
+  CharacterStats characterStats() {
+    return _equipmentSystem.statsFor(_state);
   }
 
   void completeQuestLegacy(String questId) {

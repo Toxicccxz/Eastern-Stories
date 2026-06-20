@@ -1,10 +1,12 @@
 import '../models/game_state.dart';
 import '../repositories/game_definition_repository.dart';
+import 'equipment_system.dart';
 
 class ProgressionSystem {
-  const ProgressionSystem(this._repository);
+  const ProgressionSystem(this._repository, this._equipmentSystem);
 
   final GameDefinitionRepository _repository;
+  final EquipmentSystem _equipmentSystem;
 
   GameState awardRewards(
     GameState state, {
@@ -28,6 +30,11 @@ class ProgressionSystem {
       state.player.copyWith(silver: state.player.silver + silver),
       experience,
     );
+    final stats = _equipmentSystem.statsFor(state.copyWith(player: nextPlayer));
+    final healedPlayer = nextPlayer.copyWith(
+      hp: stats.maxHp,
+      innerPower: stats.maxInnerPower,
+    );
     final log = [
       ...state.logWith(
         rewardText.isEmpty ? logPrefix : '$logPrefix。获得$rewardText。',
@@ -36,7 +43,7 @@ class ProgressionSystem {
         '你升到了 Lv.${nextPlayer.level}，气血和内力更加充沛。',
     ];
 
-    return state.copyWith(player: nextPlayer, log: log);
+    return state.copyWith(player: healedPlayer, log: log);
   }
 
   PlayerState _applyExperience(PlayerState player, int gainedExperience) {
@@ -58,9 +65,7 @@ class ProgressionSystem {
       level: level,
       experience: experience,
       nextLevelExperience: nextLevelExperience,
-      hp: maxHp,
       maxHp: maxHp,
-      innerPower: maxInnerPower,
       maxInnerPower: maxInnerPower,
     );
   }

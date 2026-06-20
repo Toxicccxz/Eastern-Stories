@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:eastern_stories/game/models/game_state.dart';
+import 'package:eastern_stories/game/models/equipment_slot.dart';
 import 'package:eastern_stories/game/models/quest_definition.dart';
 import 'package:eastern_stories/game/repositories/save_game_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -55,6 +56,7 @@ void main() {
     expect(loaded?.worldTurn, 9);
     expect(loaded?.inventoryItemIds, ['old_book']);
     expect(loaded?.equippedWeaponId, 'hengbing_sword');
+    expect(loaded?.equippedItemIds, {EquipmentSlot.weapon: 'hengbing_sword'});
     expect(loaded?.learnedSkillIds, {'parry'});
     expect(loaded?.npcStates['white_ice_dragon']?.roomId, 'ice_cave');
     expect(loaded?.npcStates['white_ice_dragon']?.currentHp, 12);
@@ -72,5 +74,17 @@ void main() {
     await repository.delete();
 
     expect(await repository.hasSave(), isFalse);
+  });
+
+  test('legacy equipped weapon field migrates into weapon slot', () {
+    final json =
+        GameState.initial(
+            startingRoomId: 'liu_home',
+          ).copyWith(equippedWeaponId: 'hengbing_sword').toJson()
+          ..remove('equippedItemIds');
+
+    final state = GameState.fromJson(json);
+
+    expect(state.equippedItemIds, {EquipmentSlot.weapon: 'hengbing_sword'});
   });
 }

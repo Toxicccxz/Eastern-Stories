@@ -4,6 +4,8 @@ import '../../game/core/game_action.dart';
 import '../../game/core/game_controller.dart';
 import '../../game/models/quest_definition.dart';
 import '../../game/models/room_definition.dart';
+import '../../game/models/equipment_slot.dart';
+import 'character_sheet.dart';
 
 class ActionBar extends StatelessWidget {
   const ActionBar({super.key, required this.room, required this.controller});
@@ -24,6 +26,11 @@ class ActionBar extends StatelessWidget {
         label: '查看',
         icon: Icons.search,
         onPressed: () => controller.dispatch(const GameAction.look()),
+      ),
+      _ActionButton(
+        label: '角色',
+        icon: Icons.person_outline,
+        onPressed: () => _showCharacter(context, controller),
       ),
       _ActionButton(
         label: '背包',
@@ -60,7 +67,7 @@ class ActionBar extends StatelessWidget {
       context: context,
       builder: (context) {
         final itemIds = controller.state.inventoryItemIds;
-        final equippedWeaponId = controller.state.equippedWeaponId;
+        final equippedItemIds = controller.state.equippedItemIds;
         final learnedSkillIds = controller.state.learnedSkillIds;
 
         return Padding(
@@ -84,7 +91,7 @@ class ActionBar extends StatelessWidget {
                     trailing: _InventoryAction(
                       itemId: itemId,
                       controller: controller,
-                      equippedWeaponId: equippedWeaponId,
+                      equippedItemIds: equippedItemIds,
                       learnedSkillIds: learnedSkillIds,
                     ),
                   ),
@@ -92,6 +99,15 @@ class ActionBar extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  void _showCharacter(BuildContext context, GameController controller) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (_) => CharacterSheet(controller: controller),
     );
   }
 
@@ -232,13 +248,13 @@ class _InventoryAction extends StatelessWidget {
   const _InventoryAction({
     required this.itemId,
     required this.controller,
-    required this.equippedWeaponId,
+    required this.equippedItemIds,
     required this.learnedSkillIds,
   });
 
   final String itemId;
   final GameController controller;
-  final String? equippedWeaponId;
+  final Map<EquipmentSlot, String> equippedItemIds;
   final Set<String> learnedSkillIds;
 
   @override
@@ -246,15 +262,16 @@ class _InventoryAction extends StatelessWidget {
     final item = controller.repository.item(itemId);
     Widget? primaryAction;
     if (item.canEquip) {
+      final isEquipped = equippedItemIds[item.equipmentSlot] == itemId;
       primaryAction = FilledButton(
         onPressed:
-            equippedWeaponId == itemId
+            isEquipped
                 ? null
                 : () {
                   controller.dispatch(GameAction.equipItem(itemId));
                   Navigator.of(context).pop();
                 },
-        child: Text(equippedWeaponId == itemId ? '已装备' : '装备'),
+        child: Text(isEquipped ? '已装备' : '装备'),
       );
     } else if (item.studySkillId case final skillId?) {
       primaryAction = FilledButton(

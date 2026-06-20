@@ -1,4 +1,5 @@
 import 'world_condition.dart';
+import 'equipment_slot.dart';
 
 class ItemDefinition {
   const ItemDefinition({
@@ -12,6 +13,10 @@ class ItemDefinition {
     this.conditions,
     this.buyPrice = 0,
     this.sellPrice = 0,
+    this.equipmentSlot,
+    this.defensePower = 0,
+    this.maxHpBonus = 0,
+    this.maxInnerPowerBonus = 0,
   });
 
   factory ItemDefinition.fromJson(Map<String, Object?> json) {
@@ -26,6 +31,10 @@ class ItemDefinition {
       conditions: worldConditionFromJson(json['conditions']),
       buyPrice: json['buyPrice'] as int? ?? 0,
       sellPrice: json['sellPrice'] as int? ?? 0,
+      equipmentSlot: _equipmentSlot(json),
+      defensePower: json['defensePower'] as int? ?? 0,
+      maxHpBonus: json['maxHpBonus'] as int? ?? 0,
+      maxInnerPowerBonus: json['maxInnerPowerBonus'] as int? ?? 0,
     );
   }
 
@@ -39,10 +48,22 @@ class ItemDefinition {
   final WorldCondition? conditions;
   final int buyPrice;
   final int sellPrice;
+  final EquipmentSlot? equipmentSlot;
+  final int defensePower;
+  final int maxHpBonus;
+  final int maxInnerPowerBonus;
 
-  bool get canEquip => attackPower > 0;
+  bool get canEquip => equipmentSlot != null;
 
   bool get canStudy => studySkillId != null;
 
   bool get canUse => restoreHp > 0 || restoreInnerPower > 0;
+}
+
+EquipmentSlot? _equipmentSlot(Map<String, Object?> json) {
+  final slot = json['equipmentSlot'] as String?;
+  if (slot != null) {
+    return EquipmentSlot.values.byName(slot);
+  }
+  return (json['attackPower'] as int? ?? 0) > 0 ? EquipmentSlot.weapon : null;
 }

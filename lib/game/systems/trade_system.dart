@@ -1,10 +1,12 @@
 import '../models/game_state.dart';
 import '../repositories/game_definition_repository.dart';
+import 'equipment_system.dart';
 
 class TradeSystem {
-  const TradeSystem(this._repository);
+  const TradeSystem(this._repository, this._equipmentSystem);
 
   final GameDefinitionRepository _repository;
+  final EquipmentSystem _equipmentSystem;
 
   GameState buyItem(GameState state, String npcId, String itemId) {
     if (!_isMerchantPresent(state, npcId)) {
@@ -72,18 +74,22 @@ class TradeSystem {
               stockByItemId: {...shopState.stockByItemId, itemId: stock + 1},
             );
 
-    return state.copyWith(
-      player: state.player.copyWith(
-        silver: state.player.silver + item.sellPrice,
+    final unequippedState = _equipmentSystem.removeItemFromEquipment(
+      state,
+      itemId,
+    );
+    return unequippedState.copyWith(
+      player: unequippedState.player.copyWith(
+        silver: unequippedState.player.silver + item.sellPrice,
       ),
       inventoryItemIds: inventory,
-      equippedWeaponId:
-          state.equippedWeaponId == itemId ? null : state.equippedWeaponId,
       shopStates:
           nextShopState == null
-              ? state.shopStates
-              : {...state.shopStates, npcId: nextShopState},
-      log: state.logWith('你把${item.name}卖给商人，得到${item.sellPrice}两银子。'),
+              ? unequippedState.shopStates
+              : {...unequippedState.shopStates, npcId: nextShopState},
+      log: unequippedState.logWith(
+        '你把${item.name}卖给商人，得到${item.sellPrice}两银子。',
+      ),
     );
   }
 

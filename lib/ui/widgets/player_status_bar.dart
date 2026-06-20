@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 
 import '../../game/models/game_state.dart';
+import '../../game/systems/equipment_system.dart';
 import 'shared/status_meter.dart';
 
 class PlayerStatusBar extends StatelessWidget {
-  const PlayerStatusBar({super.key, required this.state, this.onSave});
+  const PlayerStatusBar({
+    super.key,
+    required this.state,
+    required this.stats,
+    this.onSave,
+  });
 
   final GameState state;
+  final CharacterStats stats;
   final VoidCallback? onSave;
 
   @override
@@ -50,7 +57,7 @@ class PlayerStatusBar extends StatelessWidget {
                 child: StatusMeter(
                   label: '气血',
                   value: player.hp,
-                  maxValue: player.maxHp,
+                  maxValue: stats.maxHp,
                   color: const Color(0xFFB64B3C),
                 ),
               ),
@@ -59,7 +66,7 @@ class PlayerStatusBar extends StatelessWidget {
                 child: StatusMeter(
                   label: '内力',
                   value: player.innerPower,
-                  maxValue: player.maxInnerPower,
+                  maxValue: stats.maxInnerPower,
                   color: const Color(0xFF3E6E8F),
                 ),
               ),

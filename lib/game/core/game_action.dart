@@ -1,4 +1,5 @@
 import '../models/direction.dart';
+import '../models/equipment_slot.dart';
 
 sealed class GameAction {
   const GameAction();
@@ -18,6 +19,8 @@ sealed class GameAction {
   const factory GameAction.pickUp(String itemId) = PickUpAction;
 
   const factory GameAction.equipItem(String itemId) = EquipItemAction;
+
+  const factory GameAction.unequipItem(EquipmentSlot slot) = UnequipItemAction;
 
   const factory GameAction.studyItem(String itemId) = StudyItemAction;
 
@@ -76,6 +79,12 @@ class EquipItemAction extends GameAction {
   const EquipItemAction(this.itemId);
 
   final String itemId;
+}
+
+class UnequipItemAction extends GameAction {
+  const UnequipItemAction(this.slot);
+
+  final EquipmentSlot slot;
 }
 
 class StudyItemAction extends GameAction {
