@@ -1,11 +1,13 @@
 import '../models/game_state.dart';
 import '../models/skill_progress.dart';
 import '../repositories/game_definition_repository.dart';
+import 'skill_mapping_system.dart';
 
 class SkillProgressionSystem {
-  const SkillProgressionSystem(this._repository);
+  const SkillProgressionSystem(this._repository, this._skillMappingSystem);
 
   final GameDefinitionRepository _repository;
+  final SkillMappingSystem _skillMappingSystem;
 
   GameState study(
     GameState state, {
@@ -17,6 +19,10 @@ class SkillProgressionSystem {
     final skill = _repository.skill(skillId);
     final progress = state.skillProgress[skillId];
     if (progress == null) {
+      final requirement = _skillMappingSystem.learningRequirement(state, skill);
+      if (requirement != null) {
+        return state.copyWith(log: state.logWith(requirement));
+      }
       return state.copyWith(
         skillProgress: {
           ...state.skillProgress,

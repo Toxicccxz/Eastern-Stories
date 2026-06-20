@@ -12,9 +12,18 @@
   },
   {
     "id": "canyon_old_sword",
-    "name": "古剑",
-    "description": "剑谱上写着：气聚于锋，缓动而瞬攻，徐如林，疾如风，可研习基础剑法至五十级。",
-    "studySkillId": "basic_sword",
+    "name": "悟疾风劲竹书",
+    "description": "书中写着“直竹贵地生，风吹动不止”，可参悟基本招架至五十级。",
+    "studySkillId": "parry",
+    "studyMaxSkillLevel": 50,
+    "studyExperience": 60,
+    "sellPrice": 1
+  },
+  {
+    "id": "deisword_manual",
+    "name": "蝶恋花剑谱",
+    "description": "剑谱以柳永词意阐述剑理，须有深厚内力、十级基本剑法并手持长剑方能研习。",
+    "studySkillId": "deisword",
     "studyMaxSkillLevel": 50,
     "studyExperience": 60,
     "sellPrice": 1

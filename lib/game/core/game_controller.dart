@@ -12,6 +12,7 @@ import '../systems/movement_system.dart';
 import '../systems/progression_system.dart';
 import '../systems/quest_system.dart';
 import '../systems/skill_progression_system.dart';
+import '../systems/skill_mapping_system.dart';
 import '../systems/trade_system.dart';
 import '../systems/world_system.dart';
 import 'game_action.dart';
@@ -26,7 +27,11 @@ class GameController extends ChangeNotifier {
                ? repository.createInitialState()
                : repository.hydrateState(initialState) {
     _equipmentSystem = EquipmentSystem(repository);
-    final skillProgressionSystem = SkillProgressionSystem(repository);
+    _skillMappingSystem = SkillMappingSystem(repository);
+    final skillProgressionSystem = SkillProgressionSystem(
+      repository,
+      _skillMappingSystem,
+    );
     final progressionSystem = ProgressionSystem(repository, _equipmentSystem);
     _movementSystem = MovementSystem(repository);
     _inventorySystem = InventorySystem(
@@ -40,6 +45,7 @@ class GameController extends ChangeNotifier {
       progressionSystem,
       _equipmentSystem,
       skillProgressionSystem,
+      _skillMappingSystem,
     );
     _worldSystem = WorldSystem(repository);
     _tradeSystem = TradeSystem(repository, _equipmentSystem);
@@ -53,6 +59,7 @@ class GameController extends ChangeNotifier {
   late final CombatSystem _combatSystem;
   late final WorldSystem _worldSystem;
   late final TradeSystem _tradeSystem;
+  late final SkillMappingSystem _skillMappingSystem;
   GameState _state;
 
   GameDefinitionRepository get repository => _repository;
@@ -121,10 +128,14 @@ class GameController extends ChangeNotifier {
         npcId,
       ),
       AttackAction() => _combatSystem.attack(_state),
-      UseCombatSkillAction(:final skillId) => _combatSystem.useSkill(
+      EnableSkillAction(:final skillId, :final usage) => _skillMappingSystem
+          .enable(_state, skillId, usage),
+      DisableSkillAction(:final usage) => _skillMappingSystem.disable(
         _state,
-        skillId,
+        usage,
       ),
+      UseCombatMoveAction(:final skillId, :final moveId) => _combatSystem
+          .useMove(_state, skillId, moveId),
       FleeCombatAction() => _combatSystem.fleeCombat(_state),
     };
     notifyListeners();
@@ -146,8 +157,13 @@ class GameController extends ChangeNotifier {
     return _inventorySystem.learnedSkills(_state);
   }
 
-  List<SkillDefinition> activeCombatSkills() {
-    return learnedSkills().where((skill) => skill.isActive).toList();
+  List<CombatMoveOption> activeCombatMoves() {
+    return [
+      for (final skill in learnedSkills())
+        if (skill.isBasic || _state.enabledSkillIds.containsValue(skill.id))
+          for (final move in skill.moves)
+            CombatMoveOption(skill: skill, move: move),
+    ];
   }
 
   CharacterStats characterStats() {

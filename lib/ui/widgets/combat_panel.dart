@@ -25,7 +25,7 @@ class CombatPanel extends StatelessWidget {
     if (combatDefinition == null) {
       return const SizedBox.shrink();
     }
-    final activeSkills = controller.activeCombatSkills();
+    final activeMoves = controller.activeCombatMoves();
 
     return Panel(
       child: Column(
@@ -108,7 +108,7 @@ class CombatPanel extends StatelessWidget {
               ),
             ],
           ),
-          if (activeSkills.isNotEmpty) ...[
+          if (activeMoves.isNotEmpty) ...[
             const SizedBox(height: 14),
             Text('武功招式', style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: 8),
@@ -116,13 +116,16 @@ class CombatPanel extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: [
-                for (final skill in activeSkills)
-                  _SkillButton(
-                    skill: skill,
+                for (final option in activeMoves)
+                  _MoveButton(
+                    option: option,
                     state: state,
                     onPressed:
                         () => controller.dispatch(
-                          GameAction.useCombatSkill(skill.id),
+                          GameAction.useCombatMove(
+                            option.skill.id,
+                            option.move.id,
+                          ),
                         ),
                   ),
               ],
@@ -134,31 +137,37 @@ class CombatPanel extends StatelessWidget {
   }
 }
 
-class _SkillButton extends StatelessWidget {
-  const _SkillButton({
-    required this.skill,
+class _MoveButton extends StatelessWidget {
+  const _MoveButton({
+    required this.option,
     required this.state,
     required this.onPressed,
   });
 
-  final SkillDefinition skill;
+  final CombatMoveOption option;
   final GameState state;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final requiredSlot = skill.requiredEquipmentSlot;
+    final skill = option.skill;
+    final move = option.move;
+    final requiredSlot =
+        move.requiredEquipmentSlot ?? skill.requiredEquipmentSlot;
     final skillLevel = state.skillProgress[skill.id]?.level ?? 1;
-    final innerPowerCost = skill.innerPowerCostAtLevel(skillLevel);
+    final innerPowerCost = move.innerPowerCostAtLevel(skillLevel);
     final hasEquipment =
         requiredSlot == null || state.equippedItemIds.containsKey(requiredSlot);
     final hasInnerPower = state.player.innerPower >= innerPowerCost;
-    final enabled = hasEquipment && hasInnerPower;
+    final hasRequiredLevel = skillLevel >= move.minimumSkillLevel;
+    final enabled = hasEquipment && hasInnerPower && hasRequiredLevel;
     final reason =
         !hasEquipment
             ? '需要装备兵器'
             : !hasInnerPower
             ? '内力不足'
+            : !hasRequiredLevel
+            ? '需要 Lv.${move.minimumSkillLevel}'
             : null;
 
     return Column(
@@ -169,7 +178,7 @@ class _SkillButton extends StatelessWidget {
           onPressed: enabled ? onPressed : null,
           icon: Icon(_icon, size: 18),
           label: Text(
-            '${skill.moveName ?? skill.name} Lv.$skillLevel'
+            '${move.name} Lv.$skillLevel'
             '${_costLabel(innerPowerCost)}',
           ),
         ),
@@ -188,7 +197,7 @@ class _SkillButton extends StatelessWidget {
   }
 
   IconData get _icon {
-    return switch (skill.effectType) {
+    return switch (option.move.effectType) {
       SkillEffectType.damage => Icons.auto_fix_high,
       SkillEffectType.defend => Icons.shield_outlined,
       SkillEffectType.heal => Icons.favorite_outline,

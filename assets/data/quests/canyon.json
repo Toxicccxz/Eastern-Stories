@@ -12,6 +12,6 @@
       {"description": "将真正的印鉴交还严廷殷。", "requiredFlag": "general_seal_returned"}
     ],
     "requiredFlags": ["general_seal_returned"],
-    "rewardItemIds": ["canyon_old_sword"]
+    "rewardItemIds": ["canyon_old_sword", "deisword_manual"]
   }
 ]

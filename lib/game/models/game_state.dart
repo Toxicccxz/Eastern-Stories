@@ -1,6 +1,7 @@
 import 'quest_definition.dart';
 import 'equipment_slot.dart';
 import 'skill_progress.dart';
+import 'skill_definition.dart';
 
 class GameState {
   const GameState({
@@ -11,6 +12,7 @@ class GameState {
     required this.inventoryItemIds,
     required this.equippedItemIds,
     required this.skillProgress,
+    required this.enabledSkillIds,
     required this.roomItemOverrides,
     required this.npcStates,
     required this.shopStates,
@@ -43,6 +45,7 @@ class GameState {
       inventoryItemIds: const [],
       equippedItemIds: const {},
       skillProgress: const {},
+      enabledSkillIds: const {},
       roomItemOverrides: const {},
       npcStates: npcStates,
       shopStates: shopStates,
@@ -64,6 +67,11 @@ class GameState {
           (json['inventoryItemIds'] as List<Object?>).cast<String>(),
       equippedItemIds: _equipmentFromJson(json),
       skillProgress: _skillProgressFromJson(json),
+      enabledSkillIds:
+          (json['enabledSkillIds'] as Map<String, Object?>? ?? const {}).map(
+            (usage, skillId) =>
+                MapEntry(SkillUsage.values.byName(usage), skillId as String),
+          ),
       roomItemOverrides: (json['roomItemOverrides'] as Map<String, Object?>)
           .map(
             (roomId, itemIds) =>
@@ -100,6 +108,7 @@ class GameState {
   final List<String> inventoryItemIds;
   final Map<EquipmentSlot, String> equippedItemIds;
   final Map<String, SkillProgress> skillProgress;
+  final Map<SkillUsage, String> enabledSkillIds;
   final Map<String, List<String>> roomItemOverrides;
   final Map<String, NpcRuntimeState> npcStates;
   final Map<String, ShopRuntimeState> shopStates;
@@ -121,6 +130,9 @@ class GameState {
       'equippedWeaponId': equippedWeaponId,
       'skillProgress': skillProgress.map(
         (skillId, progress) => MapEntry(skillId, progress.toJson()),
+      ),
+      'enabledSkillIds': enabledSkillIds.map(
+        (usage, skillId) => MapEntry(usage.name, skillId),
       ),
       'learnedSkillIds': learnedSkillIds.toList(),
       'roomItemOverrides': roomItemOverrides,
@@ -148,6 +160,7 @@ class GameState {
     Map<EquipmentSlot, String>? equippedItemIds,
     Object? equippedWeaponId = _unchanged,
     Map<String, SkillProgress>? skillProgress,
+    Map<SkillUsage, String>? enabledSkillIds,
     Set<String>? learnedSkillIds,
     Map<String, List<String>>? roomItemOverrides,
     Map<String, NpcRuntimeState>? npcStates,
@@ -184,6 +197,7 @@ class GameState {
       inventoryItemIds: inventoryItemIds ?? this.inventoryItemIds,
       equippedItemIds: nextEquipment,
       skillProgress: nextSkillProgress,
+      enabledSkillIds: enabledSkillIds ?? this.enabledSkillIds,
       roomItemOverrides: roomItemOverrides ?? this.roomItemOverrides,
       npcStates: npcStates ?? this.npcStates,
       shopStates: shopStates ?? this.shopStates,

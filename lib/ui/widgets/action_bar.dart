@@ -6,6 +6,7 @@ import '../../game/models/quest_definition.dart';
 import '../../game/models/room_definition.dart';
 import '../../game/models/equipment_slot.dart';
 import '../../game/models/skill_progress.dart';
+import '../../game/models/skill_definition.dart';
 import 'character_sheet.dart';
 
 class ActionBar extends StatelessWidget {
@@ -146,59 +147,143 @@ class ActionBar extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      builder: (context) {
-        final skills = controller.learnedSkills();
+      isScrollControlled: true,
+      builder: (_) => _SkillsSheet(controller: controller),
+    );
+  }
+}
 
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('武学', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 12),
-              if (skills.isEmpty)
-                const Text('还没有领会武学。')
-              else
-                for (final skill in skills)
-                  Builder(
-                    builder: (context) {
-                      final progress =
-                          controller.state.skillProgress[skill.id]!;
-                      final isMaxLevel = progress.level >= skill.maxLevel;
-                      return ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text('${skill.name}  Lv.${progress.level}'),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(skill.description),
-                            const SizedBox(height: 6),
-                            LinearProgressIndicator(
-                              value:
-                                  isMaxLevel
-                                      ? 1
-                                      : progress.experience /
-                                          progress.experienceForNextLevel,
-                            ),
-                            const SizedBox(height: 3),
-                            Text(
-                              isMaxLevel
-                                  ? '已臻上限'
-                                  : '熟练度 ${progress.experience}/'
-                                      '${progress.experienceForNextLevel}',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-            ],
+class _SkillsSheet extends StatelessWidget {
+  const _SkillsSheet({required this.controller});
+
+  final GameController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, _) {
+        final skills = controller.learnedSkills();
+        return SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('武学', style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 12),
+                if (skills.isEmpty)
+                  const Text('还没有领会武学。')
+                else
+                  for (final skill in skills)
+                    _SkillTile(skill: skill, controller: controller),
+              ],
+            ),
           ),
         );
       },
     );
+  }
+}
+
+class _SkillTile extends StatelessWidget {
+  const _SkillTile({required this.skill, required this.controller});
+
+  final SkillDefinition skill;
+  final GameController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = controller.state.skillProgress[skill.id]!;
+    final isMaxLevel = progress.level >= skill.maxLevel;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '${skill.name}  Lv.${progress.level}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              Text(skill.isBasic ? '基本功' : '特殊武功'),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(skill.description),
+          const SizedBox(height: 8),
+          LinearProgressIndicator(
+            value:
+                isMaxLevel
+                    ? 1
+                    : progress.experience / progress.experienceForNextLevel,
+          ),
+          const SizedBox(height: 3),
+          Text(
+            isMaxLevel
+                ? '已臻上限'
+                : '熟练度 ${progress.experience}/${progress.experienceForNextLevel}',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          if (!skill.isBasic) ...[
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              children: [
+                for (final usage in skill.usages)
+                  _SkillUsageButton(
+                    skill: skill,
+                    usage: usage,
+                    controller: controller,
+                  ),
+              ],
+            ),
+          ],
+          if (skill.moves.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              '招式：${skill.moves.map((move) => move.name).join('、')}',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _SkillUsageButton extends StatelessWidget {
+  const _SkillUsageButton({
+    required this.skill,
+    required this.usage,
+    required this.controller,
+  });
+
+  final SkillDefinition skill;
+  final SkillUsage usage;
+  final GameController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final isEnabled = controller.state.enabledSkillIds[usage] == skill.id;
+    return isEnabled
+        ? OutlinedButton.icon(
+          onPressed: () => controller.dispatch(GameAction.disableSkill(usage)),
+          icon: const Icon(Icons.check, size: 18),
+          label: Text('停用${usage.label}'),
+        )
+        : FilledButton.tonal(
+          onPressed:
+              () =>
+                  controller.dispatch(GameAction.enableSkill(skill.id, usage)),
+          child: Text('用于${usage.label}'),
+        );
   }
 }
 

@@ -1,5 +1,6 @@
 import '../models/direction.dart';
 import '../models/equipment_slot.dart';
+import '../models/skill_definition.dart';
 
 sealed class GameAction {
   const GameAction();
@@ -40,8 +41,13 @@ sealed class GameAction {
 
   const factory GameAction.attack() = AttackAction;
 
-  const factory GameAction.useCombatSkill(String skillId) =
-      UseCombatSkillAction;
+  const factory GameAction.enableSkill(String skillId, SkillUsage usage) =
+      EnableSkillAction;
+
+  const factory GameAction.disableSkill(SkillUsage usage) = DisableSkillAction;
+
+  const factory GameAction.useCombatMove(String skillId, String moveId) =
+      UseCombatMoveAction;
 
   const factory GameAction.fleeCombat() = FleeCombatAction;
 }
@@ -142,10 +148,24 @@ class AttackAction extends GameAction {
   const AttackAction();
 }
 
-class UseCombatSkillAction extends GameAction {
-  const UseCombatSkillAction(this.skillId);
+class EnableSkillAction extends GameAction {
+  const EnableSkillAction(this.skillId, this.usage);
 
   final String skillId;
+  final SkillUsage usage;
+}
+
+class DisableSkillAction extends GameAction {
+  const DisableSkillAction(this.usage);
+
+  final SkillUsage usage;
+}
+
+class UseCombatMoveAction extends GameAction {
+  const UseCombatMoveAction(this.skillId, this.moveId);
+
+  final String skillId;
+  final String moveId;
 }
 
 class FleeCombatAction extends GameAction {

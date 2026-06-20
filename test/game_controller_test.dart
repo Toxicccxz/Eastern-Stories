@@ -1,9 +1,10 @@
 import 'package:eastern_stories/game/core/game_action.dart';
 import 'package:eastern_stories/game/core/game_controller.dart';
 import 'package:eastern_stories/game/models/direction.dart';
-import 'package:eastern_stories/game/models/equipment_slot.dart';
 import 'package:eastern_stories/game/models/game_state.dart';
 import 'package:eastern_stories/game/models/quest_definition.dart';
+import 'package:eastern_stories/game/models/skill_definition.dart';
+import 'package:eastern_stories/game/models/skill_progress.dart';
 import 'package:eastern_stories/game/repositories/game_definition_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -213,7 +214,7 @@ void main() {
     controller.dispatch(const GameAction.studyItem('parry_book'));
 
     expect(controller.state.learnedSkillIds, contains('parry'));
-    expect(controller.learnedSkills().single.name, '基础招架');
+    expect(controller.learnedSkills().single.name, '基本招架');
   });
 
   test('player can study the ancient sword manual', () {
@@ -224,10 +225,10 @@ void main() {
     controller.dispatch(const GameAction.studyItem('old_book'));
 
     expect(controller.state.learnedSkillIds, contains('basic_sword'));
-    expect(controller.activeCombatSkills().single.moveName, '疾风劲竹');
+    expect(controller.activeCombatMoves(), isEmpty);
   });
 
-  test('active sword move requires a weapon and consumes inner power', () {
+  test('special sword art must be enabled before its move can be used', () {
     final initialState = repository.createInitialState();
     final controller = GameController(
       repository: repository,
@@ -235,28 +236,36 @@ void main() {
         currentRoomId: 'ice_cave',
         visitedRoomIds: {...initialState.visitedRoomIds, 'ice_cave'},
         inventoryItemIds: const ['hengbing_sword'],
-        learnedSkillIds: {'basic_sword'},
+        player: initialState.player.copyWith(innerPower: 50, maxInnerPower: 50),
+        skillProgress: const {
+          'basic_sword': SkillProgress(level: 10, experience: 0),
+          'deisword': SkillProgress(level: 5, experience: 0),
+        },
       ),
     );
 
+    controller.dispatch(const GameAction.equipItem('hengbing_sword'));
     controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
-    controller.dispatch(const GameAction.useCombatSkill('basic_sword'));
+    controller.dispatch(
+      const GameAction.useCombatMove('deisword', 'wild_drunkenness'),
+    );
 
     expect(controller.state.combat?.enemyHp, 36);
-    expect(controller.state.player.innerPower, 30);
-    expect(controller.state.log.last, contains('需要合适的兵器'));
+    expect(controller.state.player.innerPower, 50);
+    expect(controller.state.log.last, contains('尚未启用'));
 
-    controller.dispatch(const GameAction.equipItem('hengbing_sword'));
-    expect(
-      controller.state.equippedItemIds[EquipmentSlot.weapon],
-      'hengbing_sword',
+    controller.dispatch(
+      const GameAction.enableSkill('deisword', SkillUsage.sword),
     );
-    controller.dispatch(const GameAction.useCombatSkill('basic_sword'));
+    expect(controller.state.enabledSkillIds[SkillUsage.sword], 'deisword');
+    controller.dispatch(
+      const GameAction.useCombatMove('deisword', 'wild_drunkenness'),
+    );
 
-    expect(controller.state.combat?.enemyHp, 15);
-    expect(controller.state.player.innerPower, 25);
-    expect(controller.state.skillProgress['basic_sword']?.experience, 20);
-    expect(controller.state.log, contains(contains('疾风劲竹')));
+    expect(controller.state.combat?.enemyHp, lessThan(36));
+    expect(controller.state.player.innerPower, 42);
+    expect(controller.state.skillProgress['deisword']?.experience, 20);
+    expect(controller.state.log, contains(contains('拟把疏狂图一醉')));
   });
 
   test('active parry stance blocks the next enemy attack', () {
@@ -271,7 +280,7 @@ void main() {
     );
 
     controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
-    controller.dispatch(const GameAction.useCombatSkill('parry'));
+    controller.dispatch(const GameAction.useCombatMove('parry', 'hold_guard'));
 
     expect(controller.state.player.hp, 80);
     expect(controller.state.combat?.round, 1);
@@ -442,8 +451,8 @@ void main() {
 
     controller.dispatch(const GameAction.studyItem('canyon_old_sword'));
     controller.dispatch(const GameAction.studyItem('canyon_old_sword'));
-    expect(controller.state.skillProgress['basic_sword']?.level, 1);
-    expect(controller.state.skillProgress['basic_sword']?.experience, 60);
+    expect(controller.state.skillProgress['parry']?.level, 1);
+    expect(controller.state.skillProgress['parry']?.experience, 60);
   });
 
   test('player can buy, sell, and use melon', () {

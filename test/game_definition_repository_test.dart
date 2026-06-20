@@ -13,6 +13,7 @@ void main() {
     expect(repository.areas, hasLength(3));
     expect(rooms, hasLength(25));
     expect(repository.quests, hasLength(2));
+    expect(repository.skills, hasLength(3));
 
     for (final area in repository.areas) {
       expect(
@@ -211,6 +212,31 @@ void main() {
           returnsNormally,
           reason: '${quest.id} rewards unknown item $itemId',
         );
+      }
+    }
+
+    for (final skill in repository.skills) {
+      expect(skill.usages, isNotEmpty, reason: '${skill.id} has no usage');
+      if (skill.isBasic) {
+        for (final usage in skill.usages) {
+          expect(
+            repository.basicSkillFor(usage)?.id,
+            skill.id,
+            reason: '${usage.name} must have one basic skill',
+          );
+        }
+      }
+      for (final requirement in skill.requiredSkillLevels.entries) {
+        expect(
+          () => repository.skill(requirement.key),
+          returnsNormally,
+          reason: '${skill.id} requires unknown skill ${requirement.key}',
+        );
+        expect(requirement.value, greaterThan(0));
+      }
+      for (final move in skill.moves) {
+        expect(move.id, isNotEmpty);
+        expect(move.minimumSkillLevel, inInclusiveRange(1, skill.maxLevel));
       }
     }
   });

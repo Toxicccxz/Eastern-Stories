@@ -1,5 +1,6 @@
 import 'world_condition.dart';
 import 'equipment_slot.dart';
+import 'skill_definition.dart';
 
 class ItemDefinition {
   const ItemDefinition({
@@ -19,6 +20,7 @@ class ItemDefinition {
     this.defensePower = 0,
     this.maxHpBonus = 0,
     this.maxInnerPowerBonus = 0,
+    this.weaponSkillUsage,
   });
 
   factory ItemDefinition.fromJson(Map<String, Object?> json) {
@@ -39,6 +41,10 @@ class ItemDefinition {
       defensePower: json['defensePower'] as int? ?? 0,
       maxHpBonus: json['maxHpBonus'] as int? ?? 0,
       maxInnerPowerBonus: json['maxInnerPowerBonus'] as int? ?? 0,
+      weaponSkillUsage:
+          json['weaponSkillUsage'] == null
+              ? null
+              : SkillUsage.values.byName(json['weaponSkillUsage'] as String),
     );
   }
 
@@ -58,6 +64,7 @@ class ItemDefinition {
   final int defensePower;
   final int maxHpBonus;
   final int maxInnerPowerBonus;
+  final SkillUsage? weaponSkillUsage;
 
   bool get canEquip => equipmentSlot != null;
 

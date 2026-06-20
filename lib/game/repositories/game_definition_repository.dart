@@ -214,6 +214,15 @@ class GameDefinitionRepository {
     return skill;
   }
 
+  SkillDefinition? basicSkillFor(SkillUsage usage) {
+    for (final skill in _skills.values) {
+      if (skill.isBasic && skill.supports(usage)) {
+        return skill;
+      }
+    }
+    return null;
+  }
+
   Map<String, NpcRuntimeState> _initialNpcStates() {
     return {
       for (final room in _rooms.values)

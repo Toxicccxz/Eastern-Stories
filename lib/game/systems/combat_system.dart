@@ -5,6 +5,7 @@ import '../repositories/game_definition_repository.dart';
 import 'equipment_system.dart';
 import 'progression_system.dart';
 import 'skill_progression_system.dart';
+import 'skill_mapping_system.dart';
 
 class CombatSystem {
   const CombatSystem(
@@ -12,12 +13,14 @@ class CombatSystem {
     this._progressionSystem,
     this._equipmentSystem,
     this._skillProgressionSystem,
+    this._skillMappingSystem,
   );
 
   final GameDefinitionRepository _repository;
   final ProgressionSystem _progressionSystem;
   final EquipmentSystem _equipmentSystem;
   final SkillProgressionSystem _skillProgressionSystem;
+  final SkillMappingSystem _skillMappingSystem;
 
   GameState startCombat(GameState state, String npcId) {
     if (state.combat != null) {
@@ -52,7 +55,7 @@ class CombatSystem {
     return _performPlayerAttack(state);
   }
 
-  GameState useSkill(GameState state, String skillId) {
+  GameState useMove(GameState state, String skillId, String moveId) {
     if (state.combat == null) {
       return _withLog(state, '现在没有敌人。');
     }
@@ -62,18 +65,26 @@ class CombatSystem {
 
     final skill = _repository.skill(skillId);
     final skillLevel = state.skillProgress[skillId]?.level ?? 1;
-    if (!skill.isActive) {
-      return _withLog(state, '${skill.name}不是可以主动施展的招式。');
+    if (!skill.isBasic && !state.enabledSkillIds.containsValue(skillId)) {
+      return _withLog(state, '你尚未启用${skill.name}。');
+    }
+    final move = skill.moves.where((move) => move.id == moveId).firstOrNull;
+    if (move == null) {
+      return _withLog(state, '${skill.name}中没有这个招式。');
+    }
+    if (skillLevel < move.minimumSkillLevel) {
+      return _withLog(state, '${skill.name}需要达到 Lv.${move.minimumSkillLevel}。');
     }
 
-    final requiredSlot = skill.requiredEquipmentSlot;
+    final requiredSlot =
+        move.requiredEquipmentSlot ?? skill.requiredEquipmentSlot;
     if (requiredSlot != null &&
         !state.equippedItemIds.containsKey(requiredSlot)) {
-      return _withLog(state, '施展${skill.moveName ?? skill.name}需要合适的兵器。');
+      return _withLog(state, '施展${move.name}需要合适的兵器。');
     }
-    final innerPowerCost = skill.innerPowerCostAtLevel(skillLevel);
+    final innerPowerCost = move.innerPowerCostAtLevel(skillLevel);
     if (state.player.innerPower < innerPowerCost) {
-      return _withLog(state, '内力不足，无法施展${skill.moveName ?? skill.name}。');
+      return _withLog(state, '内力不足，无法施展${move.name}。');
     }
 
     final preparedState = state.copyWith(
@@ -81,20 +92,21 @@ class CombatSystem {
         innerPower: state.player.innerPower - innerPowerCost,
       ),
     );
-    final result = switch (skill.effectType) {
+    final result = switch (move.effectType) {
       SkillEffectType.damage => _performPlayerAttack(
         preparedState,
-        damageBonus: skill.damageBonusAtLevel(skillLevel),
+        damageBonus: move.damageBonusAtLevel(skillLevel),
         skill: skill,
+        move: move,
       ),
       SkillEffectType.defend => _performDefensiveSkill(
         preparedState,
-        skill,
+        move,
         skillLevel,
       ),
       SkillEffectType.heal => _performHealingSkill(
         preparedState,
-        skill,
+        move,
         skillLevel,
       ),
     };
@@ -109,6 +121,7 @@ class CombatSystem {
     GameState state, {
     int damageBonus = 0,
     SkillDefinition? skill,
+    CombatMoveDefinition? move,
   }) {
     final activeCombat = state.combat;
     if (activeCombat == null) {
@@ -123,12 +136,23 @@ class CombatSystem {
     }
 
     final stats = _equipmentSystem.statsFor(state);
-    final playerDamage = (stats.attack + damageBonus - combat.defense).clamp(
-      1,
-      999,
-    );
+    final usage = _currentAttackUsage(state);
+    final effectiveSkillBonus =
+        _skillMappingSystem.effectiveLevel(state, usage) ~/ 5;
+    final playerDamage = (stats.attack +
+            effectiveSkillBonus +
+            damageBonus -
+            combat.defense)
+        .clamp(1, 999);
     final nextEnemyHp = activeCombat.enemyHp - playerDamage;
-    final attackState = _appendAttackLog(state, npc.name, playerDamage, skill);
+    final attackState = _appendAttackLog(
+      state,
+      npc.name,
+      playerDamage,
+      skill,
+      move,
+      usage,
+    );
 
     if (nextEnemyHp <= 0) {
       return _defeatNpc(attackState, npc.id, npcState, combat);
@@ -138,25 +162,25 @@ class CombatSystem {
 
   GameState _performDefensiveSkill(
     GameState state,
-    SkillDefinition skill,
+    CombatMoveDefinition move,
     int skillLevel,
   ) {
-    final message = skill.combatMessage ?? '你凝神守住门户，准备化解来势。';
+    final message = move.combatMessage ?? '你凝神守住门户，准备化解来势。';
     return _performEnemyTurn(
       _withLog(state, message),
-      defenseBonus: skill.defenseBonusAtLevel(skillLevel),
+      defenseBonus: move.defenseBonusAtLevel(skillLevel),
     );
   }
 
   GameState _performHealingSkill(
     GameState state,
-    SkillDefinition skill,
+    CombatMoveDefinition move,
     int skillLevel,
   ) {
     final stats = _equipmentSystem.statsFor(state);
-    final healAmount = skill.healAmountAtLevel(skillLevel);
+    final healAmount = move.healAmountAtLevel(skillLevel);
     final recoveredHp = (state.player.hp + healAmount).clamp(0, stats.maxHp);
-    final message = skill.combatMessage ?? '你调匀呼吸，恢复了$healAmount点气血。';
+    final message = move.combatMessage ?? '你调匀呼吸，恢复了$healAmount点气血。';
     return _performEnemyTurn(
       state.copyWith(
         player: state.player.copyWith(hp: recoveredHp),
@@ -247,12 +271,25 @@ class CombatSystem {
     String enemyName,
     int damage,
     SkillDefinition? skill,
+    CombatMoveDefinition? move,
+    SkillUsage usage,
   ) {
-    final skillMessage = skill?.combatMessage?.replaceAll('{enemy}', enemyName);
+    final skillMessage = move?.combatMessage?.replaceAll('{enemy}', enemyName);
+    final mappedSkillId = state.enabledSkillIds[usage];
+    final mappedSkill =
+        mappedSkillId == null ? null : _repository.skill(mappedSkillId);
+    final attackMessages = mappedSkill?.attackMessages ?? const <String>[];
+    final ordinaryMessage =
+        attackMessages.isEmpty
+            ? null
+            : attackMessages[state.combat!.round % attackMessages.length]
+                .replaceAll('{enemy}', enemyName);
     final message =
-        skillMessage == null
-            ? '你向$enemyName出手，造成$damage点伤害。'
-            : '$skillMessage 造成$damage点伤害。';
+        skillMessage != null
+            ? '$skillMessage 造成$damage点伤害。'
+            : ordinaryMessage != null
+            ? '$ordinaryMessage 造成$damage点伤害。'
+            : '你向$enemyName出手，造成$damage点伤害。';
     return _withLog(state, message);
   }
 
@@ -328,13 +365,24 @@ class CombatSystem {
   }
 
   int _damageReduction(GameState state) {
-    return state.skillProgress.entries
-        .map(
-          (entry) => _repository
-              .skill(entry.key)
-              .damageReductionAtLevel(entry.value.level),
-        )
-        .fold(0, (total, reduction) => total + reduction);
+    final basicParry = _repository.basicSkillFor(SkillUsage.parry);
+    final mappedParryId = state.enabledSkillIds[SkillUsage.parry];
+    final skills = [
+      basicParry?.id,
+      mappedParryId,
+    ].whereType<String>().where(state.skillProgress.containsKey);
+    return skills.fold(0, (total, skillId) {
+      final level = state.skillProgress[skillId]?.level ?? 0;
+      return total + _repository.skill(skillId).damageReductionAtLevel(level);
+    });
+  }
+
+  SkillUsage _currentAttackUsage(GameState state) {
+    final weaponId = state.equippedWeaponId;
+    if (weaponId == null) {
+      return SkillUsage.unarmed;
+    }
+    return _repository.item(weaponId).weaponSkillUsage ?? SkillUsage.unarmed;
   }
 
   GameState _withLog(GameState state, String message) {

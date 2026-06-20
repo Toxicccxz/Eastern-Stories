@@ -4,6 +4,7 @@ import 'package:eastern_stories/game/models/game_state.dart';
 import 'package:eastern_stories/game/models/equipment_slot.dart';
 import 'package:eastern_stories/game/models/quest_definition.dart';
 import 'package:eastern_stories/game/models/skill_progress.dart';
+import 'package:eastern_stories/game/models/skill_definition.dart';
 import 'package:eastern_stories/game/repositories/save_game_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -27,6 +28,7 @@ void main() {
       inventoryItemIds: ['old_book'],
       equippedWeaponId: 'hengbing_sword',
       skillProgress: {'parry': const SkillProgress(level: 3, experience: 45)},
+      enabledSkillIds: const {SkillUsage.parry: 'deisword'},
       npcStates: {
         'white_ice_dragon': const NpcRuntimeState(
           roomId: 'ice_cave',
@@ -65,6 +67,7 @@ void main() {
     expect(loaded?.learnedSkillIds, {'parry'});
     expect(loaded?.skillProgress['parry']?.level, 3);
     expect(loaded?.skillProgress['parry']?.experience, 45);
+    expect(loaded?.enabledSkillIds, {SkillUsage.parry: 'deisword'});
     expect(loaded?.npcStates['white_ice_dragon']?.roomId, 'ice_cave');
     expect(loaded?.npcStates['white_ice_dragon']?.currentHp, 12);
     expect(loaded?.npcStates['white_ice_dragon']?.isDefeated, isFalse);

@@ -4,6 +4,7 @@
     "name": "短剑",
     "description": "一把粗制滥造的铁短剑，把手缠着几圈旧布，勉强还算趁手。",
     "equipmentSlot": "weapon",
+    "weaponSkillUsage": "sword",
     "attackPower": 7,
     "sellPrice": 4
   }
