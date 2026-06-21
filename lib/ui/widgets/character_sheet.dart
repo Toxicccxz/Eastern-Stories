@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../game/core/game_action.dart';
 import '../../game/core/game_controller.dart';
 import '../../game/models/equipment_slot.dart';
+import '../../game/models/innate_attributes.dart';
 
 class CharacterSheet extends StatelessWidget {
   const CharacterSheet({super.key, required this.controller});
@@ -25,6 +26,8 @@ class CharacterSheet extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('角色', style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 4),
+                Text('${state.player.name} · ${state.player.gender.label}'),
                 const SizedBox(height: 12),
                 Wrap(
                   spacing: 20,
@@ -50,12 +53,12 @@ class CharacterSheet extends StatelessWidget {
                       value: stats.maxInnerPower,
                       bonus: stats.maxInnerPowerBonus,
                     ),
-                    _Stat(label: '精神', value: state.player.spirit, bonus: 0),
-                    _Stat(
-                      label: '悟性',
-                      value: state.player.intelligence,
-                      bonus: 0,
-                    ),
+                    for (final attribute in InnateAttribute.values)
+                      _Stat(
+                        label: attribute.label,
+                        value: state.player.attributes.valueFor(attribute),
+                        bonus: 0,
+                      ),
                     _Stat(label: '潜能', value: state.player.potential, bonus: 0),
                     _Stat(
                       label: '实战经验',

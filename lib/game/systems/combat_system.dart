@@ -300,6 +300,18 @@ class CombatSystem {
     }
 
     final npc = _repository.npc(activeCombat.npcId);
+    final combat = npc.combat;
+    if (combat != null) {
+      final attributes = state.player.attributes;
+      final escapeAbility =
+          attributes.courage + attributes.composure + attributes.karma;
+      final escapeDifficulty = combat.attack * 6 + activeCombat.round * 2;
+      if (escapeAbility < escapeDifficulty) {
+        return _performEnemyTurn(
+          _withLog(state, '你试图避开${npc.name}，却被对方封住了退路。'),
+        );
+      }
+    }
     return state.copyWith(
       combat: null,
       log: state.logWith('你避开${npc.name}，暂时退到一旁。'),

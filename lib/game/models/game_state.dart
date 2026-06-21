@@ -2,6 +2,7 @@ import 'quest_definition.dart';
 import 'equipment_slot.dart';
 import 'skill_progress.dart';
 import 'skill_definition.dart';
+import 'innate_attributes.dart';
 
 class GameState {
   const GameState({
@@ -27,23 +28,29 @@ class GameState {
     required String startingRoomId,
     Map<String, NpcRuntimeState> npcStates = const {},
     Map<String, ShopRuntimeState> shopStates = const {},
+    String playerName = '少侠',
+    PlayerGender gender = PlayerGender.male,
+    InnateAttributes attributes = const InnateAttributes.standard(),
   }) {
+    final maxHp = 50 + attributes.constitution * 2;
+    final maxSpirit = 30 + attributes.spirituality * 2;
     return GameState(
       currentRoomId: startingRoomId,
       worldTurn: 0,
-      player: const PlayerState(
-        name: '少侠',
+      player: PlayerState(
+        name: playerName,
+        gender: gender,
+        attributes: attributes,
         level: 1,
         experience: 0,
         nextLevelExperience: 100,
-        hp: 80,
-        maxHp: 80,
+        hp: maxHp,
+        maxHp: maxHp,
         innerPower: 30,
         maxInnerPower: 30,
-        spirit: 60,
-        maxSpirit: 60,
+        spirit: maxSpirit,
+        maxSpirit: maxSpirit,
         potential: 20,
-        intelligence: 12,
         combatExperience: 0,
         betrayalCount: 0,
         silver: 20,
@@ -376,6 +383,8 @@ class NpcRuntimeState {
 class PlayerState {
   const PlayerState({
     required this.name,
+    required this.gender,
+    required this.attributes,
     required this.level,
     required this.experience,
     required this.nextLevelExperience,
@@ -386,13 +395,14 @@ class PlayerState {
     required this.spirit,
     required this.maxSpirit,
     required this.potential,
-    required this.intelligence,
     required this.combatExperience,
     required this.betrayalCount,
     required this.silver,
   });
 
   final String name;
+  final PlayerGender gender;
+  final InnateAttributes attributes;
   final int level;
   final int experience;
   final int nextLevelExperience;
@@ -403,7 +413,7 @@ class PlayerState {
   final int spirit;
   final int maxSpirit;
   final int potential;
-  final int intelligence;
+  int get intelligence => attributes.intelligence;
   final int combatExperience;
   final int betrayalCount;
   final int silver;
@@ -411,6 +421,17 @@ class PlayerState {
   factory PlayerState.fromJson(Map<String, Object?> json) {
     return PlayerState(
       name: json['name'] as String,
+      gender: PlayerGender.values.byName(
+        json['gender'] as String? ?? PlayerGender.male.name,
+      ),
+      attributes:
+          json['attributes'] == null
+              ? const InnateAttributes.standard().copyWith(
+                intelligence: json['intelligence'] as int?,
+              )
+              : InnateAttributes.fromJson(
+                json['attributes'] as Map<String, Object?>,
+              ),
       level: json['level'] as int,
       experience: json['experience'] as int,
       nextLevelExperience: json['nextLevelExperience'] as int,
@@ -421,7 +442,6 @@ class PlayerState {
       spirit: json['spirit'] as int? ?? 60,
       maxSpirit: json['maxSpirit'] as int? ?? 60,
       potential: json['potential'] as int? ?? 20,
-      intelligence: json['intelligence'] as int? ?? 12,
       combatExperience: json['combatExperience'] as int? ?? 0,
       betrayalCount: json['betrayalCount'] as int? ?? 0,
       silver: json['silver'] as int,
@@ -431,6 +451,8 @@ class PlayerState {
   Map<String, Object?> toJson() {
     return {
       'name': name,
+      'gender': gender.name,
+      'attributes': attributes.toJson(),
       'level': level,
       'experience': experience,
       'nextLevelExperience': nextLevelExperience,
@@ -441,7 +463,6 @@ class PlayerState {
       'spirit': spirit,
       'maxSpirit': maxSpirit,
       'potential': potential,
-      'intelligence': intelligence,
       'combatExperience': combatExperience,
       'betrayalCount': betrayalCount,
       'silver': silver,
@@ -449,6 +470,9 @@ class PlayerState {
   }
 
   PlayerState copyWith({
+    String? name,
+    PlayerGender? gender,
+    InnateAttributes? attributes,
     int? level,
     int? experience,
     int? nextLevelExperience,
@@ -465,7 +489,11 @@ class PlayerState {
     int? silver,
   }) {
     return PlayerState(
-      name: name,
+      name: name ?? this.name,
+      gender: gender ?? this.gender,
+      attributes: (attributes ?? this.attributes).copyWith(
+        intelligence: intelligence,
+      ),
       level: level ?? this.level,
       experience: experience ?? this.experience,
       nextLevelExperience: nextLevelExperience ?? this.nextLevelExperience,
@@ -476,7 +504,6 @@ class PlayerState {
       spirit: spirit ?? this.spirit,
       maxSpirit: maxSpirit ?? this.maxSpirit,
       potential: potential ?? this.potential,
-      intelligence: intelligence ?? this.intelligence,
       combatExperience: combatExperience ?? this.combatExperience,
       betrayalCount: betrayalCount ?? this.betrayalCount,
       silver: silver ?? this.silver,

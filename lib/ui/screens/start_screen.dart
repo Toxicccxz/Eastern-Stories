@@ -5,6 +5,7 @@ import '../../game/models/game_state.dart';
 import '../../game/repositories/game_definition_repository.dart';
 import '../../game/repositories/save_game_repository.dart';
 import 'main_game_screen.dart';
+import 'character_creation_screen.dart';
 
 class StartScreen extends StatefulWidget {
   const StartScreen({
@@ -99,8 +100,15 @@ class _StartScreenState extends State<StartScreen> {
   }
 
   Future<void> _startNewGame() async {
+    final state = await Navigator.of(context).push<GameState>(
+      MaterialPageRoute<GameState>(
+        builder: (_) => CharacterCreationScreen(repository: widget.repository),
+      ),
+    );
+    if (state == null || !mounted) {
+      return;
+    }
     await _runBusy(() async {
-      final state = widget.repository.createInitialState();
       try {
         await widget.saveRepository.save(state);
       } on Object {

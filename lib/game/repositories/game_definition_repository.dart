@@ -12,6 +12,7 @@ import '../models/room_definition.dart';
 import '../models/skill_definition.dart';
 import '../models/skill_progress.dart';
 import '../models/family_definition.dart';
+import '../models/innate_attributes.dart';
 
 class GameDefinitionRepository {
   const GameDefinitionRepository({
@@ -117,11 +118,18 @@ class GameDefinitionRepository {
 
   Iterable<FamilyDefinition> get families => _families.values;
 
-  GameState createInitialState() {
+  GameState createInitialState({
+    String playerName = '少侠',
+    PlayerGender gender = PlayerGender.male,
+    InnateAttributes attributes = const InnateAttributes.standard(),
+  }) {
     return GameState.initial(
       startingRoomId: startingRoomId,
       npcStates: _initialNpcStates(),
       shopStates: _initialShopStates(),
+      playerName: playerName,
+      gender: gender,
+      attributes: attributes,
     ).copyWith(
       skillProgress: const {
         'literate': SkillProgress(level: 10, experience: 0),

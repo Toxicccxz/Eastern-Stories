@@ -27,6 +27,11 @@ class ApprenticeshipSystem {
       return _withLog(state, '${master.name}不打算收徒。');
     }
     if (!(master.apprenticeshipConditions?.isSatisfiedBy(state) ?? true)) {
+      final attributeReason = master.apprenticeshipConditions
+          ?.attributeFailureReason(state);
+      if (attributeReason != null) {
+        return _withLog(state, '${master.name}摇了摇头：$attributeReason');
+      }
       return _withLog(state, '${master.name}认为时机尚未成熟，没有答应收你为徒。');
     }
     if (state.apprenticeship?.masterNpcId == npcId) {

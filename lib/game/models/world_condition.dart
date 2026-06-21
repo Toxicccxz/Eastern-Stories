@@ -1,5 +1,6 @@
 import 'game_state.dart';
 import 'quest_definition.dart';
+import 'innate_attributes.dart';
 
 class WorldCondition {
   const WorldCondition({
@@ -8,6 +9,7 @@ class WorldCondition {
     this.requiredQuestStatuses = const {},
     this.requiredDefeatedNpcIds = const {},
     this.forbiddenDefeatedNpcIds = const {},
+    this.minimumAttributes = const {},
   });
 
   factory WorldCondition.fromJson(Map<String, Object?> json) {
@@ -23,6 +25,15 @@ class WorldCondition {
           ),
       requiredDefeatedNpcIds: _stringSet(json['requiredDefeatedNpcIds']),
       forbiddenDefeatedNpcIds: _stringSet(json['forbiddenDefeatedNpcIds']),
+      minimumAttributes:
+          (json['minimumAttributes'] as Map<String, Object?>? ?? const {}).map(
+            (attribute, value) => MapEntry(
+              InnateAttribute.values.firstWhere(
+                (candidate) => candidate.jsonKey == attribute,
+              ),
+              value as int,
+            ),
+          ),
     );
   }
 
@@ -31,6 +42,7 @@ class WorldCondition {
   final Map<String, QuestStatus> requiredQuestStatuses;
   final Set<String> requiredDefeatedNpcIds;
   final Set<String> forbiddenDefeatedNpcIds;
+  final Map<InnateAttribute, int> minimumAttributes;
 
   bool isSatisfiedBy(GameState state) {
     if (!requiredFlags.every(state.questFlags.contains) ||
@@ -48,9 +60,23 @@ class WorldCondition {
     )) {
       return false;
     }
-    return !forbiddenDefeatedNpcIds.any(
+    if (forbiddenDefeatedNpcIds.any(
       (npcId) => state.npcStates[npcId]?.isDefeated ?? false,
+    )) {
+      return false;
+    }
+    return minimumAttributes.entries.every(
+      (entry) => state.player.attributes.valueFor(entry.key) >= entry.value,
     );
+  }
+
+  String? attributeFailureReason(GameState state) {
+    for (final entry in minimumAttributes.entries) {
+      if (state.player.attributes.valueFor(entry.key) < entry.value) {
+        return '你的${entry.key.label}不足，需要达到 ${entry.value}。';
+      }
+    }
+    return null;
   }
 }
 

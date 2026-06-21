@@ -21,8 +21,8 @@ class EquipmentSystem {
     }
 
     return CharacterStats(
-      attack: 8 + attackBonus,
-      defense: 2 + defenseBonus,
+      attack: 2 + state.player.attributes.strength ~/ 3 + attackBonus,
+      defense: state.player.attributes.composure ~/ 10 + defenseBonus,
       maxHp: state.player.maxHp + maxHpBonus,
       maxInnerPower: state.player.maxInnerPower + maxInnerPowerBonus,
       attackBonus: attackBonus,
