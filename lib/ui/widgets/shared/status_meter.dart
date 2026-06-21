@@ -27,7 +27,7 @@ class StatusMeter extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(3),
           child: LinearProgressIndicator(
-            value: value / maxValue,
+            value: (value / maxValue).clamp(0.0, 1.0),
             minHeight: 6,
             backgroundColor: color.withValues(alpha: 0.18),
             valueColor: AlwaysStoppedAnimation<Color>(color),

@@ -4,6 +4,7 @@ import '../../game/core/game_action.dart';
 import '../../game/core/game_controller.dart';
 import '../../game/models/equipment_slot.dart';
 import '../../game/models/innate_attributes.dart';
+import '../../game/models/skill_definition.dart';
 
 class CharacterSheet extends StatelessWidget {
   const CharacterSheet({super.key, required this.controller});
@@ -34,6 +35,8 @@ class CharacterSheet extends StatelessWidget {
                       ? '江湖身份 · 武者同盟成员'
                       : '江湖身份 · 普通百姓',
                 ),
+                if (state.enabledSkillIds[SkillUsage.force] case final skillId?)
+                  Text('当前内功 · ${controller.repository.skill(skillId).name}'),
                 const SizedBox(height: 12),
                 Wrap(
                   spacing: 20,
@@ -53,6 +56,11 @@ class CharacterSheet extends StatelessWidget {
                       label: '气血上限',
                       value: stats.maxHp,
                       bonus: stats.maxHpBonus,
+                    ),
+                    _Stat(
+                      label: '当前内力',
+                      value: state.player.innerPower,
+                      bonus: 0,
                     ),
                     _Stat(
                       label: '内力上限',

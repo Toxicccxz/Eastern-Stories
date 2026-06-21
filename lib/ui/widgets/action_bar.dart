@@ -49,6 +49,13 @@ class ActionBar extends StatelessWidget {
         icon: Icons.menu_book_outlined,
         onPressed: () => _showSkills(context, controller),
       ),
+      if (room.allowsCultivation &&
+          controller.state.enabledSkillIds.containsKey(SkillUsage.force))
+        _ActionButton(
+          label: '运功',
+          icon: Icons.self_improvement,
+          onPressed: () => _showInnerPower(context, controller),
+        ),
     ];
 
     return Container(
@@ -149,6 +156,91 @@ class ActionBar extends StatelessWidget {
       showDragHandle: true,
       isScrollControlled: true,
       builder: (_) => _SkillsSheet(controller: controller),
+    );
+  }
+
+  void _showInnerPower(BuildContext context, GameController controller) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (_) => _InnerPowerSheet(controller: controller),
+    );
+  }
+}
+
+class _InnerPowerSheet extends StatelessWidget {
+  const _InnerPowerSheet({required this.controller});
+
+  final GameController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, _) {
+        final state = controller.state;
+        final player = state.player;
+        final forceSkillId = state.enabledSkillIds[SkillUsage.force];
+        final forceSkill =
+            forceSkillId == null
+                ? null
+                : controller.repository.skill(forceSkillId);
+        return SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('运功', style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 6),
+                Text('当前心法：${forceSkill?.name ?? '未启用'}'),
+                Text(
+                  '内力 ${player.innerPower}/${player.maxInnerPower}  ·  '
+                  '修炼上限 ${controller.innerPowerCultivationLimit()}',
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    FilledButton.icon(
+                      onPressed:
+                          () =>
+                              controller.dispatch(const GameAction.meditate()),
+                      icon: const Icon(Icons.self_improvement),
+                      label: const Text('打坐练功'),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed:
+                          () => controller.dispatch(
+                            const GameAction.recoverWithInnerPower(),
+                          ),
+                      icon: const Icon(Icons.air),
+                      label: const Text('调息'),
+                    ),
+                    if (forceSkillId == 'fonxan_force')
+                      OutlinedButton.icon(
+                        onPressed:
+                            () => controller.dispatch(
+                              const GameAction.healWithInnerPower(),
+                            ),
+                        icon: const Icon(Icons.healing_outlined),
+                        label: const Text('运功疗伤'),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  state.log.last,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

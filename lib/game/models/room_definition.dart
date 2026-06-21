@@ -15,6 +15,7 @@ class RoomDefinition {
     this.npcIds = const [],
     this.itemIds = const [],
     this.actions = const [],
+    this.allowsCultivation = false,
   });
 
   factory RoomDefinition.fromJson(Map<String, Object?> json) {
@@ -35,6 +36,7 @@ class RoomDefinition {
         for (final action in json['actions'] as List<Object?>? ?? const [])
           RoomActionDefinition.fromJson(action as Map<String, Object?>),
       ],
+      allowsCultivation: json['allowsCultivation'] as bool? ?? false,
     );
   }
 
@@ -49,6 +51,7 @@ class RoomDefinition {
   final List<String> npcIds;
   final List<String> itemIds;
   final List<RoomActionDefinition> actions;
+  final bool allowsCultivation;
 
   List<String> visibleItemIds(GameState state) {
     return state.roomItemOverrides[id] ?? itemIds;

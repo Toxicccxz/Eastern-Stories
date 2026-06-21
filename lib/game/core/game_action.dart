@@ -60,6 +60,13 @@ sealed class GameAction {
       UseCombatMoveAction;
 
   const factory GameAction.fleeCombat() = FleeCombatAction;
+
+  const factory GameAction.meditate() = MeditateAction;
+
+  const factory GameAction.recoverWithInnerPower() =
+      RecoverWithInnerPowerAction;
+
+  const factory GameAction.healWithInnerPower() = HealWithInnerPowerAction;
 }
 
 class MoveAction extends GameAction {
@@ -203,4 +210,16 @@ class UseCombatMoveAction extends GameAction {
 
 class FleeCombatAction extends GameAction {
   const FleeCombatAction();
+}
+
+class MeditateAction extends GameAction {
+  const MeditateAction();
+}
+
+class RecoverWithInnerPowerAction extends GameAction {
+  const RecoverWithInnerPowerAction();
+}
+
+class HealWithInnerPowerAction extends GameAction {
+  const HealWithInnerPowerAction();
 }

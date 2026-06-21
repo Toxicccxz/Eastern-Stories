@@ -17,6 +17,7 @@ import '../systems/trade_system.dart';
 import '../systems/world_system.dart';
 import '../systems/cultivation_system.dart';
 import '../systems/apprenticeship_system.dart';
+import '../systems/inner_power_system.dart';
 import 'game_action.dart';
 
 class GameController extends ChangeNotifier {
@@ -38,6 +39,12 @@ class GameController extends ChangeNotifier {
       repository,
       skillProgressionSystem,
       _skillMappingSystem,
+    );
+    _innerPowerSystem = InnerPowerSystem(
+      repository,
+      _equipmentSystem,
+      _skillMappingSystem,
+      skillProgressionSystem,
     );
     _apprenticeshipSystem = ApprenticeshipSystem(repository);
     final progressionSystem = ProgressionSystem(repository, _equipmentSystem);
@@ -70,6 +77,7 @@ class GameController extends ChangeNotifier {
   late final SkillMappingSystem _skillMappingSystem;
   late final CultivationSystem _cultivationSystem;
   late final ApprenticeshipSystem _apprenticeshipSystem;
+  late final InnerPowerSystem _innerPowerSystem;
   GameState _state;
 
   GameDefinitionRepository get repository => _repository;
@@ -158,6 +166,9 @@ class GameController extends ChangeNotifier {
       UseCombatMoveAction(:final skillId, :final moveId) => _combatSystem
           .useMove(_state, skillId, moveId),
       FleeCombatAction() => _combatSystem.fleeCombat(_state),
+      MeditateAction() => _innerPowerSystem.meditate(_state),
+      RecoverWithInnerPowerAction() => _innerPowerSystem.recover(_state),
+      HealWithInnerPowerAction() => _innerPowerSystem.heal(_state),
     };
     notifyListeners();
   }
@@ -193,6 +204,10 @@ class GameController extends ChangeNotifier {
 
   CharacterStats characterStats() {
     return _equipmentSystem.statsFor(_state);
+  }
+
+  int innerPowerCultivationLimit() {
+    return _innerPowerSystem.cultivationLimit(_state);
   }
 
   void completeQuestLegacy(String questId) {

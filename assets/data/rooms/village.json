@@ -6,6 +6,7 @@
     "description": "这是一所破旧的木屋。山风吹来时，屋梁会发出轻响。屋后有一座小花园，北面通向一间小仓房。",
     "mapX": 1,
     "mapY": 2,
+    "allowsCultivation": true,
     "exits": {"north": "small_storage", "south": "little_garden", "east": "village_road"},
     "npcIds": ["old_liu"]
   },

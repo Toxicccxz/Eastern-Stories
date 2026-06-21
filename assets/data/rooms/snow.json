@@ -79,6 +79,7 @@
     "description": "五张太师椅面对门口一字排开，墙上几幅书画风骨不俗，足见主人是位文武双全的高人。",
     "mapX": 6,
     "mapY": 1,
+    "allowsCultivation": true,
     "exits": {"west": "chunfeng_training_ground"},
     "npcIds": ["liu_chunfeng"]
   }
