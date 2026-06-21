@@ -6,7 +6,7 @@
     "description": "天驼关两边是悬崖，中间是谷地，形状很像骆驼的双峰。南下通往京师，北上便是关外。",
     "mapX": 2,
     "mapY": 4,
-    "exits": {"south": "yellow_road", "north": "canyon_pass"}
+    "exits": {"south": "yellow_road", "north": "canyon_pass", "east": "snow_stone_road"}
   },
   {
     "id": "canyon_pass",

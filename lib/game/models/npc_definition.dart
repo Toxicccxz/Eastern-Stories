@@ -21,6 +21,7 @@ class NpcDefinition {
     this.canAcceptApprentices = false,
     this.apprenticeTitle = '弟子',
     this.apprenticeshipConditions,
+    this.apprenticeshipFailureMessage,
   });
 
   factory NpcDefinition.fromJson(Map<String, Object?> json) {
@@ -68,6 +69,8 @@ class NpcDefinition {
       apprenticeshipConditions: worldConditionFromJson(
         json['apprenticeshipConditions'],
       ),
+      apprenticeshipFailureMessage:
+          json['apprenticeshipFailureMessage'] as String?,
     );
   }
 
@@ -88,6 +91,7 @@ class NpcDefinition {
   final bool canAcceptApprentices;
   final String apprenticeTitle;
   final WorldCondition? apprenticeshipConditions;
+  final String? apprenticeshipFailureMessage;
 
   String greetingFor(GameState state) {
     for (final variant in greetingVariants) {

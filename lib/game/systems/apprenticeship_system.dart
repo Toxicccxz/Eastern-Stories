@@ -27,10 +27,21 @@ class ApprenticeshipSystem {
       return _withLog(state, '${master.name}不打算收徒。');
     }
     if (!(master.apprenticeshipConditions?.isSatisfiedBy(state) ?? true)) {
+      final conditions = master.apprenticeshipConditions;
+      final failureMessage = master.apprenticeshipFailureMessage;
+      final hasMissingFlag =
+          conditions != null &&
+          !conditions.requiredFlags.every(state.questFlags.contains);
+      if (hasMissingFlag && failureMessage != null) {
+        return _withLog(state, '${master.name}说道：“$failureMessage”');
+      }
       final attributeReason = master.apprenticeshipConditions
           ?.attributeFailureReason(state);
       if (attributeReason != null) {
         return _withLog(state, '${master.name}摇了摇头：$attributeReason');
+      }
+      if (failureMessage != null) {
+        return _withLog(state, '${master.name}说道：“$failureMessage”');
       }
       return _withLog(state, '${master.name}认为时机尚未成熟，没有答应收你为徒。');
     }

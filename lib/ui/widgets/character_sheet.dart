@@ -28,6 +28,12 @@ class CharacterSheet extends StatelessWidget {
                 Text('角色', style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 4),
                 Text('${state.player.name} · ${state.player.gender.label}'),
+                const SizedBox(height: 2),
+                Text(
+                  state.questFlags.contains('fighter_guild_member')
+                      ? '江湖身份 · 武者同盟成员'
+                      : '江湖身份 · 普通百姓',
+                ),
                 const SizedBox(height: 12),
                 Wrap(
                   spacing: 20,

@@ -10,6 +10,7 @@ class WorldCondition {
     this.requiredDefeatedNpcIds = const {},
     this.forbiddenDefeatedNpcIds = const {},
     this.minimumAttributes = const {},
+    this.requiredFamilyId,
   });
 
   factory WorldCondition.fromJson(Map<String, Object?> json) {
@@ -34,6 +35,7 @@ class WorldCondition {
               value as int,
             ),
           ),
+      requiredFamilyId: json['requiredFamilyId'] as String?,
     );
   }
 
@@ -43,6 +45,7 @@ class WorldCondition {
   final Set<String> requiredDefeatedNpcIds;
   final Set<String> forbiddenDefeatedNpcIds;
   final Map<InnateAttribute, int> minimumAttributes;
+  final String? requiredFamilyId;
 
   bool isSatisfiedBy(GameState state) {
     if (!requiredFlags.every(state.questFlags.contains) ||
@@ -63,6 +66,10 @@ class WorldCondition {
     if (forbiddenDefeatedNpcIds.any(
       (npcId) => state.npcStates[npcId]?.isDefeated ?? false,
     )) {
+      return false;
+    }
+    if (requiredFamilyId != null &&
+        state.apprenticeship?.familyId != requiredFamilyId) {
       return false;
     }
     return minimumAttributes.entries.every(

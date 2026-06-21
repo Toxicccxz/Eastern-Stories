@@ -258,7 +258,10 @@ class QuestSystem {
   }
 
   bool _isQuestReady(GameState state, QuestDefinition quest) {
-    return quest.requiredFlags.every(state.questFlags.contains);
+    return quest.requiredFlags.every(state.questFlags.contains) &&
+        quest.requiredDefeatedNpcIds.every(
+          (npcId) => state.npcStates[npcId]?.isDefeated ?? false,
+        );
   }
 
   List<QuestStepView> _questStepViews(GameState state, QuestDefinition quest) {

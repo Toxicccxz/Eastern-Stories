@@ -1,0 +1,63 @@
+[
+  {
+    "id": "fonxan_force",
+    "name": "封山派内功",
+    "description": "封山剑派的吐纳心法，内息绵长沉稳，是施展本门剑术的根基。",
+    "kind": "special",
+    "usages": ["force"],
+    "requiredFamilyId": "fengshan_sword",
+    "requiredSkillLevels": {"basic_force": 1},
+    "canPractice": false,
+    "maxLevel": 50,
+    "practiceExperience": 20
+  },
+  {
+    "id": "fonxan_sword",
+    "name": "封山剑法",
+    "description": "封山剑派镇派剑术，招式开阖有度，必须以内功配合并持剑施展。",
+    "kind": "special",
+    "usages": ["sword", "parry"],
+    "requiredFamilyId": "fengshan_sword",
+    "minimumMaxInnerPower": 50,
+    "requiredEquipmentSlot": "weapon",
+    "requiredSkillLevels": {"basic_sword": 5, "fonxan_force": 1},
+    "practiceHpCost": 30,
+    "practiceInnerPowerCost": 3,
+    "damageReduction": 2,
+    "attackMessages": [
+      "你使一招“峰回路转”，手中长剑如银蛇般刺向{enemy}。",
+      "你使出“空山鸟语”，剑光霍霍斩向{enemy}。",
+      "你一式“旭日东升”，中宫直进刺向{enemy}。",
+      "你横剑上前，一招“空谷秋虹”画出光弧斩向{enemy}。"
+    ],
+    "moves": [
+      {
+        "id": "counterattack",
+        "name": "封字诀",
+        "effectType": "defend",
+        "innerPowerCost": 4,
+        "defenseBonus": 7,
+        "minimumSkillLevel": 5,
+        "requiredEquipmentSlot": "weapon",
+        "combatMessage": "你使出封山剑法“封”字诀，连递虚招牵制对手攻势。"
+      }
+    ],
+    "maxLevel": 50,
+    "practiceExperience": 20
+  },
+  {
+    "id": "chaos_steps",
+    "name": "倒乱七星步",
+    "description": "步位暗合北斗七星，倒行错落间令人难辨去向。",
+    "kind": "special",
+    "usages": ["dodge", "move"],
+    "requiredFamilyId": "fengshan_sword",
+    "minimumMaxInnerPower": 50,
+    "requiredSkillLevels": {"basic_dodge": 5},
+    "practiceHpCost": 30,
+    "practiceInnerPowerCost": 3,
+    "damageReduction": 3,
+    "maxLevel": 50,
+    "practiceExperience": 20
+  }
+]

@@ -1,0 +1,31 @@
+[
+  {
+    "id": "waterfog_entrance",
+    "name": "水烟阁正门",
+    "areaId": "waterfog",
+    "description": "一股沁人心脾的檀香从三进檀木正门后传来，最里的门上悬着一块龙飞凤舞的匾额。",
+    "mapX": 1,
+    "mapY": 1,
+    "exits": {"south": "snow_stone_road", "north": "waterfog_guildhall"}
+  },
+  {
+    "id": "waterfog_guildhall",
+    "name": "水烟阁正厅",
+    "areaId": "waterfog",
+    "description": "简单陈设中透着尊贵不凡的气派。这里是武者同盟议事之所，任何身家清白之人都可以登记加入。",
+    "mapX": 1,
+    "mapY": 0,
+    "exits": {"south": "waterfog_entrance"},
+    "actions": [
+      {
+        "id": "join_fighter_guild",
+        "label": "登记加入武者同盟",
+        "description": "在名册上登记，取得向各大武学门派拜师的资格。",
+        "resultRoomId": "waterfog_guildhall",
+        "log": "你在水烟阁名册上郑重写下姓名，正式成为武者同盟的一员。",
+        "setsQuestFlag": "fighter_guild_member",
+        "conditions": {"forbiddenFlags": ["fighter_guild_member"]}
+      }
+    ]
+  }
+]

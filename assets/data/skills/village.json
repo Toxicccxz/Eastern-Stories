@@ -55,12 +55,20 @@
     "practiceExperience": 20
   },
   {
+    "id": "basic_force",
+    "name": "基本内功",
+    "description": "吐纳运气与蓄养内息的根基。",
+    "kind": "basic",
+    "usages": ["force"],
+    "maxLevel": 50,
+    "practiceExperience": 20
+  },
+  {
     "id": "liuh_ken",
     "name": "柳家拳",
     "description": "刘老农家传拳法，招式取意松梅、孤崖与山涛。",
     "kind": "special",
     "usages": ["unarmed"],
-    "requiredFamilyId": "liu_family",
     "requiredSkillLevels": {"basic_unarmed": 1},
     "practiceHpCost": 15,
     "attackMessages": [

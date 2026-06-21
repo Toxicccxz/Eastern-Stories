@@ -1,0 +1,16 @@
+[
+  {
+    "id": "fengshan_first_trial",
+    "title": "门下初试",
+    "description": "柳淳风让你到教练场与武馆弟子切磋，以检验入门后的功底。",
+    "steps": [
+      {"description": "在淳风武馆教练场击败武馆弟子。", "requiredDefeatedNpcId": "fengshan_trainee"},
+      {"description": "返回大厅向柳淳风禀报。"}
+    ],
+    "requiredDefeatedNpcIds": ["fengshan_trainee"],
+    "rewardExperience": 30,
+    "rewardItemIds": ["fengshan_bamboo_sword"],
+    "rewardFamilyId": "fengshan_sword",
+    "rewardFamilyContribution": 10
+  }
+]

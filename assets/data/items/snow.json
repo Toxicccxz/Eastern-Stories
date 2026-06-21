@@ -1,0 +1,11 @@
+[
+  {
+    "id": "fengshan_bamboo_sword",
+    "name": "竹剑",
+    "description": "一把练习剑法用的竹剑，剑尖用布包住，以免误伤同伴。",
+    "attackPower": 3,
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "sword",
+    "sellPrice": 2
+  }
+]

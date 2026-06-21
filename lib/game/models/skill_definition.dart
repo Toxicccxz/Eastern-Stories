@@ -44,6 +44,7 @@ class SkillDefinition {
     this.practiceHpCost = 0,
     this.practiceInnerPowerCost = 0,
     this.requiredFamilyId,
+    this.canPractice = true,
   });
 
   factory SkillDefinition.fromJson(Map<String, Object?> json) {
@@ -78,6 +79,7 @@ class SkillDefinition {
       practiceHpCost: json['practiceHpCost'] as int? ?? 0,
       practiceInnerPowerCost: json['practiceInnerPowerCost'] as int? ?? 0,
       requiredFamilyId: json['requiredFamilyId'] as String?,
+      canPractice: json['canPractice'] as bool? ?? true,
     );
   }
 
@@ -97,6 +99,7 @@ class SkillDefinition {
   final int practiceHpCost;
   final int practiceInnerPowerCost;
   final String? requiredFamilyId;
+  final bool canPractice;
 
   bool get isBasic => kind == SkillKind.basic;
 

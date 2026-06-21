@@ -13,5 +13,15 @@
     "id": "chuenyu",
     "name": "黑松淳于",
     "description": "黑松山高而险峻，山顶城堡阴沉地俯视着山脚乡田。"
+  },
+  {
+    "id": "snow",
+    "name": "雪亭镇",
+    "description": "青石官道穿镇而过，淳风武馆的练武声终日不绝。"
+  },
+  {
+    "id": "waterfog",
+    "name": "水烟阁",
+    "description": "武者同盟议事之地，檀木正门后是一座庄严正厅。"
   }
 ]

@@ -1,0 +1,85 @@
+[
+  {
+    "id": "snow_stone_road",
+    "name": "青石官道",
+    "areaId": "snow",
+    "description": "宽敞坚实的青石板大道两旁种着整齐花木，北面通往水烟阁，东面衔接雪亭镇。",
+    "mapX": 0,
+    "mapY": 3,
+    "exits": {"west": "canyon_gate", "north": "waterfog_entrance", "east": "snow_official_road"}
+  },
+  {
+    "id": "snow_official_road",
+    "name": "青石官道",
+    "areaId": "snow",
+    "description": "车马在坚实路面上留下深深凹痕，往西南可达天驼关，东面是雪亭镇街道。",
+    "mapX": 1,
+    "mapY": 3,
+    "exits": {"west": "snow_stone_road", "east": "snow_west_street"}
+  },
+  {
+    "id": "snow_west_street",
+    "name": "雪亭镇街道",
+    "areaId": "snow",
+    "description": "街旁客栈里传来饮酒谈笑声，往东不远便是镇前广场。",
+    "mapX": 2,
+    "mapY": 3,
+    "exits": {"west": "snow_official_road", "east": "snow_south_street"}
+  },
+  {
+    "id": "snow_south_street",
+    "name": "雪亭镇街道",
+    "areaId": "snow",
+    "description": "参差瓦屋间传来犬吠，北面是一座热闹广场。",
+    "mapX": 3,
+    "mapY": 3,
+    "exits": {"west": "snow_west_street", "north": "snow_square"}
+  },
+  {
+    "id": "snow_square",
+    "name": "雪亭镇广场",
+    "areaId": "snow",
+    "description": "广场铺着整齐大石板，中央的木架已经饱经风雨，四周人来人往。",
+    "mapX": 3,
+    "mapY": 2,
+    "exits": {"south": "snow_south_street", "north": "snow_main_street"}
+  },
+  {
+    "id": "snow_main_street",
+    "name": "雪亭镇街道",
+    "areaId": "snow",
+    "description": "东边高大宅院门前旗杆上写着“淳风武馆”，院内不时传来刀剑碰撞声。",
+    "mapX": 3,
+    "mapY": 1,
+    "exits": {"south": "snow_square", "east": "chunfeng_school_gate"}
+  },
+  {
+    "id": "chunfeng_school_gate",
+    "name": "淳风武馆大门",
+    "areaId": "snow",
+    "description": "两只巨大石狮镇守着红漆大门，门后许多灰衣汉子正在操练。",
+    "mapX": 4,
+    "mapY": 1,
+    "exits": {"west": "snow_main_street", "east": "chunfeng_training_ground"}
+  },
+  {
+    "id": "chunfeng_training_ground",
+    "name": "淳风武馆教练场",
+    "areaId": "snow",
+    "description": "宽敞场地铺着黄色细砂，武馆弟子在吆喝声中反复演练拳脚剑术。",
+    "mapX": 5,
+    "mapY": 1,
+    "exits": {"west": "chunfeng_school_gate", "east": "chunfeng_schoolhall"},
+    "npcIds": ["fengshan_trainee"]
+  },
+  {
+    "id": "chunfeng_schoolhall",
+    "name": "淳风武馆大厅",
+    "areaId": "snow",
+    "description": "五张太师椅面对门口一字排开，墙上几幅书画风骨不俗，足见主人是位文武双全的高人。",
+    "mapX": 6,
+    "mapY": 1,
+    "exits": {"west": "chunfeng_training_ground"},
+    "npcIds": ["liu_chunfeng"]
+  }
+]

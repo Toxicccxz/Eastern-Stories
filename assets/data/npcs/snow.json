@@ -1,0 +1,74 @@
+[
+  {
+    "id": "liu_chunfeng",
+    "name": "柳淳风",
+    "description": "柳淳风是个高大的中年儒生，腰间玄苏剑表明这位温文儒雅之人正是淳风武馆馆主。",
+    "greeting": "淳风武馆承先父遗志而立，学剑之人首须胆大心细。",
+    "intelligence": 24,
+    "familyId": "fengshan_sword",
+    "familyGeneration": 13,
+    "canAcceptApprentices": true,
+    "apprenticeTitle": "弟子",
+    "apprenticeshipConditions": {
+      "requiredFlags": ["fighter_guild_member"],
+      "minimumAttributes": {"courage": 20, "composure": 20}
+    },
+    "apprenticeshipFailureMessage": "你尚未加入武者同盟，先去水烟阁登记，再来谈拜师之事。",
+    "teachingSkills": [
+      {"skillId": "basic_sword", "maxLevel": 50, "access": "direct"},
+      {"skillId": "parry", "maxLevel": 50, "access": "direct"},
+      {"skillId": "basic_dodge", "maxLevel": 50, "access": "direct"},
+      {"skillId": "basic_unarmed", "maxLevel": 40, "access": "direct"},
+      {"skillId": "basic_force", "maxLevel": 40, "access": "direct"},
+      {"skillId": "fonxan_force", "maxLevel": 40, "access": "direct"},
+      {"skillId": "fonxan_sword", "maxLevel": 50, "access": "direct"},
+      {"skillId": "liuh_ken", "maxLevel": 40, "access": "direct"},
+      {"skillId": "chaos_steps", "maxLevel": 40, "access": "direct"}
+    ],
+    "dialogueOptions": [
+      {
+        "id": "start_fengshan_trial",
+        "label": "请求参加门下初试",
+        "response": "很好。去教练场与一名武馆弟子切磋，胜过他之后再来见我。",
+        "startsQuestId": "fengshan_first_trial",
+        "conditions": {
+          "requiredFamilyId": "fengshan_sword",
+          "requiredQuestStatuses": {"fengshan_first_trial": "notStarted"}
+        }
+      },
+      {
+        "id": "finish_fengshan_trial",
+        "label": "禀报初试结果",
+        "response": "招式尚显生涩，但进退已有章法。这把竹剑赐你，往后须勤练不辍。",
+        "completesQuestId": "fengshan_first_trial",
+        "conditions": {
+          "requiredFamilyId": "fengshan_sword",
+          "requiredDefeatedNpcIds": ["fengshan_trainee"],
+          "requiredQuestStatuses": {"fengshan_first_trial": "active"}
+        }
+      }
+    ]
+  },
+  {
+    "id": "fengshan_trainee",
+    "name": "武馆弟子",
+    "description": "一名身材高大的灰衣弟子正在黄沙场中反复操练。",
+    "greeting": "师父既让你来初试，那便请进招吧。",
+    "conditions": {
+      "requiredFamilyId": "fengshan_sword",
+      "requiredQuestStatuses": {"fengshan_first_trial": "active"}
+    },
+    "combat": {
+      "maxHp": 24,
+      "attack": 5,
+      "defense": 2,
+      "rewardExperience": 15,
+      "specialMove": {
+        "name": "直拳",
+        "interval": 3,
+        "damageBonus": 1,
+        "message": "武馆弟子沉肩进步，一记朴实直拳迎面打来。"
+      }
+    }
+  }
+]

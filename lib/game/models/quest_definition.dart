@@ -5,6 +5,7 @@ class QuestDefinition {
     required this.description,
     required this.steps,
     required this.requiredFlags,
+    this.requiredDefeatedNpcIds = const {},
     this.rewardSilver = 0,
     this.rewardExperience = 0,
     this.rewardItemIds = const [],
@@ -25,6 +26,10 @@ class QuestDefinition {
           (json['requiredFlags'] as List<Object?>? ?? const [])
               .cast<String>()
               .toSet(),
+      requiredDefeatedNpcIds:
+          (json['requiredDefeatedNpcIds'] as List<Object?>? ?? const [])
+              .cast<String>()
+              .toSet(),
       rewardSilver: json['rewardSilver'] as int? ?? 0,
       rewardExperience: json['rewardExperience'] as int? ?? 0,
       rewardItemIds:
@@ -39,6 +44,7 @@ class QuestDefinition {
   final String description;
   final List<QuestStepDefinition> steps;
   final Set<String> requiredFlags;
+  final Set<String> requiredDefeatedNpcIds;
   final int rewardSilver;
   final int rewardExperience;
   final List<String> rewardItemIds;

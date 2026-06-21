@@ -10,11 +10,11 @@ void main() {
     final rooms = repository.rooms.toList();
 
     expect(repository.startingRoomId, 'liu_home');
-    expect(repository.areas, hasLength(3));
-    expect(rooms, hasLength(25));
-    expect(repository.quests, hasLength(2));
-    expect(repository.skills, hasLength(9));
-    expect(repository.families, hasLength(1));
+    expect(repository.areas, hasLength(5));
+    expect(rooms, hasLength(36));
+    expect(repository.quests, hasLength(3));
+    expect(repository.skills, hasLength(13));
+    expect(repository.families, hasLength(2));
 
     for (final area in repository.areas) {
       expect(
@@ -229,6 +229,13 @@ void main() {
           );
         }
       }
+      for (final npcId in quest.requiredDefeatedNpcIds) {
+        expect(
+          () => repository.npc(npcId),
+          returnsNormally,
+          reason: '${quest.id} requires unknown defeated NPC $npcId',
+        );
+      }
       for (final itemId in quest.rewardItemIds) {
         expect(
           () => repository.item(itemId),
@@ -281,5 +288,9 @@ void _expectValidCondition(
     ...condition.forbiddenDefeatedNpcIds,
   }) {
     expect(() => repository.npc(npcId), returnsNormally);
+  }
+  final familyId = condition.requiredFamilyId;
+  if (familyId != null) {
+    expect(() => repository.family(familyId), returnsNormally);
   }
 }

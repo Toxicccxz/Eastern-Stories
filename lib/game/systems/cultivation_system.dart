@@ -106,6 +106,9 @@ class CultivationSystem {
       return _withLog(state, '你需要先启用一门特殊${usage.label}。');
     }
     final skill = _repository.skill(skillId);
+    if (!skill.canPractice) {
+      return _withLog(state, '${skill.name}只能通过请教师长或实际运用来精进。');
+    }
     final progress = state.skillProgress[skillId];
     final basicSkill = _repository.basicSkillFor(usage);
     final basicProgress =
