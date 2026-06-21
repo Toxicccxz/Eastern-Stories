@@ -4,6 +4,11 @@
     "name": "刘老农",
     "description": "刘老农年近六十，手脚却还算灵活，眉间藏着焦急。",
     "greeting": "这位少侠，可否见到小女娟儿？",
+    "intelligence": 12,
+    "teachingSkills": [
+      {"skillId": "basic_sword", "maxLevel": 50},
+      {"skillId": "parry", "maxLevel": 50}
+    ],
     "greetingVariants": [
       {
         "text": "娟儿，你可算平安回来了！多谢少侠搭救。",

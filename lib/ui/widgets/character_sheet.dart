@@ -50,6 +50,18 @@ class CharacterSheet extends StatelessWidget {
                       value: stats.maxInnerPower,
                       bonus: stats.maxInnerPowerBonus,
                     ),
+                    _Stat(label: '精神', value: state.player.spirit, bonus: 0),
+                    _Stat(
+                      label: '悟性',
+                      value: state.player.intelligence,
+                      bonus: 0,
+                    ),
+                    _Stat(label: '潜能', value: state.player.potential, bonus: 0),
+                    _Stat(
+                      label: '实战经验',
+                      value: state.player.combatExperience,
+                      bonus: 0,
+                    ),
                   ],
                 ),
                 const Divider(height: 28),

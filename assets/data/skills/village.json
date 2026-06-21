@@ -1,5 +1,14 @@
 [
   {
+    "id": "literate",
+    "name": "读书识字",
+    "description": "阅读典籍和领会文字要义的基础，等级越高，研读秘籍所得越多。",
+    "kind": "basic",
+    "usages": ["knowledge"],
+    "maxLevel": 50,
+    "practiceExperience": 10
+  },
+  {
     "id": "parry",
     "name": "基本招架",
     "description": "各种拆招卸力之法的根基，是运用特殊招架武功的基础。",
@@ -39,6 +48,8 @@
     "requiredEquipmentSlot": "weapon",
     "requiredSkillLevels": {"basic_sword": 10},
     "damageReduction": 1,
+    "practiceHpCost": 15,
+    "practiceInnerPowerCost": 5,
     "attackMessages": [
       "你使一招“伫倚危楼风细细”，手中长剑如风卷向{enemy}。",
       "你使出“草色烟光残照里”，剑光如残照般洒向{enemy}。",

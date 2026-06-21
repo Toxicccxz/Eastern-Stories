@@ -126,6 +126,7 @@ class LocationInfoPanel extends StatelessWidget {
     controller.dispatch(GameAction.talk(npc.id));
     final options = controller.dialogueOptionsFor(npc.id);
     final giveItemOptions = controller.giveItemOptionsFor(npc.id);
+    final teachingSkills = controller.teachingSkillsFor(npc.id);
 
     showModalBottomSheet<void>(
       context: context,
@@ -171,6 +172,26 @@ class LocationInfoPanel extends StatelessWidget {
                     onTap: () {
                       controller.dispatch(
                         GameAction.giveItem(npc.id, option.itemId),
+                      );
+                      Navigator.of(sheetContext).pop();
+                    },
+                  ),
+              ],
+              if (teachingSkills.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text('请教', style: Theme.of(sheetContext).textTheme.labelLarge),
+                for (final teaching in teachingSkills)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.school_outlined),
+                    title: Text(
+                      controller.repository.skill(teaching.skillId).name,
+                    ),
+                    subtitle: Text('可传授至 Lv.${teaching.maxLevel}'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      controller.dispatch(
+                        GameAction.learnFromNpc(npc.id, teaching.skillId),
                       );
                       Navigator.of(sheetContext).pop();
                     },

@@ -39,7 +39,7 @@ class PlayerStatusBar extends StatelessWidget {
                   ),
                 ),
               ),
-              Text('银两 ${player.silver}'),
+              Text('潜能 ${player.potential}  银两 ${player.silver}'),
               if (onSave != null) ...[
                 const SizedBox(width: 8),
                 IconButton(
@@ -73,11 +73,26 @@ class PlayerStatusBar extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          StatusMeter(
-            label: '经验',
-            value: player.experience,
-            maxValue: player.nextLevelExperience,
-            color: const Color(0xFF6F7F3F),
+          Row(
+            children: [
+              Expanded(
+                child: StatusMeter(
+                  label: '精神',
+                  value: player.spirit,
+                  maxValue: player.maxSpirit,
+                  color: const Color(0xFF8A6D3B),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: StatusMeter(
+                  label: '经验',
+                  value: player.experience,
+                  maxValue: player.nextLevelExperience,
+                  color: const Color(0xFF6F7F3F),
+                ),
+              ),
+            ],
           ),
         ],
       ),

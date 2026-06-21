@@ -21,6 +21,9 @@ class ItemDefinition {
     this.maxHpBonus = 0,
     this.maxInnerPowerBonus = 0,
     this.weaponSkillUsage,
+    this.studyRequiredCombatExperience = 0,
+    this.studySpiritCost = 10,
+    this.studyDifficulty = 15,
   });
 
   factory ItemDefinition.fromJson(Map<String, Object?> json) {
@@ -45,6 +48,10 @@ class ItemDefinition {
           json['weaponSkillUsage'] == null
               ? null
               : SkillUsage.values.byName(json['weaponSkillUsage'] as String),
+      studyRequiredCombatExperience:
+          json['studyRequiredCombatExperience'] as int? ?? 0,
+      studySpiritCost: json['studySpiritCost'] as int? ?? 10,
+      studyDifficulty: json['studyDifficulty'] as int? ?? 15,
     );
   }
 
@@ -65,6 +72,9 @@ class ItemDefinition {
   final int maxHpBonus;
   final int maxInnerPowerBonus;
   final SkillUsage? weaponSkillUsage;
+  final int studyRequiredCombatExperience;
+  final int studySpiritCost;
+  final int studyDifficulty;
 
   bool get canEquip => equipmentSlot != null;
 

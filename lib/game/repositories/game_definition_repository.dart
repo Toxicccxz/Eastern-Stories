@@ -10,6 +10,7 @@ import '../models/npc_definition.dart';
 import '../models/quest_definition.dart';
 import '../models/room_definition.dart';
 import '../models/skill_definition.dart';
+import '../models/skill_progress.dart';
 
 class GameDefinitionRepository {
   const GameDefinitionRepository({
@@ -112,6 +113,10 @@ class GameDefinitionRepository {
       startingRoomId: startingRoomId,
       npcStates: _initialNpcStates(),
       shopStates: _initialShopStates(),
+    ).copyWith(
+      skillProgress: const {
+        'literate': SkillProgress(level: 10, experience: 0),
+      },
     );
   }
 

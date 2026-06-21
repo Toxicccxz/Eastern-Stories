@@ -15,6 +15,7 @@ import '../systems/skill_progression_system.dart';
 import '../systems/skill_mapping_system.dart';
 import '../systems/trade_system.dart';
 import '../systems/world_system.dart';
+import '../systems/cultivation_system.dart';
 import 'game_action.dart';
 
 class GameController extends ChangeNotifier {
@@ -32,12 +33,17 @@ class GameController extends ChangeNotifier {
       repository,
       _skillMappingSystem,
     );
+    _cultivationSystem = CultivationSystem(
+      repository,
+      skillProgressionSystem,
+      _skillMappingSystem,
+    );
     final progressionSystem = ProgressionSystem(repository, _equipmentSystem);
     _movementSystem = MovementSystem(repository);
     _inventorySystem = InventorySystem(
       repository,
       _equipmentSystem,
-      skillProgressionSystem,
+      _cultivationSystem,
     );
     _questSystem = QuestSystem(repository, progressionSystem);
     _combatSystem = CombatSystem(
@@ -60,6 +66,7 @@ class GameController extends ChangeNotifier {
   late final WorldSystem _worldSystem;
   late final TradeSystem _tradeSystem;
   late final SkillMappingSystem _skillMappingSystem;
+  late final CultivationSystem _cultivationSystem;
   GameState _state;
 
   GameDefinitionRepository get repository => _repository;
@@ -108,6 +115,12 @@ class GameController extends ChangeNotifier {
         _state,
         itemId,
       ),
+      LearnFromNpcAction(:final npcId, :final skillId) => _cultivationSystem
+          .learnFromNpc(_state, npcId, skillId),
+      PracticeSkillAction(:final usage) => _cultivationSystem.practice(
+        _state,
+        usage,
+      ),
       UseItemAction(:final itemId) => _inventorySystem.useItem(_state, itemId),
       DropItemAction(:final itemId) => _inventorySystem.dropItem(
         _state,
@@ -151,6 +164,10 @@ class GameController extends ChangeNotifier {
 
   List<GiveItemOption> giveItemOptionsFor(String npcId) {
     return _questSystem.giveItemOptionsFor(_state, npcId);
+  }
+
+  List<TeachingSkillDefinition> teachingSkillsFor(String npcId) {
+    return _repository.npc(npcId).teachingSkills;
   }
 
   List<SkillDefinition> learnedSkills() {

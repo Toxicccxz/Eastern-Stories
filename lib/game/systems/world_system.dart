@@ -21,7 +21,13 @@ class WorldSystem {
           next.currentRoomId,
         ),
     };
-    return next.copyWith(worldTurn: worldTurn, npcStates: npcStates);
+    return next.copyWith(
+      worldTurn: worldTurn,
+      npcStates: npcStates,
+      player: next.player.copyWith(
+        spirit: (next.player.spirit + 2).clamp(0, next.player.maxSpirit),
+      ),
+    );
   }
 
   NpcRuntimeState _advanceNpc(

@@ -13,7 +13,7 @@ void main() {
     expect(repository.areas, hasLength(3));
     expect(rooms, hasLength(25));
     expect(repository.quests, hasLength(2));
-    expect(repository.skills, hasLength(3));
+    expect(repository.skills, hasLength(4));
 
     for (final area in repository.areas) {
       expect(
@@ -172,6 +172,10 @@ void main() {
           expect(() => repository.quest(questId), returnsNormally);
         }
       }
+      for (final teaching in npc.teachingSkills) {
+        final skill = repository.skill(teaching.skillId);
+        expect(teaching.maxLevel, inInclusiveRange(1, skill.maxLevel));
+      }
     }
 
     for (final item in repository.items) {
@@ -192,6 +196,9 @@ void main() {
         if (item.studyMaxSkillLevel > 1) {
           expect(item.studyExperience, greaterThan(0));
         }
+        expect(item.studySpiritCost, greaterThan(0));
+        expect(item.studyDifficulty, greaterThan(0));
+        expect(item.studyRequiredCombatExperience, greaterThanOrEqualTo(0));
       }
     }
 

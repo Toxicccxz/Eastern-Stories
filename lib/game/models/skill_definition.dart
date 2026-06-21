@@ -16,7 +16,8 @@ enum SkillUsage {
   spells('咒文'),
   move('行动'),
   array('阵法'),
-  whip('鞭法');
+  whip('鞭法'),
+  knowledge('学识');
 
   const SkillUsage(this.label);
 
@@ -40,6 +41,8 @@ class SkillDefinition {
     this.requiredSkillLevels = const {},
     this.requiredEquipmentSlot,
     this.attackMessages = const [],
+    this.practiceHpCost = 0,
+    this.practiceInnerPowerCost = 0,
   });
 
   factory SkillDefinition.fromJson(Map<String, Object?> json) {
@@ -71,6 +74,8 @@ class SkillDefinition {
               ),
       attackMessages:
           (json['attackMessages'] as List<Object?>? ?? const []).cast<String>(),
+      practiceHpCost: json['practiceHpCost'] as int? ?? 0,
+      practiceInnerPowerCost: json['practiceInnerPowerCost'] as int? ?? 0,
     );
   }
 
@@ -87,6 +92,8 @@ class SkillDefinition {
   final Map<String, int> requiredSkillLevels;
   final EquipmentSlot? requiredEquipmentSlot;
   final List<String> attackMessages;
+  final int practiceHpCost;
+  final int practiceInnerPowerCost;
 
   bool get isBasic => kind == SkillKind.basic;
 

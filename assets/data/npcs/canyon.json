@@ -30,7 +30,7 @@
       {
         "itemId": "general_seal",
         "label": "交还真正的印鉴",
-        "response": "正是此物。你替我寻回印鉴，这把古剑便赠你作报酬。",
+        "response": "正是此物。你替我寻回印鉴，这两卷武学典籍便赠你作报酬。",
         "setsQuestFlag": "general_seal_returned",
         "completesQuestId": "recover_general_seal",
         "conditions": {
@@ -45,6 +45,10 @@
     "name": "赫造基",
     "description": "军师赫造基手持羽扇，道骨仙风，目光里透着精明。",
     "greeting": "军师轻摇羽扇，似乎早已看穿你的来意。",
+    "intelligence": 30,
+    "teachingSkills": [
+      {"skillId": "literate", "maxLevel": 50}
+    ],
     "dialogueOptions": [
       {
         "id": "ask_about_armory",

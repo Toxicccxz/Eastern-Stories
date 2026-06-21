@@ -39,6 +39,11 @@ class GameState {
         maxHp: 80,
         innerPower: 30,
         maxInnerPower: 30,
+        spirit: 60,
+        maxSpirit: 60,
+        potential: 20,
+        intelligence: 12,
+        combatExperience: 0,
         silver: 20,
       ),
       visitedRoomIds: {startingRoomId},
@@ -316,6 +321,11 @@ class PlayerState {
     required this.maxHp,
     required this.innerPower,
     required this.maxInnerPower,
+    required this.spirit,
+    required this.maxSpirit,
+    required this.potential,
+    required this.intelligence,
+    required this.combatExperience,
     required this.silver,
   });
 
@@ -327,6 +337,11 @@ class PlayerState {
   final int maxHp;
   final int innerPower;
   final int maxInnerPower;
+  final int spirit;
+  final int maxSpirit;
+  final int potential;
+  final int intelligence;
+  final int combatExperience;
   final int silver;
 
   factory PlayerState.fromJson(Map<String, Object?> json) {
@@ -339,6 +354,11 @@ class PlayerState {
       maxHp: json['maxHp'] as int,
       innerPower: json['innerPower'] as int,
       maxInnerPower: json['maxInnerPower'] as int,
+      spirit: json['spirit'] as int? ?? 60,
+      maxSpirit: json['maxSpirit'] as int? ?? 60,
+      potential: json['potential'] as int? ?? 20,
+      intelligence: json['intelligence'] as int? ?? 12,
+      combatExperience: json['combatExperience'] as int? ?? 0,
       silver: json['silver'] as int,
     );
   }
@@ -353,6 +373,11 @@ class PlayerState {
       'maxHp': maxHp,
       'innerPower': innerPower,
       'maxInnerPower': maxInnerPower,
+      'spirit': spirit,
+      'maxSpirit': maxSpirit,
+      'potential': potential,
+      'intelligence': intelligence,
+      'combatExperience': combatExperience,
       'silver': silver,
     };
   }
@@ -365,6 +390,11 @@ class PlayerState {
     int? maxHp,
     int? innerPower,
     int? maxInnerPower,
+    int? spirit,
+    int? maxSpirit,
+    int? potential,
+    int? intelligence,
+    int? combatExperience,
     int? silver,
   }) {
     return PlayerState(
@@ -376,6 +406,11 @@ class PlayerState {
       maxHp: maxHp ?? this.maxHp,
       innerPower: innerPower ?? this.innerPower,
       maxInnerPower: maxInnerPower ?? this.maxInnerPower,
+      spirit: spirit ?? this.spirit,
+      maxSpirit: maxSpirit ?? this.maxSpirit,
+      potential: potential ?? this.potential,
+      intelligence: intelligence ?? this.intelligence,
+      combatExperience: combatExperience ?? this.combatExperience,
       silver: silver ?? this.silver,
     );
   }

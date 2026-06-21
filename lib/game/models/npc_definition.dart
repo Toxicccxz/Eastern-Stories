@@ -14,6 +14,8 @@ class NpcDefinition {
     this.combat,
     this.conditions,
     this.shop,
+    this.intelligence = 10,
+    this.teachingSkills = const [],
   });
 
   factory NpcDefinition.fromJson(Map<String, Object?> json) {
@@ -48,6 +50,12 @@ class NpcDefinition {
           json['shop'] == null
               ? null
               : ShopDefinition.fromJson(json['shop'] as Map<String, Object?>),
+      intelligence: json['intelligence'] as int? ?? 10,
+      teachingSkills: [
+        for (final teaching
+            in json['teachingSkills'] as List<Object?>? ?? const [])
+          TeachingSkillDefinition.fromJson(teaching as Map<String, Object?>),
+      ],
     );
   }
 
@@ -61,6 +69,8 @@ class NpcDefinition {
   final CombatDefinition? combat;
   final WorldCondition? conditions;
   final ShopDefinition? shop;
+  final int intelligence;
+  final List<TeachingSkillDefinition> teachingSkills;
 
   String greetingFor(GameState state) {
     for (final variant in greetingVariants) {
@@ -70,6 +80,23 @@ class NpcDefinition {
     }
     return greeting;
   }
+}
+
+class TeachingSkillDefinition {
+  const TeachingSkillDefinition({
+    required this.skillId,
+    required this.maxLevel,
+  });
+
+  factory TeachingSkillDefinition.fromJson(Map<String, Object?> json) {
+    return TeachingSkillDefinition(
+      skillId: json['skillId'] as String,
+      maxLevel: json['maxLevel'] as int,
+    );
+  }
+
+  final String skillId;
+  final int maxLevel;
 }
 
 class GiveItemOption {

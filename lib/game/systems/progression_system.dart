@@ -27,7 +27,13 @@ class ProgressionSystem {
 
     final previousLevel = state.player.level;
     final nextPlayer = _applyExperience(
-      state.player.copyWith(silver: state.player.silver + silver),
+      state.player.copyWith(
+        silver: state.player.silver + silver,
+        combatExperience: state.player.combatExperience + experience,
+        potential:
+            state.player.potential +
+            (experience == 0 ? 0 : experience ~/ 10 + 1),
+      ),
       experience,
     );
     final stats = _equipmentSystem.statsFor(state.copyWith(player: nextPlayer));

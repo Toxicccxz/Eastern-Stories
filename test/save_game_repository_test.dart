@@ -29,6 +29,12 @@ void main() {
       equippedWeaponId: 'hengbing_sword',
       skillProgress: {'parry': const SkillProgress(level: 3, experience: 45)},
       enabledSkillIds: const {SkillUsage.parry: 'deisword'},
+      player: GameState.initial(startingRoomId: 'liu_home').player.copyWith(
+        spirit: 37,
+        potential: 14,
+        intelligence: 16,
+        combatExperience: 240,
+      ),
       npcStates: {
         'white_ice_dragon': const NpcRuntimeState(
           roomId: 'ice_cave',
@@ -68,6 +74,10 @@ void main() {
     expect(loaded?.skillProgress['parry']?.level, 3);
     expect(loaded?.skillProgress['parry']?.experience, 45);
     expect(loaded?.enabledSkillIds, {SkillUsage.parry: 'deisword'});
+    expect(loaded?.player.spirit, 37);
+    expect(loaded?.player.potential, 14);
+    expect(loaded?.player.intelligence, 16);
+    expect(loaded?.player.combatExperience, 240);
     expect(loaded?.npcStates['white_ice_dragon']?.roomId, 'ice_cave');
     expect(loaded?.npcStates['white_ice_dragon']?.currentHp, 12);
     expect(loaded?.npcStates['white_ice_dragon']?.isDefeated, isFalse);

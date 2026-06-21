@@ -214,7 +214,10 @@ void main() {
     controller.dispatch(const GameAction.studyItem('parry_book'));
 
     expect(controller.state.learnedSkillIds, contains('parry'));
-    expect(controller.learnedSkills().single.name, '基本招架');
+    expect(
+      controller.learnedSkills().map((skill) => skill.name),
+      contains('基本招架'),
+    );
   });
 
   test('player can study the ancient sword manual', () {
@@ -300,7 +303,7 @@ void main() {
     }
 
     expect(controller.state.skillProgress['basic_sword']?.level, 2);
-    expect(controller.state.skillProgress['basic_sword']?.experience, 20);
+    expect(controller.state.skillProgress['basic_sword']?.experience, 26);
     expect(controller.state.log, contains(contains('Lv.2')));
   });
 
@@ -440,6 +443,7 @@ void main() {
       QuestStatus.completed,
     );
     expect(controller.state.inventoryItemIds, contains('canyon_old_sword'));
+    expect(controller.state.inventoryItemIds, contains('deisword_manual'));
     expect(controller.state.inventoryItemIds, isNot(contains('general_seal')));
     expect(
       _questView(
@@ -449,10 +453,77 @@ void main() {
       isTrue,
     );
 
+    controller.replaceState(
+      controller.state.copyWith(
+        player: controller.state.player.copyWith(combatExperience: 40),
+      ),
+    );
     controller.dispatch(const GameAction.studyItem('canyon_old_sword'));
     controller.dispatch(const GameAction.studyItem('canyon_old_sword'));
     expect(controller.state.skillProgress['parry']?.level, 1);
-    expect(controller.state.skillProgress['parry']?.experience, 60);
+    expect(controller.state.skillProgress['parry']?.experience, 62);
+  });
+
+  test('learning from a teacher consumes potential and spirit', () {
+    final controller = GameController(repository: repository);
+
+    controller.dispatch(
+      const GameAction.learnFromNpc('old_liu', 'basic_sword'),
+    );
+
+    expect(controller.state.skillProgress['basic_sword']?.level, 1);
+    expect(controller.state.player.potential, 19);
+    expect(controller.state.player.spirit, 36);
+    expect(controller.state.log.last, contains('请教'));
+  });
+
+  test('studying requires literacy and enough combat experience', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        inventoryItemIds: const ['canyon_old_sword'],
+        skillProgress: const {},
+      ),
+    );
+
+    controller.dispatch(const GameAction.studyItem('canyon_old_sword'));
+    expect(controller.state.log.last, contains('不识字'));
+
+    controller.replaceState(
+      controller.state.copyWith(
+        skillProgress: const {
+          'literate': SkillProgress(level: 10, experience: 0),
+        },
+      ),
+    );
+    controller.dispatch(const GameAction.studyItem('canyon_old_sword'));
+    expect(controller.state.log.last, contains('实战经验不足'));
+  });
+
+  test('practicing an enabled special skill consumes vitals', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        inventoryItemIds: const ['hengbing_sword'],
+        equippedWeaponId: 'hengbing_sword',
+        player: initialState.player.copyWith(innerPower: 50, maxInnerPower: 50),
+        skillProgress: const {
+          'literate': SkillProgress(level: 10, experience: 0),
+          'basic_sword': SkillProgress(level: 10, experience: 0),
+          'deisword': SkillProgress(level: 5, experience: 0),
+        },
+        enabledSkillIds: const {SkillUsage.sword: 'deisword'},
+      ),
+    );
+
+    controller.dispatch(const GameAction.practiceSkill(SkillUsage.sword));
+
+    expect(controller.state.player.hp, 65);
+    expect(controller.state.player.innerPower, 45);
+    expect(controller.state.skillProgress['deisword']?.experience, 12);
+    expect(controller.state.log, contains(contains('演练')));
   });
 
   test('player can buy, sell, and use melon', () {

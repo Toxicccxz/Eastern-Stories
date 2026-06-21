@@ -28,6 +28,12 @@ sealed class GameAction {
 
   const factory GameAction.studyItem(String itemId) = StudyItemAction;
 
+  const factory GameAction.learnFromNpc(String npcId, String skillId) =
+      LearnFromNpcAction;
+
+  const factory GameAction.practiceSkill(SkillUsage usage) =
+      PracticeSkillAction;
+
   const factory GameAction.useItem(String itemId) = UseItemAction;
 
   const factory GameAction.dropItem(String itemId) = DropItemAction;
@@ -110,6 +116,19 @@ class StudyItemAction extends GameAction {
   const StudyItemAction(this.itemId);
 
   final String itemId;
+}
+
+class LearnFromNpcAction extends GameAction {
+  const LearnFromNpcAction(this.npcId, this.skillId);
+
+  final String npcId;
+  final String skillId;
+}
+
+class PracticeSkillAction extends GameAction {
+  const PracticeSkillAction(this.usage);
+
+  final SkillUsage usage;
 }
 
 class UseItemAction extends GameAction {

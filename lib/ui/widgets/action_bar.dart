@@ -273,10 +273,23 @@ class _SkillUsageButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final isEnabled = controller.state.enabledSkillIds[usage] == skill.id;
     return isEnabled
-        ? OutlinedButton.icon(
-          onPressed: () => controller.dispatch(GameAction.disableSkill(usage)),
-          icon: const Icon(Icons.check, size: 18),
-          label: Text('停用${usage.label}'),
+        ? Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            OutlinedButton.icon(
+              onPressed:
+                  () => controller.dispatch(GameAction.disableSkill(usage)),
+              icon: const Icon(Icons.check, size: 18),
+              label: Text('停用${usage.label}'),
+            ),
+            const SizedBox(width: 6),
+            FilledButton.icon(
+              onPressed:
+                  () => controller.dispatch(GameAction.practiceSkill(usage)),
+              icon: const Icon(Icons.fitness_center, size: 18),
+              label: const Text('练习'),
+            ),
+          ],
         )
         : FilledButton.tonal(
           onPressed:

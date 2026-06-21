@@ -17,6 +17,9 @@
     "studySkillId": "parry",
     "studyMaxSkillLevel": 50,
     "studyExperience": 60,
+    "studyRequiredCombatExperience": 40,
+    "studySpiritCost": 18,
+    "studyDifficulty": 15,
     "sellPrice": 1
   },
   {
@@ -26,6 +29,9 @@
     "studySkillId": "deisword",
     "studyMaxSkillLevel": 50,
     "studyExperience": 60,
+    "studyRequiredCombatExperience": 100,
+    "studySpiritCost": 24,
+    "studyDifficulty": 20,
     "sellPrice": 1
   }
 ]
