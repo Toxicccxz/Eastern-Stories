@@ -33,9 +33,15 @@ class CultivationSystem {
     if (teaching == null) {
       return _withLog(state, '${teacher.name}并不传授这门技艺。');
     }
+    final accessFailure = _teachingAccessFailure(state, teacher, teaching);
+    if (accessFailure != null) {
+      return _withLog(state, accessFailure);
+    }
     final skill = _repository.skill(skillId);
     final current = state.skillProgress[skillId];
-    if ((current?.level ?? 0) >= teaching.maxLevel) {
+    final teachingLimit = (teaching.maxLevel - state.player.betrayalCount * 5)
+        .clamp(1, teaching.maxLevel);
+    if ((current?.level ?? 0) >= teachingLimit) {
       return _withLog(state, '你在${skill.name}上的造诣已经不输${teacher.name}。');
     }
     final requirement = _skillMappingSystem.learningRequirement(state, skill);
@@ -44,6 +50,12 @@ class CultivationSystem {
     }
     if (state.player.potential <= 0) {
       return _withLog(state, '你的潜能已经发挥到极限，暂时无法继续请教。');
+    }
+    final apprenticeship = state.apprenticeship;
+    if (teaching.contributionCost > 0 &&
+        (apprenticeship == null ||
+            apprenticeship.contribution < teaching.contributionCost)) {
+      return _withLog(state, '你的师门贡献不足，${teacher.name}不肯继续传授。');
     }
     final spiritCost = _learningSpiritCost(state, teacher);
     if (state.player.spirit < spiritCost) {
@@ -61,6 +73,13 @@ class CultivationSystem {
         potential: state.player.potential - 1,
       ),
       log: state.logWith('你向${teacher.name}请教${skill.name}，似乎有所领悟。'),
+      apprenticeship:
+          apprenticeship == null || teaching.contributionCost == 0
+              ? apprenticeship
+              : apprenticeship.copyWith(
+                contribution:
+                    apprenticeship.contribution - teaching.contributionCost,
+              ),
     );
     if (current == null) {
       return nextState.copyWith(
@@ -74,7 +93,7 @@ class CultivationSystem {
       nextState,
       skillId: skillId,
       experience: 20 + state.player.intelligence,
-      levelLimit: teaching.maxLevel,
+      levelLimit: teachingLimit,
     );
   }
 
@@ -101,7 +120,11 @@ class CultivationSystem {
         state.player.innerPower < skill.practiceInnerPowerCost) {
       return _withLog(state, '你的气血或内力不足，无法继续练习${skill.name}。');
     }
-    final requirement = _skillMappingSystem.learningRequirement(state, skill);
+    final requirement = _skillMappingSystem.learningRequirement(
+      state,
+      skill,
+      requireFamily: false,
+    );
     if (requirement != null) {
       return _withLog(state, requirement);
     }
@@ -177,6 +200,23 @@ class CultivationSystem {
       }
     }
     return null;
+  }
+
+  String? _teachingAccessFailure(
+    GameState state,
+    NpcDefinition teacher,
+    TeachingSkillDefinition teaching,
+  ) {
+    final apprenticeship = state.apprenticeship;
+    return switch (teaching.access) {
+      TeachingAccess.public => null,
+      TeachingAccess.family when apprenticeship?.familyId == teacher.familyId =>
+        null,
+      TeachingAccess.direct when apprenticeship?.masterNpcId == teacher.id =>
+        null,
+      TeachingAccess.family => '${teacher.name}只指点同门弟子。',
+      TeachingAccess.direct => '${teacher.name}只向自己的弟子传授这门武学。',
+    };
   }
 
   int _learningSpiritCost(GameState state, NpcDefinition teacher) {

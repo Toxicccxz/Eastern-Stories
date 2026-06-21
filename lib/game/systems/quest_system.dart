@@ -173,6 +173,8 @@ class QuestSystem {
     final rewardText = [
       if (quest.rewardSilver > 0) '银两 +${quest.rewardSilver}',
       if (rewardNames.isNotEmpty) rewardNames,
+      if (_earnsFamilyContribution(state, quest))
+        '师门贡献 +${quest.rewardFamilyContribution}',
     ].join('，');
 
     return state.copyWith(
@@ -181,6 +183,7 @@ class QuestSystem {
       ),
       inventoryItemIds: [...state.inventoryItemIds, ...quest.rewardItemIds],
       questStatuses: {...state.questStatuses, questId: QuestStatus.completed},
+      apprenticeship: _rewardApprenticeship(state, quest),
       log: state.logWith(
         rewardText.isEmpty
             ? '完成委托：${quest.title}'
@@ -198,9 +201,15 @@ class QuestSystem {
       return _withLog(state, '这件事还没办妥。');
     }
 
+    final earnsContribution = _earnsFamilyContribution(state, quest);
     final nextState = state.copyWith(
       inventoryItemIds: [...state.inventoryItemIds, ...quest.rewardItemIds],
       questStatuses: {...state.questStatuses, questId: QuestStatus.completed},
+      apprenticeship: _rewardApprenticeship(state, quest),
+      log:
+          earnsContribution
+              ? state.logWith('你为师门立下功劳，贡献 +${quest.rewardFamilyContribution}。')
+              : state.log,
     );
     return _progressionSystem.awardRewards(
       nextState,
@@ -221,6 +230,27 @@ class QuestSystem {
       return true;
     }
     return _questStatus(state, requiredQuestId) == requiredQuestStatus;
+  }
+
+  ApprenticeshipState? _rewardApprenticeship(
+    GameState state,
+    QuestDefinition quest,
+  ) {
+    final apprenticeship = state.apprenticeship;
+    if (apprenticeship == null ||
+        apprenticeship.familyId != quest.rewardFamilyId ||
+        quest.rewardFamilyContribution == 0) {
+      return apprenticeship;
+    }
+    return apprenticeship.copyWith(
+      contribution:
+          apprenticeship.contribution + quest.rewardFamilyContribution,
+    );
+  }
+
+  bool _earnsFamilyContribution(GameState state, QuestDefinition quest) {
+    return state.apprenticeship?.familyId == quest.rewardFamilyId &&
+        quest.rewardFamilyContribution > 0;
   }
 
   QuestStatus _questStatus(GameState state, String questId) {

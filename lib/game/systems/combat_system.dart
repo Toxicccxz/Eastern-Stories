@@ -365,12 +365,12 @@ class CombatSystem {
   }
 
   int _damageReduction(GameState state) {
-    final basicParry = _repository.basicSkillFor(SkillUsage.parry);
-    final mappedParryId = state.enabledSkillIds[SkillUsage.parry];
-    final skills = [
-      basicParry?.id,
-      mappedParryId,
-    ].whereType<String>().where(state.skillProgress.containsKey);
+    final skills = <String>{
+      for (final usage in const [SkillUsage.parry, SkillUsage.dodge]) ...[
+        if (_repository.basicSkillFor(usage) case final basic?) basic.id,
+        if (state.enabledSkillIds[usage] case final mapped?) mapped,
+      ],
+    }.where(state.skillProgress.containsKey);
     return skills.fold(0, (total, skillId) {
       final level = state.skillProgress[skillId]?.level ?? 0;
       return total + _repository.skill(skillId).damageReductionAtLevel(level);

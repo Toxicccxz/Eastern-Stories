@@ -34,6 +34,14 @@ void main() {
         potential: 14,
         intelligence: 16,
         combatExperience: 240,
+        betrayalCount: 2,
+      ),
+      apprenticeship: const ApprenticeshipState(
+        familyId: 'liu_family',
+        masterNpcId: 'old_liu',
+        generation: 2,
+        title: '弟子',
+        contribution: 7,
       ),
       npcStates: {
         'white_ice_dragon': const NpcRuntimeState(
@@ -78,6 +86,11 @@ void main() {
     expect(loaded?.player.potential, 14);
     expect(loaded?.player.intelligence, 16);
     expect(loaded?.player.combatExperience, 240);
+    expect(loaded?.player.betrayalCount, 2);
+    expect(loaded?.apprenticeship?.familyId, 'liu_family');
+    expect(loaded?.apprenticeship?.masterNpcId, 'old_liu');
+    expect(loaded?.apprenticeship?.generation, 2);
+    expect(loaded?.apprenticeship?.contribution, 7);
     expect(loaded?.npcStates['white_ice_dragon']?.roomId, 'ice_cave');
     expect(loaded?.npcStates['white_ice_dragon']?.currentHp, 12);
     expect(loaded?.npcStates['white_ice_dragon']?.isDefeated, isFalse);

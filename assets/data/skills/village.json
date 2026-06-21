@@ -37,6 +37,96 @@
     "practiceExperience": 20
   },
   {
+    "id": "basic_unarmed",
+    "name": "基本拳脚",
+    "description": "拳掌指爪等徒手武艺的根基。",
+    "kind": "basic",
+    "usages": ["unarmed"],
+    "maxLevel": 50,
+    "practiceExperience": 20
+  },
+  {
+    "id": "basic_dodge",
+    "name": "基本轻功",
+    "description": "腾挪闪避与行动身法的根基。",
+    "kind": "basic",
+    "usages": ["dodge"],
+    "maxLevel": 50,
+    "practiceExperience": 20
+  },
+  {
+    "id": "liuh_ken",
+    "name": "柳家拳",
+    "description": "刘老农家传拳法，招式取意松梅、孤崖与山涛。",
+    "kind": "special",
+    "usages": ["unarmed"],
+    "requiredFamilyId": "liu_family",
+    "requiredSkillLevels": {"basic_unarmed": 1},
+    "practiceHpCost": 15,
+    "attackMessages": [
+      "你使一招“古松挂月”，对准{enemy}呼地一拳。",
+      "你左手虚晃，右拳使出“孤崖听涛”击向{enemy}。"
+    ],
+    "moves": [
+      {
+        "id": "tiger_roar",
+        "name": "荒山虎吟",
+        "effectType": "damage",
+        "damageBonus": 5,
+        "minimumSkillLevel": 5,
+        "combatMessage": "你步履一沉，使出“荒山虎吟”猛击{enemy}。"
+      }
+    ],
+    "maxLevel": 50,
+    "practiceExperience": 20
+  },
+  {
+    "id": "pyrobat_steps",
+    "name": "火蝠身法",
+    "description": "身形飘忽如夜蝠掠江，可启用为轻功与行动身法。",
+    "kind": "special",
+    "usages": ["dodge", "move"],
+    "requiredFamilyId": "liu_family",
+    "requiredSkillLevels": {"basic_dodge": 1},
+    "practiceHpCost": 15,
+    "damageReduction": 2,
+    "maxLevel": 50,
+    "practiceExperience": 20
+  },
+  {
+    "id": "six_chaos_sword",
+    "name": "六阴追魂剑",
+    "description": "剑势阴厉诡奇，可启用为剑法与招架。",
+    "kind": "special",
+    "usages": ["sword", "parry"],
+    "requiredFamilyId": "liu_family",
+    "minimumMaxInnerPower": 30,
+    "requiredEquipmentSlot": "weapon",
+    "requiredSkillLevels": {"basic_sword": 5},
+    "practiceHpCost": 15,
+    "practiceInnerPowerCost": 5,
+    "damageReduction": 1,
+    "attackMessages": [
+      "你使一招“厉鬼缠身”，身形一转，剑锋斩向{enemy}。",
+      "你舞动长剑，一招“百鬼夜行”挟着闪闪剑光刺向{enemy}。",
+      "你手中剑光暴长，一招“鬼影幢幢”往{enemy}刺去。"
+    ],
+    "moves": [
+      {
+        "id": "ghosts_dance",
+        "name": "群魔乱舞",
+        "effectType": "damage",
+        "innerPowerCost": 7,
+        "damageBonus": 8,
+        "minimumSkillLevel": 10,
+        "requiredEquipmentSlot": "weapon",
+        "combatMessage": "你使出“群魔乱舞”，手中长剑狂风骤雨般连攻{enemy}。"
+      }
+    ],
+    "maxLevel": 50,
+    "practiceExperience": 20
+  },
+  {
     "id": "deisword",
     "name": "蝶恋花剑法",
     "description": "以柳永《蝶恋花》词意入剑，可同时启用为剑法与招架。",

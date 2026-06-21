@@ -8,6 +8,8 @@ class QuestDefinition {
     this.rewardSilver = 0,
     this.rewardExperience = 0,
     this.rewardItemIds = const [],
+    this.rewardFamilyId,
+    this.rewardFamilyContribution = 0,
   });
 
   factory QuestDefinition.fromJson(Map<String, Object?> json) {
@@ -27,6 +29,8 @@ class QuestDefinition {
       rewardExperience: json['rewardExperience'] as int? ?? 0,
       rewardItemIds:
           (json['rewardItemIds'] as List<Object?>? ?? const []).cast<String>(),
+      rewardFamilyId: json['rewardFamilyId'] as String?,
+      rewardFamilyContribution: json['rewardFamilyContribution'] as int? ?? 0,
     );
   }
 
@@ -38,6 +42,8 @@ class QuestDefinition {
   final int rewardSilver;
   final int rewardExperience;
   final List<String> rewardItemIds;
+  final String? rewardFamilyId;
+  final int rewardFamilyContribution;
 }
 
 enum QuestStatus { notStarted, active, completed }

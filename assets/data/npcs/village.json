@@ -5,9 +5,18 @@
     "description": "刘老农年近六十，手脚却还算灵活，眉间藏着焦急。",
     "greeting": "这位少侠，可否见到小女娟儿？",
     "intelligence": 12,
+    "familyId": "liu_family",
+    "familyGeneration": 1,
+    "canAcceptApprentices": true,
+    "apprenticeTitle": "弟子",
     "teachingSkills": [
-      {"skillId": "basic_sword", "maxLevel": 50},
-      {"skillId": "parry", "maxLevel": 50}
+      {"skillId": "basic_sword", "maxLevel": 50, "access": "direct"},
+      {"skillId": "parry", "maxLevel": 50, "access": "direct"},
+      {"skillId": "basic_unarmed", "maxLevel": 40, "access": "direct"},
+      {"skillId": "basic_dodge", "maxLevel": 40, "access": "direct"},
+      {"skillId": "liuh_ken", "maxLevel": 30, "access": "direct"},
+      {"skillId": "pyrobat_steps", "maxLevel": 30, "access": "direct"},
+      {"skillId": "six_chaos_sword", "maxLevel": 30, "access": "direct"}
     ],
     "greetingVariants": [
       {

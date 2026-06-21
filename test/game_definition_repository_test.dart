@@ -13,7 +13,8 @@ void main() {
     expect(repository.areas, hasLength(3));
     expect(rooms, hasLength(25));
     expect(repository.quests, hasLength(2));
-    expect(repository.skills, hasLength(4));
+    expect(repository.skills, hasLength(9));
+    expect(repository.families, hasLength(1));
 
     for (final area in repository.areas) {
       expect(
@@ -175,6 +176,16 @@ void main() {
       for (final teaching in npc.teachingSkills) {
         final skill = repository.skill(teaching.skillId);
         expect(teaching.maxLevel, inInclusiveRange(1, skill.maxLevel));
+        expect(teaching.contributionCost, greaterThanOrEqualTo(0));
+      }
+      final familyId = npc.familyId;
+      if (familyId != null) {
+        expect(() => repository.family(familyId), returnsNormally);
+        expect(npc.familyGeneration, greaterThan(0));
+      }
+      if (npc.canAcceptApprentices) {
+        expect(familyId, isNotNull);
+        expect(npc.familyGeneration, isNotNull);
       }
     }
 
@@ -203,6 +214,11 @@ void main() {
     }
 
     for (final quest in repository.quests) {
+      final rewardFamilyId = quest.rewardFamilyId;
+      if (rewardFamilyId != null) {
+        expect(() => repository.family(rewardFamilyId), returnsNormally);
+        expect(quest.rewardFamilyContribution, greaterThan(0));
+      }
       for (final step in quest.steps) {
         final npcId = step.requiredDefeatedNpcId;
         if (npcId != null) {
@@ -244,6 +260,10 @@ void main() {
       for (final move in skill.moves) {
         expect(move.id, isNotEmpty);
         expect(move.minimumSkillLevel, inInclusiveRange(1, skill.maxLevel));
+      }
+      final familyId = skill.requiredFamilyId;
+      if (familyId != null) {
+        expect(() => repository.family(familyId), returnsNormally);
       }
     }
   });

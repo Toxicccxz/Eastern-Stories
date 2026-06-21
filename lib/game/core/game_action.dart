@@ -34,6 +34,10 @@ sealed class GameAction {
   const factory GameAction.practiceSkill(SkillUsage usage) =
       PracticeSkillAction;
 
+  const factory GameAction.apprenticeTo(String npcId) = ApprenticeToAction;
+
+  const factory GameAction.leaveFamily() = LeaveFamilyAction;
+
   const factory GameAction.useItem(String itemId) = UseItemAction;
 
   const factory GameAction.dropItem(String itemId) = DropItemAction;
@@ -129,6 +133,16 @@ class PracticeSkillAction extends GameAction {
   const PracticeSkillAction(this.usage);
 
   final SkillUsage usage;
+}
+
+class ApprenticeToAction extends GameAction {
+  const ApprenticeToAction(this.npcId);
+
+  final String npcId;
+}
+
+class LeaveFamilyAction extends GameAction {
+  const LeaveFamilyAction();
 }
 
 class UseItemAction extends GameAction {

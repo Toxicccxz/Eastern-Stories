@@ -4,6 +4,7 @@ import 'npc_definition.dart';
 import 'quest_definition.dart';
 import 'room_definition.dart';
 import 'skill_definition.dart';
+import 'family_definition.dart';
 
 class GameWorldDefinition {
   const GameWorldDefinition({
@@ -14,6 +15,7 @@ class GameWorldDefinition {
     required this.items,
     required this.quests,
     required this.skills,
+    required this.families,
   });
 
   factory GameWorldDefinition.fromJson(Map<String, Object?> json) {
@@ -41,6 +43,10 @@ class GameWorldDefinition {
       for (final value in json['skills'] as List<Object?>)
         SkillDefinition.fromJson(value as Map<String, Object?>),
     ];
+    final families = [
+      for (final value in json['families'] as List<Object?>)
+        FamilyDefinition.fromJson(value as Map<String, Object?>),
+    ];
 
     return GameWorldDefinition(
       startingRoomId: json['startingRoomId'] as String,
@@ -50,6 +56,7 @@ class GameWorldDefinition {
       items: {for (final item in items) item.id: item},
       quests: {for (final quest in quests) quest.id: quest},
       skills: {for (final skill in skills) skill.id: skill},
+      families: {for (final family in families) family.id: family},
     );
   }
 
@@ -60,4 +67,5 @@ class GameWorldDefinition {
   final Map<String, ItemDefinition> items;
   final Map<String, QuestDefinition> quests;
   final Map<String, SkillDefinition> skills;
+  final Map<String, FamilyDefinition> families;
 }

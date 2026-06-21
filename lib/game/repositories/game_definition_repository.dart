@@ -11,6 +11,7 @@ import '../models/quest_definition.dart';
 import '../models/room_definition.dart';
 import '../models/skill_definition.dart';
 import '../models/skill_progress.dart';
+import '../models/family_definition.dart';
 
 class GameDefinitionRepository {
   const GameDefinitionRepository({
@@ -21,12 +22,14 @@ class GameDefinitionRepository {
     required Map<String, ItemDefinition> items,
     required Map<String, QuestDefinition> quests,
     required Map<String, SkillDefinition> skills,
+    required Map<String, FamilyDefinition> families,
   }) : _areas = areas,
        _rooms = rooms,
        _npcs = npcs,
        _items = items,
        _quests = quests,
-       _skills = skills;
+       _skills = skills,
+       _families = families;
 
   factory GameDefinitionRepository.fromWorld(GameWorldDefinition world) {
     return GameDefinitionRepository(
@@ -37,6 +40,7 @@ class GameDefinitionRepository {
       items: world.items,
       quests: world.quests,
       skills: world.skills,
+      families: world.families,
     );
   }
 
@@ -69,6 +73,7 @@ class GameDefinitionRepository {
       _loadDefinitionFiles(assetBundle, sources, 'items'),
       _loadDefinitionFiles(assetBundle, sources, 'quests'),
       _loadDefinitionFiles(assetBundle, sources, 'skills'),
+      _loadDefinitionFiles(assetBundle, sources, 'families'),
     ]);
 
     return GameDefinitionRepository.fromWorld(
@@ -80,6 +85,7 @@ class GameDefinitionRepository {
         'items': definitions[3],
         'quests': definitions[4],
         'skills': definitions[5],
+        'families': definitions[6],
       }),
     );
   }
@@ -91,6 +97,7 @@ class GameDefinitionRepository {
   final Map<String, ItemDefinition> _items;
   final Map<String, QuestDefinition> _quests;
   final Map<String, SkillDefinition> _skills;
+  final Map<String, FamilyDefinition> _families;
 
   Iterable<AreaDefinition> get areas => _areas.values;
 
@@ -107,6 +114,8 @@ class GameDefinitionRepository {
   Iterable<QuestDefinition> get quests => _quests.values;
 
   Iterable<SkillDefinition> get skills => _skills.values;
+
+  Iterable<FamilyDefinition> get families => _families.values;
 
   GameState createInitialState() {
     return GameState.initial(
@@ -226,6 +235,14 @@ class GameDefinitionRepository {
       }
     }
     return null;
+  }
+
+  FamilyDefinition family(String id) {
+    final family = _families[id];
+    if (family == null) {
+      throw StateError('Unknown family id: $id');
+    }
+    return family;
   }
 
   Map<String, NpcRuntimeState> _initialNpcStates() {

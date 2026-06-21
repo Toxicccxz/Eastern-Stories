@@ -13,6 +13,7 @@ class GameState {
     required this.equippedItemIds,
     required this.skillProgress,
     required this.enabledSkillIds,
+    required this.apprenticeship,
     required this.roomItemOverrides,
     required this.npcStates,
     required this.shopStates,
@@ -44,6 +45,7 @@ class GameState {
         potential: 20,
         intelligence: 12,
         combatExperience: 0,
+        betrayalCount: 0,
         silver: 20,
       ),
       visitedRoomIds: {startingRoomId},
@@ -51,6 +53,7 @@ class GameState {
       equippedItemIds: const {},
       skillProgress: const {},
       enabledSkillIds: const {},
+      apprenticeship: null,
       roomItemOverrides: const {},
       npcStates: npcStates,
       shopStates: shopStates,
@@ -77,6 +80,12 @@ class GameState {
             (usage, skillId) =>
                 MapEntry(SkillUsage.values.byName(usage), skillId as String),
           ),
+      apprenticeship:
+          json['apprenticeship'] == null
+              ? null
+              : ApprenticeshipState.fromJson(
+                json['apprenticeship'] as Map<String, Object?>,
+              ),
       roomItemOverrides: (json['roomItemOverrides'] as Map<String, Object?>)
           .map(
             (roomId, itemIds) =>
@@ -114,6 +123,7 @@ class GameState {
   final Map<EquipmentSlot, String> equippedItemIds;
   final Map<String, SkillProgress> skillProgress;
   final Map<SkillUsage, String> enabledSkillIds;
+  final ApprenticeshipState? apprenticeship;
   final Map<String, List<String>> roomItemOverrides;
   final Map<String, NpcRuntimeState> npcStates;
   final Map<String, ShopRuntimeState> shopStates;
@@ -139,6 +149,7 @@ class GameState {
       'enabledSkillIds': enabledSkillIds.map(
         (usage, skillId) => MapEntry(usage.name, skillId),
       ),
+      'apprenticeship': apprenticeship?.toJson(),
       'learnedSkillIds': learnedSkillIds.toList(),
       'roomItemOverrides': roomItemOverrides,
       'npcStates': npcStates.map(
@@ -166,6 +177,7 @@ class GameState {
     Object? equippedWeaponId = _unchanged,
     Map<String, SkillProgress>? skillProgress,
     Map<SkillUsage, String>? enabledSkillIds,
+    Object? apprenticeship = _unchanged,
     Set<String>? learnedSkillIds,
     Map<String, List<String>>? roomItemOverrides,
     Map<String, NpcRuntimeState>? npcStates,
@@ -203,6 +215,10 @@ class GameState {
       equippedItemIds: nextEquipment,
       skillProgress: nextSkillProgress,
       enabledSkillIds: enabledSkillIds ?? this.enabledSkillIds,
+      apprenticeship:
+          apprenticeship == _unchanged
+              ? this.apprenticeship
+              : apprenticeship as ApprenticeshipState?,
       roomItemOverrides: roomItemOverrides ?? this.roomItemOverrides,
       npcStates: npcStates ?? this.npcStates,
       shopStates: shopStates ?? this.shopStates,
@@ -241,6 +257,52 @@ class ShopRuntimeState {
 
   ShopRuntimeState copyWith({Map<String, int>? stockByItemId}) {
     return ShopRuntimeState(stockByItemId: stockByItemId ?? this.stockByItemId);
+  }
+}
+
+class ApprenticeshipState {
+  const ApprenticeshipState({
+    required this.familyId,
+    required this.masterNpcId,
+    required this.generation,
+    required this.title,
+    required this.contribution,
+  });
+
+  factory ApprenticeshipState.fromJson(Map<String, Object?> json) {
+    return ApprenticeshipState(
+      familyId: json['familyId'] as String,
+      masterNpcId: json['masterNpcId'] as String,
+      generation: json['generation'] as int,
+      title: json['title'] as String,
+      contribution: json['contribution'] as int? ?? 0,
+    );
+  }
+
+  final String familyId;
+  final String masterNpcId;
+  final int generation;
+  final String title;
+  final int contribution;
+
+  Map<String, Object?> toJson() {
+    return {
+      'familyId': familyId,
+      'masterNpcId': masterNpcId,
+      'generation': generation,
+      'title': title,
+      'contribution': contribution,
+    };
+  }
+
+  ApprenticeshipState copyWith({int? contribution}) {
+    return ApprenticeshipState(
+      familyId: familyId,
+      masterNpcId: masterNpcId,
+      generation: generation,
+      title: title,
+      contribution: contribution ?? this.contribution,
+    );
   }
 }
 
@@ -326,6 +388,7 @@ class PlayerState {
     required this.potential,
     required this.intelligence,
     required this.combatExperience,
+    required this.betrayalCount,
     required this.silver,
   });
 
@@ -342,6 +405,7 @@ class PlayerState {
   final int potential;
   final int intelligence;
   final int combatExperience;
+  final int betrayalCount;
   final int silver;
 
   factory PlayerState.fromJson(Map<String, Object?> json) {
@@ -359,6 +423,7 @@ class PlayerState {
       potential: json['potential'] as int? ?? 20,
       intelligence: json['intelligence'] as int? ?? 12,
       combatExperience: json['combatExperience'] as int? ?? 0,
+      betrayalCount: json['betrayalCount'] as int? ?? 0,
       silver: json['silver'] as int,
     );
   }
@@ -378,6 +443,7 @@ class PlayerState {
       'potential': potential,
       'intelligence': intelligence,
       'combatExperience': combatExperience,
+      'betrayalCount': betrayalCount,
       'silver': silver,
     };
   }
@@ -395,6 +461,7 @@ class PlayerState {
     int? potential,
     int? intelligence,
     int? combatExperience,
+    int? betrayalCount,
     int? silver,
   }) {
     return PlayerState(
@@ -411,6 +478,7 @@ class PlayerState {
       potential: potential ?? this.potential,
       intelligence: intelligence ?? this.intelligence,
       combatExperience: combatExperience ?? this.combatExperience,
+      betrayalCount: betrayalCount ?? this.betrayalCount,
       silver: silver ?? this.silver,
     );
   }

@@ -16,6 +16,7 @@ import '../systems/skill_mapping_system.dart';
 import '../systems/trade_system.dart';
 import '../systems/world_system.dart';
 import '../systems/cultivation_system.dart';
+import '../systems/apprenticeship_system.dart';
 import 'game_action.dart';
 
 class GameController extends ChangeNotifier {
@@ -38,6 +39,7 @@ class GameController extends ChangeNotifier {
       skillProgressionSystem,
       _skillMappingSystem,
     );
+    _apprenticeshipSystem = ApprenticeshipSystem(repository);
     final progressionSystem = ProgressionSystem(repository, _equipmentSystem);
     _movementSystem = MovementSystem(repository);
     _inventorySystem = InventorySystem(
@@ -67,6 +69,7 @@ class GameController extends ChangeNotifier {
   late final TradeSystem _tradeSystem;
   late final SkillMappingSystem _skillMappingSystem;
   late final CultivationSystem _cultivationSystem;
+  late final ApprenticeshipSystem _apprenticeshipSystem;
   GameState _state;
 
   GameDefinitionRepository get repository => _repository;
@@ -121,6 +124,11 @@ class GameController extends ChangeNotifier {
         _state,
         usage,
       ),
+      ApprenticeToAction(:final npcId) => _apprenticeshipSystem.apprenticeTo(
+        _state,
+        npcId,
+      ),
+      LeaveFamilyAction() => _apprenticeshipSystem.leaveFamily(_state),
       UseItemAction(:final itemId) => _inventorySystem.useItem(_state, itemId),
       DropItemAction(:final itemId) => _inventorySystem.dropItem(
         _state,

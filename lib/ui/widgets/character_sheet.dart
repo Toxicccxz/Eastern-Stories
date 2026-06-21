@@ -18,7 +18,7 @@ class CharacterSheet extends StatelessWidget {
         final stats = controller.characterStats();
         return SafeArea(
           top: false,
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -65,6 +65,8 @@ class CharacterSheet extends StatelessWidget {
                   ],
                 ),
                 const Divider(height: 28),
+                _ApprenticeshipSection(controller: controller),
+                const Divider(height: 28),
                 for (final slot in EquipmentSlot.values)
                   _EquipmentRow(
                     slot: slot,
@@ -77,6 +79,77 @@ class CharacterSheet extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+class _ApprenticeshipSection extends StatelessWidget {
+  const _ApprenticeshipSection({required this.controller});
+
+  final GameController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = controller.state;
+    final apprenticeship = state.apprenticeship;
+    if (apprenticeship == null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('师承', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 4),
+          Text(
+            state.player.betrayalCount == 0
+                ? '尚未拜入门下'
+                : '尚无师承 · 背叛记录 ${state.player.betrayalCount}',
+          ),
+        ],
+      );
+    }
+    final family = controller.repository.family(apprenticeship.familyId);
+    final master = controller.repository.npc(apprenticeship.masterNpcId);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('师承', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 6),
+        Text(
+          '${family.name}第${apprenticeship.generation}代${apprenticeship.title}',
+        ),
+        Text('师父：${master.name}  ·  贡献：${apprenticeship.contribution}'),
+        if (state.player.betrayalCount > 0)
+          Text('背叛记录：${state.player.betrayalCount}'),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: () => _confirmLeave(context),
+          icon: const Icon(Icons.logout, size: 18),
+          label: const Text('离开师门'),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _confirmLeave(BuildContext context) async {
+    final shouldLeave = await showDialog<bool>(
+      context: context,
+      builder:
+          (dialogContext) => AlertDialog(
+            title: const Text('离开师门'),
+            content: const Text('离开师门会留下背叛记录，并使现有武学等级减半。'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(false),
+                child: const Text('取消'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(dialogContext).pop(true),
+                child: const Text('确认离门'),
+              ),
+            ],
+          ),
+    );
+    if (shouldLeave == true) {
+      controller.dispatch(const GameAction.leaveFamily());
+    }
   }
 }
 

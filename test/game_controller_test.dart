@@ -470,11 +470,84 @@ void main() {
     controller.dispatch(
       const GameAction.learnFromNpc('old_liu', 'basic_sword'),
     );
+    expect(controller.state.skillProgress['basic_sword'], isNull);
+    expect(controller.state.log.last, contains('自己的弟子'));
 
+    controller.dispatch(const GameAction.apprenticeTo('old_liu'));
+    controller.dispatch(
+      const GameAction.learnFromNpc('old_liu', 'basic_sword'),
+    );
+
+    expect(controller.state.apprenticeship?.familyId, 'liu_family');
+    expect(controller.state.apprenticeship?.generation, 2);
     expect(controller.state.skillProgress['basic_sword']?.level, 1);
     expect(controller.state.player.potential, 19);
     expect(controller.state.player.spirit, 36);
     expect(controller.state.log.last, contains('请教'));
+  });
+
+  test('leaving a family records betrayal and halves skill levels', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        apprenticeship: const ApprenticeshipState(
+          familyId: 'liu_family',
+          masterNpcId: 'old_liu',
+          generation: 2,
+          title: '弟子',
+          contribution: 8,
+        ),
+        skillProgress: const {
+          'literate': SkillProgress(level: 10, experience: 0),
+          'basic_sword': SkillProgress(level: 12, experience: 40),
+        },
+      ),
+    );
+
+    controller.dispatch(const GameAction.leaveFamily());
+
+    expect(controller.state.apprenticeship, isNull);
+    expect(controller.state.player.betrayalCount, 1);
+    expect(controller.state.skillProgress['basic_sword']?.level, 6);
+    expect(controller.state.skillProgress['basic_sword']?.experience, 0);
+  });
+
+  test('family quest rewards contribution to current disciples', () {
+    final controller = GameController(repository: repository);
+
+    controller.dispatch(const GameAction.apprenticeTo('old_liu'));
+    _completeRescueQuest(controller);
+
+    expect(controller.state.apprenticeship?.contribution, 10);
+  });
+
+  test('qualified direct disciples can learn six chaos sword', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        inventoryItemIds: const ['hengbing_sword'],
+        equippedWeaponId: 'hengbing_sword',
+        apprenticeship: const ApprenticeshipState(
+          familyId: 'liu_family',
+          masterNpcId: 'old_liu',
+          generation: 2,
+          title: '弟子',
+          contribution: 0,
+        ),
+        skillProgress: const {
+          'literate': SkillProgress(level: 10, experience: 0),
+          'basic_sword': SkillProgress(level: 5, experience: 0),
+        },
+      ),
+    );
+
+    controller.dispatch(
+      const GameAction.learnFromNpc('old_liu', 'six_chaos_sword'),
+    );
+
+    expect(controller.state.skillProgress['six_chaos_sword']?.level, 1);
   });
 
   test('studying requires literacy and enough combat experience', () {

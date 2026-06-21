@@ -24,7 +24,11 @@ class SkillMappingSystem {
       return _withLog(state, '你连${usage.label}的基础都没有学会。');
     }
 
-    final unmetRequirement = learningRequirement(state, skill);
+    final unmetRequirement = learningRequirement(
+      state,
+      skill,
+      requireFamily: false,
+    );
     if (unmetRequirement != null) {
       return _withLog(state, unmetRequirement);
     }
@@ -46,7 +50,18 @@ class SkillMappingSystem {
     );
   }
 
-  String? learningRequirement(GameState state, SkillDefinition skill) {
+  String? learningRequirement(
+    GameState state,
+    SkillDefinition skill, {
+    bool requireFamily = true,
+  }) {
+    final requiredFamilyId = skill.requiredFamilyId;
+    if (requireFamily &&
+        requiredFamilyId != null &&
+        state.apprenticeship?.familyId != requiredFamilyId) {
+      final family = _repository.family(requiredFamilyId);
+      return '${skill.name}只传授给${family.name}门下。';
+    }
     final requiredSlot = skill.requiredEquipmentSlot;
     if (requiredSlot != null &&
         !state.equippedItemIds.containsKey(requiredSlot)) {

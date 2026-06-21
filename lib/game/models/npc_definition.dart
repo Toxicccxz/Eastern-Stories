@@ -16,6 +16,11 @@ class NpcDefinition {
     this.shop,
     this.intelligence = 10,
     this.teachingSkills = const [],
+    this.familyId,
+    this.familyGeneration,
+    this.canAcceptApprentices = false,
+    this.apprenticeTitle = '弟子',
+    this.apprenticeshipConditions,
   });
 
   factory NpcDefinition.fromJson(Map<String, Object?> json) {
@@ -56,6 +61,13 @@ class NpcDefinition {
             in json['teachingSkills'] as List<Object?>? ?? const [])
           TeachingSkillDefinition.fromJson(teaching as Map<String, Object?>),
       ],
+      familyId: json['familyId'] as String?,
+      familyGeneration: json['familyGeneration'] as int?,
+      canAcceptApprentices: json['canAcceptApprentices'] as bool? ?? false,
+      apprenticeTitle: json['apprenticeTitle'] as String? ?? '弟子',
+      apprenticeshipConditions: worldConditionFromJson(
+        json['apprenticeshipConditions'],
+      ),
     );
   }
 
@@ -71,6 +83,11 @@ class NpcDefinition {
   final ShopDefinition? shop;
   final int intelligence;
   final List<TeachingSkillDefinition> teachingSkills;
+  final String? familyId;
+  final int? familyGeneration;
+  final bool canAcceptApprentices;
+  final String apprenticeTitle;
+  final WorldCondition? apprenticeshipConditions;
 
   String greetingFor(GameState state) {
     for (final variant in greetingVariants) {
@@ -86,18 +103,28 @@ class TeachingSkillDefinition {
   const TeachingSkillDefinition({
     required this.skillId,
     required this.maxLevel,
+    this.access = TeachingAccess.public,
+    this.contributionCost = 0,
   });
 
   factory TeachingSkillDefinition.fromJson(Map<String, Object?> json) {
     return TeachingSkillDefinition(
       skillId: json['skillId'] as String,
       maxLevel: json['maxLevel'] as int,
+      access: TeachingAccess.values.byName(
+        json['access'] as String? ?? TeachingAccess.public.name,
+      ),
+      contributionCost: json['contributionCost'] as int? ?? 0,
     );
   }
 
   final String skillId;
   final int maxLevel;
+  final TeachingAccess access;
+  final int contributionCost;
 }
+
+enum TeachingAccess { public, family, direct }
 
 class GiveItemOption {
   const GiveItemOption({

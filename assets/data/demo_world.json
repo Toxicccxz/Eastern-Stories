@@ -21,6 +21,7 @@
       "assets/data/quests/village.json",
       "assets/data/quests/canyon.json"
     ],
-    "skills": ["assets/data/skills/village.json"]
+    "skills": ["assets/data/skills/village.json"],
+    "families": ["assets/data/families/families.json"]
   }
 }

@@ -131,113 +131,149 @@ class LocationInfoPanel extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
+      isScrollControlled: true,
       builder: (sheetContext) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                npc.name,
-                style: Theme.of(sheetContext).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 8),
-              Text(npc.description),
-              const SizedBox(height: 12),
-              if (options.isEmpty)
-                const Text('暂时没有更多话可说。')
-              else
-                for (final option in options)
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(option.label),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      controller.dispatch(
-                        GameAction.selectDialogue(npc.id, option.id),
-                      );
-                      Navigator.of(sheetContext).pop();
-                    },
-                  ),
-              if (giveItemOptions.isNotEmpty) ...[
+        return SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  npc.name,
+                  style: Theme.of(sheetContext).textTheme.titleLarge,
+                ),
                 const SizedBox(height: 8),
-                Text('给予', style: Theme.of(sheetContext).textTheme.labelLarge),
-                for (final option in giveItemOptions)
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.redeem_outlined),
-                    title: Text(option.label),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      controller.dispatch(
-                        GameAction.giveItem(npc.id, option.itemId),
-                      );
-                      Navigator.of(sheetContext).pop();
-                    },
-                  ),
-              ],
-              if (teachingSkills.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Text('请教', style: Theme.of(sheetContext).textTheme.labelLarge),
-                for (final teaching in teachingSkills)
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.school_outlined),
-                    title: Text(
-                      controller.repository.skill(teaching.skillId).name,
+                Text(npc.description),
+                const SizedBox(height: 12),
+                if (options.isEmpty)
+                  const Text('暂时没有更多话可说。')
+                else
+                  for (final option in options)
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(option.label),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        controller.dispatch(
+                          GameAction.selectDialogue(npc.id, option.id),
+                        );
+                        Navigator.of(sheetContext).pop();
+                      },
                     ),
-                    subtitle: Text('可传授至 Lv.${teaching.maxLevel}'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      controller.dispatch(
-                        GameAction.learnFromNpc(npc.id, teaching.skillId),
-                      );
+                if (giveItemOptions.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    '给予',
+                    style: Theme.of(sheetContext).textTheme.labelLarge,
+                  ),
+                  for (final option in giveItemOptions)
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.redeem_outlined),
+                      title: Text(option.label),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        controller.dispatch(
+                          GameAction.giveItem(npc.id, option.itemId),
+                        );
+                        Navigator.of(sheetContext).pop();
+                      },
+                    ),
+                ],
+                if (teachingSkills.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    '请教',
+                    style: Theme.of(sheetContext).textTheme.labelLarge,
+                  ),
+                  for (final teaching in teachingSkills)
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.school_outlined),
+                      title: Text(
+                        controller.repository.skill(teaching.skillId).name,
+                      ),
+                      subtitle: Text(
+                        '${_teachingAccessLabel(teaching.access)} · '
+                        '可传授至 Lv.${teaching.maxLevel}',
+                      ),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        controller.dispatch(
+                          GameAction.learnFromNpc(npc.id, teaching.skillId),
+                        );
+                        Navigator.of(sheetContext).pop();
+                      },
+                    ),
+                ],
+                if (npc.canAcceptApprentices) ...[
+                  const SizedBox(height: 8),
+                  FilledButton.icon(
+                    onPressed: () {
+                      controller.dispatch(GameAction.apprenticeTo(npc.id));
                       Navigator.of(sheetContext).pop();
                     },
+                    icon: const Icon(Icons.person_add_alt_1_outlined),
+                    label: Text(
+                      controller.state.apprenticeship?.masterNpcId == npc.id
+                          ? '向师父请安'
+                          : '拜师',
+                    ),
                   ),
+                ],
+                if (npc.combat != null) ...[
+                  const SizedBox(height: 8),
+                  FilledButton.icon(
+                    onPressed: () {
+                      controller.dispatch(GameAction.startCombat(npc.id));
+                      Navigator.of(sheetContext).pop();
+                    },
+                    icon: const Icon(Icons.local_fire_department),
+                    label: const Text('迎战'),
+                  ),
+                ],
+                if (npc.shop != null) ...[
+                  const SizedBox(height: 8),
+                  FilledButton.icon(
+                    onPressed: () {
+                      Navigator.of(sheetContext).pop();
+                      Future<void>.delayed(Duration.zero, () {
+                        if (!context.mounted) {
+                          return;
+                        }
+                        showModalBottomSheet<void>(
+                          context: context,
+                          isScrollControlled: true,
+                          showDragHandle: true,
+                          builder:
+                              (_) => ShopSheet(
+                                controller: controller,
+                                merchant: npc,
+                              ),
+                        );
+                      });
+                    },
+                    icon: const Icon(Icons.storefront_outlined),
+                    label: const Text('买卖'),
+                  ),
+                ],
               ],
-              if (npc.combat != null) ...[
-                const SizedBox(height: 8),
-                FilledButton.icon(
-                  onPressed: () {
-                    controller.dispatch(GameAction.startCombat(npc.id));
-                    Navigator.of(sheetContext).pop();
-                  },
-                  icon: const Icon(Icons.local_fire_department),
-                  label: const Text('迎战'),
-                ),
-              ],
-              if (npc.shop != null) ...[
-                const SizedBox(height: 8),
-                FilledButton.icon(
-                  onPressed: () {
-                    Navigator.of(sheetContext).pop();
-                    Future<void>.delayed(Duration.zero, () {
-                      if (!context.mounted) {
-                        return;
-                      }
-                      showModalBottomSheet<void>(
-                        context: context,
-                        isScrollControlled: true,
-                        showDragHandle: true,
-                        builder:
-                            (_) => ShopSheet(
-                              controller: controller,
-                              merchant: npc,
-                            ),
-                      );
-                    });
-                  },
-                  icon: const Icon(Icons.storefront_outlined),
-                  label: const Text('买卖'),
-                ),
-              ],
-            ],
+            ),
           ),
         );
       },
     );
+  }
+
+  String _teachingAccessLabel(TeachingAccess access) {
+    return switch (access) {
+      TeachingAccess.public => '公开传授',
+      TeachingAccess.family => '同门可学',
+      TeachingAccess.direct => '嫡传武学',
+    };
   }
 }
 

@@ -43,6 +43,7 @@ class SkillDefinition {
     this.attackMessages = const [],
     this.practiceHpCost = 0,
     this.practiceInnerPowerCost = 0,
+    this.requiredFamilyId,
   });
 
   factory SkillDefinition.fromJson(Map<String, Object?> json) {
@@ -76,6 +77,7 @@ class SkillDefinition {
           (json['attackMessages'] as List<Object?>? ?? const []).cast<String>(),
       practiceHpCost: json['practiceHpCost'] as int? ?? 0,
       practiceInnerPowerCost: json['practiceInnerPowerCost'] as int? ?? 0,
+      requiredFamilyId: json['requiredFamilyId'] as String?,
     );
   }
 
@@ -94,6 +96,7 @@ class SkillDefinition {
   final List<String> attackMessages;
   final int practiceHpCost;
   final int practiceInnerPowerCost;
+  final String? requiredFamilyId;
 
   bool get isBasic => kind == SkillKind.basic;
 
