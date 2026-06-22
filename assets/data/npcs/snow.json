@@ -63,11 +63,34 @@
       "attack": 5,
       "defense": 2,
       "rewardExperience": 15,
+      "respawnAfterMoves": 3,
       "specialMove": {
         "name": "直拳",
         "interval": 3,
         "damageBonus": 1,
         "message": "武馆弟子沉肩进步，一记朴实直拳迎面打来。"
+      }
+    }
+  },
+  {
+    "id": "fengshan_duty_trainee",
+    "name": "值课弟子",
+    "description": "一名当值的灰衣弟子提剑立在场中，专门陪同门检验近日功课。",
+    "greeting": "师父既有吩咐，我会认真与你切磋。",
+    "conditions": {
+      "requiredFamilyId": "fengshan_sword",
+      "requiredFamilyTaskId": "fengshan_sparring_duty"
+    },
+    "combat": {
+      "maxHp": 28,
+      "attack": 5,
+      "defense": 3,
+      "rewardExperience": 10,
+      "specialMove": {
+        "name": "封门式",
+        "interval": 3,
+        "damageBonus": 1,
+        "message": "值课弟子横剑封住中路，随即踏步反击。"
       }
     }
   }

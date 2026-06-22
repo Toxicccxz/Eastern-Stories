@@ -52,6 +52,7 @@ class ApprenticeshipSystem {
     final oldFamilyId = state.apprenticeship?.familyId;
     final changesFamily = oldFamilyId != null && oldFamilyId != familyId;
     final family = _repository.family(familyId);
+    final initialRank = family.ranks.isEmpty ? null : family.ranks.first;
     final nextPlayer =
         changesFamily
             ? state.player.copyWith(
@@ -72,8 +73,9 @@ class ApprenticeshipSystem {
         familyId: familyId,
         masterNpcId: npcId,
         generation: masterGeneration + 1,
-        title: master.apprenticeTitle,
+        title: initialRank?.title ?? master.apprenticeTitle,
         contribution: 0,
+        rankId: initialRank?.id,
       ),
       log: state.logWith(message),
     );

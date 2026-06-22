@@ -124,6 +124,9 @@ class _ApprenticeshipSection extends StatelessWidget {
     }
     final family = controller.repository.family(apprenticeship.familyId);
     final master = controller.repository.npc(apprenticeship.masterNpcId);
+    final activeTask = controller.activeFamilyTask();
+    final isTaskComplete =
+        apprenticeship.activeTask?.isObjectiveComplete ?? false;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -133,6 +136,9 @@ class _ApprenticeshipSection extends StatelessWidget {
           '${family.name}第${apprenticeship.generation}代${apprenticeship.title}',
         ),
         Text('师父：${master.name}  ·  贡献：${apprenticeship.contribution}'),
+        Text('已完成师门差事：${apprenticeship.completedTaskCount} 次'),
+        if (activeTask != null)
+          Text('当前差事：${activeTask.title}${isTaskComplete ? '（待复命）' : ''}'),
         if (state.player.betrayalCount > 0)
           Text('背叛记录：${state.player.betrayalCount}'),
         const SizedBox(height: 8),

@@ -7,6 +7,38 @@
   {
     "id": "fengshan_sword",
     "name": "封山剑派",
-    "description": "淳风武馆所承剑派，讲究胆大心细，以封山剑法与倒乱七星步闻名。"
+    "description": "淳风武馆所承剑派，讲究胆大心细，以封山剑法与倒乱七星步闻名。",
+    "tasks": [
+      {
+        "id": "fengshan_sparring_duty",
+        "title": "同门切磋",
+        "description": "到教练场与武馆弟子认真切磋，取胜后回来向柳淳风复命。",
+        "issuerNpcId": "liu_chunfeng",
+        "type": "defeatNpc",
+        "targetId": "fengshan_duty_trainee",
+        "rewardExperience": 25,
+        "rewardPotential": 5,
+        "rewardContribution": 5,
+        "conditions": {
+          "requiredQuestStatuses": {"fengshan_first_trial": "completed"}
+        }
+      }
+    ],
+    "ranks": [
+      {
+        "id": "disciple",
+        "title": "弟子"
+      },
+      {
+        "id": "inner_disciple",
+        "title": "入室弟子",
+        "minimumContribution": 20,
+        "minimumCompletedTasks": 2,
+        "requiredSkillLevels": {
+          "basic_sword": 5,
+          "fonxan_force": 3
+        }
+      }
+    ]
   }
 ]

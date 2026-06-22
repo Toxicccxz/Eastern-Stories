@@ -38,6 +38,15 @@ sealed class GameAction {
 
   const factory GameAction.leaveFamily() = LeaveFamilyAction;
 
+  const factory GameAction.acceptFamilyTask(String npcId, String taskId) =
+      AcceptFamilyTaskAction;
+
+  const factory GameAction.turnInFamilyTask(String npcId) =
+      TurnInFamilyTaskAction;
+
+  const factory GameAction.requestFamilyPromotion(String npcId) =
+      RequestFamilyPromotionAction;
+
   const factory GameAction.useItem(String itemId) = UseItemAction;
 
   const factory GameAction.dropItem(String itemId) = DropItemAction;
@@ -150,6 +159,25 @@ class ApprenticeToAction extends GameAction {
 
 class LeaveFamilyAction extends GameAction {
   const LeaveFamilyAction();
+}
+
+class AcceptFamilyTaskAction extends GameAction {
+  const AcceptFamilyTaskAction(this.npcId, this.taskId);
+
+  final String npcId;
+  final String taskId;
+}
+
+class TurnInFamilyTaskAction extends GameAction {
+  const TurnInFamilyTaskAction(this.npcId);
+
+  final String npcId;
+}
+
+class RequestFamilyPromotionAction extends GameAction {
+  const RequestFamilyPromotionAction(this.npcId);
+
+  final String npcId;
 }
 
 class UseItemAction extends GameAction {

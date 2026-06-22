@@ -70,7 +70,7 @@
     "mapX": 5,
     "mapY": 1,
     "exits": {"west": "chunfeng_school_gate", "east": "chunfeng_schoolhall"},
-    "npcIds": ["fengshan_trainee"]
+    "npcIds": ["fengshan_trainee", "fengshan_duty_trainee"]
   },
   {
     "id": "chunfeng_schoolhall",

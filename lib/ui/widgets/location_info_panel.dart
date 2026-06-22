@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../game/core/game_action.dart';
 import '../../game/core/game_controller.dart';
 import '../../game/models/game_state.dart';
+import '../../game/models/family_definition.dart';
 import '../../game/models/npc_definition.dart';
 import '../../game/models/room_definition.dart';
 import 'shared/panel.dart';
@@ -127,6 +128,10 @@ class LocationInfoPanel extends StatelessWidget {
     final options = controller.dialogueOptionsFor(npc.id);
     final giveItemOptions = controller.giveItemOptionsFor(npc.id);
     final teachingSkills = controller.teachingSkillsFor(npc.id);
+    final familyTasks = controller.familyTasksFor(npc.id);
+    final activeFamilyTask = controller.activeFamilyTask();
+    final activeTaskProgress = controller.state.apprenticeship?.activeTask;
+    final nextFamilyRank = controller.nextFamilyRankFor(npc.id);
 
     showModalBottomSheet<void>(
       context: context,
@@ -224,6 +229,74 @@ class LocationInfoPanel extends StatelessWidget {
                     ),
                   ),
                 ],
+                if (activeFamilyTask?.issuerNpcId == npc.id) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    '师门差事',
+                    style: Theme.of(sheetContext).textTheme.labelLarge,
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.assignment_outlined),
+                    title: Text(activeFamilyTask!.title),
+                    subtitle: Text(
+                      activeTaskProgress?.isObjectiveComplete ?? false
+                          ? '差事已经办妥，可以复命。'
+                          : activeFamilyTask.description,
+                    ),
+                    trailing:
+                        activeTaskProgress?.isObjectiveComplete ?? false
+                            ? const Icon(Icons.chevron_right)
+                            : null,
+                    onTap:
+                        activeTaskProgress?.isObjectiveComplete ?? false
+                            ? () {
+                              controller.dispatch(
+                                GameAction.turnInFamilyTask(npc.id),
+                              );
+                              Navigator.of(sheetContext).pop();
+                            }
+                            : null,
+                  ),
+                ] else if (familyTasks.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    '师门差事',
+                    style: Theme.of(sheetContext).textTheme.labelLarge,
+                  ),
+                  for (final task in familyTasks)
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.assignment_add),
+                      title: Text(task.title),
+                      subtitle: Text(task.description),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        controller.dispatch(
+                          GameAction.acceptFamilyTask(npc.id, task.id),
+                        );
+                        Navigator.of(sheetContext).pop();
+                      },
+                    ),
+                ],
+                if (nextFamilyRank != null) ...[
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      controller.dispatch(
+                        GameAction.requestFamilyPromotion(npc.id),
+                      );
+                      Navigator.of(sheetContext).pop();
+                    },
+                    icon: const Icon(Icons.military_tech_outlined),
+                    label: Text('申请晋为${nextFamilyRank.title}'),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _rankRequirements(controller, nextFamilyRank),
+                    style: Theme.of(sheetContext).textTheme.bodySmall,
+                  ),
+                ],
                 if (npc.combat != null) ...[
                   const SizedBox(height: 8),
                   FilledButton.icon(
@@ -274,6 +347,19 @@ class LocationInfoPanel extends StatelessWidget {
       TeachingAccess.family => '同门可学',
       TeachingAccess.direct => '嫡传武学',
     };
+  }
+
+  String _rankRequirements(
+    GameController controller,
+    FamilyRankDefinition rank,
+  ) {
+    final requirements = <String>[
+      '贡献 ${rank.minimumContribution}',
+      '师门差事 ${rank.minimumCompletedTasks} 次',
+      for (final skill in rank.requiredSkillLevels.entries)
+        '${controller.repository.skill(skill.key).name} Lv.${skill.value}',
+    ];
+    return '晋升条件：${requirements.join(' · ')}';
   }
 }
 

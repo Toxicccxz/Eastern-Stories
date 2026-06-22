@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../models/game_state.dart';
+import '../models/family_definition.dart';
 import '../models/npc_definition.dart';
 import '../models/quest_definition.dart';
 import '../models/skill_definition.dart';
@@ -18,6 +19,7 @@ import '../systems/world_system.dart';
 import '../systems/cultivation_system.dart';
 import '../systems/apprenticeship_system.dart';
 import '../systems/inner_power_system.dart';
+import '../systems/family_task_system.dart';
 import 'game_action.dart';
 
 class GameController extends ChangeNotifier {
@@ -48,6 +50,7 @@ class GameController extends ChangeNotifier {
     );
     _apprenticeshipSystem = ApprenticeshipSystem(repository);
     final progressionSystem = ProgressionSystem(repository, _equipmentSystem);
+    _familyTaskSystem = FamilyTaskSystem(repository, progressionSystem);
     _movementSystem = MovementSystem(repository);
     _inventorySystem = InventorySystem(
       repository,
@@ -78,6 +81,7 @@ class GameController extends ChangeNotifier {
   late final CultivationSystem _cultivationSystem;
   late final ApprenticeshipSystem _apprenticeshipSystem;
   late final InnerPowerSystem _innerPowerSystem;
+  late final FamilyTaskSystem _familyTaskSystem;
   GameState _state;
 
   GameDefinitionRepository get repository => _repository;
@@ -95,6 +99,7 @@ class GameController extends ChangeNotifier {
   }
 
   void dispatch(GameAction action) {
+    final previousState = _state;
     _state = switch (action) {
       MoveAction(:final direction) => _worldSystem.advanceAfterTravel(
         _state,
@@ -137,6 +142,14 @@ class GameController extends ChangeNotifier {
         npcId,
       ),
       LeaveFamilyAction() => _apprenticeshipSystem.leaveFamily(_state),
+      AcceptFamilyTaskAction(:final npcId, :final taskId) => _familyTaskSystem
+          .acceptTask(_state, npcId, taskId),
+      TurnInFamilyTaskAction(:final npcId) => _familyTaskSystem.turnInTask(
+        _state,
+        npcId,
+      ),
+      RequestFamilyPromotionAction(:final npcId) => _familyTaskSystem
+          .requestPromotion(_state, npcId),
       UseItemAction(:final itemId) => _inventorySystem.useItem(_state, itemId),
       DropItemAction(:final itemId) => _inventorySystem.dropItem(
         _state,
@@ -170,6 +183,7 @@ class GameController extends ChangeNotifier {
       RecoverWithInnerPowerAction() => _innerPowerSystem.recover(_state),
       HealWithInnerPowerAction() => _innerPowerSystem.heal(_state),
     };
+    _state = _familyTaskSystem.advance(previousState, _state);
     notifyListeners();
   }
 
@@ -208,6 +222,18 @@ class GameController extends ChangeNotifier {
 
   int innerPowerCultivationLimit() {
     return _innerPowerSystem.cultivationLimit(_state);
+  }
+
+  List<FamilyTaskDefinition> familyTasksFor(String npcId) {
+    return _familyTaskSystem.tasksFor(_state, npcId);
+  }
+
+  FamilyTaskDefinition? activeFamilyTask() {
+    return _familyTaskSystem.activeTask(_state);
+  }
+
+  FamilyRankDefinition? nextFamilyRankFor(String npcId) {
+    return _familyTaskSystem.nextRank(_state, npcId);
   }
 
   void completeQuestLegacy(String questId) {

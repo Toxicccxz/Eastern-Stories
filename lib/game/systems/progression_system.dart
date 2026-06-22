@@ -14,6 +14,7 @@ class ProgressionSystem {
     required int experience,
     required String logPrefix,
     List<String> itemIds = const [],
+    int? potential,
   }) {
     final rewardNames = itemIds
         .map(_repository.item)
@@ -22,6 +23,7 @@ class ProgressionSystem {
     final rewardText = [
       if (silver > 0) '银两 +$silver',
       if (experience > 0) '经验 +$experience',
+      if ((potential ?? 0) > 0) '潜能 +$potential',
       if (rewardNames.isNotEmpty) rewardNames,
     ].join('，');
 
@@ -32,7 +34,7 @@ class ProgressionSystem {
         combatExperience: state.player.combatExperience + experience,
         potential:
             state.player.potential +
-            (experience == 0 ? 0 : experience ~/ 10 + 1),
+            (potential ?? (experience == 0 ? 0 : experience ~/ 10 + 1)),
       ),
       experience,
     );

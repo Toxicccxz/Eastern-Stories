@@ -161,11 +161,22 @@ class GameDefinitionRepository {
         currentHp: combat.enemyHp,
       );
     }
+    var apprenticeship = state.apprenticeship;
+    if (apprenticeship != null && apprenticeship.rankId == null) {
+      final family = _families[apprenticeship.familyId];
+      if (family != null && family.ranks.isNotEmpty) {
+        apprenticeship = apprenticeship.copyWith(
+          rankId: family.ranks.first.id,
+          title: family.ranks.first.title,
+        );
+      }
+    }
     return state.copyWith(
       npcStates: npcStates,
       shopStates: shopStates,
       questStatuses: questStatuses,
       questFlags: questFlags,
+      apprenticeship: apprenticeship,
     );
   }
 

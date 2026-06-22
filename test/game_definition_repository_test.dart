@@ -1,4 +1,5 @@
 import 'package:eastern_stories/game/repositories/game_definition_repository.dart';
+import 'package:eastern_stories/game/models/family_definition.dart';
 import 'package:eastern_stories/game/models/world_condition.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -273,6 +274,36 @@ void main() {
         expect(() => repository.family(familyId), returnsNormally);
       }
     }
+
+    for (final family in repository.families) {
+      final rankIds = <String>{};
+      for (final rank in family.ranks) {
+        expect(rankIds.add(rank.id), isTrue);
+        expect(rank.minimumContribution, greaterThanOrEqualTo(0));
+        expect(rank.minimumCompletedTasks, greaterThanOrEqualTo(0));
+        for (final requirement in rank.requiredSkillLevels.entries) {
+          expect(() => repository.skill(requirement.key), returnsNormally);
+          expect(requirement.value, greaterThan(0));
+        }
+      }
+      for (final task in family.tasks) {
+        expect(() => repository.npc(task.issuerNpcId), returnsNormally);
+        switch (task.type) {
+          case FamilyTaskType.defeatNpc:
+            expect(() => repository.npc(task.targetId), returnsNormally);
+            expect(repository.npc(task.targetId).combat, isNotNull);
+          case FamilyTaskType.visitRoom:
+            expect(() => repository.room(task.targetId), returnsNormally);
+        }
+        expect(task.rewardExperience, greaterThanOrEqualTo(0));
+        expect(task.rewardPotential, greaterThanOrEqualTo(0));
+        expect(task.rewardContribution, greaterThan(0));
+        final condition = task.conditions;
+        if (condition != null) {
+          _expectValidCondition(repository, condition);
+        }
+      }
+    }
   });
 }
 
@@ -292,5 +323,15 @@ void _expectValidCondition(
   final familyId = condition.requiredFamilyId;
   if (familyId != null) {
     expect(() => repository.family(familyId), returnsNormally);
+  }
+  final familyTaskId = condition.requiredFamilyTaskId;
+  if (familyTaskId != null) {
+    expect(
+      repository.families
+          .expand((family) => family.tasks)
+          .any((task) => task.id == familyTaskId),
+      isTrue,
+      reason: 'condition references unknown family task $familyTaskId',
+    );
   }
 }

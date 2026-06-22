@@ -274,6 +274,9 @@ class ApprenticeshipState {
     required this.generation,
     required this.title,
     required this.contribution,
+    this.rankId,
+    this.completedTaskCount = 0,
+    this.activeTask,
   });
 
   factory ApprenticeshipState.fromJson(Map<String, Object?> json) {
@@ -283,6 +286,14 @@ class ApprenticeshipState {
       generation: json['generation'] as int,
       title: json['title'] as String,
       contribution: json['contribution'] as int? ?? 0,
+      rankId: json['rankId'] as String?,
+      completedTaskCount: json['completedTaskCount'] as int? ?? 0,
+      activeTask:
+          json['activeTask'] == null
+              ? null
+              : FamilyTaskProgress.fromJson(
+                json['activeTask'] as Map<String, Object?>,
+              ),
     );
   }
 
@@ -291,6 +302,9 @@ class ApprenticeshipState {
   final int generation;
   final String title;
   final int contribution;
+  final String? rankId;
+  final int completedTaskCount;
+  final FamilyTaskProgress? activeTask;
 
   Map<String, Object?> toJson() {
     return {
@@ -299,16 +313,59 @@ class ApprenticeshipState {
       'generation': generation,
       'title': title,
       'contribution': contribution,
+      'rankId': rankId,
+      'completedTaskCount': completedTaskCount,
+      'activeTask': activeTask?.toJson(),
     };
   }
 
-  ApprenticeshipState copyWith({int? contribution}) {
+  ApprenticeshipState copyWith({
+    String? title,
+    int? contribution,
+    Object? rankId = _unchanged,
+    int? completedTaskCount,
+    Object? activeTask = _unchanged,
+  }) {
     return ApprenticeshipState(
       familyId: familyId,
       masterNpcId: masterNpcId,
       generation: generation,
-      title: title,
+      title: title ?? this.title,
       contribution: contribution ?? this.contribution,
+      rankId: rankId == _unchanged ? this.rankId : rankId as String?,
+      completedTaskCount: completedTaskCount ?? this.completedTaskCount,
+      activeTask:
+          activeTask == _unchanged
+              ? this.activeTask
+              : activeTask as FamilyTaskProgress?,
+    );
+  }
+}
+
+class FamilyTaskProgress {
+  const FamilyTaskProgress({
+    required this.taskId,
+    this.isObjectiveComplete = false,
+  });
+
+  factory FamilyTaskProgress.fromJson(Map<String, Object?> json) {
+    return FamilyTaskProgress(
+      taskId: json['taskId'] as String,
+      isObjectiveComplete: json['isObjectiveComplete'] as bool? ?? false,
+    );
+  }
+
+  final String taskId;
+  final bool isObjectiveComplete;
+
+  Map<String, Object?> toJson() {
+    return {'taskId': taskId, 'isObjectiveComplete': isObjectiveComplete};
+  }
+
+  FamilyTaskProgress copyWith({bool? isObjectiveComplete}) {
+    return FamilyTaskProgress(
+      taskId: taskId,
+      isObjectiveComplete: isObjectiveComplete ?? this.isObjectiveComplete,
     );
   }
 }
