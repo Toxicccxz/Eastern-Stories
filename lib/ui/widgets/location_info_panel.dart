@@ -195,17 +195,10 @@ class LocationInfoPanel extends StatelessWidget {
                     style: Theme.of(sheetContext).textTheme.labelLarge,
                   ),
                   for (final teaching in teachingSkills)
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.school_outlined),
-                      title: Text(
-                        controller.repository.skill(teaching.skillId).name,
-                      ),
-                      subtitle: Text(
-                        '${_teachingAccessLabel(teaching.access)} · '
-                        '可传授至 Lv.${teaching.maxLevel}',
-                      ),
-                      trailing: const Icon(Icons.chevron_right),
+                    _TeachingTile(
+                      controller: controller,
+                      npc: npc,
+                      teaching: teaching,
                       onTap: () {
                         controller.dispatch(
                           GameAction.learnFromNpc(npc.id, teaching.skillId),
@@ -341,14 +334,6 @@ class LocationInfoPanel extends StatelessWidget {
     );
   }
 
-  String _teachingAccessLabel(TeachingAccess access) {
-    return switch (access) {
-      TeachingAccess.public => '公开传授',
-      TeachingAccess.family => '同门可学',
-      TeachingAccess.direct => '嫡传武学',
-    };
-  }
-
   String _rankRequirements(
     GameController controller,
     FamilyRankDefinition rank,
@@ -360,6 +345,82 @@ class LocationInfoPanel extends StatelessWidget {
         '${controller.repository.skill(skill.key).name} Lv.${skill.value}',
     ];
     return '晋升条件：${requirements.join(' · ')}';
+  }
+}
+
+class _TeachingTile extends StatelessWidget {
+  const _TeachingTile({
+    required this.controller,
+    required this.npc,
+    required this.teaching,
+    required this.onTap,
+  });
+
+  final GameController controller;
+  final NpcDefinition npc;
+  final TeachingSkillDefinition teaching;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final skill = controller.repository.skill(teaching.skillId);
+    final failureReason = controller.teachingFailureReasonFor(
+      npc.id,
+      teaching.skillId,
+    );
+    final requirements = _teachingRequirements(controller, npc, teaching);
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(
+        failureReason == null ? Icons.school_outlined : Icons.lock_outline,
+      ),
+      title: Text(skill.name),
+      subtitle: Text(
+        [
+          '${_teachingAccessLabel(teaching.access)} · 可传授至 Lv.${teaching.maxLevel}',
+          if (requirements.isNotEmpty) requirements,
+          if (failureReason != null) failureReason,
+        ].join('\n'),
+      ),
+      trailing: Icon(
+        failureReason == null ? Icons.chevron_right : Icons.info_outline,
+      ),
+      onTap: onTap,
+    );
+  }
+
+  String _teachingRequirements(
+    GameController controller,
+    NpcDefinition npc,
+    TeachingSkillDefinition teaching,
+  ) {
+    final requirements = <String>[];
+    final requiredRankId = teaching.requiredRankId;
+    final familyId = npc.familyId;
+    if (requiredRankId != null && familyId != null) {
+      final rank = controller.repository.family(familyId).rank(requiredRankId);
+      requirements.add('需${rank?.title ?? requiredRankId}');
+    }
+    if (teaching.requiredContribution > 0) {
+      requirements.add('贡献 ${teaching.requiredContribution}');
+    }
+    if (teaching.contributionCost > 0) {
+      requirements.add('每次耗贡献 ${teaching.contributionCost}');
+    }
+    for (final skill in teaching.requiredSkillLevels.entries) {
+      requirements.add(
+        '${controller.repository.skill(skill.key).name} Lv.${skill.value}',
+      );
+    }
+    return requirements.isEmpty ? '' : '条件：${requirements.join(' · ')}';
+  }
+
+  String _teachingAccessLabel(TeachingAccess access) {
+    return switch (access) {
+      TeachingAccess.public => '公开传授',
+      TeachingAccess.family => '同门可学',
+      TeachingAccess.direct => '嫡传武学',
+    };
   }
 }
 

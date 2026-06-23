@@ -20,10 +20,35 @@
       {"skillId": "basic_dodge", "maxLevel": 50, "access": "direct"},
       {"skillId": "basic_unarmed", "maxLevel": 40, "access": "direct"},
       {"skillId": "basic_force", "maxLevel": 40, "access": "direct"},
-      {"skillId": "fonxan_force", "maxLevel": 40, "access": "direct"},
-      {"skillId": "fonxan_sword", "maxLevel": 50, "access": "direct"},
-      {"skillId": "liuh_ken", "maxLevel": 40, "access": "direct"},
-      {"skillId": "chaos_steps", "maxLevel": 40, "access": "direct"}
+      {
+        "skillId": "fonxan_force",
+        "maxLevel": 40,
+        "access": "direct",
+        "requiredSkillLevels": {"basic_force": 1}
+      },
+      {
+        "skillId": "fonxan_sword",
+        "maxLevel": 50,
+        "access": "direct",
+        "requiredRankId": "inner_disciple",
+        "requiredContribution": 15,
+        "requiredSkillLevels": {"basic_sword": 5, "fonxan_force": 1},
+        "contributionCost": 1
+      },
+      {
+        "skillId": "liuh_ken",
+        "maxLevel": 40,
+        "access": "direct",
+        "requiredSkillLevels": {"basic_unarmed": 1}
+      },
+      {
+        "skillId": "chaos_steps",
+        "maxLevel": 40,
+        "access": "direct",
+        "requiredRankId": "inner_disciple",
+        "requiredContribution": 10,
+        "requiredSkillLevels": {"basic_dodge": 5}
+      }
     ],
     "dialogueOptions": [
       {
@@ -46,6 +71,24 @@
           "requiredDefeatedNpcIds": ["fengshan_trainee"],
           "requiredQuestStatuses": {"fengshan_first_trial": "active"}
         }
+      }
+    ]
+  },
+  {
+    "id": "li_huoshi",
+    "name": "李火狮",
+    "description": "李火狮是淳风武馆中专管拳脚操练的教师，身形厚实，双拳老茧很深。",
+    "greeting": "封山门下也不能只识剑路，拳脚根基若虚，临阵一样站不稳。",
+    "intelligence": 16,
+    "familyId": "fengshan_sword",
+    "familyGeneration": 14,
+    "teachingSkills": [
+      {"skillId": "basic_unarmed", "maxLevel": 30, "access": "family"},
+      {
+        "skillId": "liuh_ken",
+        "maxLevel": 20,
+        "access": "family",
+        "requiredSkillLevels": {"basic_unarmed": 1}
       }
     ]
   },

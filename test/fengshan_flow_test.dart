@@ -1,6 +1,7 @@
 import 'package:eastern_stories/game/core/game_action.dart';
 import 'package:eastern_stories/game/core/game_controller.dart';
 import 'package:eastern_stories/game/models/innate_attributes.dart';
+import 'package:eastern_stories/game/models/equipment_slot.dart';
 import 'package:eastern_stories/game/models/game_state.dart';
 import 'package:eastern_stories/game/models/quest_definition.dart';
 import 'package:eastern_stories/game/models/skill_definition.dart';
@@ -187,6 +188,90 @@ void main() {
     expect(controller.state.apprenticeship?.rankId, 'disciple');
     expect(controller.state.log.last, contains('基本剑法'));
   });
+
+  test('advanced Fengshan teaching is locked behind inner disciple rank', () {
+    final readyState = repository.createInitialState().copyWith(
+      currentRoomId: 'chunfeng_schoolhall',
+      inventoryItemIds: const ['fengshan_bamboo_sword'],
+      equippedItemIds: const {EquipmentSlot.weapon: 'fengshan_bamboo_sword'},
+      skillProgress: const {
+        'literate': SkillProgress(level: 10, experience: 0),
+        'basic_sword': SkillProgress(level: 5, experience: 0),
+        'fonxan_force': SkillProgress(level: 3, experience: 0),
+      },
+      apprenticeship: const ApprenticeshipState(
+        familyId: 'fengshan_sword',
+        masterNpcId: 'liu_chunfeng',
+        generation: 14,
+        title: '弟子',
+        contribution: 20,
+        rankId: 'disciple',
+        completedTaskCount: 2,
+      ),
+      player: repository.createInitialState().player.copyWith(
+        maxInnerPower: 60,
+        innerPower: 60,
+        potential: 10,
+      ),
+    );
+    final controller = GameController(
+      repository: repository,
+      initialState: readyState,
+    );
+
+    controller.dispatch(
+      const GameAction.learnFromNpc('liu_chunfeng', 'fonxan_sword'),
+    );
+    expect(controller.state.learnedSkillIds, isNot(contains('fonxan_sword')));
+    expect(controller.state.log.last, contains('入室弟子'));
+
+    controller.dispatch(
+      const GameAction.requestFamilyPromotion('liu_chunfeng'),
+    );
+    controller.dispatch(
+      const GameAction.learnFromNpc('liu_chunfeng', 'fonxan_sword'),
+    );
+
+    expect(controller.state.apprenticeship?.rankId, 'inner_disciple');
+    expect(controller.state.learnedSkillIds, contains('fonxan_sword'));
+    expect(controller.state.apprenticeship?.contribution, 19);
+  });
+
+  test(
+    'family teachers can teach same-family disciples without being master',
+    () {
+      final controller = GameController(repository: repository);
+      _moveStateTo(controller, 'chunfeng_training_ground');
+
+      controller.dispatch(
+        const GameAction.learnFromNpc('li_huoshi', 'liuh_ken'),
+      );
+      expect(controller.state.learnedSkillIds, isNot(contains('liuh_ken')));
+      expect(controller.state.log.last, contains('同门弟子'));
+
+      controller.replaceState(
+        controller.state.copyWith(
+          apprenticeship: const ApprenticeshipState(
+            familyId: 'fengshan_sword',
+            masterNpcId: 'liu_chunfeng',
+            generation: 14,
+            title: '弟子',
+            contribution: 0,
+            rankId: 'disciple',
+          ),
+          skillProgress: const {
+            'literate': SkillProgress(level: 10, experience: 0),
+            'basic_unarmed': SkillProgress(level: 1, experience: 0),
+          },
+        ),
+      );
+      controller.dispatch(
+        const GameAction.learnFromNpc('li_huoshi', 'liuh_ken'),
+      );
+
+      expect(controller.state.learnedSkillIds, contains('liuh_ken'));
+    },
+  );
 }
 
 void _moveStateTo(GameController controller, String roomId) {

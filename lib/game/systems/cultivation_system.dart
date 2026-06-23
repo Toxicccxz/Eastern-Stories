@@ -1,4 +1,5 @@
 import '../models/game_state.dart';
+import '../models/family_definition.dart';
 import '../models/npc_definition.dart';
 import '../models/skill_progress.dart';
 import '../models/skill_definition.dart';
@@ -33,7 +34,7 @@ class CultivationSystem {
     if (teaching == null) {
       return _withLog(state, '${teacher.name}并不传授这门技艺。');
     }
-    final accessFailure = _teachingAccessFailure(state, teacher, teaching);
+    final accessFailure = teachingFailureReason(state, teacher, teaching);
     if (accessFailure != null) {
       return _withLog(state, accessFailure);
     }
@@ -205,13 +206,13 @@ class CultivationSystem {
     return null;
   }
 
-  String? _teachingAccessFailure(
+  String? teachingFailureReason(
     GameState state,
     NpcDefinition teacher,
     TeachingSkillDefinition teaching,
   ) {
     final apprenticeship = state.apprenticeship;
-    return switch (teaching.access) {
+    final accessFailure = switch (teaching.access) {
       TeachingAccess.public => null,
       TeachingAccess.family when apprenticeship?.familyId == teacher.familyId =>
         null,
@@ -220,6 +221,54 @@ class CultivationSystem {
       TeachingAccess.family => '${teacher.name}只指点同门弟子。',
       TeachingAccess.direct => '${teacher.name}只向自己的弟子传授这门武学。',
     };
+    if (accessFailure != null) {
+      return accessFailure;
+    }
+
+    final requiredRankId = teaching.requiredRankId;
+    if (requiredRankId != null) {
+      if (apprenticeship == null ||
+          apprenticeship.familyId != teacher.familyId) {
+        return '${teacher.name}只向本门弟子传授这门武学。';
+      }
+      final family = _repository.family(apprenticeship.familyId);
+      final rank = family.rank(requiredRankId);
+      if (!_hasRank(family, apprenticeship.rankId, requiredRankId)) {
+        return '${teacher.name}说道：你需先晋为${rank?.title ?? '更高门阶'}，再来请教。';
+      }
+    }
+
+    if (teaching.requiredContribution > 0 &&
+        (apprenticeship == null ||
+            apprenticeship.familyId != teacher.familyId ||
+            apprenticeship.contribution < teaching.requiredContribution)) {
+      return '你的师门贡献不足，还不能请教这门武学。';
+    }
+
+    for (final requirement in teaching.requiredSkillLevels.entries) {
+      final level = state.skillProgress[requirement.key]?.level ?? 0;
+      if (level < requirement.value) {
+        final skill = _repository.skill(requirement.key);
+        return '你的${skill.name}还不足，需要 Lv.${requirement.value}。';
+      }
+    }
+    return null;
+  }
+
+  bool _hasRank(
+    FamilyDefinition family,
+    String? currentRankId,
+    String requiredRankId,
+  ) {
+    final currentIndex = family.ranks.indexWhere(
+      (rank) => rank.id == currentRankId,
+    );
+    final requiredIndex = family.ranks.indexWhere(
+      (rank) => rank.id == requiredRankId,
+    );
+    return currentIndex >= 0 &&
+        requiredIndex >= 0 &&
+        currentIndex >= requiredIndex;
   }
 
   int _learningSpiritCost(GameState state, NpcDefinition teacher) {

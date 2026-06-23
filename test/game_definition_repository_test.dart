@@ -177,6 +177,31 @@ void main() {
       for (final teaching in npc.teachingSkills) {
         final skill = repository.skill(teaching.skillId);
         expect(teaching.maxLevel, inInclusiveRange(1, skill.maxLevel));
+        final requiredRankId = teaching.requiredRankId;
+        final familyId = npc.familyId;
+        if (requiredRankId != null) {
+          expect(familyId, isNotNull);
+          if (familyId != null) {
+            expect(
+              repository.family(familyId).rank(requiredRankId),
+              isNotNull,
+              reason:
+                  '${npc.id} teaching ${teaching.skillId} requires unknown '
+                  'rank $requiredRankId',
+            );
+          }
+        }
+        expect(teaching.requiredContribution, greaterThanOrEqualTo(0));
+        for (final requirement in teaching.requiredSkillLevels.entries) {
+          expect(
+            () => repository.skill(requirement.key),
+            returnsNormally,
+            reason:
+                '${npc.id} teaching ${teaching.skillId} requires unknown '
+                'skill ${requirement.key}',
+          );
+          expect(requirement.value, greaterThan(0));
+        }
         expect(teaching.contributionCost, greaterThanOrEqualTo(0));
       }
       final familyId = npc.familyId;

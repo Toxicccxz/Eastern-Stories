@@ -203,6 +203,20 @@ class GameController extends ChangeNotifier {
     return _repository.npc(npcId).teachingSkills;
   }
 
+  String? teachingFailureReasonFor(String npcId, String skillId) {
+    final teacher = _repository.npc(npcId);
+    for (final teaching in teacher.teachingSkills) {
+      if (teaching.skillId == skillId) {
+        return _cultivationSystem.teachingFailureReason(
+          _state,
+          teacher,
+          teaching,
+        );
+      }
+    }
+    return '${teacher.name}并不传授这门技艺。';
+  }
+
   List<SkillDefinition> learnedSkills() {
     return _inventorySystem.learnedSkills(_state);
   }

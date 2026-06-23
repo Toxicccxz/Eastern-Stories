@@ -108,6 +108,9 @@ class TeachingSkillDefinition {
     required this.skillId,
     required this.maxLevel,
     this.access = TeachingAccess.public,
+    this.requiredRankId,
+    this.requiredContribution = 0,
+    this.requiredSkillLevels = const {},
     this.contributionCost = 0,
   });
 
@@ -118,6 +121,11 @@ class TeachingSkillDefinition {
       access: TeachingAccess.values.byName(
         json['access'] as String? ?? TeachingAccess.public.name,
       ),
+      requiredRankId: json['requiredRankId'] as String?,
+      requiredContribution: json['requiredContribution'] as int? ?? 0,
+      requiredSkillLevels:
+          (json['requiredSkillLevels'] as Map<String, Object?>? ?? const {})
+              .map((skillId, level) => MapEntry(skillId, level as int)),
       contributionCost: json['contributionCost'] as int? ?? 0,
     );
   }
@@ -125,6 +133,9 @@ class TeachingSkillDefinition {
   final String skillId;
   final int maxLevel;
   final TeachingAccess access;
+  final String? requiredRankId;
+  final int requiredContribution;
+  final Map<String, int> requiredSkillLevels;
   final int contributionCost;
 }
 
