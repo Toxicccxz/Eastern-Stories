@@ -12,7 +12,7 @@ void main() {
 
     expect(repository.startingRoomId, 'liu_home');
     expect(repository.areas, hasLength(5));
-    expect(rooms, hasLength(36));
+    expect(rooms, hasLength(40));
     expect(repository.quests, hasLength(3));
     expect(repository.skills, hasLength(13));
     expect(repository.families, hasLength(2));
@@ -348,6 +348,13 @@ void _expectValidCondition(
   final familyId = condition.requiredFamilyId;
   if (familyId != null) {
     expect(() => repository.family(familyId), returnsNormally);
+  }
+  for (final rankId in condition.requiredFamilyRankIds) {
+    expect(
+      repository.families.any((family) => family.rank(rankId) != null),
+      isTrue,
+      reason: 'condition references unknown family rank $rankId',
+    );
   }
   final familyTaskId = condition.requiredFamilyTaskId;
   if (familyTaskId != null) {

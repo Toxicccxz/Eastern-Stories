@@ -60,7 +60,8 @@
     "description": "两只巨大石狮镇守着红漆大门，门后许多灰衣汉子正在操练。",
     "mapX": 4,
     "mapY": 1,
-    "exits": {"west": "snow_main_street", "east": "chunfeng_training_ground"}
+    "exits": {"west": "snow_main_street", "east": "chunfeng_training_ground"},
+    "npcIds": ["liu_anlu"]
   },
   {
     "id": "chunfeng_training_ground",
@@ -80,7 +81,60 @@
     "mapX": 6,
     "mapY": 1,
     "allowsCultivation": true,
-    "exits": {"west": "chunfeng_training_ground"},
+    "exits": {
+      "west": "chunfeng_training_ground",
+      "east": {
+        "roomId": "chunfeng_inner_yard",
+        "conditions": {
+          "requiredFamilyId": "fengshan_sword",
+          "requiredFamilyRankIds": ["inner_disciple"]
+        }
+      }
+    },
     "npcIds": ["liu_chunfeng"]
+  },
+  {
+    "id": "chunfeng_inner_yard",
+    "name": "天井",
+    "areaId": "snow",
+    "description": "这里是淳风武馆中的天井，往西走可以回到正厅，北边是书房，南边是招待客人的厢房，东边长廊通向武馆内院。天井中种满奇花异草，中央石柱刻着“剑气指天、剑心内敛、剑芒不显、剑神如电”。",
+    "mapX": 7,
+    "mapY": 1,
+    "exits": {
+      "west": "chunfeng_schoolhall",
+      "north": "chunfeng_study",
+      "south": "chunfeng_guest_room",
+      "east": "chunfeng_inner_hall"
+    }
+  },
+  {
+    "id": "chunfeng_study",
+    "name": "书房",
+    "areaId": "snow",
+    "description": "这是一间整理得相当干净的书房，红木桌椅上铺着蓝绸巾。西面书架排满古书，窗外可以看见天井中的花木。",
+    "mapX": 7,
+    "mapY": 0,
+    "exits": {"south": "chunfeng_inner_yard"},
+    "npcIds": ["liu_huixin"]
+  },
+  {
+    "id": "chunfeng_guest_room",
+    "name": "客房",
+    "areaId": "snow",
+    "description": "这里是一间布置雅致的厢房，从窗子可以看到北边天井和南边庭园里的奇花异草，墙上还挂着一幅仕女图。",
+    "mapX": 7,
+    "mapY": 2,
+    "exits": {"north": "chunfeng_inner_yard"},
+    "npcIds": ["pang_yi"]
+  },
+  {
+    "id": "chunfeng_inner_hall",
+    "name": "武馆内院",
+    "areaId": "snow",
+    "description": "这里是淳风武馆的内院，平常弟子没有馆主允许不敢擅入。东边似乎通向柳家祠堂，南北两侧还有家眷卧房和仆役房舍。",
+    "mapX": 8,
+    "mapY": 1,
+    "allowsCultivation": true,
+    "exits": {"west": "chunfeng_inner_yard"}
   }
 ]

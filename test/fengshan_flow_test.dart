@@ -1,5 +1,6 @@
 import 'package:eastern_stories/game/core/game_action.dart';
 import 'package:eastern_stories/game/core/game_controller.dart';
+import 'package:eastern_stories/game/models/direction.dart';
 import 'package:eastern_stories/game/models/innate_attributes.dart';
 import 'package:eastern_stories/game/models/equipment_slot.dart';
 import 'package:eastern_stories/game/models/game_state.dart';
@@ -272,6 +273,49 @@ void main() {
       expect(controller.state.learnedSkillIds, contains('liuh_ken'));
     },
   );
+
+  test('inner Fengshan rooms unlock after inner disciple promotion', () {
+    final controller = GameController(
+      repository: repository,
+      initialState: repository.createInitialState().copyWith(
+        currentRoomId: 'chunfeng_schoolhall',
+        apprenticeship: const ApprenticeshipState(
+          familyId: 'fengshan_sword',
+          masterNpcId: 'liu_chunfeng',
+          generation: 14,
+          title: '弟子',
+          contribution: 0,
+          rankId: 'disciple',
+        ),
+      ),
+    );
+
+    var exits = repository
+        .room('chunfeng_schoolhall')
+        .availableExits(controller.state);
+    expect(exits[Direction.east], isNull);
+
+    controller.replaceState(
+      controller.state.copyWith(
+        apprenticeship: const ApprenticeshipState(
+          familyId: 'fengshan_sword',
+          masterNpcId: 'liu_chunfeng',
+          generation: 14,
+          title: '入室弟子',
+          contribution: 20,
+          rankId: 'inner_disciple',
+          completedTaskCount: 2,
+        ),
+      ),
+    );
+    exits = repository
+        .room('chunfeng_schoolhall')
+        .availableExits(controller.state);
+    expect(exits[Direction.east], 'chunfeng_inner_yard');
+
+    controller.dispatch(const GameAction.move(Direction.east));
+    expect(controller.state.currentRoomId, 'chunfeng_inner_yard');
+  });
 }
 
 void _moveStateTo(GameController controller, String roomId) {

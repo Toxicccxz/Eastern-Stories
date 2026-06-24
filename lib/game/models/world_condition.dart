@@ -11,6 +11,7 @@ class WorldCondition {
     this.forbiddenDefeatedNpcIds = const {},
     this.minimumAttributes = const {},
     this.requiredFamilyId,
+    this.requiredFamilyRankIds = const {},
     this.requiredFamilyTaskId,
   });
 
@@ -37,6 +38,7 @@ class WorldCondition {
             ),
           ),
       requiredFamilyId: json['requiredFamilyId'] as String?,
+      requiredFamilyRankIds: _stringSet(json['requiredFamilyRankIds']),
       requiredFamilyTaskId: json['requiredFamilyTaskId'] as String?,
     );
   }
@@ -48,6 +50,7 @@ class WorldCondition {
   final Set<String> forbiddenDefeatedNpcIds;
   final Map<InnateAttribute, int> minimumAttributes;
   final String? requiredFamilyId;
+  final Set<String> requiredFamilyRankIds;
   final String? requiredFamilyTaskId;
 
   bool isSatisfiedBy(GameState state) {
@@ -73,6 +76,10 @@ class WorldCondition {
     }
     if (requiredFamilyId != null &&
         state.apprenticeship?.familyId != requiredFamilyId) {
+      return false;
+    }
+    if (requiredFamilyRankIds.isNotEmpty &&
+        !requiredFamilyRankIds.contains(state.apprenticeship?.rankId)) {
       return false;
     }
     if (requiredFamilyTaskId != null &&

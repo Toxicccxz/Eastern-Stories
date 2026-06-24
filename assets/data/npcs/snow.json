@@ -93,6 +93,134 @@
     ]
   },
   {
+    "id": "liu_anlu",
+    "name": "刘安禄",
+    "description": "刘安禄是淳风武馆的门房，除了柳淳风没有人知道他的来历，只知道他一手快刀在这一带颇有名气。",
+    "greeting": "馆主正在厅中，外客入内请守武馆规矩。",
+    "intelligence": 11,
+    "dialogueOptions": [
+      {
+        "id": "ask_school_rules",
+        "label": "打听武馆规矩",
+        "response": "刘安禄抱刀说道：外客止步正厅，门下弟子可在教练场习艺，入室弟子才可奉命进入天井内院。"
+      },
+      {
+        "id": "ask_inner_yard",
+        "label": "询问内院",
+        "response": "刘安禄摇头道：天井往里是柳家内院，非馆主许可，寻常弟子也不敢擅入。"
+      }
+    ],
+    "combat": {
+      "maxHp": 40,
+      "attack": 8,
+      "defense": 5,
+      "rewardExperience": 20,
+      "specialMove": {
+        "name": "快刀",
+        "interval": 3,
+        "damageBonus": 3,
+        "message": "刘安禄忽然一刀劈出，刀势沉猛，却在半途微微收住。"
+      }
+    }
+  },
+  {
+    "id": "liu_huixin",
+    "name": "柳绘心",
+    "description": "柳绘心是淳风武馆馆主柳淳风的独生女，眉目清秀，手边放着一柄细剑。",
+    "greeting": "书房里清静得很，你若是来翻武学典籍，可别把爹爹的书弄乱了。",
+    "intelligence": 27,
+    "familyId": "fengshan_sword",
+    "familyGeneration": 14,
+    "teachingSkills": [
+      {
+        "skillId": "basic_dodge",
+        "maxLevel": 40,
+        "access": "family",
+        "requiredRankId": "inner_disciple"
+      },
+      {
+        "skillId": "chaos_steps",
+        "maxLevel": 30,
+        "access": "family",
+        "requiredRankId": "inner_disciple",
+        "requiredSkillLevels": {"basic_dodge": 5}
+      }
+    ],
+    "dialogueOptions": [
+      {
+        "id": "ask_fonxan_school",
+        "label": "询问封山剑派",
+        "response": "柳绘心说道：封山剑派讲究胆大心细，剑出前心先定。你若只想着招式好看，反而会落了下乘。"
+      },
+      {
+        "id": "ask_practice",
+        "label": "请她指点身法",
+        "response": "柳绘心笑道：倒乱七星步不是乱走，脚下每一步都要给下一剑留余地。"
+      }
+    ],
+    "combat": {
+      "maxHp": 34,
+      "attack": 6,
+      "defense": 5,
+      "rewardExperience": 15,
+      "specialMove": {
+        "name": "封字诀",
+        "interval": 3,
+        "damageBonus": 1,
+        "message": "柳绘心秀眉微蹙，细剑连递虚招，封住你的进路。"
+      }
+    }
+  },
+  {
+    "id": "pang_yi",
+    "name": "逄义",
+    "description": "逄义是封山剑派中和柳淳风同辈的弟子，生性好赌，常年外出，虽辈分颇高却不担任门中要职。",
+    "greeting": "逄义倚在客房里笑道：江湖路远，手边若有几两银子，总比空谈侠义稳当。",
+    "intelligence": 16,
+    "familyId": "fengshan_sword",
+    "familyGeneration": 13,
+    "teachingSkills": [
+      {
+        "skillId": "fonxan_force",
+        "maxLevel": 30,
+        "access": "family",
+        "requiredSkillLevels": {"basic_force": 1}
+      },
+      {
+        "skillId": "fonxan_sword",
+        "maxLevel": 30,
+        "access": "family",
+        "requiredRankId": "inner_disciple",
+        "requiredSkillLevels": {"basic_sword": 5, "fonxan_force": 1},
+        "contributionCost": 1
+      }
+    ],
+    "dialogueOptions": [
+      {
+        "id": "ask_money",
+        "label": "谈赚钱",
+        "response": "逄义眼睛一亮：真的？哪里有钱赚？只要不违侠义道，逄某倒也愿意帮忙。"
+      },
+      {
+        "id": "ask_liu_chunfeng",
+        "label": "询问柳淳风",
+        "response": "逄义说道：柳淳风是在下同门师兄，他掌门做得稳，我嘛，天生坐不住。"
+      }
+    ],
+    "combat": {
+      "maxHp": 48,
+      "attack": 9,
+      "defense": 6,
+      "rewardExperience": 24,
+      "specialMove": {
+        "name": "封山剑",
+        "interval": 3,
+        "damageBonus": 3,
+        "message": "逄义收起笑意，长剑一抖，使出一式老辣的封山剑路。"
+      }
+    }
+  },
+  {
     "id": "fengshan_trainee",
     "name": "武馆弟子",
     "description": "一名身材高大的灰衣弟子正在黄沙场中反复操练。",
@@ -106,7 +234,6 @@
       "attack": 5,
       "defense": 2,
       "rewardExperience": 15,
-      "respawnAfterMoves": 3,
       "specialMove": {
         "name": "直拳",
         "interval": 3,
@@ -129,6 +256,7 @@
       "attack": 5,
       "defense": 3,
       "rewardExperience": 10,
+      "respawnAfterMoves": 3,
       "specialMove": {
         "name": "封门式",
         "interval": 3,
