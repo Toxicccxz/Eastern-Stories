@@ -70,7 +70,13 @@ class _MainGameScreenState extends State<MainGameScreen> {
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
                     children: [
-                      AreaMapView(area: area, rooms: areaRooms, state: state),
+                      AreaMapView(
+                        area: area,
+                        rooms: areaRooms,
+                        allAreas: widget.controller.repository.areas.toList(),
+                        allRooms: widget.controller.repository.rooms.toList(),
+                        state: state,
+                      ),
                       const SizedBox(height: 12),
                       LocationInfoPanel(
                         areaName: area.name,
