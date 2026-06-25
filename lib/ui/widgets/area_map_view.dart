@@ -414,6 +414,7 @@ class _WorldMapLayout {
       rooms: rooms,
       roomById: roomById,
       points: points,
+      stubLength: AreaMapView._nodeGap * 0.48,
     );
 
     return _WorldMapLayout(
@@ -435,16 +436,17 @@ class _WorldMapLayout {
     required List<RoomDefinition> rooms,
     required Map<String, RoomDefinition> roomById,
     required Map<String, Offset> points,
+    required double stubLength,
   }) {
     final links = <_CrossAreaLink>[];
     final drawnLinks = <String>{};
-    const maximumDistance = 260.0;
     for (final room in rooms) {
       final start = points[room.id];
       if (start == null) {
         continue;
       }
-      for (final targetRoomId in room.exits.values) {
+      for (final exit in room.exits.entries) {
+        final targetRoomId = exit.value;
         final targetRoom = roomById[targetRoomId];
         final end = points[targetRoomId];
         if (targetRoom == null ||
@@ -453,14 +455,45 @@ class _WorldMapLayout {
           continue;
         }
         final linkKey = _linkKey(room.id, targetRoomId);
-        if (!drawnLinks.add(linkKey) ||
-            (end - start).distance > maximumDistance) {
+        if (!drawnLinks.add(linkKey)) {
           continue;
         }
-        links.add(_CrossAreaLink(start: start, end: end));
+        final targetDirection = _reverseDirection(targetRoom, room.id);
+        links.add(
+          _CrossAreaLink(
+            start: start + _directionVector(exit.key) * stubLength,
+            end:
+                targetDirection == null
+                    ? end - _directionVector(exit.key) * stubLength
+                    : end + _directionVector(targetDirection) * stubLength,
+          ),
+        );
       }
     }
     return links;
+  }
+
+  static Direction? _reverseDirection(
+    RoomDefinition room,
+    String targetRoomId,
+  ) {
+    for (final exit in room.exits.entries) {
+      if (exit.value == targetRoomId) {
+        return exit.key;
+      }
+    }
+    return null;
+  }
+
+  static Offset _directionVector(Direction direction) {
+    return switch (direction) {
+      Direction.north => const Offset(0, -1),
+      Direction.south => const Offset(0, 1),
+      Direction.east => const Offset(1, 0),
+      Direction.west => const Offset(-1, 0),
+      Direction.up => const Offset(0, -1),
+      Direction.down => const Offset(0, 1),
+    };
   }
 
   static String _linkKey(String first, String second) {
