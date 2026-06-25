@@ -319,6 +319,13 @@ void main() {
             expect(repository.npc(task.targetId).combat, isNotNull);
           case FamilyTaskType.visitRoom:
             expect(() => repository.room(task.targetId), returnsNormally);
+          case FamilyTaskType.talkToNpc:
+            expect(() => repository.npc(task.targetId), returnsNormally);
+          case FamilyTaskType.patrolRooms:
+            expect(task.targetIds, isNotEmpty);
+            for (final roomId in task.objectiveIds) {
+              expect(() => repository.room(roomId), returnsNormally);
+            }
         }
         expect(task.rewardExperience, greaterThanOrEqualTo(0));
         expect(task.rewardPotential, greaterThanOrEqualTo(0));

@@ -22,6 +22,56 @@
         "conditions": {
           "requiredQuestStatuses": {"fengshan_first_trial": "completed"}
         }
+      },
+      {
+        "id": "fengshan_gate_rules",
+        "title": "问明门规",
+        "description": "去武馆大门向刘安禄问清内外门行走规矩，再回来向柳淳风复命。",
+        "issuerNpcId": "liu_chunfeng",
+        "type": "talkToNpc",
+        "targetId": "liu_anlu",
+        "rewardExperience": 15,
+        "rewardPotential": 3,
+        "rewardContribution": 3,
+        "conditions": {
+          "requiredQuestStatuses": {"fengshan_first_trial": "completed"}
+        }
+      },
+      {
+        "id": "fengshan_visit_huixin",
+        "title": "问候书房",
+        "description": "到书房向柳绘心问候，顺便听她讲几句封山剑派的身法要义。",
+        "issuerNpcId": "liu_chunfeng",
+        "type": "talkToNpc",
+        "targetId": "liu_huixin",
+        "rewardExperience": 20,
+        "rewardPotential": 5,
+        "rewardContribution": 4,
+        "conditions": {
+          "requiredQuestStatuses": {"fengshan_first_trial": "completed"},
+          "requiredFamilyRankIds": ["inner_disciple"]
+        }
+      },
+      {
+        "id": "fengshan_inner_patrol",
+        "title": "巡查内院",
+        "description": "依次巡查天井、书房、客房和武馆内院，确认内院各处安静无事。",
+        "issuerNpcId": "liu_chunfeng",
+        "type": "patrolRooms",
+        "targetId": "chunfeng_inner_yard",
+        "targetIds": [
+          "chunfeng_inner_yard",
+          "chunfeng_study",
+          "chunfeng_guest_room",
+          "chunfeng_inner_hall"
+        ],
+        "rewardExperience": 25,
+        "rewardPotential": 6,
+        "rewardContribution": 5,
+        "conditions": {
+          "requiredQuestStatuses": {"fengshan_first_trial": "completed"},
+          "requiredFamilyRankIds": ["inner_disciple"]
+        }
       }
     ],
     "ranks": [

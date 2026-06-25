@@ -184,6 +184,9 @@ class GameController extends ChangeNotifier {
       HealWithInnerPowerAction() => _innerPowerSystem.heal(_state),
     };
     _state = _familyTaskSystem.advance(previousState, _state);
+    if (action case TalkAction(:final npcId)) {
+      _state = _familyTaskSystem.recordNpcTalk(_state, npcId);
+    }
     notifyListeners();
   }
 

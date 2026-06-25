@@ -41,7 +41,7 @@ class FamilyDefinition {
   }
 }
 
-enum FamilyTaskType { defeatNpc, visitRoom }
+enum FamilyTaskType { defeatNpc, visitRoom, talkToNpc, patrolRooms }
 
 class FamilyTaskDefinition {
   const FamilyTaskDefinition({
@@ -51,6 +51,7 @@ class FamilyTaskDefinition {
     required this.issuerNpcId,
     required this.type,
     required this.targetId,
+    this.targetIds = const [],
     this.rewardExperience = 0,
     this.rewardPotential = 0,
     this.rewardContribution = 0,
@@ -65,6 +66,8 @@ class FamilyTaskDefinition {
       issuerNpcId: json['issuerNpcId'] as String,
       type: FamilyTaskType.values.byName(json['type'] as String),
       targetId: json['targetId'] as String,
+      targetIds:
+          (json['targetIds'] as List<Object?>? ?? const []).cast<String>(),
       rewardExperience: json['rewardExperience'] as int? ?? 0,
       rewardPotential: json['rewardPotential'] as int? ?? 0,
       rewardContribution: json['rewardContribution'] as int? ?? 0,
@@ -78,10 +81,13 @@ class FamilyTaskDefinition {
   final String issuerNpcId;
   final FamilyTaskType type;
   final String targetId;
+  final List<String> targetIds;
   final int rewardExperience;
   final int rewardPotential;
   final int rewardContribution;
   final WorldCondition? conditions;
+
+  List<String> get objectiveIds => targetIds.isEmpty ? [targetId] : targetIds;
 }
 
 class FamilyRankDefinition {

@@ -76,12 +76,13 @@ class FamilyTaskSystem {
 
     var npcStates = state.npcStates;
     if (task.type == FamilyTaskType.defeatNpc) {
-      final targetState = state.npcStates[task.targetId];
-      final target = _repository.npc(task.targetId);
+      final targetId = task.objectiveIds.first;
+      final targetState = state.npcStates[targetId];
+      final target = _repository.npc(targetId);
       if (targetState != null && target.combat != null) {
         npcStates = {
           ...state.npcStates,
-          task.targetId: targetState.copyWith(
+          targetId: targetState.copyWith(
             currentHp: target.combat!.maxHp,
             isDefeated: false,
             respawnAtTurn: null,
@@ -111,22 +112,43 @@ class FamilyTaskSystem {
     if (task == null) {
       return next;
     }
-    final completed = switch (task.type) {
-      FamilyTaskType.defeatNpc =>
-        !(previous.npcStates[task.targetId]?.isDefeated ?? false) &&
-            (next.npcStates[task.targetId]?.isDefeated ?? false),
-      FamilyTaskType.visitRoom =>
-        previous.currentRoomId != task.targetId &&
-            next.currentRoomId == task.targetId,
+    final nextProgress = switch (task.type) {
+      FamilyTaskType.defeatNpc => _advanceDefeatNpc(previous, next, task),
+      FamilyTaskType.visitRoom => _advanceVisitRoom(previous, next, task),
+      FamilyTaskType.talkToNpc => progress,
+      FamilyTaskType.patrolRooms => _advancePatrolRooms(previous, next, task),
     };
-    if (!completed) {
+    if (nextProgress == progress) {
       return next;
     }
+    final completed = nextProgress.isObjectiveComplete;
     return next.copyWith(
-      apprenticeship: apprenticeship.copyWith(
-        activeTask: progress.copyWith(isObjectiveComplete: true),
-      ),
-      log: next.logWith('师门差事“${task.title}”已经办妥，可以回去复命。'),
+      apprenticeship: apprenticeship.copyWith(activeTask: nextProgress),
+      log:
+          completed
+              ? next.logWith('师门差事“${task.title}”已经办妥，可以回去复命。')
+              : next.logWith('师门差事“${task.title}”已有进展。'),
+    );
+  }
+
+  GameState recordNpcTalk(GameState state, String npcId) {
+    final apprenticeship = state.apprenticeship;
+    final progress = apprenticeship?.activeTask;
+    if (apprenticeship == null ||
+        progress == null ||
+        progress.isObjectiveComplete) {
+      return state;
+    }
+    final task = activeTask(state);
+    if (task == null ||
+        task.type != FamilyTaskType.talkToNpc ||
+        !task.objectiveIds.contains(npcId)) {
+      return state;
+    }
+    final nextProgress = _completeTarget(progress, npcId, task.objectiveIds);
+    return state.copyWith(
+      apprenticeship: apprenticeship.copyWith(activeTask: nextProgress),
+      log: state.logWith('师门差事“${task.title}”已经办妥，可以回去复命。'),
     );
   }
 
@@ -204,6 +226,62 @@ class FamilyTaskSystem {
     return _repository
         .visibleNpcsInRoom(state, state.currentRoomId)
         .any((npc) => npc.id == npcId);
+  }
+
+  FamilyTaskProgress _advanceDefeatNpc(
+    GameState previous,
+    GameState next,
+    FamilyTaskDefinition task,
+  ) {
+    final progress = next.apprenticeship!.activeTask!;
+    final targetId = task.objectiveIds.first;
+    final completed =
+        !(previous.npcStates[targetId]?.isDefeated ?? false) &&
+        (next.npcStates[targetId]?.isDefeated ?? false);
+    return completed ? progress.copyWith(isObjectiveComplete: true) : progress;
+  }
+
+  FamilyTaskProgress _advanceVisitRoom(
+    GameState previous,
+    GameState next,
+    FamilyTaskDefinition task,
+  ) {
+    final progress = next.apprenticeship!.activeTask!;
+    final targetId = task.objectiveIds.first;
+    final completed =
+        previous.currentRoomId != targetId && next.currentRoomId == targetId;
+    return completed
+        ? progress.copyWith(
+          isObjectiveComplete: true,
+          completedTargetIds: {targetId},
+        )
+        : progress;
+  }
+
+  FamilyTaskProgress _advancePatrolRooms(
+    GameState previous,
+    GameState next,
+    FamilyTaskDefinition task,
+  ) {
+    final progress = next.apprenticeship!.activeTask!;
+    if (previous.currentRoomId == next.currentRoomId ||
+        !task.objectiveIds.contains(next.currentRoomId)) {
+      return progress;
+    }
+    return _completeTarget(progress, next.currentRoomId, task.objectiveIds);
+  }
+
+  FamilyTaskProgress _completeTarget(
+    FamilyTaskProgress progress,
+    String targetId,
+    List<String> objectiveIds,
+  ) {
+    final completedTargetIds = {...progress.completedTargetIds, targetId};
+    final isComplete = objectiveIds.every(completedTargetIds.contains);
+    return progress.copyWith(
+      completedTargetIds: completedTargetIds,
+      isObjectiveComplete: isComplete,
+    );
   }
 
   GameState _withLog(GameState state, String message) {

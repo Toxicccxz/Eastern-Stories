@@ -346,26 +346,40 @@ class FamilyTaskProgress {
   const FamilyTaskProgress({
     required this.taskId,
     this.isObjectiveComplete = false,
+    this.completedTargetIds = const {},
   });
 
   factory FamilyTaskProgress.fromJson(Map<String, Object?> json) {
     return FamilyTaskProgress(
       taskId: json['taskId'] as String,
       isObjectiveComplete: json['isObjectiveComplete'] as bool? ?? false,
+      completedTargetIds:
+          (json['completedTargetIds'] as List<Object?>? ?? const [])
+              .cast<String>()
+              .toSet(),
     );
   }
 
   final String taskId;
   final bool isObjectiveComplete;
+  final Set<String> completedTargetIds;
 
   Map<String, Object?> toJson() {
-    return {'taskId': taskId, 'isObjectiveComplete': isObjectiveComplete};
+    return {
+      'taskId': taskId,
+      'isObjectiveComplete': isObjectiveComplete,
+      'completedTargetIds': completedTargetIds.toList(),
+    };
   }
 
-  FamilyTaskProgress copyWith({bool? isObjectiveComplete}) {
+  FamilyTaskProgress copyWith({
+    bool? isObjectiveComplete,
+    Set<String>? completedTargetIds,
+  }) {
     return FamilyTaskProgress(
       taskId: taskId,
       isObjectiveComplete: isObjectiveComplete ?? this.isObjectiveComplete,
+      completedTargetIds: completedTargetIds ?? this.completedTargetIds,
     );
   }
 }
