@@ -151,22 +151,42 @@ class AreaMapView extends StatelessWidget {
   int _max(int first, int second) => first > second ? first : second;
 
   void _showWorldMap(BuildContext context, ColorScheme colorScheme) {
-    showDialog<void>(
+    showWorldMapDialog(
       context: context,
-      builder: (context) {
-        return Dialog(
-          insetPadding: const EdgeInsets.all(16),
-          clipBehavior: Clip.antiAlias,
-          child: _WorldMapDialog(
-            areas: allAreas,
-            rooms: allRooms,
-            state: state,
-            currentColor: colorScheme.primary,
-          ),
-        );
-      },
+      areas: allAreas,
+      rooms: allRooms,
+      state: state,
+      currentColor: colorScheme.primary,
     );
   }
+}
+
+Future<void> showWorldMapDialog({
+  required BuildContext context,
+  required List<AreaDefinition> areas,
+  required List<RoomDefinition> rooms,
+  required GameState state,
+  required Color currentColor,
+  String? initialRoomId,
+  String? targetRoomId,
+}) {
+  return showDialog<void>(
+    context: context,
+    builder: (context) {
+      return Dialog(
+        insetPadding: const EdgeInsets.all(16),
+        clipBehavior: Clip.antiAlias,
+        child: _WorldMapDialog(
+          areas: areas,
+          rooms: rooms,
+          state: state,
+          currentColor: currentColor,
+          initialRoomId: initialRoomId,
+          targetRoomId: targetRoomId,
+        ),
+      );
+    },
+  );
 }
 
 class _WorldMapDialog extends StatefulWidget {
@@ -175,19 +195,38 @@ class _WorldMapDialog extends StatefulWidget {
     required this.rooms,
     required this.state,
     required this.currentColor,
+    this.initialRoomId,
+    this.targetRoomId,
   });
 
   final List<AreaDefinition> areas;
   final List<RoomDefinition> rooms;
   final GameState state;
   final Color currentColor;
+  final String? initialRoomId;
+  final String? targetRoomId;
 
   @override
   State<_WorldMapDialog> createState() => _WorldMapDialogState();
 }
 
 class _WorldMapDialogState extends State<_WorldMapDialog> {
-  late String _selectedRoomId = widget.state.currentRoomId;
+  late final TransformationController _transformationController;
+  late String _selectedRoomId =
+      widget.initialRoomId ?? widget.targetRoomId ?? widget.state.currentRoomId;
+  bool _didCenterInitialRoom = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _transformationController = TransformationController();
+  }
+
+  @override
+  void dispose() {
+    _transformationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -199,6 +238,15 @@ class _WorldMapDialogState extends State<_WorldMapDialog> {
       areas: widget.areas,
       rooms: widget.rooms,
     );
+    final routeRoomIds =
+        widget.targetRoomId == null
+            ? const <String>[]
+            : _routeRoomIds(
+              rooms: widget.rooms,
+              state: widget.state,
+              fromRoomId: widget.state.currentRoomId,
+              toRoomId: widget.targetRoomId!,
+            );
 
     final screenSize = MediaQuery.sizeOf(context);
     return SizedBox(
@@ -227,6 +275,17 @@ class _WorldMapDialogState extends State<_WorldMapDialog> {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
+                      if (widget.targetRoomId != null) ...[
+                        const SizedBox(height: 3),
+                        Text(
+                          _routeSummary(
+                            roomById: roomById,
+                            targetRoomId: widget.targetRoomId!,
+                            routeRoomIds: routeRoomIds,
+                          ),
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -249,9 +308,11 @@ class _WorldMapDialogState extends State<_WorldMapDialog> {
                       ? constraints.maxHeight
                       : layout.size.height,
                 );
+                _centerInitialRoom(constraints, layout, canvasSize);
 
                 return ClipRect(
                   child: InteractiveViewer(
+                    transformationController: _transformationController,
                     minScale: 0.75,
                     maxScale: 2.5,
                     constrained: false,
@@ -282,6 +343,15 @@ class _WorldMapDialogState extends State<_WorldMapDialog> {
                               ),
                             ),
                           ),
+                          if (routeRoomIds.length > 1)
+                            Positioned.fill(
+                              child: CustomPaint(
+                                painter: _RoutePathPainter(
+                                  routeRoomIds: routeRoomIds,
+                                  points: layout.points,
+                                ),
+                              ),
+                            ),
                           Positioned.fill(
                             child: CustomPaint(
                               painter: _TopologyMapPainter(
@@ -293,6 +363,8 @@ class _WorldMapDialogState extends State<_WorldMapDialog> {
                                 stubLength: AreaMapView._nodeGap * 0.48,
                                 currentColor: widget.currentColor,
                                 selectedRoomId: _selectedRoomId,
+                                targetRoomId: widget.targetRoomId,
+                                routeRoomIds: routeRoomIds.toSet(),
                                 drawCrossAreaLinks: false,
                               ),
                             ),
@@ -323,6 +395,33 @@ class _WorldMapDialogState extends State<_WorldMapDialog> {
         ],
       ),
     );
+  }
+
+  void _centerInitialRoom(
+    BoxConstraints constraints,
+    _WorldMapLayout layout,
+    Size canvasSize,
+  ) {
+    if (_didCenterInitialRoom) {
+      return;
+    }
+    final point = layout.points[_selectedRoomId];
+    if (point == null) {
+      return;
+    }
+    _didCenterInitialRoom = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      final viewportCenter = Offset(
+        constraints.maxWidth / 2,
+        constraints.maxHeight / 2,
+      );
+      final offset = viewportCenter - point;
+      _transformationController.value =
+          Matrix4.identity()..translate(offset.dx, offset.dy);
+    });
   }
 }
 
@@ -508,6 +607,73 @@ class _CrossAreaLink {
   final Offset end;
 }
 
+List<String> _routeRoomIds({
+  required List<RoomDefinition> rooms,
+  required GameState state,
+  required String fromRoomId,
+  required String toRoomId,
+}) {
+  if (fromRoomId == toRoomId) {
+    return [fromRoomId];
+  }
+  final roomById = {for (final room in rooms) room.id: room};
+  if (!roomById.containsKey(fromRoomId) || !roomById.containsKey(toRoomId)) {
+    return const [];
+  }
+
+  final queue = <String>[fromRoomId];
+  final previousByRoomId = <String, String?>{fromRoomId: null};
+  var cursor = 0;
+  while (cursor < queue.length) {
+    final roomId = queue[cursor];
+    cursor += 1;
+    final room = roomById[roomId];
+    if (room == null) {
+      continue;
+    }
+    for (final nextRoomId in room.availableExits(state).values) {
+      if (!roomById.containsKey(nextRoomId) ||
+          previousByRoomId.containsKey(nextRoomId)) {
+        continue;
+      }
+      previousByRoomId[nextRoomId] = roomId;
+      if (nextRoomId == toRoomId) {
+        return _reconstructRoute(previousByRoomId, toRoomId);
+      }
+      queue.add(nextRoomId);
+    }
+  }
+  return const [];
+}
+
+List<String> _reconstructRoute(
+  Map<String, String?> previousByRoomId,
+  String toRoomId,
+) {
+  final route = <String>[];
+  String? cursor = toRoomId;
+  while (cursor != null) {
+    route.add(cursor);
+    cursor = previousByRoomId[cursor];
+  }
+  return route.reversed.toList();
+}
+
+String _routeSummary({
+  required Map<String, RoomDefinition> roomById,
+  required String targetRoomId,
+  required List<String> routeRoomIds,
+}) {
+  final targetName = roomById[targetRoomId]?.name ?? targetRoomId;
+  if (routeRoomIds.isEmpty) {
+    return '目标：$targetName · 暂时没有可达路线';
+  }
+  if (routeRoomIds.length == 1) {
+    return '目标：$targetName · 已在当前位置';
+  }
+  return '目标：$targetName · 约 ${routeRoomIds.length - 1} 步可达';
+}
+
 class _GridBackgroundPainter extends CustomPainter {
   const _GridBackgroundPainter({required this.gridSize});
 
@@ -608,6 +774,39 @@ class _CrossAreaLinkPainter extends CustomPainter {
   }
 }
 
+class _RoutePathPainter extends CustomPainter {
+  const _RoutePathPainter({required this.routeRoomIds, required this.points});
+
+  final List<String> routeRoomIds;
+  final Map<String, Offset> points;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (routeRoomIds.length < 2) {
+      return;
+    }
+    final paint =
+        Paint()
+          ..color = const Color(0xFFB07A2A)
+          ..strokeWidth = 4
+          ..strokeCap = StrokeCap.square;
+    for (var index = 0; index < routeRoomIds.length - 1; index += 1) {
+      final start = points[routeRoomIds[index]];
+      final end = points[routeRoomIds[index + 1]];
+      if (start == null || end == null) {
+        continue;
+      }
+      canvas.drawLine(start, end, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _RoutePathPainter oldDelegate) {
+    return oldDelegate.routeRoomIds != routeRoomIds ||
+        oldDelegate.points != points;
+  }
+}
+
 class _TopologyMapPainter extends CustomPainter {
   const _TopologyMapPainter({
     required this.rooms,
@@ -618,6 +817,8 @@ class _TopologyMapPainter extends CustomPainter {
     required this.stubLength,
     required this.currentColor,
     this.selectedRoomId,
+    this.targetRoomId,
+    this.routeRoomIds = const {},
     this.drawCrossAreaLinks = true,
   });
 
@@ -629,6 +830,8 @@ class _TopologyMapPainter extends CustomPainter {
   final double stubLength;
   final Color currentColor;
   final String? selectedRoomId;
+  final String? targetRoomId;
+  final Set<String> routeRoomIds;
   final bool drawCrossAreaLinks;
 
   @override
@@ -687,6 +890,8 @@ class _TopologyMapPainter extends CustomPainter {
       }
       final isCurrent = room.id == state.currentRoomId;
       final isSelected = room.id == selectedRoomId;
+      final isTarget = room.id == targetRoomId;
+      final isOnRoute = routeRoomIds.contains(room.id);
       final isVisited = state.visitedRoomIds.contains(room.id);
       final rect = Rect.fromCenter(
         center: center,
@@ -698,6 +903,10 @@ class _TopologyMapPainter extends CustomPainter {
             ..color =
                 isCurrent
                     ? currentColor
+                    : isTarget
+                    ? const Color(0xFFB07A2A)
+                    : isOnRoute
+                    ? const Color(0xFFFFE4B5)
                     : isVisited
                     ? const Color(0xFFFFFCF3)
                     : const Color(0xFFF4F1E8);
@@ -705,7 +914,7 @@ class _TopologyMapPainter extends CustomPainter {
           Paint()
             ..color = const Color(0xFF1F241B)
             ..style = PaintingStyle.stroke
-            ..strokeWidth = isCurrent ? 2.2 : 1.8;
+            ..strokeWidth = isCurrent || isTarget ? 2.2 : 1.8;
       canvas.drawRect(rect, fillPaint);
       canvas.drawRect(rect, borderPaint);
       if (isSelected && !isCurrent) {
@@ -715,6 +924,14 @@ class _TopologyMapPainter extends CustomPainter {
               ..style = PaintingStyle.stroke
               ..strokeWidth = 2;
         canvas.drawRect(rect.inflate(4), selectedPaint);
+      }
+      if (isTarget) {
+        final targetPaint =
+            Paint()
+              ..color = const Color(0xFFB07A2A)
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 2;
+        canvas.drawRect(rect.inflate(6), targetPaint);
       }
     }
   }
@@ -726,6 +943,8 @@ class _TopologyMapPainter extends CustomPainter {
         oldDelegate.state.visitedRoomIds != state.visitedRoomIds ||
         oldDelegate.currentColor != currentColor ||
         oldDelegate.selectedRoomId != selectedRoomId ||
+        oldDelegate.targetRoomId != targetRoomId ||
+        oldDelegate.routeRoomIds != routeRoomIds ||
         oldDelegate.drawCrossAreaLinks != drawCrossAreaLinks;
   }
 

@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../game/core/game_action.dart';
 import '../../game/core/game_controller.dart';
-import '../../game/models/family_definition.dart';
-import '../../game/models/game_state.dart';
-import '../../game/models/quest_definition.dart';
 import '../../game/models/room_definition.dart';
 import '../../game/models/equipment_slot.dart';
 import '../../game/models/skill_progress.dart';
@@ -123,50 +120,6 @@ class ActionBar extends StatelessWidget {
     );
   }
 
-  void _showQuests(BuildContext context, GameController controller) {
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder: (context) {
-        final quests = controller.questViews();
-        final activeFamilyTask = controller.activeFamilyTask();
-        final activeFamilyProgress =
-            controller.state.apprenticeship?.activeTask;
-        final visibleQuests =
-            quests
-                .where((quest) => quest.status != QuestStatus.notStarted)
-                .toList();
-
-        return SafeArea(
-          top: false,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('委托', style: Theme.of(context).textTheme.titleLarge),
-                const SizedBox(height: 12),
-                if (activeFamilyTask != null && activeFamilyProgress != null)
-                  _FamilyTaskTile(
-                    task: activeFamilyTask,
-                    progress: activeFamilyProgress,
-                    controller: controller,
-                  ),
-                if (activeFamilyTask != null && activeFamilyProgress != null)
-                  const SizedBox(height: 12),
-                if (visibleQuests.isEmpty)
-                  Text(activeFamilyTask == null ? '还没有接到委托。' : '暂无其他委托。')
-                else
-                  for (final quest in visibleQuests) _QuestTile(quest: quest),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   void _showSkills(BuildContext context, GameController controller) {
     showModalBottomSheet<void>(
       context: context,
@@ -181,118 +134,6 @@ class ActionBar extends StatelessWidget {
       context: context,
       showDragHandle: true,
       builder: (_) => _InnerPowerSheet(controller: controller),
-    );
-  }
-}
-
-class _FamilyTaskTile extends StatelessWidget {
-  const _FamilyTaskTile({
-    required this.task,
-    required this.progress,
-    required this.controller,
-  });
-
-  final FamilyTaskDefinition task;
-  final FamilyTaskProgress progress;
-  final GameController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFE0D8C8)),
-        borderRadius: BorderRadius.circular(8),
-        color: const Color(0xFFFFFCF6),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.account_tree_outlined, color: colorScheme.primary),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    '师门差事：${task.title}',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Text(_statusText),
-            const SizedBox(height: 6),
-            Text(task.description),
-            const SizedBox(height: 8),
-            for (final targetId in task.objectiveIds)
-              _FamilyTaskTargetRow(
-                label: _targetLabel(targetId),
-                isCompleted:
-                    progress.isObjectiveComplete ||
-                    progress.completedTargetIds.contains(targetId),
-              ),
-            const SizedBox(height: 8),
-            Text(
-              '奖励：经验 ${task.rewardExperience} · 潜能 ${task.rewardPotential} · 贡献 ${task.rewardContribution}',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String get _statusText {
-    if (progress.isObjectiveComplete) {
-      return '状态：已办妥，可向${controller.repository.npc(task.issuerNpcId).name}复命。';
-    }
-    return switch (task.type) {
-      FamilyTaskType.defeatNpc => '状态：前往目标处切磋。',
-      FamilyTaskType.visitRoom => '状态：前往指定地点。',
-      FamilyTaskType.talkToNpc => '状态：拜访指定人物。',
-      FamilyTaskType.patrolRooms => '状态：巡查指定地点。',
-    };
-  }
-
-  String _targetLabel(String targetId) {
-    return switch (task.type) {
-      FamilyTaskType.defeatNpc ||
-      FamilyTaskType.talkToNpc => controller.repository.npc(targetId).name,
-      FamilyTaskType.visitRoom ||
-      FamilyTaskType.patrolRooms => controller.repository.room(targetId).name,
-    };
-  }
-}
-
-class _FamilyTaskTargetRow extends StatelessWidget {
-  const _FamilyTaskTargetRow({required this.label, required this.isCompleted});
-
-  final String label;
-  final bool isCompleted;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: Row(
-        children: [
-          Icon(
-            isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
-            size: 18,
-            color:
-                isCompleted
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.outline,
-          ),
-          const SizedBox(width: 8),
-          Expanded(child: Text(label)),
-        ],
-      ),
     );
   }
 }
@@ -518,77 +359,6 @@ class _SkillUsageButton extends StatelessWidget {
                   controller.dispatch(GameAction.enableSkill(skill.id, usage)),
           child: Text('用于${usage.label}'),
         );
-  }
-}
-
-class _QuestTile extends StatelessWidget {
-  const _QuestTile({required this.quest});
-
-  final QuestView quest;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            quest.definition.title,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 4),
-          Text(_statusText, style: Theme.of(context).textTheme.bodySmall),
-          const SizedBox(height: 8),
-          for (final step in quest.steps) _QuestStepRow(step: step),
-        ],
-      ),
-    );
-  }
-
-  String get _statusText {
-    return switch (quest.status) {
-      QuestStatus.completed => '已完成',
-      QuestStatus.active when quest.isReadyToComplete => '可回报',
-      QuestStatus.active => '进行中',
-      QuestStatus.notStarted => '未接取',
-    };
-  }
-}
-
-class _QuestStepRow extends StatelessWidget {
-  const _QuestStepRow({required this.step});
-
-  final QuestStepView step;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final (icon, color) = switch (step.status) {
-      QuestStepStatus.completed => (Icons.check_circle, colorScheme.primary),
-      QuestStepStatus.current => (
-        Icons.radio_button_checked,
-        colorScheme.tertiary,
-      ),
-      QuestStepStatus.pending => (
-        Icons.radio_button_unchecked,
-        colorScheme.outline,
-      ),
-    };
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 18, color: color),
-          const SizedBox(width: 8),
-          Expanded(child: Text(step.description)),
-        ],
-      ),
-    );
   }
 }
 

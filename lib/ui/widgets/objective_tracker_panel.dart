@@ -4,6 +4,7 @@ import '../../game/core/game_controller.dart';
 import '../../game/models/family_definition.dart';
 import '../../game/models/game_state.dart';
 import '../../game/models/quest_definition.dart';
+import 'area_map_view.dart';
 import 'shared/panel.dart';
 
 class ObjectiveTrackerPanel extends StatelessWidget {
@@ -59,7 +60,7 @@ class ObjectiveTrackerPanel extends StatelessWidget {
                 if (objectives.activeFamilyTask != null ||
                     quest != objectives.activeQuests.first)
                   const SizedBox(height: 8),
-                _CompactQuest(quest: quest),
+                _CompactQuest(quest: quest, controller: controller),
               ],
               if (objectives.activeQuests.length > 2)
                 Padding(
@@ -124,7 +125,7 @@ class _ObjectiveTrackerSheet extends StatelessWidget {
                   const Text('还没有接到委托。')
                 else
                   for (final quest in objectives.visibleQuests)
-                    _QuestDetail(quest: quest),
+                    _QuestDetail(quest: quest, controller: controller),
                 const Divider(height: 28),
                 _SectionTitle(
                   icon: Icons.account_tree_outlined,
@@ -211,9 +212,10 @@ class _ObjectiveSnapshot {
 }
 
 class _CompactQuest extends StatelessWidget {
-  const _CompactQuest({required this.quest});
+  const _CompactQuest({required this.quest, required this.controller});
 
   final QuestView quest;
+  final GameController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -223,6 +225,14 @@ class _CompactQuest extends StatelessWidget {
       title: quest.definition.title,
       subtitle: currentStep,
       isComplete: quest.status == QuestStatus.completed,
+      onLocate:
+          _currentQuestTargetRoomId(controller, quest) == null
+              ? null
+              : () => _showTargetMap(
+                context,
+                controller,
+                _currentQuestTargetRoomId(controller, quest)!,
+              ),
     );
   }
 }
@@ -240,6 +250,7 @@ class _CompactFamilyTask extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final targetRoomId = _familyTaskTargetRoomId(controller, task);
     return _ObjectiveLine(
       icon: Icons.account_tree_outlined,
       title: '师门差事：${task.title}',
@@ -248,6 +259,10 @@ class _CompactFamilyTask extends StatelessWidget {
               ? '回去向${controller.repository.npc(task.issuerNpcId).name}复命。'
               : _familyTaskActionText(task),
       isComplete: progress.isObjectiveComplete,
+      onLocate:
+          targetRoomId == null
+              ? null
+              : () => _showTargetMap(context, controller, targetRoomId),
     );
   }
 }
@@ -259,19 +274,29 @@ class _CompactPromotion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final masterRoomId = _npcRoomId(
+      objectives.controller,
+      objectives.apprenticeship!.masterNpcId,
+    );
     return _ObjectiveLine(
       icon: Icons.military_tech_outlined,
       title: '门内晋升',
       subtitle: '下一阶：${objectives.nextRank!.title}',
       isComplete: _promotionReady(objectives),
+      onLocate:
+          masterRoomId == null
+              ? null
+              : () =>
+                  _showTargetMap(context, objectives.controller, masterRoomId),
     );
   }
 }
 
 class _QuestDetail extends StatelessWidget {
-  const _QuestDetail({required this.quest});
+  const _QuestDetail({required this.quest, required this.controller});
 
   final QuestView quest;
+  final GameController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -303,6 +328,14 @@ class _QuestDetail extends StatelessWidget {
                 QuestStepStatus.current => _ProgressStatus.current,
                 QuestStepStatus.pending => _ProgressStatus.pending,
               },
+              onLocate:
+                  _questStepTargetRoomId(controller, step) == null
+                      ? null
+                      : () => _showTargetMap(
+                        context,
+                        controller,
+                        _questStepTargetRoomId(controller, step)!,
+                      ),
             ),
           if (quest.isReadyToComplete && quest.status == QuestStatus.active)
             Padding(
@@ -396,6 +429,14 @@ class _FamilyTaskDetail extends StatelessWidget {
                           progress.completedTargetIds.contains(targetId)
                       ? _ProgressStatus.complete
                       : _ProgressStatus.current,
+              onLocate:
+                  _familyTargetRoomId(controller, task, targetId) == null
+                      ? null
+                      : () => _showTargetMap(
+                        context,
+                        controller,
+                        _familyTargetRoomId(controller, task, targetId)!,
+                      ),
             ),
           const SizedBox(height: 8),
           Text(
@@ -433,6 +474,24 @@ class _PromotionDetail extends StatelessWidget {
             style: Theme.of(
               context,
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: () {
+                final roomId = _npcRoomId(
+                  controller,
+                  apprenticeship.masterNpcId,
+                );
+                if (roomId != null) {
+                  _showTargetMap(context, controller, roomId);
+                }
+              },
+              icon: const Icon(Icons.travel_explore, size: 18),
+              label: Text(
+                '定位师父：${controller.repository.npc(apprenticeship.masterNpcId).name}',
+              ),
+            ),
           ),
           const SizedBox(height: 10),
           _ProgressRow(
@@ -474,12 +533,14 @@ class _ObjectiveLine extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.isComplete,
+    this.onLocate,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
   final bool isComplete;
+  final VoidCallback? onLocate;
 
   @override
   Widget build(BuildContext context) {
@@ -503,6 +564,12 @@ class _ObjectiveLine extends StatelessWidget {
             ],
           ),
         ),
+        if (onLocate != null)
+          IconButton(
+            tooltip: '定位',
+            onPressed: onLocate,
+            icon: const Icon(Icons.travel_explore, size: 20),
+          ),
       ],
     );
   }
@@ -583,10 +650,15 @@ class _StatusPill extends StatelessWidget {
 enum _ProgressStatus { complete, current, pending }
 
 class _ProgressRow extends StatelessWidget {
-  const _ProgressRow({required this.label, required this.status});
+  const _ProgressRow({
+    required this.label,
+    required this.status,
+    this.onLocate,
+  });
 
   final String label;
   final _ProgressStatus status;
+  final VoidCallback? onLocate;
 
   @override
   Widget build(BuildContext context) {
@@ -609,6 +681,13 @@ class _ProgressRow extends StatelessWidget {
           Icon(icon, size: 18, color: color),
           const SizedBox(width: 8),
           Expanded(child: Text(label)),
+          if (onLocate != null)
+            IconButton(
+              tooltip: '定位',
+              visualDensity: VisualDensity.compact,
+              onPressed: onLocate,
+              icon: const Icon(Icons.travel_explore, size: 18),
+            ),
         ],
       ),
     );
@@ -693,4 +772,79 @@ bool _promotionReady(_ObjectiveSnapshot objectives) {
     }
   }
   return true;
+}
+
+String? _currentQuestTargetRoomId(GameController controller, QuestView quest) {
+  for (final step in quest.steps) {
+    if (step.status == QuestStepStatus.current) {
+      return _questStepTargetRoomId(controller, step);
+    }
+  }
+  for (final step in quest.steps.reversed) {
+    final targetRoomId = _questStepTargetRoomId(controller, step);
+    if (targetRoomId != null) {
+      return targetRoomId;
+    }
+  }
+  return null;
+}
+
+String? _questStepTargetRoomId(GameController controller, QuestStepView step) {
+  if (step.targetRoomId != null) {
+    return step.targetRoomId;
+  }
+  final npcId = step.targetNpcId;
+  return npcId == null ? null : _npcRoomId(controller, npcId);
+}
+
+String? _familyTaskTargetRoomId(
+  GameController controller,
+  FamilyTaskDefinition task,
+) {
+  if (task.type == FamilyTaskType.patrolRooms) {
+    final progress = controller.state.apprenticeship?.activeTask;
+    for (final targetId in task.objectiveIds) {
+      if (progress?.completedTargetIds.contains(targetId) ?? false) {
+        continue;
+      }
+      return targetId;
+    }
+  }
+  if (controller.state.apprenticeship?.activeTask?.isObjectiveComplete ??
+      false) {
+    return _npcRoomId(controller, task.issuerNpcId);
+  }
+  return _familyTargetRoomId(controller, task, task.objectiveIds.first);
+}
+
+String? _familyTargetRoomId(
+  GameController controller,
+  FamilyTaskDefinition task,
+  String targetId,
+) {
+  return switch (task.type) {
+    FamilyTaskType.defeatNpc ||
+    FamilyTaskType.talkToNpc => _npcRoomId(controller, targetId),
+    FamilyTaskType.visitRoom || FamilyTaskType.patrolRooms => targetId,
+  };
+}
+
+String? _npcRoomId(GameController controller, String npcId) {
+  return controller.state.npcStates[npcId]?.roomId;
+}
+
+void _showTargetMap(
+  BuildContext context,
+  GameController controller,
+  String targetRoomId,
+) {
+  showWorldMapDialog(
+    context: context,
+    areas: controller.repository.areas.toList(),
+    rooms: controller.repository.rooms.toList(),
+    state: controller.state,
+    currentColor: Theme.of(context).colorScheme.primary,
+    initialRoomId: targetRoomId,
+    targetRoomId: targetRoomId,
+  );
 }

@@ -61,6 +61,8 @@ class QuestStepDefinition {
     required this.description,
     this.requiredFlag,
     this.requiredDefeatedNpcId,
+    this.targetRoomId,
+    this.targetNpcId,
   });
 
   factory QuestStepDefinition.fromJson(Map<String, Object?> json) {
@@ -68,19 +70,30 @@ class QuestStepDefinition {
       description: json['description'] as String,
       requiredFlag: json['requiredFlag'] as String?,
       requiredDefeatedNpcId: json['requiredDefeatedNpcId'] as String?,
+      targetRoomId: json['targetRoomId'] as String?,
+      targetNpcId: json['targetNpcId'] as String?,
     );
   }
 
   final String description;
   final String? requiredFlag;
   final String? requiredDefeatedNpcId;
+  final String? targetRoomId;
+  final String? targetNpcId;
 }
 
 class QuestStepView {
-  const QuestStepView({required this.description, required this.status});
+  const QuestStepView({
+    required this.description,
+    required this.status,
+    this.targetRoomId,
+    this.targetNpcId,
+  });
 
   final String description;
   final QuestStepStatus status;
+  final String? targetRoomId;
+  final String? targetNpcId;
 }
 
 class QuestView {

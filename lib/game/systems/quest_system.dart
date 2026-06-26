@@ -272,6 +272,8 @@ class QuestSystem {
           QuestStepView(
             description: step.description,
             status: QuestStepStatus.completed,
+            targetRoomId: step.targetRoomId,
+            targetNpcId: step.targetNpcId,
           ),
       ];
     }
@@ -291,7 +293,12 @@ class QuestSystem {
         foundCurrentStep = true;
       }
       views.add(
-        QuestStepView(description: step.description, status: stepStatus),
+        QuestStepView(
+          description: step.description,
+          status: stepStatus,
+          targetRoomId: step.targetRoomId,
+          targetNpcId: step.targetNpcId,
+        ),
       );
     }
     return views;
