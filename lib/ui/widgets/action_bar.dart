@@ -10,6 +10,7 @@ import '../../game/models/equipment_slot.dart';
 import '../../game/models/skill_progress.dart';
 import '../../game/models/skill_definition.dart';
 import 'character_sheet.dart';
+import 'objective_tracker_panel.dart';
 
 class ActionBar extends StatelessWidget {
   const ActionBar({super.key, required this.room, required this.controller});
@@ -42,9 +43,9 @@ class ActionBar extends StatelessWidget {
         onPressed: () => _showInventory(context, controller),
       ),
       _ActionButton(
-        label: '委托',
+        label: '目标',
         icon: Icons.assignment_outlined,
-        onPressed: () => _showQuests(context, controller),
+        onPressed: () => showObjectiveTrackerSheet(context, controller),
       ),
       _ActionButton(
         label: '武学',

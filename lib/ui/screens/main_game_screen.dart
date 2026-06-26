@@ -6,6 +6,7 @@ import '../widgets/area_map_view.dart';
 import '../widgets/combat_window.dart';
 import '../widgets/event_log_panel.dart';
 import '../widgets/location_info_panel.dart';
+import '../widgets/objective_tracker_panel.dart';
 import '../widgets/player_status_bar.dart';
 
 class MainGameScreen extends StatefulWidget {
@@ -84,6 +85,8 @@ class _MainGameScreenState extends State<MainGameScreen> {
                         controller: widget.controller,
                         state: state,
                       ),
+                      const SizedBox(height: 12),
+                      ObjectiveTrackerPanel(controller: widget.controller),
                       const SizedBox(height: 12),
                       EventLogPanel(messages: state.log),
                     ],
