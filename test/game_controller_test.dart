@@ -42,6 +42,84 @@ void main() {
     );
   });
 
+  test('capital passage quest follows the original token event', () {
+    final controller = GameController(repository: repository);
+
+    for (final direction in const [
+      Direction.east,
+      Direction.north,
+      Direction.north,
+      Direction.west,
+      Direction.south,
+      Direction.south,
+      Direction.south,
+    ]) {
+      controller.dispatch(GameAction.move(direction));
+    }
+    expect(controller.state.currentRoomId, 'capital_north_gate');
+    expect(
+      repository
+          .room('capital_north_gate')
+          .availableExits(controller.state),
+      isNot(contains(Direction.north)),
+    );
+
+    controller.dispatch(
+      const GameAction.selectDialogue(
+        'capital_guard',
+        'ask_about_leaving_capital',
+      ),
+    );
+    expect(
+      controller.state.questStatuses['capital_passage'],
+      QuestStatus.active,
+    );
+
+    for (final direction in const [
+      Direction.south,
+      Direction.south,
+      Direction.west,
+      Direction.west,
+      Direction.north,
+    ]) {
+      controller.dispatch(GameAction.move(direction));
+    }
+    controller.dispatch(
+      const GameAction.performRoomAction('search_abandoned_garden'),
+    );
+    expect(controller.state.inventoryItemIds, contains('capital_exit_token'));
+    expect(controller.state.questFlags, contains('capital_exit_token_found'));
+
+    for (final direction in const [
+      Direction.south,
+      Direction.east,
+      Direction.east,
+      Direction.north,
+      Direction.north,
+    ]) {
+      controller.dispatch(GameAction.move(direction));
+    }
+    controller.dispatch(
+      const GameAction.giveItem('capital_guard', 'capital_exit_token'),
+    );
+
+    expect(
+      controller.state.questStatuses['capital_passage'],
+      QuestStatus.completed,
+    );
+    expect(
+      controller.state.inventoryItemIds,
+      isNot(contains('capital_exit_token')),
+    );
+    expect(controller.state.questFlags, contains('capital_passage_registered'));
+    expect(
+      repository
+          .room('capital_north_gate')
+          .availableExits(controller.state),
+      contains(Direction.north),
+    );
+  });
+
   test('dropping an item moves it into the current room', () {
     final controller = GameController(repository: repository);
 

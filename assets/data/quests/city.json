@@ -1,0 +1,26 @@
+[
+  {
+    "id": "capital_passage",
+    "title": "京师通行",
+    "description": "京师守城兵盘查严密。城中废园里，或许能找到一支遗失的出城令牌。",
+    "steps": [
+      {
+        "description": "向京师北门的守城兵询问出城规矩。",
+        "targetNpcId": "capital_guard"
+      },
+      {
+        "description": "前往京师西街北面的废园，在荒草中寻找令牌。",
+        "requiredFlag": "capital_exit_token_found",
+        "targetRoomId": "capital_abandoned_garden"
+      },
+      {
+        "description": "把出城令牌交给北门守城兵查验。",
+        "requiredFlag": "capital_passage_registered",
+        "targetNpcId": "capital_guard"
+      }
+    ],
+    "requiredFlags": ["capital_passage_registered"],
+    "rewardExperience": 120,
+    "rewardSilver": 40
+  }
+]

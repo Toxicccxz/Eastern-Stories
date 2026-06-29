@@ -11,9 +11,9 @@ void main() {
     final rooms = repository.rooms.toList();
 
     expect(repository.startingRoomId, 'liu_home');
-    expect(repository.areas, hasLength(5));
-    expect(rooms, hasLength(40));
-    expect(repository.quests, hasLength(3));
+    expect(repository.areas, hasLength(6));
+    expect(rooms, hasLength(54));
+    expect(repository.quests, hasLength(4));
     expect(repository.skills, hasLength(13));
     expect(repository.families, hasLength(2));
 
@@ -49,6 +49,13 @@ void main() {
               '${room.id} action ${action.id} references unknown room '
               '${action.resultRoomId}',
         );
+        for (final itemId in action.givesItemIds) {
+          expect(
+            () => repository.item(itemId),
+            returnsNormally,
+            reason: '${room.id} action ${action.id} gives unknown item $itemId',
+          );
+        }
         final condition = action.conditions;
         if (condition != null) {
           _expectValidCondition(repository, condition);

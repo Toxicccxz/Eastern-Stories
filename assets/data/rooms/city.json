@@ -1,0 +1,152 @@
+[
+  {
+    "id": "capital_crossroads",
+    "name": "三叉路口",
+    "areaId": "city",
+    "description": "这里已经离天驼关很远了。黄土大道向北延伸，西面的青石小路通往傅家坡，向南则是入京必经的北驿道。来往的旅客、商人和农民渐渐多了起来。",
+    "mapX": 2,
+    "mapY": 0,
+    "exits": {"east": "yellow_road", "south": "capital_north_road_outer"}
+  },
+  {
+    "id": "capital_north_road_outer",
+    "name": "北驿道",
+    "areaId": "city",
+    "description": "这是一条青石铺地的大驿道，地处京师北郊，北方入京必经此地。远处城楼已隐约可见。",
+    "mapX": 2,
+    "mapY": 1,
+    "exits": {"north": "capital_crossroads", "south": "capital_north_road_inner"}
+  },
+  {
+    "id": "capital_north_road_inner",
+    "name": "北驿道",
+    "areaId": "city",
+    "description": "青石驿道上人来人往，挑担的苦力、赶车的马夫和赴京传书的军人熙熙攘攘。南边便是京师北门。",
+    "mapX": 2,
+    "mapY": 2,
+    "exits": {"north": "capital_north_road_outer", "south": "capital_north_gate"}
+  },
+  {
+    "id": "capital_north_gate",
+    "name": "京师北门",
+    "areaId": "city",
+    "description": "北门曾遭异族攻打，城砖显得有些陈旧。城门上方悬着“京师北门”几个金字，官兵在来往人群间严密盘查。",
+    "mapX": 2,
+    "mapY": 3,
+    "exits": {
+      "north": {
+        "roomId": "capital_north_road_inner",
+        "conditions": {"requiredFlags": ["capital_passage_registered"]}
+      },
+      "south": "capital_dazhalan"
+    },
+    "npcIds": ["capital_guard"]
+  },
+  {
+    "id": "capital_dazhalan",
+    "name": "大栅栏",
+    "areaId": "city",
+    "description": "战争时官兵曾在这里架设巨大的栅栏盘查行人。栅栏虽已撤去，老人们仍习惯沿用这个地名。",
+    "mapX": 2,
+    "mapY": 4,
+    "exits": {"north": "capital_north_gate", "south": "capital_huguo_crossroads"}
+  },
+  {
+    "id": "capital_huguo_crossroads",
+    "name": "十字路口",
+    "areaId": "city",
+    "description": "京师中轴线与护国道在此交叉。东西街市人来人往，南面的皇家祭坛反倒冷冷清清。",
+    "mapX": 2,
+    "mapY": 5,
+    "exits": {"north": "capital_dazhalan", "west": "capital_west_huguo_street", "east": "capital_east_huguo_street", "south": "capital_altar"}
+  },
+  {
+    "id": "capital_west_huguo_street",
+    "name": "护国道西段",
+    "areaId": "city",
+    "description": "这是护国道西段，行脚商人与进香客混在人群里。再向西走，酒肉香味渐渐浓了起来。",
+    "mapX": 1,
+    "mapY": 5,
+    "exits": {"east": "capital_huguo_crossroads", "west": "capital_west_street"}
+  },
+  {
+    "id": "capital_west_street",
+    "name": "京师西街",
+    "areaId": "city",
+    "description": "南边是京师闻名的太白酒楼，北边是一所荒废多年的旧园。园中荒草摇曳，几乎无人敢进。",
+    "mapX": 0,
+    "mapY": 5,
+    "exits": {"east": "capital_west_huguo_street", "north": "capital_abandoned_garden", "south": "capital_taibai_inn"}
+  },
+  {
+    "id": "capital_abandoned_garden",
+    "name": "废园",
+    "areaId": "city",
+    "description": "废园的主人昔日位极人臣，后来以莫须有之罪被斩了全族。如今园中荒草丛生，只余残垣供人凭吊。",
+    "mapX": 0,
+    "mapY": 4,
+    "exits": {"south": "capital_west_street"},
+    "actions": [
+      {
+        "id": "search_abandoned_garden",
+        "label": "搜索草丛",
+        "description": "在荒草和残垣间仔细寻找。",
+        "resultRoomId": "capital_abandoned_garden",
+        "log": "你拨开齐腰深的荒草，在一截断墙旁找到了一支遗失多年的出城令牌。",
+        "setsQuestFlag": "capital_exit_token_found",
+        "givesItemIds": ["capital_exit_token"],
+        "conditions": {
+          "forbiddenFlags": ["capital_exit_token_found"],
+          "requiredQuestStatuses": {"capital_passage": "active"}
+        }
+      }
+    ]
+  },
+  {
+    "id": "capital_taibai_inn",
+    "name": "太白酒楼",
+    "areaId": "city",
+    "description": "酒楼内装饰得金碧辉煌，餐具也极为讲究。这里菜肴远近闻名，时常可见达官贵人出入。",
+    "mapX": 0,
+    "mapY": 6,
+    "exits": {"north": "capital_west_street"},
+    "npcIds": ["capital_waiter"]
+  },
+  {
+    "id": "capital_east_huguo_street",
+    "name": "护国道东段",
+    "areaId": "city",
+    "description": "护国道东段青石铺地，街面整洁。南面的人声最为嘈杂，那里便是京师天桥。",
+    "mapX": 3,
+    "mapY": 5,
+    "exits": {"west": "capital_huguo_crossroads", "east": "capital_bridge"}
+  },
+  {
+    "id": "capital_bridge",
+    "name": "天桥",
+    "areaId": "city",
+    "description": "天桥人声鼎沸，杂耍、卖艺和小买卖应有尽有。若仔细寻找，说不定能买到些有用之物。北边是校武场。",
+    "mapX": 3,
+    "mapY": 6,
+    "exits": {"north": "capital_training_ground", "west": "capital_east_huguo_street"},
+    "npcIds": ["capital_street_performer"]
+  },
+  {
+    "id": "capital_training_ground",
+    "name": "校武场",
+    "areaId": "city",
+    "description": "御林军在这里日夜操练，喊杀声此起彼伏。每年武考也在此举行，许多江湖人物曾在这里声名鹊起。",
+    "mapX": 3,
+    "mapY": 7,
+    "exits": {"south": "capital_bridge"}
+  },
+  {
+    "id": "capital_altar",
+    "name": "皇家祭坛",
+    "areaId": "city",
+    "description": "宽阔广场中央是皇家祭坛，重大典礼时皇帝与文武百官会在此祭祀。平日只有禁卫军和宫中杂役偶尔经过。",
+    "mapX": 2,
+    "mapY": 6,
+    "exits": {"north": "capital_huguo_crossroads"}
+  }
+]

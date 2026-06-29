@@ -57,7 +57,7 @@
     "description": "宽阔的黄土大道足够八架马车并行。南面回到傅家坡，北面通往地势险峻的天驼关。",
     "mapX": 2,
     "mapY": 0,
-    "exits": {"south": "melon_farm", "north": "canyon_gate", "east": "chuenyu_crossroad"}
+    "exits": {"south": "melon_farm", "north": "canyon_gate", "east": "chuenyu_crossroad", "west": "capital_crossroads"}
   },
   {
     "id": "jade_snail_lake",

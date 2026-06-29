@@ -1,0 +1,32 @@
+[
+  {
+    "id": "capital_exit_token",
+    "name": "出城令牌",
+    "description": "一支遗失多年的铜制令牌，或许在出城时还有用。"
+  },
+  {
+    "id": "capital_cake",
+    "name": "糕饼",
+    "description": "太白酒楼新蒸的糕饼，松软香甜。",
+    "restoreHp": 18,
+    "buyPrice": 8,
+    "sellPrice": 3
+  },
+  {
+    "id": "capital_wine",
+    "name": "烧酒",
+    "description": "一壶京师常见的烈酒，入口辛辣，饮下后周身发暖。",
+    "restoreHp": 8,
+    "restoreInnerPower": 12,
+    "buyPrice": 12,
+    "sellPrice": 5
+  },
+  {
+    "id": "capital_hurt_medicine",
+    "name": "金疮药",
+    "description": "江湖人常备的外伤药，可以迅速止血疗伤。",
+    "restoreHp": 45,
+    "buyPrice": 25,
+    "sellPrice": 10
+  }
+]

@@ -81,6 +81,7 @@ class RoomActionDefinition {
     required this.log,
     this.conditions,
     this.setsQuestFlag,
+    this.givesItemIds = const [],
   });
 
   factory RoomActionDefinition.fromJson(Map<String, Object?> json) {
@@ -92,6 +93,8 @@ class RoomActionDefinition {
       log: json['log'] as String,
       conditions: worldConditionFromJson(json['conditions']),
       setsQuestFlag: json['setsQuestFlag'] as String?,
+      givesItemIds:
+          (json['givesItemIds'] as List<Object?>? ?? const []).cast<String>(),
     );
   }
 
@@ -102,6 +105,7 @@ class RoomActionDefinition {
   final String log;
   final WorldCondition? conditions;
   final String? setsQuestFlag;
+  final List<String> givesItemIds;
 }
 
 Map<Direction, String> _parseExits(Map<String, Object?> json) {

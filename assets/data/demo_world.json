@@ -7,24 +7,28 @@
       "assets/data/rooms/canyon.json",
       "assets/data/rooms/chuenyu.json",
       "assets/data/rooms/snow.json",
-      "assets/data/rooms/waterfog.json"
+      "assets/data/rooms/waterfog.json",
+      "assets/data/rooms/city.json"
     ],
     "npcs": [
       "assets/data/npcs/village.json",
       "assets/data/npcs/chuenyu.json",
       "assets/data/npcs/canyon.json",
-      "assets/data/npcs/snow.json"
+      "assets/data/npcs/snow.json",
+      "assets/data/npcs/city.json"
     ],
     "items": [
       "assets/data/items/village.json",
       "assets/data/items/chuenyu.json",
       "assets/data/items/canyon.json",
-      "assets/data/items/snow.json"
+      "assets/data/items/snow.json",
+      "assets/data/items/city.json"
     ],
     "quests": [
       "assets/data/quests/village.json",
       "assets/data/quests/canyon.json",
-      "assets/data/quests/snow.json"
+      "assets/data/quests/snow.json",
+      "assets/data/quests/city.json"
     ],
     "skills": [
       "assets/data/skills/village.json",

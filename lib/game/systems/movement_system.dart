@@ -46,6 +46,7 @@ class MovementSystem {
           action.setsQuestFlag == null
               ? state.questFlags
               : {...state.questFlags, action.setsQuestFlag!},
+      inventoryItemIds: [...state.inventoryItemIds, ...action.givesItemIds],
       log: state.logWith(action.log),
     );
   }

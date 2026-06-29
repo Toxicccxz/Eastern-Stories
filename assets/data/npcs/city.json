@@ -1,0 +1,59 @@
+[
+  {
+    "id": "capital_guard",
+    "name": "京师守城兵",
+    "description": "守城官兵武功算不得高明，却是训练有素、纪律严明的战士，没有人愿意轻易招惹他们。",
+    "greeting": "守城兵审视着来往行人，手始终没有离开剑柄。",
+    "greetingVariants": [
+      {
+        "text": "守城兵认得你登记过的令牌，向你点了点头。",
+        "conditions": {"requiredFlags": ["capital_passage_registered"]}
+      }
+    ],
+    "dialogueOptions": [
+      {
+        "id": "ask_about_leaving_capital",
+        "label": "询问出城规矩",
+        "response": "没有官府通令，任何人不能随意出城。你可以在京城里找一找，说不定能找到遗失的出城令牌。",
+        "startsQuestId": "capital_passage",
+        "conditions": {"requiredQuestStatuses": {"capital_passage": "notStarted"}}
+      }
+    ],
+    "giveItemOptions": [
+      {
+        "itemId": "capital_exit_token",
+        "label": "交出出城令牌",
+        "response": "守城兵验过令牌，在名册上记下一笔：令牌是真的。往后进出北门，不必再受盘查。",
+        "setsQuestFlag": "capital_passage_registered",
+        "completesQuestId": "capital_passage",
+        "conditions": {
+          "requiredFlags": ["capital_exit_token_found"],
+          "requiredQuestStatuses": {"capital_passage": "active"}
+        }
+      }
+    ]
+  },
+  {
+    "id": "capital_waiter",
+    "name": "店小二",
+    "description": "店小二笑眯眯地忙着，不时拿起挂在脖子上的抹布擦脸。",
+    "greeting": "店小二高声招呼道：客官里面请，太白酒楼的酒菜可是京城一绝！",
+    "shop": {
+      "products": [
+        {"itemId": "capital_cake", "initialStock": -1},
+        {"itemId": "capital_wine", "initialStock": -1}
+      ]
+    }
+  },
+  {
+    "id": "capital_street_performer",
+    "name": "卖艺壮汉",
+    "description": "一个满脸横肉的壮汉站在人群中央，口水四溅地招呼看客。",
+    "greeting": "卖艺壮汉吆喝道：出外靠朋友，诸位请捧个钱场！",
+    "shop": {
+      "products": [
+        {"itemId": "capital_hurt_medicine", "initialStock": -1}
+      ]
+    }
+  }
+]
