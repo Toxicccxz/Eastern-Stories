@@ -58,9 +58,7 @@ void main() {
     }
     expect(controller.state.currentRoomId, 'capital_north_gate');
     expect(
-      repository
-          .room('capital_north_gate')
-          .availableExits(controller.state),
+      repository.room('capital_north_gate').availableExits(controller.state),
       isNot(contains(Direction.north)),
     );
 
@@ -113,8 +111,103 @@ void main() {
     );
     expect(controller.state.questFlags, contains('capital_passage_registered'));
     expect(
+      repository.room('capital_north_gate').availableExits(controller.state),
+      contains(Direction.north),
+    );
+  });
+
+  test('capital exam storyline unlocks the meridian gate', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'capital_bridge',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'capital_bridge'},
+        questStatuses: {'capital_passage': QuestStatus.completed},
+        questFlags: {'capital_passage_registered'},
+      ),
+    );
+
+    controller.dispatch(
+      const GameAction.selectDialogue(
+        'capital_trader',
+        'ask_about_bought_office',
+      ),
+    );
+    expect(
+      controller.state.questStatuses['capital_exam_corruption'],
+      QuestStatus.active,
+    );
+
+    for (final direction in const [
+      Direction.west,
+      Direction.west,
+      Direction.west,
+      Direction.west,
+      Direction.south,
+    ]) {
+      controller.dispatch(GameAction.move(direction));
+    }
+    expect(controller.state.currentRoomId, 'capital_taibai_inn');
+    controller.dispatch(
+      const GameAction.selectDialogue('capital_qian', 'ask_qian_about_office'),
+    );
+    controller.dispatch(
+      const GameAction.selectDialogue(
+        'capital_waiter',
+        'allow_taibai_upstairs',
+      ),
+    );
+    controller.dispatch(const GameAction.move(Direction.up));
+    expect(controller.state.currentRoomId, 'capital_taibai_upstairs');
+    controller.dispatch(
+      const GameAction.selectDialogue(
+        'capital_noble_scion',
+        'ask_about_exam_list',
+      ),
+    );
+
+    for (final direction in const [
+      Direction.down,
+      Direction.north,
+      Direction.east,
+      Direction.east,
+      Direction.east,
+      Direction.east,
+      Direction.north,
+    ]) {
+      controller.dispatch(GameAction.move(direction));
+    }
+    expect(controller.state.currentRoomId, 'capital_training_ground');
+    expect(
       repository
-          .room('capital_north_gate')
+          .room('capital_training_ground')
+          .availableExits(controller.state),
+      isNot(contains(Direction.north)),
+    );
+
+    controller.dispatch(const GameAction.startCombat('capital_exam_candidate'));
+    for (var turn = 0; turn < 20 && controller.state.combat != null; turn++) {
+      controller.dispatch(const GameAction.attack());
+    }
+    expect(
+      controller.state.npcStates['capital_exam_candidate']?.isDefeated,
+      isTrue,
+    );
+    controller.dispatch(
+      const GameAction.selectDialogue(
+        'capital_exam_instructor',
+        'report_false_candidate',
+      ),
+    );
+
+    expect(
+      controller.state.questStatuses['capital_exam_corruption'],
+      QuestStatus.completed,
+    );
+    expect(
+      repository
+          .room('capital_training_ground')
           .availableExits(controller.state),
       contains(Direction.north),
     );

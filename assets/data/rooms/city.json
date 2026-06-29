@@ -109,8 +109,24 @@
     "description": "酒楼内装饰得金碧辉煌，餐具也极为讲究。这里菜肴远近闻名，时常可见达官贵人出入。",
     "mapX": 0,
     "mapY": 6,
-    "exits": {"north": "capital_west_street"},
-    "npcIds": ["capital_waiter"]
+    "exits": {
+      "north": "capital_west_street",
+      "up": {
+        "roomId": "capital_taibai_upstairs",
+        "conditions": {"requiredFlags": ["capital_taibai_upstairs_allowed"]}
+      }
+    },
+    "npcIds": ["capital_waiter", "capital_qian"]
+  },
+  {
+    "id": "capital_taibai_upstairs",
+    "name": "太白酒楼二楼",
+    "areaId": "city",
+    "description": "二楼雅座专供有来头的客人饮酒作乐。达官贵族在屏风后低声交谈，不少想谋取仕途的富家子弟也在这里打听消息。",
+    "mapX": 0,
+    "mapY": 7,
+    "exits": {"down": "capital_taibai_inn"},
+    "npcIds": ["capital_noble_scion"]
   },
   {
     "id": "capital_east_huguo_street",
@@ -129,7 +145,7 @@
     "mapX": 3,
     "mapY": 6,
     "exits": {"north": "capital_training_ground", "west": "capital_east_huguo_street"},
-    "npcIds": ["capital_street_performer"]
+    "npcIds": ["capital_street_performer", "capital_trader"]
   },
   {
     "id": "capital_training_ground",
@@ -138,7 +154,23 @@
     "description": "御林军在这里日夜操练，喊杀声此起彼伏。每年武考也在此举行，许多江湖人物曾在这里声名鹊起。",
     "mapX": 3,
     "mapY": 7,
-    "exits": {"south": "capital_bridge"}
+    "exits": {
+      "south": "capital_bridge",
+      "north": {
+        "roomId": "capital_meridian_gate",
+        "conditions": {"requiredFlags": ["capital_exam_verified"]}
+      }
+    },
+    "npcIds": ["capital_exam_instructor", "capital_exam_candidate"]
+  },
+  {
+    "id": "capital_meridian_gate",
+    "name": "午门",
+    "areaId": "city",
+    "description": "这里是紫禁城午门。北面的庄严大门紧闭，两侧石狮虎视眈眈地盯着来往人群；南面便是历年选拔武状元的校武场。",
+    "mapX": 3,
+    "mapY": 8,
+    "exits": {"south": "capital_training_ground"}
   },
   {
     "id": "capital_altar",

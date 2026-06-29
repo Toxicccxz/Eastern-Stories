@@ -22,5 +22,45 @@
     "requiredFlags": ["capital_passage_registered"],
     "rewardExperience": 120,
     "rewardSilver": 40
+  },
+  {
+    "id": "capital_exam_corruption",
+    "title": "武考疑云",
+    "description": "京师流传着花钱买官、冒名应试的传闻，线索指向太白酒楼二楼与校武场。",
+    "steps": [
+      {
+        "description": "在天桥向关外商人打听买官传闻。",
+        "targetNpcId": "capital_trader"
+      },
+      {
+        "description": "前往太白酒楼询问钱掌柜。",
+        "requiredFlag": "capital_upstairs_clue",
+        "targetNpcId": "capital_qian"
+      },
+      {
+        "description": "请店小二通融，进入太白酒楼二楼。",
+        "requiredFlag": "capital_taibai_upstairs_allowed",
+        "targetNpcId": "capital_waiter"
+      },
+      {
+        "description": "向二楼的富家公子追问武考名册。",
+        "requiredFlag": "capital_exam_rumor",
+        "targetNpcId": "capital_noble_scion"
+      },
+      {
+        "description": "在校武场击败冒名考生。",
+        "requiredDefeatedNpcId": "capital_exam_candidate",
+        "targetNpcId": "capital_exam_candidate"
+      },
+      {
+        "description": "向武考教头呈报冒名顶替之事。",
+        "requiredFlag": "capital_exam_verified",
+        "targetNpcId": "capital_exam_instructor"
+      }
+    ],
+    "requiredFlags": ["capital_exam_verified"],
+    "requiredDefeatedNpcIds": ["capital_exam_candidate"],
+    "rewardExperience": 260,
+    "rewardSilver": 100
   }
 ]

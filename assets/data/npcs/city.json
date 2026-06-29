@@ -43,7 +43,20 @@
         {"itemId": "capital_cake", "initialStock": -1},
         {"itemId": "capital_wine", "initialStock": -1}
       ]
-    }
+    },
+    "dialogueOptions": [
+      {
+        "id": "allow_taibai_upstairs",
+        "label": "请他通融上楼",
+        "response": "店小二看看钱掌柜，又看看你，终于侧身让开：既然掌柜提过你，那便楼上请。",
+        "setsQuestFlag": "capital_taibai_upstairs_allowed",
+        "conditions": {
+          "requiredFlags": ["capital_upstairs_clue"],
+          "forbiddenFlags": ["capital_taibai_upstairs_allowed"],
+          "requiredQuestStatuses": {"capital_exam_corruption": "active"}
+        }
+      }
+    ]
   },
   {
     "id": "capital_street_performer",
@@ -55,5 +68,105 @@
         {"itemId": "capital_hurt_medicine", "initialStock": -1}
       ]
     }
+  },
+  {
+    "id": "capital_trader",
+    "name": "关外商人",
+    "description": "一位从关外来的中年商人，风尘仆仆，谈起京城近况时满脸愤懑。",
+    "greeting": "商人叹道：这年头生意不好做，几个臭钱倒能买来官做。",
+    "dialogueOptions": [
+      {
+        "id": "ask_about_bought_office",
+        "label": "打听买官传闻",
+        "response": "商人压低声音：太白酒楼里常有富家子弟打听进阶消息。钱掌柜耳目多，你不妨去问问他。",
+        "startsQuestId": "capital_exam_corruption",
+        "conditions": {
+          "requiredQuestStatuses": {
+            "capital_passage": "completed",
+            "capital_exam_corruption": "notStarted"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "capital_qian",
+    "name": "钱掌柜",
+    "description": "钱掌柜生得白白胖胖，一双小眼睛不时滴溜溜乱转。他经营的太白酒楼是京城首屈一指的大酒楼。",
+    "greeting": "钱掌柜站在柜后拨弄算盘，目光却一直留意着堂中客人。",
+    "dialogueOptions": [
+      {
+        "id": "ask_qian_about_office",
+        "label": "询问买官传闻",
+        "response": "钱掌柜朝楼梯努努嘴：这种事情不该问我。楼上的人才知道武考名册是怎么回事。",
+        "setsQuestFlag": "capital_upstairs_clue",
+        "conditions": {
+          "forbiddenFlags": ["capital_upstairs_clue"],
+          "requiredQuestStatuses": {"capital_exam_corruption": "active"}
+        }
+      }
+    ]
+  },
+  {
+    "id": "capital_noble_scion",
+    "name": "富家公子",
+    "description": "这名锦衣公子腰佩美玉，面前摆着好酒好菜，说起武考时神色颇为自得。",
+    "greeting": "富家公子晃着酒杯笑道：校武场上的名次，未必全靠拳脚挣来。",
+    "dialogueOptions": [
+      {
+        "id": "ask_about_exam_list",
+        "label": "追问武考名册",
+        "response": "富家公子酒意上涌：有个冒名顶替的家伙正在校武场候考。你若真有本事，亲自去拆穿他便是。",
+        "setsQuestFlag": "capital_exam_rumor",
+        "conditions": {
+          "requiredFlags": ["capital_taibai_upstairs_allowed"],
+          "forbiddenFlags": ["capital_exam_rumor"],
+          "requiredQuestStatuses": {"capital_exam_corruption": "active"}
+        }
+      }
+    ]
+  },
+  {
+    "id": "capital_exam_candidate",
+    "name": "冒名考生",
+    "description": "这名考生衣甲光鲜，招式却虚浮凌乱。见你盯着名册看，他立刻露出凶狠神色。",
+    "greeting": "冒名考生按住刀柄喝道：校武场不是你多管闲事的地方！",
+    "conditions": {
+      "requiredFlags": ["capital_exam_rumor"],
+      "requiredQuestStatuses": {"capital_exam_corruption": "active"}
+    },
+    "combat": {
+      "maxHp": 55,
+      "attack": 6,
+      "defense": 3,
+      "rewardExperience": 75,
+      "rewardSilver": 18,
+      "specialMove": {
+        "name": "横刀抢攻",
+        "interval": 3,
+        "damageBonus": 2,
+        "message": "冒名考生心虚气急，横刀猛劈，企图逼你退出校武场。"
+      }
+    }
+  },
+  {
+    "id": "capital_exam_instructor",
+    "name": "武考教头",
+    "description": "负责维持校武场秩序的教头身穿轻甲，手里紧握着本届武考名册。",
+    "greeting": "武考教头沉声说道：校武重地，切磋可以，扰乱秩序者严惩不贷。",
+    "dialogueOptions": [
+      {
+        "id": "report_false_candidate",
+        "label": "呈报冒名考生",
+        "response": "教头核对名册后脸色一沉：果然有人冒名顶替。此事我会立即上报，你可前往午门外候讯。",
+        "setsQuestFlag": "capital_exam_verified",
+        "completesQuestId": "capital_exam_corruption",
+        "conditions": {
+          "requiredFlags": ["capital_exam_rumor"],
+          "requiredDefeatedNpcIds": ["capital_exam_candidate"],
+          "requiredQuestStatuses": {"capital_exam_corruption": "active"}
+        }
+      }
+    ]
   }
 ]

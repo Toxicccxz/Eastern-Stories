@@ -12,8 +12,8 @@ void main() {
 
     expect(repository.startingRoomId, 'liu_home');
     expect(repository.areas, hasLength(6));
-    expect(rooms, hasLength(54));
-    expect(repository.quests, hasLength(4));
+    expect(rooms, hasLength(56));
+    expect(repository.quests, hasLength(5));
     expect(repository.skills, hasLength(13));
     expect(repository.families, hasLength(2));
 
