@@ -7,5 +7,40 @@
     "equipmentSlot": "weapon",
     "weaponSkillUsage": "sword",
     "sellPrice": 2
+  },
+  {
+    "id": "snow_dagger",
+    "name": "短匕首",
+    "description": "客栈出售的普通短匕首，适合初入江湖之人防身。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "sword",
+    "attackPower": 4,
+    "buyPrice": 18,
+    "sellPrice": 7
+  },
+  {
+    "id": "snow_wineskin",
+    "name": "酒袋",
+    "description": "装着雪亭镇红酒的皮酒袋，饮下后身体微微发暖。",
+    "restoreHp": 8,
+    "restoreInnerPower": 8,
+    "buyPrice": 10,
+    "sellPrice": 4
+  },
+  {
+    "id": "snow_dumpling",
+    "name": "包子",
+    "description": "刚出笼的热包子，皮薄馅足。",
+    "restoreHp": 16,
+    "buyPrice": 6,
+    "sellPrice": 2
+  },
+  {
+    "id": "snow_chicken_leg",
+    "name": "鸡腿",
+    "description": "烤得油亮喷香的鸡腿，可以补充不少体力。",
+    "restoreHp": 28,
+    "buyPrice": 12,
+    "sellPrice": 5
   }
 ]

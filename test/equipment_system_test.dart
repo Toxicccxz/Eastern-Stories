@@ -15,7 +15,7 @@ void main() {
   });
 
   test('equipping and removing body armor updates derived defense', () {
-    final controller = GameController(repository: repository);
+    final controller = _controllerAtLiuHome(repository);
 
     controller.dispatch(const GameAction.move(Direction.north));
     controller.dispatch(const GameAction.pickUp('plain_cloth'));
@@ -35,7 +35,7 @@ void main() {
   });
 
   test('dropping equipped armor clears its equipment slot', () {
-    final controller = GameController(repository: repository);
+    final controller = _controllerAtLiuHome(repository);
 
     controller.dispatch(const GameAction.move(Direction.north));
     controller.dispatch(const GameAction.pickUp('plain_cloth'));
@@ -54,7 +54,7 @@ void main() {
   });
 
   test('selling equipped armor clears its slot and derived bonus', () {
-    final controller = GameController(repository: repository);
+    final controller = _controllerAtLiuHome(repository);
 
     controller.dispatch(const GameAction.move(Direction.north));
     controller.dispatch(const GameAction.pickUp('plain_cloth'));
@@ -71,4 +71,18 @@ void main() {
     expect(controller.characterStats().defense, 2);
     expect(controller.state.player.silver, 21);
   });
+}
+
+GameController _controllerAtLiuHome(GameDefinitionRepository repository) {
+  final initialState = repository.createInitialState();
+  return GameController(
+    repository: repository,
+    initialState: initialState.copyWith(
+      currentRoomId: 'liu_home',
+      visitedRoomIds: {...initialState.visitedRoomIds, 'liu_home'},
+      player: initialState.player.copyWith(silver: 20),
+      inventoryItemIds: const [],
+      equippedItemIds: const {},
+    ),
+  );
 }

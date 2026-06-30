@@ -12,8 +12,6 @@
       {"description": "带小娟回刘家小房见父亲。", "requiredFlag": "xiao_juan_rescued", "targetNpcId": "old_liu"}
     ],
     "requiredFlags": ["xiao_juan_rescued"],
-    "rewardFamilyId": "liu_family",
-    "rewardFamilyContribution": 10,
     "rewardItemIds": ["hengbing_sword", "parry_book"]
   }
 ]

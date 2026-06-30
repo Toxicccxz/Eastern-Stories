@@ -1,5 +1,5 @@
 {
-  "startingRoomId": "liu_home",
+  "startingRoomId": "snow_inn",
   "sources": {
     "areas": ["assets/data/areas/areas.json"],
     "rooms": [

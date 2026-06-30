@@ -17,8 +17,29 @@ void main() {
     repository = await GameDefinitionRepository.loadDemo();
   });
 
+  test('new story uses the original Snow Pavilion inn opening', () {
+    final state = repository.createInitialState();
+
+    expect(state.currentRoomId, 'snow_inn');
+    expect(state.player.potential, 99);
+    expect(state.player.silver, 0);
+    expect(state.inventoryItemIds, contains('plain_cloth'));
+    expect(state.equippedItemIds.values, contains('plain_cloth'));
+    expect(state.skillProgress, isEmpty);
+    expect(
+      repository
+          .visibleNpcsInRoom(state, state.currentRoomId)
+          .map((npc) => npc.id),
+      containsAll([
+        'snow_inn_waiter',
+        'snow_inn_traveller',
+        'snow_inn_blade_traveller',
+      ]),
+    );
+  });
+
   test('moving through an exit updates current room and log', () {
-    final controller = GameController(repository: repository);
+    final controller = _controllerAtLiuHome(repository);
 
     controller.dispatch(const GameAction.move(Direction.south));
 
@@ -28,7 +49,7 @@ void main() {
   });
 
   test('picking up an item moves it into inventory', () {
-    final controller = GameController(repository: repository);
+    final controller = _controllerAtLiuHome(repository);
 
     controller.dispatch(const GameAction.move(Direction.north));
     controller.dispatch(const GameAction.pickUp('old_book'));
@@ -43,7 +64,7 @@ void main() {
   });
 
   test('capital passage quest follows the original token event', () {
-    final controller = GameController(repository: repository);
+    final controller = _controllerAtLiuHome(repository);
 
     for (final direction in const [
       Direction.east,
@@ -561,7 +582,7 @@ void main() {
   });
 
   test('dropping an item moves it into the current room', () {
-    final controller = GameController(repository: repository);
+    final controller = _controllerAtLiuHome(repository);
 
     controller.dispatch(const GameAction.move(Direction.north));
     controller.dispatch(const GameAction.pickUp('old_book'));
@@ -600,7 +621,7 @@ void main() {
   });
 
   test('old liu quest can be started, progressed, and completed', () {
-    final controller = GameController(repository: repository);
+    final controller = _controllerAtLiuHome(repository);
 
     controller.dispatch(
       const GameAction.selectDialogue('old_liu', 'ask_daughter'),
@@ -726,7 +747,7 @@ void main() {
   });
 
   test('player can study parry book to learn basic parry', () {
-    final controller = GameController(repository: repository);
+    final controller = _controllerAtLiuHome(repository);
 
     _completeRescueQuest(controller);
     controller.dispatch(const GameAction.studyItem('parry_book'));
@@ -739,7 +760,7 @@ void main() {
   });
 
   test('player can study the ancient sword manual', () {
-    final controller = GameController(repository: repository);
+    final controller = _controllerAtLiuHome(repository);
 
     controller.dispatch(const GameAction.move(Direction.north));
     controller.dispatch(const GameAction.pickUp('old_book'));
@@ -813,7 +834,12 @@ void main() {
     final initialState = repository.createInitialState();
     final controller = GameController(
       repository: repository,
-      initialState: initialState.copyWith(inventoryItemIds: const ['old_book']),
+      initialState: initialState.copyWith(
+        inventoryItemIds: const ['old_book'],
+        skillProgress: const {
+          'literate': SkillProgress(level: 10, experience: 0),
+        },
+      ),
     );
 
     for (var study = 0; study < 4; study += 1) {
@@ -832,6 +858,8 @@ void main() {
       initialState: initialState.copyWith(
         currentRoomId: 'ice_cave',
         visitedRoomIds: {...initialState.visitedRoomIds, 'ice_cave'},
+        inventoryItemIds: const [],
+        equippedItemIds: const {},
       ),
     );
 
@@ -859,7 +887,7 @@ void main() {
     controller.dispatch(const GameAction.attack());
 
     expect(controller.state.combat, isNull);
-    expect(controller.state.currentRoomId, 'liu_home');
+    expect(controller.state.currentRoomId, 'snow_inn');
     expect(controller.state.player.hp, 40);
     expect(controller.state.player.innerPower, 15);
     expect(controller.state.npcStates['white_ice_dragon']?.currentHp, 32);
@@ -867,7 +895,7 @@ void main() {
   });
 
   test('room actions can move the player through lake scenes', () {
-    final controller = GameController(repository: repository);
+    final controller = _controllerAtLiuHome(repository);
 
     controller.dispatch(const GameAction.move(Direction.east));
     controller.dispatch(const GameAction.move(Direction.east));
@@ -880,7 +908,7 @@ void main() {
   });
 
   test('player can cross from village into canyon area', () {
-    final controller = GameController(repository: repository);
+    final controller = _controllerAtLiuHome(repository);
 
     controller.dispatch(const GameAction.move(Direction.east));
     controller.dispatch(const GameAction.move(Direction.north));
@@ -896,7 +924,7 @@ void main() {
   });
 
   test('general seal quest follows the original fake seal exchange', () {
-    final controller = GameController(repository: repository);
+    final controller = _controllerAtLiuHome(repository);
 
     _moveToGeneralTent(controller);
     controller.dispatch(
@@ -982,26 +1010,16 @@ void main() {
     expect(controller.state.skillProgress['parry']?.experience, 62);
   });
 
-  test('learning from a teacher consumes potential and spirit', () {
-    final controller = GameController(repository: repository);
-
-    controller.dispatch(
-      const GameAction.learnFromNpc('old_liu', 'basic_sword'),
-    );
-    expect(controller.state.skillProgress['basic_sword'], isNull);
-    expect(controller.state.log.last, contains('自己的弟子'));
+  test('old Liu is not an apprentice master in the original content', () {
+    final controller = _controllerAtLiuHome(repository);
 
     controller.dispatch(const GameAction.apprenticeTo('old_liu'));
     controller.dispatch(
       const GameAction.learnFromNpc('old_liu', 'basic_sword'),
     );
 
-    expect(controller.state.apprenticeship?.familyId, 'liu_family');
-    expect(controller.state.apprenticeship?.generation, 2);
-    expect(controller.state.skillProgress['basic_sword']?.level, 1);
-    expect(controller.state.player.potential, 19);
-    expect(controller.state.player.spirit, 36);
-    expect(controller.state.log.last, contains('请教'));
+    expect(controller.state.apprenticeship, isNull);
+    expect(controller.state.skillProgress['basic_sword'], isNull);
   });
 
   test('leaving a family records betrayal and halves skill levels', () {
@@ -1010,8 +1028,8 @@ void main() {
       repository: repository,
       initialState: initialState.copyWith(
         apprenticeship: const ApprenticeshipState(
-          familyId: 'liu_family',
-          masterNpcId: 'old_liu',
+          familyId: 'fengshan_sword',
+          masterNpcId: 'liu_chunfeng',
           generation: 2,
           title: '弟子',
           contribution: 8,
@@ -1031,29 +1049,27 @@ void main() {
     expect(controller.state.skillProgress['basic_sword']?.experience, 0);
   });
 
-  test('family quest rewards contribution to current disciples', () {
-    final controller = GameController(repository: repository);
+  test('rescuing Xiao Juan gives the original item rewards only', () {
+    final controller = _controllerAtLiuHome(repository);
 
-    controller.dispatch(const GameAction.apprenticeTo('old_liu'));
     _completeRescueQuest(controller);
 
-    expect(controller.state.apprenticeship?.contribution, 10);
+    expect(controller.state.apprenticeship, isNull);
+    expect(
+      controller.state.inventoryItemIds,
+      containsAll(['hengbing_sword', 'parry_book']),
+    );
   });
 
-  test('qualified direct disciples can learn six chaos sword', () {
+  test('old Liu does not teach six chaos sword', () {
     final initialState = repository.createInitialState();
     final controller = GameController(
       repository: repository,
       initialState: initialState.copyWith(
+        currentRoomId: 'liu_home',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'liu_home'},
         inventoryItemIds: const ['hengbing_sword'],
         equippedWeaponId: 'hengbing_sword',
-        apprenticeship: const ApprenticeshipState(
-          familyId: 'liu_family',
-          masterNpcId: 'old_liu',
-          generation: 2,
-          title: '弟子',
-          contribution: 0,
-        ),
         skillProgress: const {
           'literate': SkillProgress(level: 10, experience: 0),
           'basic_sword': SkillProgress(level: 5, experience: 0),
@@ -1065,7 +1081,7 @@ void main() {
       const GameAction.learnFromNpc('old_liu', 'six_chaos_sword'),
     );
 
-    expect(controller.state.skillProgress['six_chaos_sword']?.level, 1);
+    expect(controller.state.skillProgress['six_chaos_sword'], isNull);
   });
 
   test('studying requires literacy and enough combat experience', () {
@@ -1118,7 +1134,7 @@ void main() {
   });
 
   test('player can buy, sell, and use melon', () {
-    final controller = GameController(repository: repository);
+    final controller = _controllerAtLiuHome(repository);
 
     controller.dispatch(const GameAction.move(Direction.east));
     controller.dispatch(const GameAction.move(Direction.north));
@@ -1158,6 +1174,9 @@ void main() {
     final controller = GameController(
       repository: repository,
       initialState: initialState.copyWith(
+        currentRoomId: 'liu_home',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'liu_home'},
+        player: initialState.player.copyWith(silver: 20),
         shopStates: {
           ...initialState.shopStates,
           'meloner': const ShopRuntimeState(stockByItemId: {'water_melon': 1}),
@@ -1181,7 +1200,7 @@ void main() {
   });
 
   test('player can equip a weapon and defeat the ice dragon', () {
-    final controller = GameController(repository: repository);
+    final controller = _controllerAtLiuHome(repository);
 
     _completeRescueQuest(controller);
     controller.dispatch(const GameAction.equipItem('hengbing_sword'));
@@ -1243,7 +1262,7 @@ void main() {
   });
 
   test('enemy damage persists after fleeing and restarting combat', () {
-    final controller = GameController(repository: repository);
+    final controller = _controllerAtLiuHome(repository);
 
     controller.dispatch(const GameAction.move(Direction.east));
     controller.dispatch(const GameAction.move(Direction.east));
@@ -1330,6 +1349,23 @@ void _moveHomeFromDungeonTunnel(GameController controller) {
 QuestView _questView(GameController controller, String questId) {
   return controller.questViews().firstWhere(
     (quest) => quest.definition.id == questId,
+  );
+}
+
+GameController _controllerAtLiuHome(GameDefinitionRepository repository) {
+  final initialState = repository.createInitialState();
+  return GameController(
+    repository: repository,
+    initialState: initialState.copyWith(
+      currentRoomId: 'liu_home',
+      visitedRoomIds: {...initialState.visitedRoomIds, 'liu_home'},
+      player: initialState.player.copyWith(potential: 20, silver: 20),
+      inventoryItemIds: const [],
+      equippedItemIds: const {},
+      skillProgress: const {
+        'literate': SkillProgress(level: 10, experience: 0),
+      },
+    ),
   );
 }
 

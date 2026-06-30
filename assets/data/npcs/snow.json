@@ -264,5 +264,45 @@
         "message": "值课弟子横剑封住中路，随即踏步反击。"
       }
     }
+  },
+  {
+    "id": "snow_inn_waiter",
+    "name": "店小二",
+    "description": "店小二笑眯眯地忙着，不时拿起挂在脖子上的抹布擦脸。",
+    "greeting": "店小二招呼道：这位客官，请进来喝杯茶，歇歇腿吧。",
+    "shop": {
+      "products": [
+        {"itemId": "snow_dagger", "initialStock": -1},
+        {"itemId": "snow_wineskin", "initialStock": -1},
+        {"itemId": "snow_dumpling", "initialStock": -1},
+        {"itemId": "snow_chicken_leg", "initialStock": -1}
+      ]
+    },
+    "dialogueOptions": [
+      {
+        "id": "ask_about_snow_town",
+        "label": "打听雪亭镇",
+        "response": "雪亭镇虽在关外，却是往来商旅歇脚的地方。北边水烟阁是武者同盟所在，东边山路则通往老松林。"
+      }
+    ]
+  },
+  {
+    "id": "snow_inn_traveller",
+    "name": "旅客",
+    "description": "一位风尘仆仆的外地旅客正坐在桌边，留心听着客栈里的各种消息。",
+    "greeting": "旅客说道：第一次来雪亭镇？这里向西可去天驼关，向北能到水烟阁。",
+    "dialogueOptions": [
+      {
+        "id": "ask_about_world_routes",
+        "label": "询问附近道路",
+        "response": "从广场往西是天驼关方向，镇外北路通水烟阁，东边山路进入老松林。若想进京，则要沿天驼关南面的黄土大道走。"
+      }
+    ]
+  },
+  {
+    "id": "snow_inn_blade_traveller",
+    "name": "佩刀旅客",
+    "description": "一名佩着飞刀的旅客靠窗而坐，衣着普通，目光却不时扫过客栈门口。",
+    "greeting": "佩刀旅客说道：江湖路远，先认清道路，再谈行侠仗义。"
   }
 ]

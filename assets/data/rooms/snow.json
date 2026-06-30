@@ -1,5 +1,24 @@
 [
   {
+    "id": "snow_inn",
+    "name": "饮风客栈",
+    "areaId": "snow",
+    "description": "这是雪亭镇南边最负盛名的小客栈。各地旅人聚在这里交换见闻，门边乌木招牌上写着“饮风客栈”，墙边楼梯通往二楼。",
+    "mapX": 2,
+    "mapY": 2,
+    "exits": {"east": "snow_square", "up": "snow_inn_second_floor"},
+    "npcIds": ["snow_inn_waiter", "snow_inn_traveller", "snow_inn_blade_traveller"]
+  },
+  {
+    "id": "snow_inn_second_floor",
+    "name": "饮风客栈二楼",
+    "areaId": "snow",
+    "description": "客栈二楼只留宿名头够大的客人。几扇房门紧闭，墙边楼梯通回一楼茶座。",
+    "mapX": 2,
+    "mapY": 1,
+    "exits": {"down": "snow_inn"}
+  },
+  {
     "id": "snow_stone_road",
     "name": "青石官道",
     "areaId": "snow",

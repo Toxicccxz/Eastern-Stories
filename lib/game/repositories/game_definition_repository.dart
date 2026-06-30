@@ -13,6 +13,7 @@ import '../models/skill_definition.dart';
 import '../models/skill_progress.dart';
 import '../models/family_definition.dart';
 import '../models/innate_attributes.dart';
+import '../models/equipment_slot.dart';
 
 class GameDefinitionRepository {
   const GameDefinitionRepository({
@@ -123,17 +124,20 @@ class GameDefinitionRepository {
     PlayerGender gender = PlayerGender.male,
     InnateAttributes attributes = const InnateAttributes.standard(),
   }) {
-    return GameState.initial(
+    final initialState = GameState.initial(
       startingRoomId: startingRoomId,
       npcStates: _initialNpcStates(),
       shopStates: _initialShopStates(),
       playerName: playerName,
       gender: gender,
       attributes: attributes,
-    ).copyWith(
-      skillProgress: const {
-        'literate': SkillProgress(level: 10, experience: 0),
-      },
+    );
+    return initialState.copyWith(
+      player: initialState.player.copyWith(potential: 99, silver: 0),
+      inventoryItemIds: const ['plain_cloth'],
+      equippedItemIds: const {EquipmentSlot.body: 'plain_cloth'},
+      skillProgress: const <String, SkillProgress>{},
+      log: const ['你在雪亭镇饮风客栈中醒来，东方故事就此开始。'],
     );
   }
 

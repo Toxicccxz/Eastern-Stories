@@ -10,12 +10,12 @@ void main() {
     final repository = await GameDefinitionRepository.loadDemo();
     final rooms = repository.rooms.toList();
 
-    expect(repository.startingRoomId, 'liu_home');
+    expect(repository.startingRoomId, 'snow_inn');
     expect(repository.areas, hasLength(7));
-    expect(rooms, hasLength(123));
+    expect(rooms, hasLength(125));
     expect(repository.quests, hasLength(6));
     expect(repository.skills, hasLength(13));
-    expect(repository.families, hasLength(2));
+    expect(repository.families, hasLength(1));
 
     for (final area in repository.areas) {
       expect(

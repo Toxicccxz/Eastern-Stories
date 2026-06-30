@@ -37,8 +37,8 @@ void main() {
         betrayalCount: 2,
       ),
       apprenticeship: const ApprenticeshipState(
-        familyId: 'liu_family',
-        masterNpcId: 'old_liu',
+        familyId: 'fengshan_sword',
+        masterNpcId: 'liu_chunfeng',
         generation: 2,
         title: '弟子',
         contribution: 7,
@@ -87,8 +87,8 @@ void main() {
     expect(loaded?.player.intelligence, 16);
     expect(loaded?.player.combatExperience, 240);
     expect(loaded?.player.betrayalCount, 2);
-    expect(loaded?.apprenticeship?.familyId, 'liu_family');
-    expect(loaded?.apprenticeship?.masterNpcId, 'old_liu');
+    expect(loaded?.apprenticeship?.familyId, 'fengshan_sword');
+    expect(loaded?.apprenticeship?.masterNpcId, 'liu_chunfeng');
     expect(loaded?.apprenticeship?.generation, 2);
     expect(loaded?.apprenticeship?.contribution, 7);
     expect(loaded?.npcStates['white_ice_dragon']?.roomId, 'ice_cave');
