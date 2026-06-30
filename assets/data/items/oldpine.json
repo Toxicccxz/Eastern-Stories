@@ -1,0 +1,14 @@
+[
+  {
+    "id": "oldpine_parry_essentials",
+    "name": "过招要旨",
+    "description": "从老松林洞穴遗骨旁得到的旧卷，记载着拆招、卸力和判断来势的心得。",
+    "studySkillId": "parry",
+    "studyMaxSkillLevel": 25,
+    "studyExperience": 55,
+    "studyRequiredCombatExperience": 80,
+    "studySpiritCost": 14,
+    "studyDifficulty": 18,
+    "sellPrice": 12
+  }
+]

@@ -1,0 +1,465 @@
+[
+  {
+    "id": "oldpine_north_path1",
+    "name": "林间小路",
+    "areaId": "oldpine",
+    "description": "小路两旁长满高耸松树，往北不远便能走出林子回到雪亭镇。当地人把这里叫作老松林，据说林中有一株树龄上千年的古松。",
+    "mapX": 3,
+    "mapY": 0,
+    "exits": {"north": "snow_east_mountain_road", "south": "oldpine_north_path2"}
+  },
+  {
+    "id": "oldpine_north_path2",
+    "name": "林间小路",
+    "areaId": "oldpine",
+    "description": "松林间鸟鸣不断，小路向南北延伸。厚厚松针覆盖地面，踩上去几乎没有声音。",
+    "mapX": 3,
+    "mapY": 1,
+    "exits": {"north": "oldpine_north_path1", "south": "oldpine_north_path3"}
+  },
+  {
+    "id": "oldpine_north_path3",
+    "name": "林间小路",
+    "areaId": "oldpine",
+    "description": "小路向东通往一处空地，周围松树比北面的矮小许多，林中也忽然变得安静。",
+    "mapX": 3,
+    "mapY": 2,
+    "exits": {"north": "oldpine_north_path2", "east": "oldpine_clearing"}
+  },
+  {
+    "id": "oldpine_clearing",
+    "name": "林间空地",
+    "areaId": "oldpine",
+    "description": "树木花草像被人修剪过一般围成整齐圆形，中央一株巨大古松如大伞般遮去阳光。路旁官府告示提醒此处常有歹人出没。",
+    "mapX": 4,
+    "mapY": 2,
+    "exits": {"west": "oldpine_north_path3", "north": "oldpine_slope_path1", "east": "oldpine_east_path1"},
+    "actions": [
+      {
+        "id": "climb_ancient_pine",
+        "label": "攀爬古松",
+        "description": "沿着粗大的树干爬上古松。",
+        "resultRoomId": "oldpine_tree1",
+        "log": "你手脚并用，沿着粗糙树皮爬上空地中央的古松。"
+      }
+    ]
+  },
+  {
+    "id": "oldpine_east_path1",
+    "name": "林间小路",
+    "areaId": "oldpine",
+    "description": "这段松树林中的树干上留着许多刀刻记号，西面是空地，东面山涧上横跨着一座古老石桥。",
+    "mapX": 5,
+    "mapY": 2,
+    "exits": {"west": "oldpine_clearing", "east": "oldpine_stone_bridge"}
+  },
+  {
+    "id": "oldpine_stone_bridge",
+    "name": "小石桥",
+    "areaId": "oldpine",
+    "description": "长满青苔的古桥横跨山涧，清泉在乱石间奔流。北面的瀑布如白练垂下，藤蔓从陡峭石壁一直垂到潭边。",
+    "mapX": 6,
+    "mapY": 2,
+    "exits": {"west": "oldpine_east_path1", "east": "oldpine_east_path3"},
+    "actions": [
+      {
+        "id": "swing_below_stone_bridge",
+        "label": "抓住藤蔓",
+        "description": "抓住桥边藤蔓，荡向瀑布后方的亮光。",
+        "resultRoomId": "oldpine_secret_entrance",
+        "log": "你翻过石桥护栏，紧抓藤蔓荡入山涧，穿过水帘落在瀑布后的岩石通道中。"
+      }
+    ]
+  },
+  {
+    "id": "oldpine_east_path3",
+    "name": "林间小路",
+    "areaId": "oldpine",
+    "description": "西边石桥横跨山涧，东面似乎已到林子边缘。泥地上留着杂乱人迹与马蹄印，却看不出它们通向何处。",
+    "mapX": 7,
+    "mapY": 2,
+    "exits": {"west": "oldpine_stone_bridge"},
+    "npcIds": ["oldpine_maniac"],
+    "actions": [
+      {
+        "id": "enter_oldpine_maze",
+        "label": "循脚印进入密林",
+        "description": "沿杂乱脚印进入方向难辨的松树林。",
+        "resultRoomId": "oldpine_pine3",
+        "log": "你拨开低垂松枝循着脚印前行，身后的林间小路很快消失在浓密树影中。"
+      }
+    ]
+  },
+  {
+    "id": "oldpine_slope_path1",
+    "name": "林间小路",
+    "areaId": "oldpine",
+    "description": "足迹繁多的小路向北接上一条长坡，显然经常有人从这里经过。林间不时传来压低的交谈声。",
+    "mapX": 4,
+    "mapY": 1,
+    "exits": {"south": "oldpine_clearing", "north": "oldpine_slope_path2"},
+    "npcIds": ["oldpine_bandit_scout"]
+  },
+  {
+    "id": "oldpine_slope_path2",
+    "name": "下坡道",
+    "areaId": "oldpine",
+    "description": "笔直坡道北高南低，两旁长满松树，东边隐约传来山涧流水声。",
+    "mapX": 4,
+    "mapY": 0,
+    "exits": {"south": "oldpine_slope_path1", "north": "oldpine_slope_path3"}
+  },
+  {
+    "id": "oldpine_slope_path3",
+    "name": "下坡道",
+    "areaId": "oldpine",
+    "description": "坡道继续向北延伸，车辙与脚印在松针下若隐若现，像是通向林中更深处。",
+    "mapX": 4,
+    "mapY": -1,
+    "exits": {"south": "oldpine_slope_path2", "north": "oldpine_slope_path4"}
+  },
+  {
+    "id": "oldpine_slope_path4",
+    "name": "下坡道",
+    "areaId": "oldpine",
+    "description": "道路在密林前暂时中断，北方似乎还有路，只是被低垂松枝和乱石遮住。",
+    "mapX": 4,
+    "mapY": -2,
+    "exits": {"south": "oldpine_slope_path3"}
+  },
+  {
+    "id": "oldpine_tree1",
+    "name": "大松树上",
+    "areaId": "oldpine",
+    "description": "你攀附在古松粗大的树干上，从这里能清楚看见树下动静而不易被人发觉。枝叶间似乎藏着一个黑衣人。",
+    "mapX": 3,
+    "mapY": 3,
+    "exits": {"down": "oldpine_clearing", "up": "oldpine_tree2"},
+    "npcIds": ["oldpine_spy"]
+  },
+  {
+    "id": "oldpine_tree2",
+    "name": "大松树上",
+    "areaId": "oldpine",
+    "description": "这里离地已有七八丈高，枝头结着许多松果，大多远在细枝末端，稍有不慎便会跌落。",
+    "mapX": 3,
+    "mapY": 4,
+    "exits": {"down": "oldpine_tree1", "up": "oldpine_tree3"}
+  },
+  {
+    "id": "oldpine_tree3",
+    "name": "大松树顶",
+    "areaId": "oldpine",
+    "description": "凉风从四面八方吹来，树冠下的老松林尽收眼底。脚下离地至少十五六丈，向下看去令人一阵晕眩。",
+    "mapX": 3,
+    "mapY": 5,
+    "exits": {"down": "oldpine_tree2"}
+  },
+  {
+    "id": "oldpine_secret_entrance",
+    "name": "秘密通道入口",
+    "areaId": "oldpine",
+    "description": "岩石通道南边是一片亮晶晶的水帘，瀑布轰鸣从帘幕后传来。铜铸烛台照亮石壁，通道向北延伸。",
+    "mapX": 7,
+    "mapY": 3,
+    "exits": {"south": "oldpine_waterfall", "north": "oldpine_secret_path"}
+  },
+  {
+    "id": "oldpine_secret_path",
+    "name": "秘密通道",
+    "areaId": "oldpine",
+    "description": "岩壁生着厚厚青苔，南边隐约传来水声，北面则飘来一股野兽般的恶臭。",
+    "mapX": 8,
+    "mapY": 3,
+    "exits": {"south": "oldpine_secret_entrance", "north": "oldpine_deep_passage"}
+  },
+  {
+    "id": "oldpine_deep_passage",
+    "name": "秘密通道深处",
+    "areaId": "oldpine",
+    "description": "阴森山洞里，一条金银花蛇昂首盘在突出的大青石上，堵住了继续深入的方向。",
+    "mapX": 8,
+    "mapY": 2,
+    "exits": {"south": "oldpine_secret_path"},
+    "npcIds": ["oldpine_venom_snake"],
+    "actions": [
+      {
+        "id": "climb_passage_stone",
+        "label": "爬上大青石",
+        "description": "越过金银花蛇盘踞的大青石，继续深入洞穴。",
+        "resultRoomId": "oldpine_stone_ledge",
+        "log": "你踏上长满青苔的大青石，扶着湿滑石壁站稳身形。",
+        "conditions": {"requiredDefeatedNpcIds": ["oldpine_venom_snake"]}
+      }
+    ]
+  },
+  {
+    "id": "oldpine_waterfall",
+    "name": "瀑布前",
+    "areaId": "oldpine",
+    "description": "你站在齐胸深的小水潭里，白练般的瀑布从数百丈高处冲下。三面都是陡峭山壁，只有南面山涧可以通行。",
+    "mapX": 7,
+    "mapY": 4,
+    "exits": {"north": "oldpine_secret_entrance", "south": "oldpine_riverbank2"}
+  },
+  {
+    "id": "oldpine_riverbank2",
+    "name": "山涧之中",
+    "areaId": "oldpine",
+    "description": "你站在山涧岩石上，小石桥高高跨过头顶两侧石壁，北边瀑布从更高的悬崖垂下。",
+    "mapX": 7,
+    "mapY": 5,
+    "exits": {"north": "oldpine_waterfall", "south": "oldpine_riverbank1"}
+  },
+  {
+    "id": "oldpine_riverbank1",
+    "name": "山涧之中",
+    "areaId": "oldpine",
+    "description": "泉水从脚边乱石间流过，南面是散发腥味的深潭。两边山壁又高又陡，但一处窄缝似乎可以容人攀爬。",
+    "mapX": 7,
+    "mapY": 6,
+    "exits": {"north": "oldpine_riverbank2", "south": "oldpine_lake"},
+    "actions": [
+      {
+        "id": "climb_ravine_wall",
+        "label": "攀爬山壁",
+        "description": "沿山壁裂缝爬入一处窄穴。",
+        "resultRoomId": "oldpine_cliff_hole",
+        "log": "你试稳脚边岩石，小心翼翼地沿裂缝爬进山壁上的窄穴。"
+      }
+    ]
+  },
+  {
+    "id": "oldpine_lake",
+    "name": "水潭",
+    "areaId": "oldpine",
+    "description": "深不见底的潭水不断冒出气泡，散发诡异香味。黄色怪草长满潭边，近乎直立的山壁将这里围成一口深井。",
+    "mapX": 7,
+    "mapY": 7,
+    "exits": {"north": "oldpine_riverbank1"},
+    "npcIds": ["oldpine_giant_serpent"]
+  },
+  {
+    "id": "oldpine_cliff_hole",
+    "name": "山壁上的窄穴",
+    "areaId": "oldpine",
+    "description": "岩穴勉强能容一人喘息。下方是山涧，向上继续攀爬则能接近林间小路。",
+    "mapX": 8,
+    "mapY": 6,
+    "exits": {},
+    "actions": [
+      {
+        "id": "climb_out_of_ravine",
+        "label": "继续向上攀爬",
+        "description": "越过最后一段山壁，返回林间小路。",
+        "resultRoomId": "oldpine_east_path3",
+        "log": "你沿着最后一段石壁奋力上攀，翻过岩脊回到石桥东面的林间小路。"
+      },
+      {
+        "id": "climb_down_to_ravine",
+        "label": "爬回山涧",
+        "description": "沿原路爬回山涧岩石。",
+        "resultRoomId": "oldpine_riverbank1",
+        "log": "你沿来路慢慢下爬，重新落到山涧中的岩石上。"
+      }
+    ]
+  },
+  {
+    "id": "oldpine_stone_ledge",
+    "name": "大青石上",
+    "areaId": "oldpine",
+    "description": "突出的大青石表面湿滑，四周石壁长满青苔，看似无路可走。石后有一道狭窄缝隙可以向下钻入。",
+    "mapX": 9,
+    "mapY": 2,
+    "exits": {},
+    "actions": [
+      {
+        "id": "descend_into_oldpine_caves",
+        "label": "钻入石后洞穴",
+        "description": "从大青石后方钻入更深的洞穴。",
+        "resultRoomId": "oldpine_cave1",
+        "log": "你从石后缝隙慢慢爬下，落进一片四通八达的黑暗洞穴。"
+      }
+    ]
+  },
+  {
+    "id": "oldpine_cave1",
+    "name": "山洞",
+    "areaId": "oldpine",
+    "description": "四面都是黑漆漆的小石洞，方向难以分辨，只有北面隐约透出一点微光。",
+    "mapX": 9,
+    "mapY": 1,
+    "exits": {"south": "oldpine_stone_ledge", "north": "oldpine_cave2", "east": "oldpine_cave3", "west": "oldpine_cave1"}
+  },
+  {
+    "id": "oldpine_cave2",
+    "name": "山洞",
+    "areaId": "oldpine",
+    "description": "洞穴深处岔路交错，回声从不同方向传来，让人完全无法判断瀑布水声的位置。",
+    "mapX": 9,
+    "mapY": 0,
+    "exits": {"south": "oldpine_cave1", "north": "oldpine_cave3", "east": "oldpine_cave4", "west": "oldpine_cave1"}
+  },
+  {
+    "id": "oldpine_cave3",
+    "name": "山洞",
+    "areaId": "oldpine",
+    "description": "这里的石洞几乎一模一样，脚印在潮湿地面来回重叠，稍不留神便会绕回原处。",
+    "mapX": 10,
+    "mapY": 0,
+    "exits": {"south": "oldpine_cave1", "north": "oldpine_cave2", "east": "oldpine_cave3", "west": "oldpine_cave4"}
+  },
+  {
+    "id": "oldpine_cave4",
+    "name": "山洞",
+    "areaId": "oldpine",
+    "description": "潮湿石壁间出现一股微弱气流，西面深处似乎传来比其他岔道更清晰的瀑布声。",
+    "mapX": 10,
+    "mapY": 1,
+    "exits": {"south": "oldpine_cave1", "north": "oldpine_cave2", "east": "oldpine_cave3"},
+    "actions": [
+      {
+        "id": "follow_cave_water_sound",
+        "label": "循着水声前进",
+        "description": "穿过西侧狭窄洞口，寻找更清晰的瀑布声。",
+        "resultRoomId": "oldpine_cave5",
+        "log": "你侧身挤过西侧洞口，瀑布轰鸣逐渐清晰，前方终于出现出口微光。"
+      }
+    ]
+  },
+  {
+    "id": "oldpine_cave5",
+    "name": "山洞尽头",
+    "areaId": "oldpine",
+    "description": "东面洞口传来瀑布水声，石壁上留着利剑刻成的遗言。角落里躺着一具已经腐朽多年的骸骨。",
+    "mapX": 11,
+    "mapY": 1,
+    "exits": {},
+    "actions": [
+      {
+        "id": "bury_oldpine_skeleton",
+        "label": "安葬洞中遗骨",
+        "description": "依照石壁遗言，将洞中骸骨妥善掩埋。",
+        "resultRoomId": "oldpine_cave5",
+        "log": "你将骸骨妥善安葬。洞顶忽然喀喇一响，一卷写着拆招卸力要旨的旧书落了下来。",
+        "setsQuestFlag": "oldpine_skeleton_buried",
+        "givesItemIds": ["oldpine_parry_essentials"],
+        "conditions": {"forbiddenFlags": ["oldpine_skeleton_buried"]}
+      },
+      {
+        "id": "leave_oldpine_caves",
+        "label": "滑向瀑布出口",
+        "description": "沿东面湿滑洞口回到瀑布水潭。",
+        "resultRoomId": "oldpine_waterfall",
+        "log": "你沿湿滑岩面向洞口挪去，脚下一空，随着水流落入瀑布前的水潭。"
+      }
+    ]
+  },
+  {
+    "id": "oldpine_pine1",
+    "name": "松树林",
+    "areaId": "oldpine",
+    "description": "茂密松树遮蔽天空，四周景物几乎完全相同。一个高瘦土匪和一个矮胖土匪在树后窥视来路。",
+    "mapX": 9,
+    "mapY": 4,
+    "exits": {"north": "oldpine_pine2", "south": "oldpine_pine7", "east": "oldpine_pine3", "west": "oldpine_pine4"},
+    "npcIds": ["oldpine_tall_bandit", "oldpine_fat_bandit"]
+  },
+  {
+    "id": "oldpine_pine2",
+    "name": "松树林",
+    "areaId": "oldpine",
+    "description": "松针与树影让方向感变得模糊，东面枯枝后似乎藏着一座用木头搭成的寨门。",
+    "mapX": 10,
+    "mapY": 4,
+    "exits": {"south": "oldpine_pine3", "east": "oldpine_keep_entrance", "west": "oldpine_pine1", "north": "oldpine_pine5"}
+  },
+  {
+    "id": "oldpine_pine3",
+    "name": "松树林",
+    "areaId": "oldpine",
+    "description": "脚印进入密林后散向各处，松树遮得不见天日，你已经难以分辨来时方向。",
+    "mapX": 10,
+    "mapY": 5,
+    "exits": {"north": "oldpine_pine2", "south": "oldpine_pine6", "east": "oldpine_pine3", "west": "oldpine_pine4"}
+  },
+  {
+    "id": "oldpine_pine4",
+    "name": "松树林",
+    "areaId": "oldpine",
+    "description": "树干上的刀痕在这里忽然中断，北面松林似乎稍显稀疏，其他方向仍是一片幽暗。",
+    "mapX": 9,
+    "mapY": 5,
+    "exits": {"north": "oldpine_pine5", "south": "oldpine_pine7", "east": "oldpine_pine3", "west": "oldpine_pine1"}
+  },
+  {
+    "id": "oldpine_pine5",
+    "name": "松树林",
+    "areaId": "oldpine",
+    "description": "密林深处偶尔传来犬吠，北风带着炊烟气味，说明附近应有人长期居住。",
+    "mapX": 9,
+    "mapY": 6,
+    "exits": {"north": "oldpine_pine6", "south": "oldpine_pine4", "east": "oldpine_pine2", "west": "oldpine_pine5"}
+  },
+  {
+    "id": "oldpine_pine6",
+    "name": "松树林",
+    "areaId": "oldpine",
+    "description": "松林间出现被人踩实的泥地，西边传来狼狗低吼，说明你正在接近土匪活动区域。",
+    "mapX": 10,
+    "mapY": 6,
+    "exits": {"west": "oldpine_pine7", "north": "oldpine_pine5", "south": "oldpine_pine3", "east": "oldpine_pine6"}
+  },
+  {
+    "id": "oldpine_pine7",
+    "name": "松树林",
+    "areaId": "oldpine",
+    "description": "一只独眼狼狗守在杂乱松枝间，地面散落着啃过的骨头。这里的足迹比其他林地更加密集。",
+    "mapX": 10,
+    "mapY": 7,
+    "exits": {"north": "oldpine_pine6", "east": "oldpine_pine1", "west": "oldpine_pine4", "south": "oldpine_pine7"},
+    "npcIds": ["oldpine_wolf_dog"]
+  },
+  {
+    "id": "oldpine_keep_entrance",
+    "name": "老松寨秘密入口",
+    "areaId": "oldpine",
+    "description": "木寨门挂着几颗不知名动物头骨和生锈铁链，外面铺满枯松枝，在森林中极难发现。",
+    "mapX": 11,
+    "mapY": 4,
+    "exits": {
+      "west": "oldpine_pine2",
+      "east": {
+        "roomId": "oldpine_keep_yard",
+        "conditions": {"requiredDefeatedNpcIds": ["oldpine_keep_gate_guard"]}
+      }
+    },
+    "npcIds": ["oldpine_keep_gate_guard"]
+  },
+  {
+    "id": "oldpine_keep_yard",
+    "name": "老松寨",
+    "areaId": "oldpine",
+    "description": "木墙后的险要位置堆着沙包石堆，显然埋伏着人手。东面越过一排木桩便是山寨大厅。",
+    "mapX": 12,
+    "mapY": 4,
+    "exits": {
+      "west": "oldpine_keep_entrance",
+      "east": {
+        "roomId": "oldpine_keep_hall",
+        "conditions": {"requiredDefeatedNpcIds": ["oldpine_keep_yard_guard", "oldpine_bandit_leader"]}
+      }
+    },
+    "npcIds": ["oldpine_keep_yard_guard", "oldpine_bandit_leader"]
+  },
+  {
+    "id": "oldpine_keep_hall",
+    "name": "老松寨大厅",
+    "areaId": "oldpine",
+    "description": "北侧熊皮上摆着三张椅子，火盆和上锁木箱散落四周。中央大坑里，许多头骨浸在散发恶臭的黄水中。",
+    "mapX": 13,
+    "mapY": 4,
+    "exits": {"west": "oldpine_keep_yard"},
+    "npcIds": ["oldpine_commander"]
+  }
+]

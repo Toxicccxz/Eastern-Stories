@@ -6,7 +6,7 @@
     "description": "宽敞坚实的青石板大道两旁种着整齐花木，北面通往水烟阁，东面衔接雪亭镇。",
     "mapX": 0,
     "mapY": 3,
-    "exits": {"west": "canyon_gate", "north": "waterfog_entrance", "east": "snow_official_road"}
+    "exits": {"west": "canyon_gate", "north": "waterfog_sroad1", "east": "snow_official_road"}
   },
   {
     "id": "snow_official_road",
@@ -42,7 +42,7 @@
     "description": "广场铺着整齐大石板，中央的木架已经饱经风雨，四周人来人往。",
     "mapX": 3,
     "mapY": 2,
-    "exits": {"south": "snow_south_street", "north": "snow_main_street"}
+    "exits": {"south": "snow_south_street", "north": "snow_main_street", "east": "snow_east_path1"}
   },
   {
     "id": "snow_main_street",
@@ -136,5 +136,32 @@
     "mapY": 1,
     "allowsCultivation": true,
     "exits": {"west": "chunfeng_inner_yard"}
+  },
+  {
+    "id": "snow_east_path1",
+    "name": "黄土小径",
+    "areaId": "snow",
+    "description": "普通黄土小径弯弯曲曲地向东盘旋上山，西面可回雪亭镇，路旁林木渐渐茂密。",
+    "mapX": 4,
+    "mapY": 2,
+    "exits": {"west": "snow_square", "east": "snow_east_path2"}
+  },
+  {
+    "id": "snow_east_path2",
+    "name": "黄土小径",
+    "areaId": "snow",
+    "description": "小径穿过一片山间坡地，西面还能望见雪亭镇错落的房屋，东边道路继续上山。",
+    "mapX": 5,
+    "mapY": 2,
+    "exits": {"west": "snow_east_path1", "east": "snow_east_mountain_road"}
+  },
+  {
+    "id": "snow_east_mountain_road",
+    "name": "山路",
+    "areaId": "snow",
+    "description": "几块长满青苔的大石铺成一条不宽不窄的山路。西面是黄土小径，向南便进入当地人所说的老松林。",
+    "mapX": 6,
+    "mapY": 2,
+    "exits": {"west": "snow_east_path2", "south": "oldpine_north_path1"}
   }
 ]

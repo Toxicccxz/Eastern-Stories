@@ -1,0 +1,166 @@
+[
+  {
+    "id": "oldpine_bandit_scout",
+    "name": "土匪探哨",
+    "description": "年轻探哨满脸匪气，一副百无聊赖的模样，腰间短剑却始终没有离手。",
+    "greeting": "土匪探哨斜眼喝道：这条路不是给闲人走的！",
+    "combat": {
+      "maxHp": 42,
+      "attack": 6,
+      "defense": 2,
+      "rewardExperience": 35,
+      "rewardSilver": 3,
+      "specialMove": {
+        "name": "短剑突刺",
+        "interval": 3,
+        "damageBonus": 2,
+        "message": "土匪探哨忽然拔出短剑，贴着松树向你刺来。"
+      }
+    }
+  },
+  {
+    "id": "oldpine_maniac",
+    "name": "疯老头子",
+    "description": "疯老头正对着来人龇牙咧嘴，破旧长袍上沾满泥污，眼神里却偶尔闪过骇人的精光。",
+    "greeting": "疯老头子含糊笑道：桥下有人，树上也有人，谁都别想走！",
+    "combat": {
+      "maxHp": 78,
+      "attack": 9,
+      "defense": 5,
+      "rewardExperience": 100,
+      "rewardSilver": 8,
+      "specialMove": {
+        "name": "幽冥邪术",
+        "interval": 3,
+        "damageBonus": 4,
+        "message": "疯老头怪笑着挥动双手，一股阴冷劲风迎面袭来。"
+      }
+    }
+  },
+  {
+    "id": "oldpine_spy",
+    "name": "黑衣人",
+    "description": "黑衣人藏在古松枝叶间，举止鬼祟，袖中露出几柄寒光闪闪的飞刀。",
+    "greeting": "黑衣人冷冷说道：既然看见了我，就别想装作什么都不知道。",
+    "combat": {
+      "maxHp": 52,
+      "attack": 7,
+      "defense": 3,
+      "rewardExperience": 55,
+      "rewardSilver": 6,
+      "specialMove": {
+        "name": "飞刀",
+        "interval": 3,
+        "damageBonus": 3,
+        "message": "黑衣人抖动手腕，一柄飞刀穿过松针直射而来。"
+      }
+    }
+  },
+  {
+    "id": "oldpine_venom_snake",
+    "name": "金银花蛇",
+    "description": "毒蛇盘在大青石上昂首吐信，金银相间的花纹在幽暗洞穴里格外醒目。",
+    "greeting": "金银花蛇弓起身体，发出细长的嘶鸣。",
+    "combat": {
+      "maxHp": 48,
+      "attack": 8,
+      "defense": 4,
+      "rewardExperience": 65,
+      "specialMove": {
+        "name": "毒牙突袭",
+        "interval": 3,
+        "damageBonus": 3,
+        "message": "金银花蛇骤然弹起，尖锐毒牙直取你的手腕。"
+      }
+    }
+  },
+  {
+    "id": "oldpine_giant_serpent",
+    "name": "黑冠巨蟒",
+    "description": "乌黑油亮的巨蟒盘踞潭边，头顶生着巨大肉瘤，粗壮躯干几乎堵住整个水潭。",
+    "greeting": "黑冠巨蟒昂起头颅，沉重蛇身压得碎石咯咯作响。",
+    "combat": {
+      "maxHp": 125,
+      "attack": 11,
+      "defense": 7,
+      "rewardExperience": 180,
+      "rewardSilver": 15,
+      "specialMove": {
+        "name": "巨尾横扫",
+        "interval": 3,
+        "damageBonus": 5,
+        "message": "黑冠巨蟒扭动躯干，粗大蛇尾裹着碎石横扫而来。"
+      }
+    }
+  },
+  {
+    "id": "oldpine_tall_bandit",
+    "name": "高瘦土匪",
+    "description": "土匪长得高高瘦瘦，脸色苍白，一副无精打采的模样，手中长剑却磨得很亮。",
+    "greeting": "高瘦土匪提剑说道：迷进林子算你倒霉。",
+    "combat": {"maxHp": 40, "attack": 6, "defense": 2, "rewardExperience": 30, "rewardSilver": 6}
+  },
+  {
+    "id": "oldpine_fat_bandit",
+    "name": "矮胖土匪",
+    "description": "矮胖土匪圆滚滚的眼珠在满脸肥肉中转来转去，始终盯着来人的钱袋。",
+    "greeting": "矮胖土匪骂道：把身上的钱通通留下来！",
+    "combat": {
+      "maxHp": 44,
+      "attack": 6,
+      "defense": 2,
+      "rewardExperience": 30,
+      "rewardSilver": 5,
+      "specialMove": {"name": "呼喊同伙", "interval": 3, "damageBonus": 2, "message": "矮胖土匪高声呼喊同伙，趁你分神挥剑砍来。"}
+    }
+  },
+  {
+    "id": "oldpine_wolf_dog",
+    "name": "独眼狼狗",
+    "description": "凶猛狼狗只剩一只眼睛，正恶狠狠地盯着每一个靠近山寨的人。",
+    "greeting": "独眼狼狗压低身体，龇出尖牙发出低吼。",
+    "combat": {"maxHp": 55, "attack": 7, "defense": 3, "rewardExperience": 45}
+  },
+  {
+    "id": "oldpine_keep_gate_guard",
+    "name": "土匪喽罗",
+    "description": "守门喽罗满脸横肉，持短剑挡在枯松枝掩盖的寨门前。",
+    "greeting": "守门喽罗喝道：什么人敢闯老松寨！",
+    "combat": {"maxHp": 58, "attack": 7, "defense": 3, "rewardExperience": 50, "rewardSilver": 5}
+  },
+  {
+    "id": "oldpine_keep_yard_guard",
+    "name": "土匪喽罗",
+    "description": "院内喽罗从沙包石堆后跳出，手中短剑直指闯入者。",
+    "greeting": "土匪喽罗大喊：把门关上，一个也别放走！",
+    "combat": {"maxHp": 62, "attack": 8, "defense": 4, "rewardExperience": 55, "rewardSilver": 5}
+  },
+  {
+    "id": "oldpine_bandit_leader",
+    "name": "土匪首领",
+    "description": "土匪首领眼神凶恶，精光四射的眼珠死死盯着来人的脖子，手中厚背刀带着暗红锈迹。",
+    "greeting": "土匪首领阴恻恻地说道：这种三脚猫功夫也敢上老松寨撒野？",
+    "combat": {
+      "maxHp": 88,
+      "attack": 10,
+      "defense": 5,
+      "rewardExperience": 110,
+      "rewardSilver": 30,
+      "specialMove": {"name": "毒爪抢攻", "interval": 3, "damageBonus": 4, "message": "土匪首领虎吼一声欺身上前，刀爪并用猛攻你的要害。"}
+    }
+  },
+  {
+    "id": "oldpine_commander",
+    "name": "常老大",
+    "description": "老松寨寨主常老大号称“泼风刀王”，身披毛皮，手持长柄大刀，气势远胜寻常土匪。",
+    "greeting": "常老大提起大刀冷笑道：能闯到这里，倒有几分本事。",
+    "combat": {
+      "maxHp": 145,
+      "attack": 12,
+      "defense": 8,
+      "rewardExperience": 260,
+      "rewardSilver": 50,
+      "specialMove": {"name": "泼风刀", "interval": 3, "damageBonus": 6, "message": "常老大舞动长刀，泼风般的刀光封住你四周退路。"}
+    }
+  }
+]

@@ -1,0 +1,120 @@
+[
+  {
+    "id": "waterfog_road_guard",
+    "name": "水烟阁武士",
+    "description": "这名武士相貌魁梧，守在通往白石阶梯的官道旁，目光警觉地观察每一个登山之人。",
+    "greeting": "武士说道：再往上便是水烟阁，行路时不要惊扰山中清静。",
+    "dialogueOptions": [
+      {
+        "id": "ask_waterfog_road",
+        "label": "询问水烟阁",
+        "response": "水烟阁是历代武林盟主的行馆，也是武者同盟议事之地。沿白石阶梯一直上山便到。"
+      }
+    ]
+  },
+  {
+    "id": "waterfog_gate_guard",
+    "name": "水烟阁武士",
+    "description": "守门武士身形魁梧，衣着整齐，站在三进檀木门旁维持秩序。",
+    "greeting": "武士抱拳说道：正厅是武者议事之所，入内请守水烟阁规矩。",
+    "dialogueOptions": [
+      {
+        "id": "ask_fighter_guild",
+        "label": "询问武者同盟",
+        "response": "身家清白之人都可在正厅名册登记。加入同盟后，才能向同盟中的各大门派正式拜师。"
+      }
+    ]
+  },
+  {
+    "id": "waterfog_cliff_watcher",
+    "name": "水烟阁司事",
+    "description": "司事看起来和蔼可亲，一双眼睛却炯炯有神，显然有不俗的武学根基。",
+    "greeting": "司事望着云海说道：半山风急，少侠在亭中歇息片刻再走也不迟。",
+    "dialogueOptions": [
+      {
+        "id": "ask_clifftop_view",
+        "label": "询问山中景色",
+        "response": "清晨雾起时，诸峰如岛，水烟阁便像浮在云海之间。西面的山路还通向一座葬剑亭。"
+      }
+    ]
+  },
+  {
+    "id": "waterfog_servant",
+    "name": "仆役",
+    "description": "仆役衣着朴素，正将劈好的柴薪一捆捆码放整齐，看起来并不会武功。",
+    "greeting": "仆役擦擦额头说道：柴房地方窄，客人小心别被木柴绊着。"
+  },
+  {
+    "id": "waterfog_west_elite_guard",
+    "name": "水烟阁红衣武士",
+    "description": "红衣武士眼神锐利，沉默地守住西侧厅通往聆啸厅的走道。",
+    "greeting": "红衣武士沉声说道：前方是水烟阁内厅，不要在此喧哗。"
+  },
+  {
+    "id": "waterfog_east_elite_guard",
+    "name": "水烟阁红衣武士",
+    "description": "红衣武士衣缘绣着金线，站姿沉稳，守着东侧厅二楼的入口。",
+    "greeting": "红衣武士看了你一眼：游览可以，莫要擅闯阁主居所。"
+  },
+  {
+    "id": "waterfog_celestial_tiger",
+    "name": "天邪虎",
+    "description": "天邪派灵兽有着火红毛皮和银白纹路，湛蓝眼珠散发着妖异光芒。它安静卧在半山亭旁，并无伤人之意。",
+    "greeting": "天邪虎抬眼看了看你，又将头伏回前爪。"
+  },
+  {
+    "id": "waterfog_elder_nan",
+    "name": "南危水",
+    "description": "水烟阁五长老南危水是当世使剑名家，也是槐阳王的弟弟，一身武学兼取天邪、封山两派之长。",
+    "greeting": "南危水按着焦殇剑说道：剑招可学，持剑之心却须自己磨炼。",
+    "dialogueOptions": [
+      {
+        "id": "ask_nan_about_sword",
+        "label": "询问葬剑亭",
+        "response": "葬剑亭所记并非剑法，而是前人以血留下的规矩：争胜不可失义，用剑不可失心。"
+      }
+    ]
+  },
+  {
+    "id": "waterfog_elder_chen",
+    "name": "陈坚石",
+    "description": "水烟阁六长老以横练功夫“石猿功”成名数十年，性情顽固，因此得了“坚石”这个名字。",
+    "greeting": "陈坚石拄着铁杖说道：山路虽长，一阶一阶走稳便是。",
+    "dialogueOptions": [
+      {
+        "id": "ask_chen_about_honggu",
+        "label": "询问虹谷石台",
+        "response": "那块石碑是第六代阁主关雨楼所立。碑上题字以指力入石，后人至今无人敢轻易仿效。"
+      }
+    ]
+  },
+  {
+    "id": "waterfog_elder_yan",
+    "name": "颜违",
+    "description": "水烟阁七长老颜违是七位长老中最年轻的一位，办事精明干练，常负责筹办武林大会。",
+    "greeting": "颜违正在整理武林大会旧册，见你进来便微微颔首。",
+    "dialogueOptions": [
+      {
+        "id": "start_waterfog_inscriptions",
+        "label": "询问水烟阁旧事",
+        "response": "西侧山路有虹谷石台和葬剑亭。你若想了解水烟阁，不妨亲自读过两处碑文，再回来告诉我所得。",
+        "startsQuestId": "waterfog_inscriptions",
+        "conditions": {
+          "requiredFlags": ["fighter_guild_member"],
+          "requiredQuestStatuses": {"waterfog_inscriptions": "notStarted"}
+        }
+      },
+      {
+        "id": "finish_waterfog_inscriptions",
+        "label": "禀报碑文所记",
+        "response": "颜违点头道：一碑显前人功力，一碑戒后人品行。记住这两件事，才算真正到过水烟阁。",
+        "setsQuestFlag": "waterfog_inscriptions_reported",
+        "completesQuestId": "waterfog_inscriptions",
+        "conditions": {
+          "requiredFlags": ["waterfog_honggu_stele_read", "waterfog_sword_tomb_read"],
+          "requiredQuestStatuses": {"waterfog_inscriptions": "active"}
+        }
+      }
+    ]
+  }
+]

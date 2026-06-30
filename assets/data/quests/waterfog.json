@@ -1,0 +1,31 @@
+[
+  {
+    "id": "waterfog_inscriptions",
+    "title": "虹谷碑铭",
+    "description": "水烟阁七长老颜违请你查阅西侧山路上的虹谷石碑与葬剑亭碑铭。",
+    "steps": [
+      {
+        "description": "向聆啸厅的颜违询问水烟阁旧事。",
+        "targetNpcId": "waterfog_elder_yan"
+      },
+      {
+        "description": "前往虹谷石台，查看第六代阁主关雨楼所立石碑。",
+        "requiredFlag": "waterfog_honggu_stele_read",
+        "targetRoomId": "waterfog_wpath2"
+      },
+      {
+        "description": "前往葬剑亭，阅读亭前的高大碑铭。",
+        "requiredFlag": "waterfog_sword_tomb_read",
+        "targetRoomId": "waterfog_sword_tomb"
+      },
+      {
+        "description": "返回聆啸厅，向颜违禀报碑文所记。",
+        "requiredFlag": "waterfog_inscriptions_reported",
+        "targetNpcId": "waterfog_elder_yan"
+      }
+    ],
+    "requiredFlags": ["waterfog_inscriptions_reported"],
+    "rewardExperience": 180,
+    "rewardSilver": 60
+  }
+]

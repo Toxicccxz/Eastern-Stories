@@ -1,20 +1,113 @@
 [
   {
+    "id": "waterfog_sroad1",
+    "name": "青石官道",
+    "areaId": "waterfog",
+    "description": "宽敞坚实的青石板大道沿山势展开，北边山腰上已能望见水烟阁的琉璃屋瓦。这里开始便是历代水烟阁主人管辖的封地。",
+    "mapX": 6,
+    "mapY": 10,
+    "exits": {"east": "snow_stone_road", "west": "waterfog_sroad2"}
+  },
+  {
+    "id": "waterfog_sroad2",
+    "name": "青石官道",
+    "areaId": "waterfog",
+    "description": "大道沿山势向西弯去，路旁枫木渐密。再往西不远，便是通往水烟阁的白石阶梯。",
+    "mapX": 5,
+    "mapY": 10,
+    "exits": {"east": "waterfog_sroad1", "west": "waterfog_sroad3"}
+  },
+  {
+    "id": "waterfog_sroad3",
+    "name": "青石官道",
+    "areaId": "waterfog",
+    "description": "青石大道在这里贴着山腰延伸，一道长长的白石阶梯向北上山。仰头望去，阶梯尽头的雄伟楼阁隐在云雾之间。",
+    "mapX": 4,
+    "mapY": 10,
+    "exits": {"east": "waterfog_sroad2", "north": "waterfog_stair1"},
+    "npcIds": ["waterfog_road_guard"]
+  },
+  {
+    "id": "waterfog_stair1",
+    "name": "白石阶梯",
+    "areaId": "waterfog",
+    "description": "长长的阶梯全部用东海裂瓶山所产的拟玉白石砌成，虽年代久远，石面仍洁白温润。",
+    "mapX": 4,
+    "mapY": 9,
+    "exits": {"south": "waterfog_sroad3", "north": "waterfog_stair2"}
+  },
+  {
+    "id": "waterfog_stair2",
+    "name": "白石阶梯",
+    "areaId": "waterfog",
+    "description": "白石阶梯随着山势盘旋而上，山风卷着枫叶从阶前掠过，脚下官道已经显得十分遥远。",
+    "mapX": 4,
+    "mapY": 8,
+    "exits": {"south": "waterfog_stair1", "east": "waterfog_stair3"}
+  },
+  {
+    "id": "waterfog_stair3",
+    "name": "白石阶梯",
+    "areaId": "waterfog",
+    "description": "阶梯转向东面，外侧便是云雾缭绕的深谷。远处山峰在雾中时隐时现。",
+    "mapX": 5,
+    "mapY": 8,
+    "exits": {"west": "waterfog_stair2", "north": "waterfog_stair4"}
+  },
+  {
+    "id": "waterfog_stair4",
+    "name": "白石阶梯",
+    "areaId": "waterfog",
+    "description": "白石阶梯继续向北攀升，前方山壁旁立着一座小亭，正好可供登山之人歇脚。",
+    "mapX": 5,
+    "mapY": 7,
+    "exits": {"south": "waterfog_stair3", "north": "waterfog_clifftop"}
+  },
+  {
+    "id": "waterfog_clifftop",
+    "name": "水烟阁半山亭",
+    "areaId": "waterfog",
+    "description": "白石小亭的东面和北面都是深不见底的悬崖。云雾间突出几座山峰，西北方的水烟阁仿佛漂浮在云海之上。",
+    "mapX": 5,
+    "mapY": 6,
+    "exits": {"south": "waterfog_stair4", "west": "waterfog_stair5"},
+    "npcIds": ["waterfog_cliff_watcher", "waterfog_celestial_tiger"]
+  },
+  {
+    "id": "waterfog_stair5",
+    "name": "白石阶梯",
+    "areaId": "waterfog",
+    "description": "阶梯像一条白龙沿山峰蜿蜒，水烟阁已近在眼前，却仍在雾气中显得飘渺难测。",
+    "mapX": 4,
+    "mapY": 6,
+    "exits": {"east": "waterfog_clifftop", "north": "waterfog_frontyard"}
+  },
+  {
+    "id": "waterfog_frontyard",
+    "name": "水烟阁前",
+    "areaId": "waterfog",
+    "description": "琉璃屋瓦与白玉般的石砖让水烟阁在群山间格外醒目。这里曾是武术之神杞庸的居所，后来成为历代武林盟主的行馆。",
+    "mapX": 4,
+    "mapY": 5,
+    "exits": {"south": "waterfog_stair5", "north": "waterfog_entrance", "west": "waterfog_wpath1"}
+  },
+  {
     "id": "waterfog_entrance",
     "name": "水烟阁正门",
     "areaId": "waterfog",
-    "description": "一股沁人心脾的檀香从三进檀木正门后传来，最里的门上悬着一块龙飞凤舞的匾额。",
-    "mapX": 1,
-    "mapY": 1,
-    "exits": {"south": "snow_stone_road", "north": "waterfog_guildhall"}
+    "description": "正门分为三进，全部由上等檀木雕成，一股沁人心脾的檀香迎面而来。最里的门上悬着一块龙飞凤舞的匾额。",
+    "mapX": 4,
+    "mapY": 4,
+    "exits": {"south": "waterfog_frontyard", "north": "waterfog_guildhall", "west": "waterfog_west_hall", "east": "waterfog_east_hall"},
+    "npcIds": ["waterfog_gate_guard"]
   },
   {
     "id": "waterfog_guildhall",
     "name": "水烟阁正厅",
     "areaId": "waterfog",
     "description": "简单陈设中透着尊贵不凡的气派。这里是武者同盟议事之所，任何身家清白之人都可以登记加入。",
-    "mapX": 1,
-    "mapY": 0,
+    "mapX": 4,
+    "mapY": 3,
     "exits": {"south": "waterfog_entrance"},
     "actions": [
       {
@@ -25,6 +118,176 @@
         "log": "你在水烟阁名册上郑重写下姓名，正式成为武者同盟的一员。",
         "setsQuestFlag": "fighter_guild_member",
         "conditions": {"forbiddenFlags": ["fighter_guild_member"]}
+      }
+    ]
+  },
+  {
+    "id": "waterfog_west_hall",
+    "name": "水烟阁西侧花厅",
+    "areaId": "waterfog",
+    "description": "花厅南面和西面围着白玉栏杆，栏杆外种满茶花。东边是正门，北边侧门后可见通往二楼的阶梯。",
+    "mapX": 3,
+    "mapY": 4,
+    "exits": {"east": "waterfog_entrance", "north": "waterfog_west_stair"}
+  },
+  {
+    "id": "waterfog_west_stair",
+    "name": "西侧厅",
+    "areaId": "waterfog",
+    "description": "西侧厅院中立着一道白石梯。北边通往柴房和仆役卧房，南边可回花厅，阶梯则通向二楼。",
+    "mapX": 3,
+    "mapY": 3,
+    "exits": {"south": "waterfog_west_hall", "north": "waterfog_storage", "up": "waterfog_west_second_floor"}
+  },
+  {
+    "id": "waterfog_storage",
+    "name": "柴房",
+    "areaId": "waterfog",
+    "description": "劈好的柴薪整齐堆在北侧，狭窄通道向东通往仆役卧室，向南可回西侧厅。",
+    "mapX": 3,
+    "mapY": 2,
+    "exits": {"south": "waterfog_west_stair", "east": "waterfog_servant_room"},
+    "npcIds": ["waterfog_servant"]
+  },
+  {
+    "id": "waterfog_servant_room",
+    "name": "仆役卧室",
+    "areaId": "waterfog",
+    "description": "宽敞卧房里摆着可睡二三十人的大通铺，东首的暖炕只在严冬使用，南边橱柜里放着仆役们的私物。",
+    "mapX": 4,
+    "mapY": 2,
+    "exits": {"west": "waterfog_storage"}
+  },
+  {
+    "id": "waterfog_west_second_floor",
+    "name": "西侧厅二楼",
+    "areaId": "waterfog",
+    "description": "挑高侧厅上只有一条七八尺宽的走道，连接楼梯与通往聆啸厅的东门。",
+    "mapX": 3,
+    "mapY": 1,
+    "exits": {"down": "waterfog_west_stair", "east": "waterfog_forehall"},
+    "npcIds": ["waterfog_west_elite_guard"]
+  },
+  {
+    "id": "waterfog_forehall",
+    "name": "聆啸厅",
+    "areaId": "waterfog",
+    "description": "二楼聆啸厅南面是一座大露台，五块灰绿色怪石按不同方位排列。东西出口分别通向两侧厅。",
+    "mapX": 4,
+    "mapY": 1,
+    "exits": {"west": "waterfog_west_second_floor", "east": "waterfog_east_second_floor"},
+    "npcIds": ["waterfog_elder_nan", "waterfog_elder_chen", "waterfog_elder_yan"]
+  },
+  {
+    "id": "waterfog_east_second_floor",
+    "name": "东侧厅二楼",
+    "areaId": "waterfog",
+    "description": "挑高侧厅二楼是一条狭长走道，西门通往聆啸厅，向下的阶梯回到东侧厅。",
+    "mapX": 5,
+    "mapY": 1,
+    "exits": {"west": "waterfog_forehall", "down": "waterfog_east_stair"},
+    "npcIds": ["waterfog_east_elite_guard"]
+  },
+  {
+    "id": "waterfog_east_stair",
+    "name": "东侧厅",
+    "areaId": "waterfog",
+    "description": "栏杆外便是深谷，更显水烟阁孤立峰顶、傲视群山的气魄。这里有阶梯通往二楼，北边是厨房。",
+    "mapX": 5,
+    "mapY": 3,
+    "exits": {"south": "waterfog_east_hall", "north": "waterfog_kitchen", "up": "waterfog_east_second_floor"}
+  },
+  {
+    "id": "waterfog_east_hall",
+    "name": "水烟阁东侧花厅",
+    "areaId": "waterfog",
+    "description": "花厅东面和南面围着白石栏杆，栏杆外茶花盛放。西边是正门，北边通向东侧厅。",
+    "mapX": 5,
+    "mapY": 4,
+    "exits": {"west": "waterfog_entrance", "north": "waterfog_east_stair"}
+  },
+  {
+    "id": "waterfog_kitchen",
+    "name": "厨房",
+    "areaId": "waterfog",
+    "description": "东首大灶旁堆着许多瓦瓮，北边方桌上锅碗瓢盆一应俱全，西侧橱柜散发着饭菜香气。",
+    "mapX": 5,
+    "mapY": 2,
+    "exits": {"south": "waterfog_east_stair"}
+  },
+  {
+    "id": "waterfog_wpath1",
+    "name": "山坡小径",
+    "areaId": "waterfog",
+    "description": "山坡小径北侧整齐种着一排枫树，东边平台便是水烟阁前。小径向西上坡，通往山巅虹台方向。",
+    "mapX": 3,
+    "mapY": 5,
+    "exits": {"east": "waterfog_frontyard", "west": "waterfog_wpath2"}
+  },
+  {
+    "id": "waterfog_wpath2",
+    "name": "虹谷石台",
+    "areaId": "waterfog",
+    "description": "小径旁立着一座七八尺高的石碑，东北方白石阶梯通往山巅。西侧便是水烟十景中最有名的虹谷断崖。",
+    "mapX": 2,
+    "mapY": 5,
+    "exits": {"east": "waterfog_wpath1", "north": "waterfog_wpath3"},
+    "actions": [
+      {
+        "id": "read_honggu_stele",
+        "label": "查看虹谷石碑",
+        "description": "仔细辨认石碑上苍劲古朴的题字。",
+        "resultRoomId": "waterfog_wpath2",
+        "log": "碑上写着“虹谷石台，乙丑年水烟阁第六代阁主关雨楼立”。字迹没有斧凿痕迹，竟像是以手指直接写入岩石。",
+        "setsQuestFlag": "waterfog_honggu_stele_read",
+        "conditions": {"forbiddenFlags": ["waterfog_honggu_stele_read"]}
+      }
+    ]
+  },
+  {
+    "id": "waterfog_wpath3",
+    "name": "白石阶梯",
+    "areaId": "waterfog",
+    "description": "阶梯依山壁而建，东面隔着深谷可望见水烟阁。晨雾升起时，楼阁仿佛飘在云间，这便是水烟十景中的“飞天楼阁”。",
+    "mapX": 2,
+    "mapY": 4,
+    "exits": {"south": "waterfog_wpath2", "north": "waterfog_wpath4"}
+  },
+  {
+    "id": "waterfog_wpath4",
+    "name": "白石阶梯",
+    "areaId": "waterfog",
+    "description": "阶梯越爬越高，西面山顶已能望见虹台中央的擎天柱，东面深谷对岸则是水烟阁。",
+    "mapX": 2,
+    "mapY": 3,
+    "exits": {"south": "waterfog_wpath3", "north": "waterfog_wpath5"}
+  },
+  {
+    "id": "waterfog_wpath5",
+    "name": "白石阶梯",
+    "areaId": "waterfog",
+    "description": "三面深谷环绕着这段山阶，远方群山仿佛朝向虹台。西边不远便是通往虹台入口的葬剑亭。",
+    "mapX": 2,
+    "mapY": 2,
+    "exits": {"south": "waterfog_wpath4", "west": "waterfog_sword_tomb"}
+  },
+  {
+    "id": "waterfog_sword_tomb",
+    "name": "葬剑亭",
+    "areaId": "waterfog",
+    "description": "山腰亭前立着一块两丈多高的石碑。夏夜野风穿亭而过时会发出呜呜哭声，因此得名水烟十景之一的“孤亭剑泣”。",
+    "mapX": 1,
+    "mapY": 2,
+    "exits": {"east": "waterfog_wpath5"},
+    "actions": [
+      {
+        "id": "read_sword_tomb_monolith",
+        "label": "阅读葬剑碑铭",
+        "description": "阅读亭前高大石碑上的旧事。",
+        "resultRoomId": "waterfog_sword_tomb",
+        "log": "碑文记载风波剑神黎红药葬剑于此，又告诫后人不可因比武不胜而行奸计害人之事。",
+        "setsQuestFlag": "waterfog_sword_tomb_read",
+        "conditions": {"forbiddenFlags": ["waterfog_sword_tomb_read"]}
       }
     ]
   }

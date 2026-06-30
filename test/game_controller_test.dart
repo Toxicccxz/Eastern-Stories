@@ -213,6 +213,353 @@ void main() {
     );
   });
 
+  test('waterfog mountain route reaches the fighter guild hall', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'snow_stone_road',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'snow_stone_road'},
+      ),
+    );
+
+    for (final direction in const [
+      Direction.north,
+      Direction.west,
+      Direction.west,
+      Direction.north,
+      Direction.north,
+      Direction.east,
+      Direction.north,
+      Direction.north,
+      Direction.west,
+      Direction.north,
+      Direction.north,
+      Direction.north,
+    ]) {
+      controller.dispatch(GameAction.move(direction));
+    }
+
+    expect(controller.state.currentRoomId, 'waterfog_guildhall');
+    expect(
+      controller.state.visitedRoomIds,
+      containsAll([
+        'waterfog_sroad3',
+        'waterfog_clifftop',
+        'waterfog_frontyard',
+        'waterfog_entrance',
+      ]),
+    );
+    controller.dispatch(
+      const GameAction.performRoomAction('join_fighter_guild'),
+    );
+    expect(controller.state.questFlags, contains('fighter_guild_member'));
+  });
+
+  test('waterfog inscription quest visits both original monuments', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'waterfog_forehall',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'waterfog_forehall'},
+        questFlags: {'fighter_guild_member'},
+      ),
+    );
+
+    controller.dispatch(
+      const GameAction.selectDialogue(
+        'waterfog_elder_yan',
+        'start_waterfog_inscriptions',
+      ),
+    );
+    expect(
+      controller.state.questStatuses['waterfog_inscriptions'],
+      QuestStatus.active,
+    );
+
+    for (final direction in const [
+      Direction.west,
+      Direction.down,
+      Direction.south,
+      Direction.east,
+      Direction.south,
+      Direction.west,
+      Direction.west,
+    ]) {
+      controller.dispatch(GameAction.move(direction));
+    }
+    controller.dispatch(
+      const GameAction.performRoomAction('read_honggu_stele'),
+    );
+    for (final direction in const [
+      Direction.north,
+      Direction.north,
+      Direction.north,
+      Direction.west,
+    ]) {
+      controller.dispatch(GameAction.move(direction));
+    }
+    controller.dispatch(
+      const GameAction.performRoomAction('read_sword_tomb_monolith'),
+    );
+    expect(
+      controller.state.questFlags,
+      containsAll(['waterfog_honggu_stele_read', 'waterfog_sword_tomb_read']),
+    );
+
+    for (final direction in const [
+      Direction.east,
+      Direction.south,
+      Direction.south,
+      Direction.south,
+      Direction.east,
+      Direction.east,
+      Direction.north,
+      Direction.west,
+      Direction.north,
+      Direction.up,
+      Direction.east,
+    ]) {
+      controller.dispatch(GameAction.move(direction));
+    }
+    expect(controller.state.currentRoomId, 'waterfog_forehall');
+    controller.dispatch(
+      const GameAction.selectDialogue(
+        'waterfog_elder_yan',
+        'finish_waterfog_inscriptions',
+      ),
+    );
+
+    expect(
+      controller.state.questStatuses['waterfog_inscriptions'],
+      QuestStatus.completed,
+    );
+    expect(
+      controller.state.questFlags,
+      contains('waterfog_inscriptions_reported'),
+    );
+  });
+
+  test('old pine forest entrance connects both stable branches', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'snow_square',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'snow_square'},
+      ),
+    );
+
+    for (final direction in const [
+      Direction.east,
+      Direction.east,
+      Direction.east,
+      Direction.south,
+      Direction.south,
+      Direction.south,
+      Direction.east,
+    ]) {
+      controller.dispatch(GameAction.move(direction));
+    }
+    expect(controller.state.currentRoomId, 'oldpine_clearing');
+
+    for (final direction in const [
+      Direction.east,
+      Direction.east,
+      Direction.east,
+    ]) {
+      controller.dispatch(GameAction.move(direction));
+    }
+    expect(controller.state.currentRoomId, 'oldpine_east_path3');
+    expect(
+      repository
+          .visibleNpcsInRoom(controller.state, controller.state.currentRoomId)
+          .map((npc) => npc.id),
+      contains('oldpine_maniac'),
+    );
+
+    for (final direction in const [
+      Direction.west,
+      Direction.west,
+      Direction.west,
+      Direction.north,
+    ]) {
+      controller.dispatch(GameAction.move(direction));
+    }
+    expect(controller.state.currentRoomId, 'oldpine_slope_path1');
+    expect(
+      repository
+          .visibleNpcsInRoom(controller.state, controller.state.currentRoomId)
+          .map((npc) => npc.id),
+      contains('oldpine_bandit_scout'),
+    );
+  });
+
+  test('old pine forest actions form a complete ravine route', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'oldpine_clearing',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'oldpine_clearing'},
+      ),
+    );
+
+    controller.dispatch(
+      const GameAction.performRoomAction('climb_ancient_pine'),
+    );
+    controller.dispatch(const GameAction.move(Direction.up));
+    controller.dispatch(const GameAction.move(Direction.up));
+    expect(controller.state.currentRoomId, 'oldpine_tree3');
+    for (var step = 0; step < 3; step++) {
+      controller.dispatch(const GameAction.move(Direction.down));
+    }
+    expect(controller.state.currentRoomId, 'oldpine_clearing');
+
+    controller.dispatch(const GameAction.move(Direction.east));
+    controller.dispatch(const GameAction.move(Direction.east));
+    controller.dispatch(
+      const GameAction.performRoomAction('swing_below_stone_bridge'),
+    );
+    expect(controller.state.currentRoomId, 'oldpine_secret_entrance');
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(const GameAction.move(Direction.north));
+    expect(controller.state.currentRoomId, 'oldpine_deep_passage');
+    expect(
+      repository
+          .visibleNpcsInRoom(controller.state, controller.state.currentRoomId)
+          .map((npc) => npc.id),
+      contains('oldpine_venom_snake'),
+    );
+
+    controller.dispatch(const GameAction.move(Direction.south));
+    controller.dispatch(const GameAction.move(Direction.south));
+    for (var step = 0; step < 4; step++) {
+      controller.dispatch(const GameAction.move(Direction.south));
+    }
+    expect(controller.state.currentRoomId, 'oldpine_lake');
+    expect(
+      repository
+          .visibleNpcsInRoom(controller.state, controller.state.currentRoomId)
+          .map((npc) => npc.id),
+      contains('oldpine_giant_serpent'),
+    );
+
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(
+      const GameAction.performRoomAction('climb_ravine_wall'),
+    );
+    controller.dispatch(
+      const GameAction.performRoomAction('climb_out_of_ravine'),
+    );
+    expect(controller.state.currentRoomId, 'oldpine_east_path3');
+  });
+
+  test('old pine cave route rewards the original parry manual', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'oldpine_deep_passage',
+        visitedRoomIds: {
+          ...initialState.visitedRoomIds,
+          'oldpine_deep_passage',
+        },
+      ),
+    );
+
+    controller.dispatch(const GameAction.startCombat('oldpine_venom_snake'));
+    for (var turn = 0; turn < 20 && controller.state.combat != null; turn++) {
+      controller.dispatch(const GameAction.attack());
+    }
+    expect(
+      controller.state.npcStates['oldpine_venom_snake']?.isDefeated,
+      isTrue,
+    );
+
+    controller.dispatch(
+      const GameAction.performRoomAction('climb_passage_stone'),
+    );
+    controller.dispatch(
+      const GameAction.performRoomAction('descend_into_oldpine_caves'),
+    );
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(const GameAction.move(Direction.east));
+    controller.dispatch(
+      const GameAction.performRoomAction('follow_cave_water_sound'),
+    );
+    expect(controller.state.currentRoomId, 'oldpine_cave5');
+
+    controller.dispatch(
+      const GameAction.performRoomAction('bury_oldpine_skeleton'),
+    );
+    expect(
+      controller.state.inventoryItemIds,
+      contains('oldpine_parry_essentials'),
+    );
+    expect(controller.state.questFlags, contains('oldpine_skeleton_buried'));
+    expect(
+      repository
+          .room('oldpine_cave5')
+          .availableActions(controller.state)
+          .map((action) => action.id),
+      isNot(contains('bury_oldpine_skeleton')),
+    );
+
+    controller.dispatch(
+      const GameAction.performRoomAction('leave_oldpine_caves'),
+    );
+    expect(controller.state.currentRoomId, 'oldpine_waterfall');
+  });
+
+  test('old pine maze leads through the gated bandit keep', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'oldpine_east_path3',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'oldpine_east_path3'},
+        player: initialState.player.copyWith(hp: 400, maxHp: 400),
+        inventoryItemIds: ['hengbing_sword'],
+      ),
+    );
+    controller.dispatch(const GameAction.equipItem('hengbing_sword'));
+
+    controller.dispatch(
+      const GameAction.performRoomAction('enter_oldpine_maze'),
+    );
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(const GameAction.move(Direction.east));
+    expect(controller.state.currentRoomId, 'oldpine_keep_entrance');
+    expect(
+      repository.room('oldpine_keep_entrance').availableExits(controller.state),
+      isNot(contains(Direction.east)),
+    );
+
+    _defeatNpc(controller, 'oldpine_keep_gate_guard');
+    expect(
+      repository.room('oldpine_keep_entrance').availableExits(controller.state),
+      contains(Direction.east),
+    );
+    controller.dispatch(const GameAction.move(Direction.east));
+    expect(
+      repository.room('oldpine_keep_yard').availableExits(controller.state),
+      isNot(contains(Direction.east)),
+    );
+
+    _defeatNpc(controller, 'oldpine_keep_yard_guard');
+    _defeatNpc(controller, 'oldpine_bandit_leader');
+    expect(
+      repository.room('oldpine_keep_yard').availableExits(controller.state),
+      contains(Direction.east),
+    );
+    controller.dispatch(const GameAction.move(Direction.east));
+    expect(controller.state.currentRoomId, 'oldpine_keep_hall');
+    _defeatNpc(controller, 'oldpine_commander');
+    expect(controller.state.npcStates['oldpine_commander']?.isDefeated, isTrue);
+  });
+
   test('dropping an item moves it into the current room', () {
     final controller = GameController(repository: repository);
 
@@ -984,6 +1331,14 @@ QuestView _questView(GameController controller, String questId) {
   return controller.questViews().firstWhere(
     (quest) => quest.definition.id == questId,
   );
+}
+
+void _defeatNpc(GameController controller, String npcId) {
+  controller.dispatch(GameAction.startCombat(npcId));
+  for (var turn = 0; turn < 100 && controller.state.combat != null; turn++) {
+    controller.dispatch(const GameAction.attack());
+  }
+  expect(controller.state.npcStates[npcId]?.isDefeated, isTrue);
 }
 
 void _moveToGeneralTent(GameController controller) {
