@@ -262,7 +262,7 @@ class CombatSystem {
       ),
       npcStates: npcStates,
       combat: null,
-      log: state.logWith('你不敌$enemyName，昏迷后被人送回刘家小房。'),
+      log: state.logWith('你不敌$enemyName，昏迷后被人送回饮风客栈。'),
     );
   }
 

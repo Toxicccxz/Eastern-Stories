@@ -304,5 +304,130 @@
     "name": "佩刀旅客",
     "description": "一名佩着飞刀的旅客靠窗而坐，衣着普通，目光却不时扫过客栈门口。",
     "greeting": "佩刀旅客说道：江湖路远，先认清道路，再谈行侠仗义。"
+  },
+  {
+    "id": "snow_banker_annihir",
+    "name": "安惜迩",
+    "description": "安惜迩是个相当斯文的年轻人，年纪轻轻便是一家大钱庄的老板。镇民对他的来历和一身稀奇武功都觉得神秘莫测。",
+    "greeting": "安惜迩从账册上抬起眼，温和地向你点了点头。"
+  },
+  {
+    "id": "snow_smith_wang",
+    "name": "王铁匠",
+    "description": "王铁匠正用铁钳夹住一块红热的铁块放进炉中，粗壮手臂上满是汗水与炭灰。",
+    "greeting": "王铁匠说道：锄头和铲子都有人订了，铁锤倒还有一把。",
+    "shop": {
+      "products": [
+        {"itemId": "snow_smith_hammer", "initialStock": -1}
+      ]
+    }
+  },
+  {
+    "id": "snow_herbalist_yang",
+    "name": "杨掌柜",
+    "description": "杨掌柜是附近有名的善人，常施舍草药给付不起药钱的穷人，年轻时曾跟山烟寺玄智和尚学医。",
+    "greeting": "杨掌柜说道：若只是皮肉小伤，敷些金创药便好。",
+    "shop": {
+      "products": [
+        {"itemId": "snow_hurt_drug", "initialStock": -1},
+        {"itemId": "snow_snake_drug", "initialStock": -1}
+      ]
+    }
+  },
+  {
+    "id": "snow_woodcutter",
+    "name": "樵夫",
+    "description": "一个身穿普通樵夫衣服的粗壮汉子，肩背宽阔，像是刚从山里砍柴回来。",
+    "greeting": "樵夫叹道：野羊山那些牛鼻子不知施了什么法，前天害我差点迷路。"
+  },
+  {
+    "id": "snow_post_officer_du",
+    "name": "杜宽",
+    "description": "杜宽担任雪亭驿长已有十几年。他几次放弃升迁，只因舍不得离开雪亭镇，镇民对他的风评很好。",
+    "greeting": "杜宽说道：这里便是雪亭驿，你是要寄信还是收信？"
+  },
+  {
+    "id": "snow_temple_keeper",
+    "name": "庙祝",
+    "description": "这个老人看起来七十多岁，佝偻的身影守在香火熏黑的神案旁。",
+    "greeting": "庙祝说道：这位少侠，捐点香火钱积些阴德吧。"
+  },
+  {
+    "id": "snow_drunk",
+    "name": "醉汉",
+    "description": "一个喝得醉醺醺的年轻人抱着酒袋，走起路来东倒西歪。",
+    "greeting": "醉汉含糊地说道：酒……给我酒……"
+  },
+  {
+    "id": "snow_scavenger",
+    "name": "收破烂的",
+    "description": "这个人不但沿街收破烂，自己也穿得破烂不堪。",
+    "greeting": "收破烂的拖长声音吆喝：收破烂哪……"
+  },
+  {
+    "id": "snow_farmer",
+    "name": "农夫",
+    "description": "你看到一位面色黝黑的农夫，脚上穿着草鞋，身上披着旧蓑衣。",
+    "greeting": "农夫憨厚地点点头，像是急着赶路回田里。"
+  },
+  {
+    "id": "snow_crazy_dog",
+    "name": "疯狗",
+    "description": "一只浑身脏兮兮的野狗，一双眼睛正恶狠狠地瞪着你。",
+    "greeting": "疯狗伏低身子，喉咙里发出低沉的吠声。",
+    "combat": {
+      "maxHp": 22,
+      "attack": 6,
+      "defense": 2,
+      "rewardExperience": 12,
+      "respawnAfterMoves": 4,
+      "specialMove": {
+        "name": "乱咬",
+        "interval": 3,
+        "damageBonus": 2,
+        "message": "疯狗突然跳了起来，口中乱咬，逼得你连退两步。"
+      }
+    }
+  },
+  {
+    "id": "snow_wild_dog",
+    "name": "野狗",
+    "description": "一只浑身脏兮兮的野狗，绕着路边嗅来嗅去。",
+    "greeting": "野狗用鼻子闻了闻你的脚，又对着你摇了摇尾巴。",
+    "combat": {
+      "maxHp": 18,
+      "attack": 4,
+      "defense": 2,
+      "rewardExperience": 8,
+      "respawnAfterMoves": 4,
+      "specialMove": {
+        "name": "撕咬",
+        "interval": 3,
+        "damageBonus": 1,
+        "message": "野狗猛地扑上来，在你身旁胡乱撕咬。"
+      }
+    }
+  },
+  {
+    "id": "snow_teacher_wei",
+    "name": "魏无极",
+    "description": "魏无极是个博学多闻的教书先生，年轻时曾经中过举人，因为生性喜爱自由而不愿做官，如今在雪亭镇以教书为业。",
+    "greeting": "魏无极说道：读书识字是做人的第一步，若有心向学，什么时候开始都不算晚。",
+    "intelligence": 26,
+    "teachingSkills": [
+      {"skillId": "literate", "maxLevel": 50, "access": "direct"}
+    ],
+    "dialogueOptions": [
+      {
+        "id": "ask_tuition",
+        "label": "询问学费",
+        "response": "魏无极说道：学问是金钱买不到的，不过若你有心，五两银子便可入门。"
+      },
+      {
+        "id": "ask_liu_anlu_secret",
+        "label": "询问刘安禄",
+        "response": "魏无极沉吟道：你说的是野羊山寨的二寨主，人称血手刘三的刘安禄吗？这名字，可不是寻常门房该有的来历。"
+      }
+    ]
   }
 ]

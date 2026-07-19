@@ -590,6 +590,10 @@ class _WorldMapLayout {
       Direction.south => const Offset(0, 1),
       Direction.east => const Offset(1, 0),
       Direction.west => const Offset(-1, 0),
+      Direction.northeast => const Offset(1, -1),
+      Direction.northwest => const Offset(-1, -1),
+      Direction.southeast => const Offset(1, 1),
+      Direction.southwest => const Offset(-1, 1),
       Direction.up => const Offset(0, -1),
       Direction.down => const Offset(0, 1),
     };
@@ -958,6 +962,10 @@ class _TopologyMapPainter extends CustomPainter {
       Direction.south => const Offset(0, 1),
       Direction.east => const Offset(1, 0),
       Direction.west => const Offset(-1, 0),
+      Direction.northeast => const Offset(1, -1),
+      Direction.northwest => const Offset(-1, -1),
+      Direction.southeast => const Offset(1, 1),
+      Direction.southwest => const Offset(-1, 1),
       Direction.up => const Offset(0, -1),
       Direction.down => const Offset(0, 1),
     };

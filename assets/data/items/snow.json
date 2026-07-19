@@ -42,5 +42,39 @@
     "restoreHp": 28,
     "buyPrice": 12,
     "sellPrice": 5
+  },
+  {
+    "id": "snow_smith_hammer",
+    "name": "铁锤",
+    "description": "一把沉甸甸的打铁用铁锤，王铁匠做得十分坚固耐用。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "unarmed",
+    "attackPower": 5,
+    "buyPrice": 300,
+    "sellPrice": 120
+  },
+  {
+    "id": "snow_hurt_drug",
+    "name": "金创药",
+    "description": "桑邻药铺出售的外伤药，适合敷治寻常皮肉伤。",
+    "restoreHp": 24,
+    "buyPrice": 18,
+    "sellPrice": 7
+  },
+  {
+    "id": "snow_snake_drug",
+    "name": "蛇药",
+    "description": "杨掌柜配制的蛇伤药散，带着淡淡檀香。",
+    "restoreHp": 12,
+    "buyPrice": 12,
+    "sellPrice": 5
+  },
+  {
+    "id": "snow_round_shield",
+    "name": "圆盾",
+    "description": "淳风武馆地下密室里藏着的一面旧圆盾，边缘已经有些磨损，却仍然结实。",
+    "equipmentSlot": "accessory",
+    "defensePower": 2,
+    "sellPrice": 8
   }
 ]

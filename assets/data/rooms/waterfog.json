@@ -6,7 +6,7 @@
     "description": "宽敞坚实的青石板大道沿山势展开，北边山腰上已能望见水烟阁的琉璃屋瓦。这里开始便是历代水烟阁主人管辖的封地。",
     "mapX": 6,
     "mapY": 10,
-    "exits": {"east": "snow_stone_road", "west": "waterfog_sroad2"}
+    "exits": {"east": "snow_waterfog_road", "west": "waterfog_sroad2"}
   },
   {
     "id": "waterfog_sroad2",

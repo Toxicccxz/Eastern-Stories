@@ -111,10 +111,7 @@
     "mapY": 6,
     "exits": {
       "north": "capital_west_street",
-      "up": {
-        "roomId": "capital_taibai_upstairs",
-        "conditions": {"requiredFlags": ["capital_taibai_upstairs_allowed"]}
-      }
+      "up": "capital_taibai_upstairs"
     },
     "npcIds": ["capital_waiter", "capital_qian"]
   },
@@ -156,12 +153,8 @@
     "mapY": 7,
     "exits": {
       "south": "capital_bridge",
-      "north": {
-        "roomId": "capital_meridian_gate",
-        "conditions": {"requiredFlags": ["capital_exam_verified"]}
-      }
-    },
-    "npcIds": ["capital_exam_instructor", "capital_exam_candidate"]
+      "north": "capital_meridian_gate"
+    }
   },
   {
     "id": "capital_meridian_gate",

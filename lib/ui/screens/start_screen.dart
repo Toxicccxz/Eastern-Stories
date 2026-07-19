@@ -58,7 +58,7 @@ class _StartScreenState extends State<StartScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                '从刘家小房醒来，沿着村路、花园与玉螺湖，慢慢走进这段江湖。',
+                '从雪亭镇饮风客栈醒来，沿着青石官道，慢慢走进这段江湖。',
                 textAlign: TextAlign.center,
                 style: Theme.of(
                   context,

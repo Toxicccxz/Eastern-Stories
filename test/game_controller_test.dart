@@ -38,6 +38,100 @@ void main() {
     );
   });
 
+  test('Snow Pavilion main street reaches the original town services', () {
+    final controller = GameController(repository: repository);
+
+    controller.dispatch(const GameAction.move(Direction.east));
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(const GameAction.move(Direction.west));
+    expect(controller.state.currentRoomId, 'snow_bank');
+    expect(
+      repository.visibleNpcsInRoom(controller.state, 'snow_bank').single.name,
+      '安惜迩',
+    );
+
+    controller.dispatch(const GameAction.move(Direction.east));
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(const GameAction.move(Direction.west));
+    expect(controller.state.currentRoomId, 'snow_smithy');
+    expect(
+      repository.npc('snow_smith_wang').shop?.products.single.itemId,
+      'snow_smith_hammer',
+    );
+
+    controller.dispatch(const GameAction.move(Direction.east));
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(const GameAction.move(Direction.west));
+    expect(controller.state.currentRoomId, 'snow_herbshop');
+    expect(repository.npc('snow_herbalist_yang').shop?.products.length, 2);
+
+    controller.dispatch(const GameAction.move(Direction.east));
+    controller.dispatch(const GameAction.move(Direction.east));
+    expect(controller.state.currentRoomId, 'snow_hockshop');
+    controller.dispatch(const GameAction.move(Direction.west));
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(const GameAction.move(Direction.west));
+    expect(controller.state.currentRoomId, 'snow_postoffice');
+
+    controller.replaceState(
+      controller.state.copyWith(currentRoomId: 'snow_square'),
+    );
+    controller.dispatch(const GameAction.move(Direction.east));
+    expect(controller.state.currentRoomId, 'snow_temple');
+    controller.dispatch(const GameAction.move(Direction.south));
+    expect(controller.state.currentRoomId, 'snow_east_path1');
+  });
+
+  test(
+    'Snow Pavilion academy and weapon storage follow original room layout',
+    () {
+      final controller = GameController(repository: repository);
+
+      controller.dispatch(const GameAction.move(Direction.east));
+      controller.dispatch(const GameAction.move(Direction.south));
+      controller.dispatch(const GameAction.move(Direction.west));
+      controller.dispatch(const GameAction.move(Direction.south));
+      expect(controller.state.currentRoomId, 'snow_academy');
+      expect(
+        repository
+            .visibleNpcsInRoom(controller.state, 'snow_academy')
+            .map((npc) => npc.id),
+        contains('snow_teacher_wei'),
+      );
+
+      controller.replaceState(
+        controller.state.copyWith(currentRoomId: 'chunfeng_training_ground'),
+      );
+      controller.dispatch(const GameAction.move(Direction.north));
+      expect(controller.state.currentRoomId, 'chunfeng_weapon_storage');
+      expect(
+        repository
+            .room('chunfeng_weapon_storage')
+            .availableExits(controller.state),
+        isNot(contains(Direction.down)),
+      );
+
+      controller.dispatch(
+        const GameAction.performRoomAction('push_weapon_shelf'),
+      );
+      expect(
+        controller.state.questFlags,
+        contains('chunfeng_secret_storage_opened'),
+      );
+      expect(
+        repository
+            .room('chunfeng_weapon_storage')
+            .availableExits(controller.state),
+        contains(Direction.down),
+      );
+
+      controller.dispatch(const GameAction.move(Direction.down));
+      controller.dispatch(const GameAction.pickUp('snow_round_shield'));
+      expect(controller.state.currentRoomId, 'chunfeng_secret_storage');
+      expect(controller.state.inventoryItemIds, contains('snow_round_shield'));
+    },
+  );
+
   test('moving through an exit updates current room and log', () {
     final controller = _controllerAtLiuHome(repository);
 
@@ -137,100 +231,26 @@ void main() {
     );
   });
 
-  test('capital exam storyline unlocks the meridian gate', () {
+  test('original capital routes do not require an exam storyline', () {
     final initialState = repository.createInitialState();
     final controller = GameController(
       repository: repository,
       initialState: initialState.copyWith(
-        currentRoomId: 'capital_bridge',
-        visitedRoomIds: {...initialState.visitedRoomIds, 'capital_bridge'},
-        questStatuses: {'capital_passage': QuestStatus.completed},
-        questFlags: {'capital_passage_registered'},
+        currentRoomId: 'capital_taibai_inn',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'capital_taibai_inn'},
       ),
     );
 
-    controller.dispatch(
-      const GameAction.selectDialogue(
-        'capital_trader',
-        'ask_about_bought_office',
-      ),
-    );
-    expect(
-      controller.state.questStatuses['capital_exam_corruption'],
-      QuestStatus.active,
-    );
-
-    for (final direction in const [
-      Direction.west,
-      Direction.west,
-      Direction.west,
-      Direction.west,
-      Direction.south,
-    ]) {
-      controller.dispatch(GameAction.move(direction));
-    }
-    expect(controller.state.currentRoomId, 'capital_taibai_inn');
-    controller.dispatch(
-      const GameAction.selectDialogue('capital_qian', 'ask_qian_about_office'),
-    );
-    controller.dispatch(
-      const GameAction.selectDialogue(
-        'capital_waiter',
-        'allow_taibai_upstairs',
-      ),
-    );
     controller.dispatch(const GameAction.move(Direction.up));
     expect(controller.state.currentRoomId, 'capital_taibai_upstairs');
-    controller.dispatch(
-      const GameAction.selectDialogue(
-        'capital_noble_scion',
-        'ask_about_exam_list',
-      ),
+    controller.replaceState(
+      controller.state.copyWith(currentRoomId: 'capital_training_ground'),
     );
-
-    for (final direction in const [
-      Direction.down,
-      Direction.north,
-      Direction.east,
-      Direction.east,
-      Direction.east,
-      Direction.east,
-      Direction.north,
-    ]) {
-      controller.dispatch(GameAction.move(direction));
-    }
-    expect(controller.state.currentRoomId, 'capital_training_ground');
+    controller.dispatch(const GameAction.move(Direction.north));
+    expect(controller.state.currentRoomId, 'capital_meridian_gate');
     expect(
-      repository
-          .room('capital_training_ground')
-          .availableExits(controller.state),
-      isNot(contains(Direction.north)),
-    );
-
-    controller.dispatch(const GameAction.startCombat('capital_exam_candidate'));
-    for (var turn = 0; turn < 20 && controller.state.combat != null; turn++) {
-      controller.dispatch(const GameAction.attack());
-    }
-    expect(
-      controller.state.npcStates['capital_exam_candidate']?.isDefeated,
-      isTrue,
-    );
-    controller.dispatch(
-      const GameAction.selectDialogue(
-        'capital_exam_instructor',
-        'report_false_candidate',
-      ),
-    );
-
-    expect(
-      controller.state.questStatuses['capital_exam_corruption'],
-      QuestStatus.completed,
-    );
-    expect(
-      repository
-          .room('capital_training_ground')
-          .availableExits(controller.state),
-      contains(Direction.north),
+      repository.visibleNpcsInRoom(controller.state, 'capital_training_ground'),
+      isEmpty,
     );
   });
 
@@ -246,6 +266,7 @@ void main() {
 
     for (final direction in const [
       Direction.north,
+      Direction.west,
       Direction.west,
       Direction.west,
       Direction.north,
@@ -277,39 +298,16 @@ void main() {
     expect(controller.state.questFlags, contains('fighter_guild_member'));
   });
 
-  test('waterfog inscription quest visits both original monuments', () {
+  test('waterfog monuments can be read without an invented quest', () {
     final initialState = repository.createInitialState();
     final controller = GameController(
       repository: repository,
       initialState: initialState.copyWith(
-        currentRoomId: 'waterfog_forehall',
-        visitedRoomIds: {...initialState.visitedRoomIds, 'waterfog_forehall'},
-        questFlags: {'fighter_guild_member'},
+        currentRoomId: 'waterfog_wpath2',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'waterfog_wpath2'},
       ),
     );
 
-    controller.dispatch(
-      const GameAction.selectDialogue(
-        'waterfog_elder_yan',
-        'start_waterfog_inscriptions',
-      ),
-    );
-    expect(
-      controller.state.questStatuses['waterfog_inscriptions'],
-      QuestStatus.active,
-    );
-
-    for (final direction in const [
-      Direction.west,
-      Direction.down,
-      Direction.south,
-      Direction.east,
-      Direction.south,
-      Direction.west,
-      Direction.west,
-    ]) {
-      controller.dispatch(GameAction.move(direction));
-    }
     controller.dispatch(
       const GameAction.performRoomAction('read_honggu_stele'),
     );
@@ -329,36 +327,9 @@ void main() {
       containsAll(['waterfog_honggu_stele_read', 'waterfog_sword_tomb_read']),
     );
 
-    for (final direction in const [
-      Direction.east,
-      Direction.south,
-      Direction.south,
-      Direction.south,
-      Direction.east,
-      Direction.east,
-      Direction.north,
-      Direction.west,
-      Direction.north,
-      Direction.up,
-      Direction.east,
-    ]) {
-      controller.dispatch(GameAction.move(direction));
-    }
-    expect(controller.state.currentRoomId, 'waterfog_forehall');
-    controller.dispatch(
-      const GameAction.selectDialogue(
-        'waterfog_elder_yan',
-        'finish_waterfog_inscriptions',
-      ),
-    );
-
     expect(
-      controller.state.questStatuses['waterfog_inscriptions'],
-      QuestStatus.completed,
-    );
-    expect(
-      controller.state.questFlags,
-      contains('waterfog_inscriptions_reported'),
+      controller.state.questStatuses,
+      isNot(contains('waterfog_inscriptions')),
     );
   });
 
@@ -373,6 +344,7 @@ void main() {
     );
 
     for (final direction in const [
+      Direction.south,
       Direction.east,
       Direction.east,
       Direction.east,
@@ -851,7 +823,7 @@ void main() {
     expect(controller.state.log, contains(contains('Lv.2')));
   });
 
-  test('enemy special move triggers on its configured round', () {
+  test('original ice dragon has no invented timed special move', () {
     final initialState = repository.createInitialState();
     final controller = GameController(
       repository: repository,
@@ -868,8 +840,8 @@ void main() {
     controller.dispatch(const GameAction.attack());
 
     expect(controller.state.combat?.round, 2);
-    expect(controller.state.player.hp, 66);
-    expect(controller.state.log.last, contains('寒息'));
+    expect(controller.state.player.hp, 70);
+    expect(controller.state.log.last, isNot(contains('寒息')));
   });
 
   test('defeated player recovers at the starting room', () {
@@ -1220,7 +1192,7 @@ void main() {
     expect(controller.characterStats().attack, 18);
     expect(controller.state.learnedSkillIds, contains('parry'));
     expect(controller.state.combat, isNull);
-    expect(controller.state.player.silver, 108);
+    expect(controller.state.player.silver, 28);
     expect(controller.state.player.level, 2);
     expect(controller.state.player.experience, 10);
     expect(controller.state.player.hp, 92);
@@ -1232,19 +1204,9 @@ void main() {
       ),
       isEmpty,
     );
-    expect(
-      controller.repository
-          .room(controller.state.currentRoomId)
-          .visibleItemIds(controller.state),
-      contains('ice_dragon_scale'),
-    );
     expect(controller.state.log, contains(contains('白鳞冰龙')));
-    expect(controller.state.log.last, contains('冰龙白鳞'));
-
-    controller.dispatch(const GameAction.pickUp('ice_dragon_scale'));
     controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
 
-    expect(controller.state.inventoryItemIds, contains('ice_dragon_scale'));
     expect(controller.state.combat, isNull);
 
     for (var index = 0; index < 3; index += 1) {
@@ -1252,13 +1214,9 @@ void main() {
       controller.dispatch(const GameAction.move(Direction.west));
     }
 
-    expect(controller.state.npcStates['white_ice_dragon']?.isDefeated, isFalse);
-    expect(
-      controller.state.npcStates['white_ice_dragon']?.hasDroppedLoot,
-      isTrue,
-    );
+    expect(controller.state.npcStates['white_ice_dragon']?.isDefeated, isTrue);
     controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
-    expect(controller.state.combat, isNotNull);
+    expect(controller.state.combat, isNull);
   });
 
   test('enemy damage persists after fleeing and restarting combat', () {

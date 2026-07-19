@@ -3,6 +3,10 @@ enum Direction {
   south('南'),
   east('东'),
   west('西'),
+  northeast('东北'),
+  northwest('西北'),
+  southeast('东南'),
+  southwest('西南'),
   up('上'),
   down('下');
 

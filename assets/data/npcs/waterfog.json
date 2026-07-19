@@ -92,29 +92,6 @@
     "id": "waterfog_elder_yan",
     "name": "颜违",
     "description": "水烟阁七长老颜违是七位长老中最年轻的一位，办事精明干练，常负责筹办武林大会。",
-    "greeting": "颜违正在整理武林大会旧册，见你进来便微微颔首。",
-    "dialogueOptions": [
-      {
-        "id": "start_waterfog_inscriptions",
-        "label": "询问水烟阁旧事",
-        "response": "西侧山路有虹谷石台和葬剑亭。你若想了解水烟阁，不妨亲自读过两处碑文，再回来告诉我所得。",
-        "startsQuestId": "waterfog_inscriptions",
-        "conditions": {
-          "requiredFlags": ["fighter_guild_member"],
-          "requiredQuestStatuses": {"waterfog_inscriptions": "notStarted"}
-        }
-      },
-      {
-        "id": "finish_waterfog_inscriptions",
-        "label": "禀报碑文所记",
-        "response": "颜违点头道：一碑显前人功力，一碑戒后人品行。记住这两件事，才算真正到过水烟阁。",
-        "setsQuestFlag": "waterfog_inscriptions_reported",
-        "completesQuestId": "waterfog_inscriptions",
-        "conditions": {
-          "requiredFlags": ["waterfog_honggu_stele_read", "waterfog_sword_tomb_read"],
-          "requiredQuestStatuses": {"waterfog_inscriptions": "active"}
-        }
-      }
-    ]
+    "greeting": "颜违正在整理武林大会旧册，见你进来便微微颔首。"
   }
 ]
