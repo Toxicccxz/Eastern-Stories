@@ -7,16 +7,53 @@
     "mapX": 2,
     "mapY": 2,
     "exits": {"east": "snow_square", "up": "snow_inn_second_floor"},
-    "npcIds": ["snow_inn_waiter", "snow_inn_traveller", "snow_inn_blade_traveller"]
+    "npcIds": ["snow_inn_waiter", "snow_inn_traveller", "snow_inn_traveller_2"],
+    "actions": [
+      {
+        "id": "read_snow_inn_sign",
+        "label": "查看招牌",
+        "description": "看看靠近门口那块乌木雕成的招牌。",
+        "resultRoomId": "snow_inn",
+        "log": "招牌上写着：饮风客栈。"
+      }
+    ]
   },
   {
     "id": "snow_inn_second_floor",
     "name": "饮风客栈二楼",
     "areaId": "snow",
-    "description": "客栈二楼只留宿名头够大的客人。几扇房门紧闭，墙边楼梯通回一楼茶座。",
-    "mapX": 1,
-    "mapY": 2,
-    "exits": {"down": "snow_inn"}
+    "description": "你现在来到了饮风客栈的二楼，这家客栈有个很奇怪的规矩，就是只留宿名头够大的客人。墙边有一道楼梯通往一楼的茶座。",
+    "mapX": -1,
+    "mapY": 5,
+    "exits": {"west": "snow_inn_west_room", "north": "snow_inn_north_room", "east": "snow_inn_east_room", "down": "snow_inn"},
+    "npcIds": ["snow_rat", "snow_rat_2", "snow_rat_3", "snow_rat_4", "snow_rat_5", "snow_rat_6"]
+  },
+  {
+    "id": "snow_inn_west_room",
+    "name": "客房",
+    "areaId": "snow",
+    "description": "这是一间打扫得相当干净的客房，虽然所有的家具看起来都相当朴素，比不上县城里几家著名的大酒馆，但是自有一种敦厚亲切的感觉。",
+    "mapX": -2,
+    "mapY": 5,
+    "exits": {"east": "snow_inn_second_floor"}
+  },
+  {
+    "id": "snow_inn_north_room",
+    "name": "客房",
+    "areaId": "snow",
+    "description": "这是一间打扫得相当干净的客房，虽然所有的家具看起来都相当朴素，比不上县城里几家著名的大酒馆，但是自有一种敦厚亲切的感觉。",
+    "mapX": -1,
+    "mapY": 4,
+    "exits": {"south": "snow_inn_second_floor"}
+  },
+  {
+    "id": "snow_inn_east_room",
+    "name": "客房",
+    "areaId": "snow",
+    "description": "这是一间打扫得相当干净的客房，虽然所有的家具看起来都相当朴素，比不上县城里几家著名的大酒馆，但是自有一种敦厚亲切的感觉。",
+    "mapX": 0,
+    "mapY": 5,
+    "exits": {"west": "snow_inn_second_floor"}
   },
   {
     "id": "snow_stone_road",
@@ -54,7 +91,7 @@
     "mapX": 2,
     "mapY": 3,
     "exits": {"west": "snow_official_road", "east": "snow_south_street", "south": "snow_academy"},
-    "npcIds": ["snow_farmer"]
+    "npcIds": ["snow_farmer", "snow_farmer_2"]
   },
   {
     "id": "snow_academy",
@@ -82,7 +119,8 @@
     "description": "广场铺着整齐大石板，中央的木架已经饱经风雨，四周人来人往。",
     "mapX": 3,
     "mapY": 2,
-    "exits": {"south": "snow_south_street", "north": "snow_main_street", "west": "snow_inn", "east": "snow_temple"}
+    "exits": {"south": "snow_south_street", "north": "snow_main_street", "west": "snow_inn", "east": "snow_temple"},
+    "npcIds": ["snow_square_blade_traveller", "snow_square_blade_traveller_2", "snow_square_blade_traveller_3"]
   },
   {
     "id": "snow_main_street",
@@ -100,8 +138,39 @@
     "description": "大街向南通往镇前广场，东边是一间大宅院，西边打铁铺叮叮当当的声音远远便能听见。街上一个醉汉和收破烂的在人群间晃荡。",
     "mapX": 3,
     "mapY": 0,
-    "exits": {"south": "snow_main_street", "north": "snow_main_street3", "west": "snow_smithy"},
+    "exits": {"south": "snow_main_street", "north": "snow_main_street3", "west": "snow_smithy", "east": "snow_workplace"},
     "npcIds": ["snow_drunk", "snow_scavenger"]
+  },
+  {
+    "id": "snow_workplace",
+    "name": "谷物加工厂",
+    "areaId": "snow",
+    "description": "这是一间谷物加工厂，这里是谷子脱壳成米的地方。米厂老板是一个一看就知道十分精明的干瘦中年人，老是带着一脸奸笑。许多人正在忙忙碌碌地工作着，门口挂着一块告示。",
+    "mapX": 4,
+    "mapY": 0,
+    "allowsCombat": false,
+    "exits": {"west": "snow_main_street2"},
+    "npcIds": ["snow_worker"],
+    "actions": [
+      {
+        "id": "read_workplace_sign",
+        "label": "查看告示",
+        "description": "看看米厂门口挂着的告示写了什么。",
+        "resultRoomId": "snow_workplace",
+        "log": "告示上写着：现在正紧缺人手，急需雇佣一批短工来干活。工作一次，给工钱纹银一两。"
+      },
+      {
+        "id": "work_at_snow_workplace",
+        "label": "做短工",
+        "description": "在米厂帮忙舂米、搬袋，换一点工钱。",
+        "resultRoomId": "snow_workplace",
+        "log": "你卷起袖子在米厂里忙活了一阵，满身都是谷壳灰。老板数给你一两银子。",
+        "hpCost": 8,
+        "spiritCost": 12,
+        "rewardSilver": 1,
+        "failureLog": "你现在疲惫得很，米厂老板摆摆手，让你先去歇一歇。"
+      }
+    ]
   },
   {
     "id": "snow_main_street3",
@@ -158,7 +227,23 @@
     "mapX": 2,
     "mapY": -1,
     "exits": {"east": "snow_main_street3"},
-    "npcIds": ["snow_herbalist_yang", "snow_woodcutter"]
+    "npcIds": ["snow_herbalist_yang", "snow_woodcutter"],
+    "actions": [
+      {
+        "id": "read_herbshop_sign",
+        "label": "查看纸片",
+        "description": "看看柜台上贴着的发黄纸片。",
+        "resultRoomId": "snow_herbshop",
+        "log": "纸片上写着：价目表请向掌柜查询。"
+      },
+      {
+        "id": "inspect_herbshop_cabinet",
+        "label": "查看药柜",
+        "description": "仔细看看柜台后的巨大杉木药柜。",
+        "resultRoomId": "snow_herbshop",
+        "log": "药柜暗红色的纹理与几处磨得发亮的痕迹显示它年代相当久远；柜身和墙壁贴得非常紧密，看不出丝毫缝隙。"
+      }
+    ]
   },
   {
     "id": "snow_hockshop",
@@ -195,8 +280,28 @@
     "description": "老旧庙堂的神桌上供奉着红脸城隍，神案四周已被多年香火熏得乌黑。",
     "mapX": 4,
     "mapY": 2,
+    "allowsCombat": false,
     "exits": {"west": "snow_square", "south": "snow_east_path1"},
-    "npcIds": ["snow_temple_keeper"]
+    "npcIds": ["snow_temple_keeper"],
+    "itemIds": ["snow_paper_seal", "snow_paper_seal_2"],
+    "actions": [
+      {
+        "id": "inspect_snow_denotation_box",
+        "label": "查看功德箱",
+        "description": "看看神案旁那个收纳香火钱的功德箱。",
+        "resultRoomId": "snow_temple",
+        "log": "功德箱上落着一层香灰，箱口旁有几张桃符纸，像是庙祝平日画符所用。"
+      },
+      {
+        "id": "donate_to_snow_temple",
+        "label": "投香火钱",
+        "description": "向城隍庙功德箱里投入一两银子。",
+        "resultRoomId": "snow_temple",
+        "log": "你往功德箱里投入一两银子，庙祝向你点头致意。",
+        "silverCost": 1,
+        "failureLog": "你摸了摸身上，连一两银子也没有。"
+      }
+    ]
   },
   {
     "id": "chunfeng_school_gate",
@@ -336,7 +441,7 @@
     "mapX": 5,
     "mapY": 3,
     "exits": {"west": "snow_east_path1", "east": "snow_east_mountain_road"},
-    "npcIds": ["snow_wild_dog"]
+    "npcIds": ["snow_wild_dog", "snow_wild_dog_2"]
   },
   {
     "id": "snow_east_mountain_road",

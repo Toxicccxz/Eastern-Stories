@@ -38,10 +38,21 @@ class MovementSystem {
       return _withLog(state, '这里暂时不能这样做。');
     }
 
+    if (state.player.hp <= action.hpCost ||
+        state.player.spirit < action.spiritCost ||
+        state.player.silver < action.silverCost) {
+      return _withLog(state, action.failureLog ?? '你现在状态不好，先歇一歇吧。');
+    }
+
     final nextRoom = _repository.room(action.resultRoomId);
     return state.copyWith(
       currentRoomId: nextRoom.id,
       visitedRoomIds: {...state.visitedRoomIds, nextRoom.id},
+      player: state.player.copyWith(
+        hp: state.player.hp - action.hpCost,
+        spirit: state.player.spirit - action.spiritCost,
+        silver: state.player.silver - action.silverCost + action.rewardSilver,
+      ),
       questFlags:
           action.setsQuestFlag == null
               ? state.questFlags

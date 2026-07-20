@@ -12,7 +12,7 @@ void main() {
 
       expect(validator.errors, isEmpty);
       expect(validator.countFor('areas'), 7);
-      expect(validator.countFor('rooms'), 140);
+      expect(validator.countFor('rooms'), 144);
       expect(validator.countFor('quests'), 4);
     },
     timeout: const Timeout(Duration(seconds: 10)),

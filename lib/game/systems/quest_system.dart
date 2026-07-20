@@ -32,12 +32,28 @@ class QuestSystem {
 
   List<GiveItemOption> giveItemOptionsFor(GameState state, String npcId) {
     final npc = _repository.npc(npcId);
-    return [
-      for (final option in npc.giveItemOptions)
-        if (state.inventoryItemIds.contains(option.itemId) &&
-            (option.conditions?.isSatisfiedBy(state) ?? true))
-          option,
-    ];
+    final options = <GiveItemOption>[];
+    for (final option in npc.giveItemOptions) {
+      if (!(option.conditions?.isSatisfiedBy(state) ?? true)) {
+        continue;
+      }
+      if (option.acceptsAnyItem) {
+        for (final itemId in state.inventoryItemIds.toSet()) {
+          final item = _repository.item(itemId);
+          options.add(
+            option.copyWith(
+              itemId: itemId,
+              label: '${option.label}${item.name}',
+            ),
+          );
+        }
+        continue;
+      }
+      if (state.inventoryItemIds.contains(option.itemId)) {
+        options.add(option);
+      }
+    }
+    return options;
   }
 
   GameState talk(GameState state, String npcId) {
@@ -150,6 +166,20 @@ class QuestSystem {
               : {...state.questFlags, option.setsQuestFlag!},
       log: state.logWith('${npc.name}说道：“${option.response}”'),
     );
+    if (option.startsFollowing) {
+      final npcState = nextState.npcStates[npcId];
+      if (npcState != null) {
+        nextState = nextState.copyWith(
+          npcStates: {
+            ...nextState.npcStates,
+            npcId: npcState.copyWith(
+              roomId: nextState.currentRoomId,
+              isFollowing: true,
+            ),
+          },
+        );
+      }
+    }
     final completesQuestId = option.completesQuestId;
     if (completesQuestId != null) {
       nextState = _completeQuestWithExperience(nextState, completesQuestId);

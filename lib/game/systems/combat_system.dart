@@ -27,6 +27,11 @@ class CombatSystem {
       return _withLog(state, '你已经在战斗中。');
     }
 
+    final room = _repository.room(state.currentRoomId);
+    if (!room.allowsCombat) {
+      return _withLog(state, '这里不是动手的地方。');
+    }
+
     final npcState = state.npcStates[npcId];
     if (npcState == null ||
         npcState.roomId != state.currentRoomId ||

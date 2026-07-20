@@ -306,6 +306,19 @@
     "greeting": "佩刀旅客说道：江湖路远，先认清道路，再谈行侠仗义。"
   },
   {
+    "id": "snow_inn_traveller_2",
+    "name": "旅客",
+    "description": "一位风尘仆仆的外地旅客坐在茶座旁，像是在等同行的人回来。",
+    "greeting": "旅客说道：雪亭镇虽小，来往的人却不少，听一桌闲话也能知道半个江湖。",
+    "dialogueOptions": [
+      {
+        "id": "ask_about_snow_routes",
+        "label": "询问雪亭镇道路",
+        "response": "旅客说道：镇北是山坳，镇东有黄土小径，西南一路能去天驼关，北边青石官道则通水烟阁。"
+      }
+    ]
+  },
+  {
     "id": "snow_banker_annihir",
     "name": "安惜迩",
     "description": "安惜迩是个相当斯文的年轻人，年纪轻轻便是一家大钱庄的老板。镇民对他的来历和一身稀奇武功都觉得神秘莫测。",
@@ -356,19 +369,39 @@
     "id": "snow_drunk",
     "name": "醉汉",
     "description": "一个喝得醉醺醺的年轻人抱着酒袋，走起路来东倒西歪。",
-    "greeting": "醉汉含糊地说道：酒……给我酒……"
+    "greeting": "醉汉含糊地说道：酒……给我酒……",
+    "giveItemOptions": [
+      {
+        "itemId": "snow_wineskin",
+        "label": "给他酒袋",
+        "response": "醉汉接过酒袋灌了一口，咧嘴笑道：多谢啦……江湖路远，有酒便不冷。"
+      }
+    ]
   },
   {
     "id": "snow_scavenger",
     "name": "收破烂的",
     "description": "这个人不但沿街收破烂，自己也穿得破烂不堪。",
-    "greeting": "收破烂的拖长声音吆喝：收破烂哪……"
+    "greeting": "收破烂的拖长声音吆喝：收破烂哪……",
+    "giveItemOptions": [
+      {
+        "itemId": "*",
+        "label": "给他",
+        "response": "收破烂的笑道：多谢这位好心人！"
+      }
+    ]
   },
   {
     "id": "snow_farmer",
     "name": "农夫",
     "description": "你看到一位面色黝黑的农夫，脚上穿着草鞋，身上披着旧蓑衣。",
     "greeting": "农夫憨厚地点点头，像是急着赶路回田里。"
+  },
+  {
+    "id": "snow_farmer_2",
+    "name": "农夫",
+    "description": "一位面色黝黑的农夫挑着农具，脚上的草鞋沾着官道边的泥土。",
+    "greeting": "农夫说道：雪亭镇外的田地薄，日子却总还要过下去。"
   },
   {
     "id": "snow_crazy_dog",
@@ -380,6 +413,7 @@
       "attack": 6,
       "defense": 2,
       "rewardExperience": 12,
+      "dropItemIds": ["snow_bone"],
       "respawnAfterMoves": 4,
       "specialMove": {
         "name": "乱咬",
@@ -394,11 +428,48 @@
     "name": "野狗",
     "description": "一只浑身脏兮兮的野狗，绕着路边嗅来嗅去。",
     "greeting": "野狗用鼻子闻了闻你的脚，又对着你摇了摇尾巴。",
+    "giveItemOptions": [
+      {
+        "itemId": "snow_bone",
+        "label": "给它骨头",
+        "response": "野狗高兴地汪汪叫了起来，摇着尾巴跟在你身边。",
+        "startsFollowing": true
+      }
+    ],
     "combat": {
       "maxHp": 18,
       "attack": 4,
       "defense": 2,
       "rewardExperience": 8,
+      "dropItemIds": ["snow_bone"],
+      "respawnAfterMoves": 4,
+      "specialMove": {
+        "name": "撕咬",
+        "interval": 3,
+        "damageBonus": 1,
+        "message": "野狗猛地扑上来，在你身旁胡乱撕咬。"
+      }
+    }
+  },
+  {
+    "id": "snow_wild_dog_2",
+    "name": "野狗",
+    "description": "一只浑身脏兮兮的野狗在路边嗅来嗅去，偶尔抬头望着过路人。",
+    "greeting": "野狗在你的脚边挨挨擦擦的，像是想讨点东西吃。",
+    "giveItemOptions": [
+      {
+        "itemId": "snow_bone",
+        "label": "给它骨头",
+        "response": "野狗高兴地汪汪叫了起来，摇着尾巴跟在你身边。",
+        "startsFollowing": true
+      }
+    ],
+    "combat": {
+      "maxHp": 18,
+      "attack": 4,
+      "defense": 2,
+      "rewardExperience": 8,
+      "dropItemIds": ["snow_bone"],
       "respawnAfterMoves": 4,
       "specialMove": {
         "name": "撕咬",
@@ -429,5 +500,125 @@
         "response": "魏无极沉吟道：你说的是野羊山寨的二寨主，人称血手刘三的刘安禄吗？这名字，可不是寻常门房该有的来历。"
       }
     ]
+  },
+  {
+    "id": "snow_rat",
+    "name": "老鼠",
+    "description": "一只贼头贼脑的大老鼠，正沿着墙根飞快地窜来窜去。",
+    "greeting": "老鼠吱吱叫了两声，转眼钻到桌脚下面。",
+    "combat": {
+      "maxHp": 8,
+      "attack": 2,
+      "defense": 1,
+      "rewardExperience": 2,
+      "respawnAfterMoves": 3
+    }
+  },
+  {
+    "id": "snow_rat_2",
+    "name": "老鼠",
+    "description": "一只贼头贼脑的大老鼠，正沿着墙根飞快地窜来窜去。",
+    "greeting": "老鼠吱吱叫了两声，转眼钻到桌脚下面。",
+    "combat": {"maxHp": 8, "attack": 2, "defense": 1, "rewardExperience": 2, "respawnAfterMoves": 3}
+  },
+  {
+    "id": "snow_rat_3",
+    "name": "老鼠",
+    "description": "一只贼头贼脑的大老鼠，正沿着墙根飞快地窜来窜去。",
+    "greeting": "老鼠吱吱叫了两声，转眼钻到桌脚下面。",
+    "combat": {"maxHp": 8, "attack": 2, "defense": 1, "rewardExperience": 2, "respawnAfterMoves": 3}
+  },
+  {
+    "id": "snow_rat_4",
+    "name": "老鼠",
+    "description": "一只贼头贼脑的大老鼠，正沿着墙根飞快地窜来窜去。",
+    "greeting": "老鼠吱吱叫了两声，转眼钻到桌脚下面。",
+    "combat": {"maxHp": 8, "attack": 2, "defense": 1, "rewardExperience": 2, "respawnAfterMoves": 3}
+  },
+  {
+    "id": "snow_rat_5",
+    "name": "老鼠",
+    "description": "一只贼头贼脑的大老鼠，正沿着墙根飞快地窜来窜去。",
+    "greeting": "老鼠吱吱叫了两声，转眼钻到桌脚下面。",
+    "combat": {"maxHp": 8, "attack": 2, "defense": 1, "rewardExperience": 2, "respawnAfterMoves": 3}
+  },
+  {
+    "id": "snow_rat_6",
+    "name": "老鼠",
+    "description": "一只贼头贼脑的大老鼠，正沿着墙根飞快地窜来窜去。",
+    "greeting": "老鼠吱吱叫了两声，转眼钻到桌脚下面。",
+    "combat": {"maxHp": 8, "attack": 2, "defense": 1, "rewardExperience": 2, "respawnAfterMoves": 3}
+  },
+  {
+    "id": "snow_worker",
+    "name": "苦力",
+    "description": "一个苦力打扮的汉子站在这里，像是在等人来雇用。",
+    "greeting": "苦力拱手说道：小人的工资一天只要一百文钱，大人只管吩咐。",
+    "dialogueOptions": [
+      {
+        "id": "ask_worker_home",
+        "label": "询问家乡",
+        "response": "苦力说道：小人是乔阴县雪亭镇人氏，靠卖力气混口饭吃。"
+      },
+      {
+        "id": "ask_worker_employment",
+        "label": "询问雇佣",
+        "response": "苦力说道：一百文钱一天，一个子儿也不能少。"
+      }
+    ]
+  },
+  {
+    "id": "snow_square_blade_traveller",
+    "name": "佩刀旅客",
+    "description": "一位来到雪亭镇的外地旅客，腰间别着飞刀，站在广场边留心观察往来人群。",
+    "greeting": "佩刀旅客说道：广场人杂，走江湖要多留三分心。",
+    "combat": {
+      "maxHp": 28,
+      "attack": 5,
+      "defense": 3,
+      "rewardExperience": 10,
+      "specialMove": {
+        "name": "飞刀",
+        "interval": 3,
+        "damageBonus": 1,
+        "message": "佩刀旅客手腕一抖，飞刀贴着你的衣襟掠过。"
+      }
+    }
+  },
+  {
+    "id": "snow_square_blade_traveller_2",
+    "name": "佩刀旅客",
+    "description": "一位来到雪亭镇的外地旅客，腰间别着飞刀，站在广场边留心观察往来人群。",
+    "greeting": "佩刀旅客说道：广场人杂，走江湖要多留三分心。",
+    "combat": {
+      "maxHp": 28,
+      "attack": 5,
+      "defense": 3,
+      "rewardExperience": 10,
+      "specialMove": {
+        "name": "飞刀",
+        "interval": 3,
+        "damageBonus": 1,
+        "message": "佩刀旅客手腕一抖，飞刀贴着你的衣襟掠过。"
+      }
+    }
+  },
+  {
+    "id": "snow_square_blade_traveller_3",
+    "name": "佩刀旅客",
+    "description": "一位来到雪亭镇的外地旅客，腰间别着飞刀，站在广场边留心观察往来人群。",
+    "greeting": "佩刀旅客说道：广场人杂，走江湖要多留三分心。",
+    "combat": {
+      "maxHp": 28,
+      "attack": 5,
+      "defense": 3,
+      "rewardExperience": 10,
+      "specialMove": {
+        "name": "飞刀",
+        "interval": 3,
+        "damageBonus": 1,
+        "message": "佩刀旅客手腕一抖，飞刀贴着你的衣襟掠过。"
+      }
+    }
   }
 ]

@@ -76,5 +76,23 @@
     "equipmentSlot": "accessory",
     "defensePower": 2,
     "sellPrice": 8
+  },
+  {
+    "id": "snow_paper_seal",
+    "name": "桃符纸",
+    "description": "道士们用来画符的符纸，具有封存法力的功用。",
+    "sellPrice": 1
+  },
+  {
+    "id": "snow_paper_seal_2",
+    "name": "桃符纸",
+    "description": "道士们用来画符的符纸，具有封存法力的功用。",
+    "sellPrice": 1
+  },
+  {
+    "id": "snow_bone",
+    "name": "骨头",
+    "description": "一截干净的骨头，野狗见了大概会很高兴。",
+    "sellPrice": 1
   }
 ]

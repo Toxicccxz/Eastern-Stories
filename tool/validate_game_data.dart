@@ -129,6 +129,7 @@ class GameDataValidator {
 
       final mapX = room.data['mapX'];
       final mapY = room.data['mapY'];
+      final allowsCombat = room.data['allowsCombat'];
       if (mapX is! int || mapY is! int) {
         errors.add('$context must have integer mapX and mapY values.');
       } else {
@@ -141,6 +142,9 @@ class GameDataValidator {
         } else {
           coordinates[key] = room;
         }
+      }
+      if (allowsCombat != null && allowsCombat is! bool) {
+        errors.add('$context.allowsCombat must be a boolean.');
       }
 
       final exits = _optionalObject(room.data['exits'], '$context.exits');
@@ -241,7 +245,10 @@ class GameDataValidator {
         '$context.giveItemOptions',
       )) {
         final optionContext = '$context give option';
-        _requireReference('items', option['itemId'], '$optionContext.itemId');
+        final itemId = option['itemId'];
+        if (itemId != '*') {
+          _requireReference('items', itemId, '$optionContext.itemId');
+        }
         _requireReferences(
           'items',
           option['givesItemIds'],

@@ -12,7 +12,7 @@ void main() {
 
     expect(repository.startingRoomId, 'snow_inn');
     expect(repository.areas, hasLength(7));
-    expect(rooms, hasLength(140));
+    expect(rooms, hasLength(144));
     expect(repository.quests, hasLength(4));
     expect(repository.skills, hasLength(13));
     expect(repository.families, hasLength(1));
@@ -160,11 +160,13 @@ void main() {
         }
       }
       for (final option in npc.giveItemOptions) {
-        expect(
-          () => repository.item(option.itemId),
-          returnsNormally,
-          reason: '${npc.id} accepts unknown item ${option.itemId}',
-        );
+        if (!option.acceptsAnyItem) {
+          expect(
+            () => repository.item(option.itemId),
+            returnsNormally,
+            reason: '${npc.id} accepts unknown item ${option.itemId}',
+          );
+        }
         for (final itemId in option.givesItemIds) {
           expect(
             () => repository.item(itemId),

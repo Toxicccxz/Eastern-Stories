@@ -33,7 +33,7 @@ void main() {
       containsAll([
         'snow_inn_waiter',
         'snow_inn_traveller',
-        'snow_inn_blade_traveller',
+        'snow_inn_traveller_2',
       ]),
     );
   });
@@ -41,7 +41,25 @@ void main() {
   test('Snow Pavilion main street reaches the original town services', () {
     final controller = GameController(repository: repository);
 
+    expect(
+      repository
+          .room('snow_inn')
+          .availableActions(controller.state)
+          .map((action) => action.id),
+      contains('read_snow_inn_sign'),
+    );
+
     controller.dispatch(const GameAction.move(Direction.east));
+    expect(
+      repository
+          .visibleNpcsInRoom(controller.state, 'snow_square')
+          .map((npc) => npc.id),
+      containsAll([
+        'snow_square_blade_traveller',
+        'snow_square_blade_traveller_2',
+        'snow_square_blade_traveller_3',
+      ]),
+    );
     controller.dispatch(const GameAction.move(Direction.north));
     controller.dispatch(const GameAction.move(Direction.west));
     expect(controller.state.currentRoomId, 'snow_bank');
@@ -64,6 +82,13 @@ void main() {
     controller.dispatch(const GameAction.move(Direction.west));
     expect(controller.state.currentRoomId, 'snow_herbshop');
     expect(repository.npc('snow_herbalist_yang').shop?.products.length, 2);
+    expect(
+      repository
+          .room('snow_herbshop')
+          .availableActions(controller.state)
+          .map((action) => action.id),
+      containsAll(['read_herbshop_sign', 'inspect_herbshop_cabinet']),
+    );
 
     controller.dispatch(const GameAction.move(Direction.east));
     controller.dispatch(const GameAction.move(Direction.east));
@@ -129,6 +154,223 @@ void main() {
       controller.dispatch(const GameAction.pickUp('snow_round_shield'));
       expect(controller.state.currentRoomId, 'chunfeng_secret_storage');
       expect(controller.state.inventoryItemIds, contains('snow_round_shield'));
+    },
+  );
+
+  test(
+    'Snow Pavilion inn rooms and workplace are mapped from original rooms',
+    () {
+      final controller = GameController(repository: repository);
+
+      controller.dispatch(const GameAction.move(Direction.up));
+      expect(controller.state.currentRoomId, 'snow_inn_second_floor');
+      expect(
+        repository
+            .visibleNpcsInRoom(controller.state, 'snow_inn_second_floor')
+            .map((npc) => npc.id),
+        containsAll([
+          'snow_rat',
+          'snow_rat_2',
+          'snow_rat_3',
+          'snow_rat_4',
+          'snow_rat_5',
+          'snow_rat_6',
+        ]),
+      );
+
+      controller.dispatch(const GameAction.move(Direction.west));
+      expect(controller.state.currentRoomId, 'snow_inn_west_room');
+      controller.dispatch(const GameAction.move(Direction.east));
+      controller.dispatch(const GameAction.move(Direction.north));
+      expect(controller.state.currentRoomId, 'snow_inn_north_room');
+      controller.dispatch(const GameAction.move(Direction.south));
+      controller.dispatch(const GameAction.move(Direction.east));
+      expect(controller.state.currentRoomId, 'snow_inn_east_room');
+
+      controller.replaceState(
+        controller.state.copyWith(currentRoomId: 'snow_main_street2'),
+      );
+      controller.dispatch(const GameAction.move(Direction.east));
+      expect(controller.state.currentRoomId, 'snow_workplace');
+      expect(
+        repository
+            .room('snow_workplace')
+            .availableActions(controller.state)
+            .map((action) => action.id),
+        containsAll(['read_workplace_sign', 'work_at_snow_workplace']),
+      );
+      expect(
+        repository
+            .visibleNpcsInRoom(controller.state, 'snow_workplace')
+            .map((npc) => npc.id),
+        contains('snow_worker'),
+      );
+
+      final silverBeforeWork = controller.state.player.silver;
+      final hpBeforeWork = controller.state.player.hp;
+      final spiritBeforeWork = controller.state.player.spirit;
+      controller.dispatch(
+        const GameAction.performRoomAction('work_at_snow_workplace'),
+      );
+      expect(controller.state.player.silver, silverBeforeWork + 1);
+      expect(controller.state.player.hp, hpBeforeWork - 8);
+      expect(controller.state.player.spirit, spiritBeforeWork - 12);
+
+      controller.replaceState(
+        controller.state.copyWith(
+          player: controller.state.player.copyWith(hp: 8, spirit: 0),
+        ),
+      );
+      final silverBeforeFailedWork = controller.state.player.silver;
+      controller.dispatch(
+        const GameAction.performRoomAction('work_at_snow_workplace'),
+      );
+      expect(controller.state.player.silver, silverBeforeFailedWork);
+      expect(controller.state.log.last, contains('疲惫'));
+    },
+  );
+
+  test('giving a bone makes the Snow Pavilion dog follow the player', () {
+    final initialState = repository.createInitialState().copyWith(
+      currentRoomId: 'snow_east_path2',
+      visitedRoomIds: {'snow_inn', 'snow_east_path2'},
+      inventoryItemIds: ['snow_bone'],
+    );
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState,
+    );
+
+    expect(
+      controller
+          .giveItemOptionsFor('snow_wild_dog')
+          .map((option) => option.itemId),
+      contains('snow_bone'),
+    );
+
+    controller.dispatch(
+      const GameAction.giveItem('snow_wild_dog', 'snow_bone'),
+    );
+    expect(controller.state.inventoryItemIds, isNot(contains('snow_bone')));
+    expect(controller.state.npcStates['snow_wild_dog']?.isFollowing, isTrue);
+
+    controller.dispatch(const GameAction.move(Direction.west));
+    expect(controller.state.currentRoomId, 'snow_east_path1');
+    expect(
+      controller.state.npcStates['snow_wild_dog']?.roomId,
+      'snow_east_path1',
+    );
+  });
+
+  test('defeating a Snow Pavilion dog leaves a bone to pick up', () {
+    final initialState = repository.createInitialState().copyWith(
+      currentRoomId: 'snow_stone_road',
+      visitedRoomIds: {'snow_inn', 'snow_stone_road'},
+    );
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        player: initialState.player.copyWith(hp: 300, maxHp: 300),
+      ),
+    );
+
+    _defeatNpc(controller, 'snow_crazy_dog');
+    expect(
+      controller.repository
+          .visibleItemsInRoom(controller.state, 'snow_stone_road')
+          .map((item) => item.id),
+      contains('snow_bone'),
+    );
+
+    controller.dispatch(const GameAction.pickUp('snow_bone'));
+    expect(controller.state.inventoryItemIds, contains('snow_bone'));
+    expect(
+      controller.repository
+          .visibleItemsInRoom(controller.state, 'snow_stone_road')
+          .map((item) => item.id),
+      isNot(contains('snow_bone')),
+    );
+  });
+
+  test('Snow Pavilion scavenger accepts any carried item', () {
+    final initialState = repository.createInitialState().copyWith(
+      currentRoomId: 'snow_main_street2',
+      visitedRoomIds: {'snow_inn', 'snow_main_street2'},
+      inventoryItemIds: ['snow_bone'],
+    );
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState,
+    );
+
+    final giveOptions = controller.giveItemOptionsFor('snow_scavenger');
+    expect(giveOptions.map((option) => option.itemId), contains('snow_bone'));
+    expect(giveOptions.map((option) => option.label), contains('给他骨头'));
+
+    controller.dispatch(
+      const GameAction.giveItem('snow_scavenger', 'snow_bone'),
+    );
+    expect(controller.state.inventoryItemIds, isNot(contains('snow_bone')));
+    expect(controller.state.log.last, contains('多谢'));
+  });
+
+  test('Snow Pavilion temple donation consumes silver', () {
+    final initialState = repository.createInitialState().copyWith(
+      currentRoomId: 'snow_temple',
+      visitedRoomIds: {'snow_inn', 'snow_temple'},
+    );
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState,
+    );
+
+    controller.dispatch(
+      const GameAction.performRoomAction('donate_to_snow_temple'),
+    );
+    expect(controller.state.player.silver, 0);
+    expect(controller.state.log.last, contains('一两银子也没有'));
+
+    controller.replaceState(
+      controller.state.copyWith(currentRoomId: 'snow_workplace'),
+    );
+    controller.dispatch(
+      const GameAction.performRoomAction('work_at_snow_workplace'),
+    );
+    expect(controller.state.player.silver, 1);
+
+    controller.replaceState(
+      controller.state.copyWith(currentRoomId: 'snow_temple'),
+    );
+    controller.dispatch(
+      const GameAction.performRoomAction('donate_to_snow_temple'),
+    );
+    expect(controller.state.player.silver, 0);
+    expect(controller.state.log.last, contains('功德箱'));
+  });
+
+  test(
+    'Snow Pavilion temple prevents combat like the original no_fight room',
+    () {
+      final initialState = repository.createInitialState();
+      final crazyDogState = initialState.npcStates['snow_crazy_dog'];
+      final controller = GameController(
+        repository: repository,
+        initialState: initialState.copyWith(
+          currentRoomId: 'snow_temple',
+          visitedRoomIds: {'snow_inn', 'snow_temple'},
+          npcStates: {
+            ...initialState.npcStates,
+            if (crazyDogState != null)
+              'snow_crazy_dog': crazyDogState.copyWith(roomId: 'snow_temple'),
+          },
+        ),
+      );
+
+      expect(repository.room('snow_temple').allowsCombat, isFalse);
+      controller.dispatch(const GameAction.startCombat('snow_crazy_dog'));
+
+      expect(controller.state.combat, isNull);
+      expect(controller.state.log.last, contains('不是动手的地方'));
     },
   );
 

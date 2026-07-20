@@ -16,6 +16,7 @@ class RoomDefinition {
     this.itemIds = const [],
     this.actions = const [],
     this.allowsCultivation = false,
+    this.allowsCombat = true,
   });
 
   factory RoomDefinition.fromJson(Map<String, Object?> json) {
@@ -37,6 +38,7 @@ class RoomDefinition {
           RoomActionDefinition.fromJson(action as Map<String, Object?>),
       ],
       allowsCultivation: json['allowsCultivation'] as bool? ?? false,
+      allowsCombat: json['allowsCombat'] as bool? ?? true,
     );
   }
 
@@ -52,6 +54,7 @@ class RoomDefinition {
   final List<String> itemIds;
   final List<RoomActionDefinition> actions;
   final bool allowsCultivation;
+  final bool allowsCombat;
 
   List<String> visibleItemIds(GameState state) {
     return state.roomItemOverrides[id] ?? itemIds;
@@ -82,6 +85,11 @@ class RoomActionDefinition {
     this.conditions,
     this.setsQuestFlag,
     this.givesItemIds = const [],
+    this.hpCost = 0,
+    this.spiritCost = 0,
+    this.silverCost = 0,
+    this.rewardSilver = 0,
+    this.failureLog,
   });
 
   factory RoomActionDefinition.fromJson(Map<String, Object?> json) {
@@ -95,6 +103,11 @@ class RoomActionDefinition {
       setsQuestFlag: json['setsQuestFlag'] as String?,
       givesItemIds:
           (json['givesItemIds'] as List<Object?>? ?? const []).cast<String>(),
+      hpCost: json['hpCost'] as int? ?? 0,
+      spiritCost: json['spiritCost'] as int? ?? 0,
+      silverCost: json['silverCost'] as int? ?? 0,
+      rewardSilver: json['rewardSilver'] as int? ?? 0,
+      failureLog: json['failureLog'] as String?,
     );
   }
 
@@ -106,6 +119,11 @@ class RoomActionDefinition {
   final WorldCondition? conditions;
   final String? setsQuestFlag;
   final List<String> givesItemIds;
+  final int hpCost;
+  final int spiritCost;
+  final int silverCost;
+  final int rewardSilver;
+  final String? failureLog;
 }
 
 Map<Direction, String> _parseExits(Map<String, Object?> json) {

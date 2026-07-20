@@ -151,6 +151,7 @@ class GiveItemOption {
     this.givesItemIds = const [],
     this.setsQuestFlag,
     this.completesQuestId,
+    this.startsFollowing = false,
   });
 
   factory GiveItemOption.fromJson(Map<String, Object?> json) {
@@ -164,6 +165,7 @@ class GiveItemOption {
           (json['givesItemIds'] as List<Object?>? ?? const []).cast<String>(),
       setsQuestFlag: json['setsQuestFlag'] as String?,
       completesQuestId: json['completesQuestId'] as String?,
+      startsFollowing: json['startsFollowing'] as bool? ?? false,
     );
   }
 
@@ -175,6 +177,23 @@ class GiveItemOption {
   final List<String> givesItemIds;
   final String? setsQuestFlag;
   final String? completesQuestId;
+  final bool startsFollowing;
+
+  bool get acceptsAnyItem => itemId == '*';
+
+  GiveItemOption copyWith({String? itemId, String? label}) {
+    return GiveItemOption(
+      itemId: itemId ?? this.itemId,
+      label: label ?? this.label,
+      response: response,
+      conditions: conditions,
+      consumesItem: consumesItem,
+      givesItemIds: givesItemIds,
+      setsQuestFlag: setsQuestFlag,
+      completesQuestId: completesQuestId,
+      startsFollowing: startsFollowing,
+    );
+  }
 }
 
 class ShopDefinition {
