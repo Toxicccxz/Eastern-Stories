@@ -18,12 +18,6 @@ class ActionBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final buttons = [
-      for (final entry in room.availableExits(controller.state).entries)
-        _ActionButton(
-          label: entry.key.label,
-          icon: Icons.navigation,
-          onPressed: () => controller.dispatch(GameAction.move(entry.key)),
-        ),
       _ActionButton(
         label: '查看',
         icon: Icons.search,
@@ -58,16 +52,9 @@ class ActionBar extends StatelessWidget {
         ),
     ];
 
-    return Container(
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-      decoration: const BoxDecoration(
-        color: Color(0xFFFFFCF6),
-        border: Border(top: BorderSide(color: Color(0xFFE0D8C8))),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Wrap(spacing: 8, runSpacing: 8, children: buttons),
-      ),
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Wrap(spacing: 8, runSpacing: 8, children: buttons),
     );
   }
 
@@ -460,12 +447,16 @@ class _ActionButton extends StatelessWidget {
 
   final String label;
   final IconData icon;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
     return FilledButton.icon(
       onPressed: onPressed,
+      style: FilledButton.styleFrom(
+        minimumSize: const Size(76, 40),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+      ),
       icon: Icon(icon, size: 18),
       label: Text(label),
     );

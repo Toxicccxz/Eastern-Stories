@@ -108,6 +108,89 @@ void main() {
   });
 
   test(
+    'Snow Pavilion east mountain road reaches the original Lingxin Temple',
+    () {
+      final initialState = repository.createInitialState().copyWith(
+        currentRoomId: 'snow_east_mountain_road',
+        visitedRoomIds: {'snow_inn', 'snow_east_mountain_road'},
+      );
+      final controller = GameController(
+        repository: repository,
+        initialState: initialState,
+      );
+
+      controller.dispatch(const GameAction.move(Direction.east));
+      expect(controller.state.currentRoomId, 'temple_sroad');
+      final templeRoad = repository.room(controller.state.currentRoomId);
+      expect(repository.area(templeRoad.areaId).id, 'temple');
+      expect(templeRoad.outdoorAreaId, 'temple');
+
+      for (final direction in const [
+        Direction.eastup,
+        Direction.northup,
+        Direction.eastup,
+        Direction.northup,
+        Direction.east,
+        Direction.north,
+        Direction.north,
+        Direction.north,
+      ]) {
+        controller.dispatch(GameAction.move(direction));
+      }
+
+      expect(controller.state.currentRoomId, 'temple_main_hall');
+      expect(
+        repository
+            .visibleNpcsInRoom(controller.state, 'temple_main_hall')
+            .map((npc) => npc.id),
+        containsAll(['temple_taolord', 'temple_trainer', 'temple_tfighter']),
+      );
+    },
+  );
+
+  test('Lingxin Temple library keeps the original Maoshan-only entrance', () {
+    final initialState = repository.createInitialState().copyWith(
+      currentRoomId: 'temple_road2',
+      visitedRoomIds: {'snow_inn', 'temple_road2'},
+    );
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState,
+    );
+
+    expect(
+      repository.room('temple_road2').availableExits(controller.state),
+      isNot(contains(Direction.enter)),
+    );
+    expect(
+      repository
+          .room('temple_road2')
+          .availableActions(controller.state)
+          .map((action) => action.id),
+      contains('read_temple_library_slab'),
+    );
+
+    controller.dispatch(
+      const GameAction.performRoomAction('read_temple_library_slab'),
+    );
+    expect(controller.state.log.last, contains('非茅山弟子不得进入'));
+
+    controller.replaceState(
+      controller.state.copyWith(
+        questFlags: {...controller.state.questFlags, 'maoshan_library_access'},
+      ),
+    );
+    expect(
+      repository.room('temple_road2').availableExits(controller.state),
+      containsPair(Direction.enter, 'temple_book_room1'),
+    );
+    controller.dispatch(const GameAction.move(Direction.enter));
+    expect(controller.state.currentRoomId, 'temple_book_room1');
+    controller.dispatch(const GameAction.move(Direction.up));
+    expect(controller.state.currentRoomId, 'temple_book_room2');
+  });
+
+  test(
     'Snow Pavilion academy and weapon storage follow original room layout',
     () {
       final controller = GameController(repository: repository);
@@ -373,6 +456,16 @@ void main() {
       expect(controller.state.log.last, contains('不是动手的地方'));
     },
   );
+
+  test('Snow Pavilion keeps original outdoor room flags', () {
+    expect(repository.room('snow_square').outdoorAreaId, 'snow');
+    expect(repository.room('snow_square').isOutdoor, isTrue);
+    expect(repository.room('snow_east_mountain_road').outdoorAreaId, 'snow');
+    expect(repository.room('chunfeng_training_ground').outdoorAreaId, 'snow');
+    expect(repository.room('snow_inn').isOutdoor, isFalse);
+    expect(repository.room('snow_temple').isOutdoor, isFalse);
+    expect(repository.room('snow_workplace').isOutdoor, isFalse);
+  });
 
   test('moving through an exit updates current room and log', () {
     final controller = _controllerAtLiuHome(repository);

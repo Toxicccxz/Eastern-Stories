@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../game/core/game_controller.dart';
+import '../../game/models/room_definition.dart';
 import '../widgets/action_bar.dart';
 import '../widgets/area_map_view.dart';
 import '../widgets/combat_window.dart';
+import '../widgets/direction_pad.dart';
 import '../widgets/event_log_panel.dart';
 import '../widgets/location_info_panel.dart';
 import '../widgets/objective_tracker_panel.dart';
@@ -92,7 +94,7 @@ class _MainGameScreenState extends State<MainGameScreen> {
                     ],
                   ),
                 ),
-                ActionBar(room: room, controller: widget.controller),
+                _ControlDeck(room: room, controller: widget.controller),
               ],
             ),
           ),
@@ -138,5 +140,36 @@ class _MainGameScreenState extends State<MainGameScreen> {
 
   void _save() {
     widget.onSave?.call();
+  }
+}
+
+class _ControlDeck extends StatelessWidget {
+  const _ControlDeck({required this.room, required this.controller});
+
+  final RoomDefinition room;
+  final GameController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color(0xFFFFFCF6),
+        border: Border(top: BorderSide(color: Color(0xFFE0D8C8))),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(child: ActionBar(room: room, controller: controller)),
+              const SizedBox(width: 12),
+              DirectionPad(room: room, controller: controller),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

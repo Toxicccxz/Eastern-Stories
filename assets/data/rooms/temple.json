@@ -1,0 +1,262 @@
+[
+  {
+    "id": "temple_sroad",
+    "name": "青石官道",
+    "areaId": "temple",
+    "description": "青石大道沿山腰往南下山，东边一条石阶往山上去，西面可回到雪亭镇东边的山路。",
+    "mapX": 0,
+    "mapY": 6,
+    "outdoorAreaId": "temple",
+    "exits": {"west": "snow_east_mountain_road", "eastup": "temple_ladder5"}
+  },
+  {
+    "id": "temple_ladder5",
+    "name": "石英岩石阶",
+    "areaId": "temple",
+    "description": "你正站在阶梯的起点，纯白色宽敞的石英岩阶梯蜿蜒而上，在青翠山色中形成一条白色巨龙。",
+    "mapX": 1,
+    "mapY": 6,
+    "outdoorAreaId": "temple",
+    "exits": {"westdown": "temple_sroad", "northup": "temple_ladder4"}
+  },
+  {
+    "id": "temple_ladder4",
+    "name": "石英岩石阶",
+    "areaId": "temple",
+    "description": "你正走在一道长长的石英岩阶梯上，阶梯两侧种着一排高耸的松树，雪亭镇就在西边不远的山下。",
+    "mapX": 1,
+    "mapY": 5,
+    "outdoorAreaId": "temple",
+    "exits": {"southdown": "temple_ladder5", "eastup": "temple_ladder3"}
+  },
+  {
+    "id": "temple_ladder3",
+    "name": "石英岩石阶",
+    "areaId": "temple",
+    "description": "石阶在这里弯向北边，山风夹着松涛声掠过，远处还能隐约听见雪亭镇上的人声。",
+    "mapX": 0,
+    "mapY": 5,
+    "outdoorAreaId": "temple",
+    "exits": {"westdown": "temple_ladder4", "northup": "temple_ladder2"}
+  },
+  {
+    "id": "temple_ladder2",
+    "name": "石英岩石阶",
+    "areaId": "temple",
+    "description": "你正走在一道长长的石英岩阶梯上，东北边的山峰高耸挺拔，云雾飘渺的山顶上矗立着一座白色楼阁。",
+    "mapX": 0,
+    "mapY": 4,
+    "outdoorAreaId": "temple",
+    "exits": {"east": "temple_ladder1", "southdown": "temple_ladder3"},
+    "npcIds": ["temple_guest"]
+  },
+  {
+    "id": "temple_ladder1",
+    "name": "石英岩石阶",
+    "areaId": "temple",
+    "description": "长长的阶梯到了尽头，前方矗立着一座山门，山门上龙飞凤舞地写着三个字，笔力苍劲有力。",
+    "mapX": 1,
+    "mapY": 4,
+    "outdoorAreaId": "temple",
+    "exits": {"north": "temple_entrance", "west": "temple_ladder2"},
+    "npcIds": ["temple_little_taoist1"]
+  },
+  {
+    "id": "temple_entrance",
+    "name": "灵心观前",
+    "areaId": "temple",
+    "description": "眼前是一座古色古香的山门，上面以龙飞凤舞的笔迹书写着“灵心观”三字。北边是一个颇大的广场，南边则是下山石阶。",
+    "mapX": 1,
+    "mapY": 3,
+    "outdoorAreaId": "temple",
+    "exits": {"north": "temple_square", "south": "temple_ladder1"}
+  },
+  {
+    "id": "temple_square",
+    "name": "灵心观广场",
+    "areaId": "temple",
+    "description": "你正站在灵心观前的广场上，四周石板铺得极为平整，北边便是灵心观大殿，南边可出山门。",
+    "mapX": 1,
+    "mapY": 2,
+    "outdoorAreaId": "temple",
+    "exits": {"north": "temple_main_hall", "south": "temple_entrance"}
+  },
+  {
+    "id": "temple_main_hall",
+    "name": "灵心观大殿",
+    "areaId": "temple",
+    "description": "这里是灵心观大殿，殿内香烟缭绕，梁柱沉静古朴。东西两侧各有回廊，南边可回到广场。",
+    "mapX": 1,
+    "mapY": 1,
+    "allowsCultivation": true,
+    "exits": {"south": "temple_square", "west": "temple_corridor2", "east": "temple_corridor1"},
+    "npcIds": ["temple_taolord", "temple_trainer", "temple_tfighter"]
+  },
+  {
+    "id": "temple_corridor1",
+    "name": "回廊",
+    "areaId": "temple",
+    "description": "你现在正走在一条回廊上，西边的圆形拱门可以回到大殿，北方通向后院一侧。",
+    "mapX": 2,
+    "mapY": 1,
+    "exits": {"west": "temple_main_hall", "north": "temple_corridor7"}
+  },
+  {
+    "id": "temple_corridor2",
+    "name": "回廊",
+    "areaId": "temple",
+    "description": "你现在正走在一条回廊上，东边的圆形拱门可以回到大殿，北方通向后院一侧。",
+    "mapX": 0,
+    "mapY": 1,
+    "exits": {"east": "temple_main_hall", "north": "temple_corridor6"}
+  },
+  {
+    "id": "temple_corridor6",
+    "name": "回廊",
+    "areaId": "temple",
+    "description": "回廊往南北延伸，两端分别连接着大殿及后殿。东边是一座花草扶疏的天井。",
+    "mapX": 0,
+    "mapY": 0,
+    "exits": {"south": "temple_corridor2", "north": "temple_corridor4", "east": "temple_inner_yard"}
+  },
+  {
+    "id": "temple_corridor7",
+    "name": "回廊",
+    "areaId": "temple",
+    "description": "回廊往南北延伸，两端分别连接着大殿及后殿。西边是一座天井，东边则是一排厢房。",
+    "mapX": 2,
+    "mapY": 0,
+    "exits": {"south": "temple_corridor1", "north": "temple_corridor3", "west": "temple_inner_yard", "east": "temple_restroom1"}
+  },
+  {
+    "id": "temple_inner_yard",
+    "name": "天井",
+    "areaId": "temple",
+    "description": "你正站在灵心观的天井里，这里种植着一些花草树木，西北角有一口水井。",
+    "mapX": 1,
+    "mapY": 0,
+    "outdoorAreaId": "temple",
+    "exits": {"north": "temple_corridor5", "west": "temple_corridor6", "east": "temple_corridor7"},
+    "npcIds": ["temple_little_taoist2"]
+  },
+  {
+    "id": "temple_corridor5",
+    "name": "回廊",
+    "areaId": "temple",
+    "description": "你现在走在围绕天井的回廊上，回廊往东西两侧延伸，南边就是天井，北方是供奉历代掌门灵位的后殿。",
+    "mapX": 1,
+    "mapY": -1,
+    "exits": {"west": "temple_corridor4", "east": "temple_corridor3", "south": "temple_inner_yard", "north": "temple_back_hall"}
+  },
+  {
+    "id": "temple_corridor4",
+    "name": "回廊",
+    "areaId": "temple",
+    "description": "你正站在回廊转角的地方，回廊从这里往东边及南边而去。北边是一间大房子，里面传来阵阵叱喝声。",
+    "mapX": 0,
+    "mapY": -1,
+    "exits": {"north": "temple_training_room", "south": "temple_corridor6", "east": "temple_corridor5"}
+  },
+  {
+    "id": "temple_training_room",
+    "name": "练功房",
+    "areaId": "temple",
+    "description": "这里是一间宽敞的练功房，木桩、兵器架与蒲团分列四周，几名道士正在运气练拳。",
+    "mapX": 0,
+    "mapY": -2,
+    "allowsCultivation": true,
+    "exits": {"south": "temple_corridor4"},
+    "npcIds": ["temple_taoist", "temple_taoist2"]
+  },
+  {
+    "id": "temple_corridor3",
+    "name": "回廊",
+    "areaId": "temple",
+    "description": "你正站在回廊转角的地方，回廊从这往西及南边而去。东侧是一排厢房，北方是一条青石小径。",
+    "mapX": 2,
+    "mapY": -1,
+    "exits": {"north": "temple_road1", "south": "temple_corridor7", "west": "temple_corridor5", "east": "temple_restroom2"}
+  },
+  {
+    "id": "temple_restroom1",
+    "name": "厢房",
+    "areaId": "temple",
+    "description": "这是一间给挂单道士歇脚的厢房，屋中陈设简单，木床旁放着旧行囊。",
+    "mapX": 3,
+    "mapY": 0,
+    "exits": {"west": "temple_corridor7"},
+    "npcIds": ["temple_old_taoist"]
+  },
+  {
+    "id": "temple_restroom2",
+    "name": "厢房",
+    "areaId": "temple",
+    "description": "这是一间干净朴素的厢房，窗外可以望见观中回廊。",
+    "mapX": 3,
+    "mapY": -1,
+    "exits": {"west": "temple_corridor3"}
+  },
+  {
+    "id": "temple_back_hall",
+    "name": "后殿",
+    "areaId": "temple",
+    "description": "这里是灵心观后殿，供奉着茅山派历代掌门人的灵位，烛火幽幽，气氛肃穆。",
+    "mapX": 1,
+    "mapY": -2,
+    "exits": {"south": "temple_corridor5"}
+  },
+  {
+    "id": "temple_road1",
+    "name": "青石小径",
+    "areaId": "temple",
+    "description": "你正走在一条青石铺成的小径上，小径蜿蜒穿过观后，南边回到回廊，西北方还有一段小路。",
+    "mapX": 2,
+    "mapY": -2,
+    "outdoorAreaId": "temple",
+    "exits": {"south": "temple_corridor3", "northwest": "temple_road2"}
+  },
+  {
+    "id": "temple_road2",
+    "name": "青石小径",
+    "areaId": "temple",
+    "description": "小径在这里接近藏经楼，路旁石碑上写着：非茅山弟子不得进入。",
+    "mapX": 1,
+    "mapY": -3,
+    "outdoorAreaId": "temple",
+    "exits": {
+      "southeast": "temple_road1",
+      "enter": {
+        "roomId": "temple_book_room1",
+        "conditions": {"requiredFlags": ["maoshan_library_access"]}
+      }
+    },
+    "npcIds": ["temple_guard_taoist", "temple_taoist_guard"],
+    "actions": [
+      {
+        "id": "read_temple_library_slab",
+        "label": "查看石碑",
+        "description": "看看藏经楼门旁那块石碑。",
+        "resultRoomId": "temple_road2",
+        "log": "石碑上写着：非茅山弟子不得进入。"
+      }
+    ]
+  },
+  {
+    "id": "temple_book_room1",
+    "name": "经楼",
+    "areaId": "temple",
+    "description": "这里是灵心观中收藏书籍的地方，四周书架上堆满了书。有些书纸张已经泛黄，摸一摸可能就会散掉。角落里有一座小小的木梯通往二楼。",
+    "mapX": 0,
+    "mapY": -3,
+    "exits": {"up": "temple_book_room2", "out": "temple_road2"}
+  },
+  {
+    "id": "temple_book_room2",
+    "name": "经楼",
+    "areaId": "temple",
+    "description": "上了楼来，首先看到一幅张天师的画像挂在对面墙上，画像下方摆着一张覆着红布的桌子，桌上整齐地放着茅山的镇教秘籍。",
+    "mapX": 0,
+    "mapY": -4,
+    "exits": {"down": "temple_book_room1"}
+  }
+]

@@ -585,18 +585,7 @@ class _WorldMapLayout {
   }
 
   static Offset _directionVector(Direction direction) {
-    return switch (direction) {
-      Direction.north => const Offset(0, -1),
-      Direction.south => const Offset(0, 1),
-      Direction.east => const Offset(1, 0),
-      Direction.west => const Offset(-1, 0),
-      Direction.northeast => const Offset(1, -1),
-      Direction.northwest => const Offset(-1, -1),
-      Direction.southeast => const Offset(1, 1),
-      Direction.southwest => const Offset(-1, 1),
-      Direction.up => const Offset(0, -1),
-      Direction.down => const Offset(0, 1),
-    };
+    return Offset(direction.mapDx.toDouble(), direction.mapDy.toDouble());
   }
 
   static String _linkKey(String first, String second) {
@@ -957,17 +946,6 @@ class _TopologyMapPainter extends CustomPainter {
   }
 
   Offset _directionVector(Direction direction) {
-    return switch (direction) {
-      Direction.north => const Offset(0, -1),
-      Direction.south => const Offset(0, 1),
-      Direction.east => const Offset(1, 0),
-      Direction.west => const Offset(-1, 0),
-      Direction.northeast => const Offset(1, -1),
-      Direction.northwest => const Offset(-1, -1),
-      Direction.southeast => const Offset(1, 1),
-      Direction.southwest => const Offset(-1, 1),
-      Direction.up => const Offset(0, -1),
-      Direction.down => const Offset(0, 1),
-    };
+    return Offset(direction.mapDx.toDouble(), direction.mapDy.toDouble());
   }
 }

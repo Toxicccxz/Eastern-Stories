@@ -30,6 +30,8 @@ class LocationInfoPanel extends StatelessWidget {
     final items =
         controller.repository.visibleItemsInRoom(state, room.id).toList();
     final exits = room.availableExits(state);
+    final contextualExits =
+        exits.entries.where((entry) => !entry.key.isPrimaryMovement).toList();
 
     return Panel(
       child: Column(
@@ -45,10 +47,10 @@ class LocationInfoPanel extends StatelessWidget {
           Text(room.description),
           const SizedBox(height: 12),
           _ChipRow(
-            label: '出口',
-            emptyText: '无路可走',
+            label: '去处',
+            emptyText: '无特殊去处',
             children: [
-              for (final exit in exits.entries)
+              for (final exit in contextualExits)
                 ActionChip(
                   avatar: const Icon(Icons.directions, size: 18),
                   label: Text(

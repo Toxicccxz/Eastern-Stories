@@ -9,7 +9,8 @@
       "assets/data/rooms/snow.json",
       "assets/data/rooms/waterfog.json",
       "assets/data/rooms/city.json",
-      "assets/data/rooms/oldpine.json"
+      "assets/data/rooms/oldpine.json",
+      "assets/data/rooms/temple.json"
     ],
     "npcs": [
       "assets/data/npcs/village.json",
@@ -18,7 +19,8 @@
       "assets/data/npcs/snow.json",
       "assets/data/npcs/city.json",
       "assets/data/npcs/waterfog.json",
-      "assets/data/npcs/oldpine.json"
+      "assets/data/npcs/oldpine.json",
+      "assets/data/npcs/temple.json"
     ],
     "items": [
       "assets/data/items/village.json",

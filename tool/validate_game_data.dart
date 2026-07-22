@@ -126,6 +126,12 @@ class GameDataValidator {
     for (final room in _all('rooms')) {
       final context = 'room "${room.id}" (${room.source})';
       _requireReference('areas', room.data['areaId'], '$context.areaId');
+      _requireReference(
+        'areas',
+        room.data['outdoorAreaId'],
+        '$context.outdoorAreaId',
+        optional: true,
+      );
 
       final mapX = room.data['mapX'];
       final mapY = room.data['mapY'];

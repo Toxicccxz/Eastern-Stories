@@ -11,8 +11,8 @@ void main() {
     final rooms = repository.rooms.toList();
 
     expect(repository.startingRoomId, 'snow_inn');
-    expect(repository.areas, hasLength(7));
-    expect(rooms, hasLength(144));
+    expect(repository.areas, hasLength(8));
+    expect(rooms, hasLength(169));
     expect(repository.quests, hasLength(4));
     expect(repository.skills, hasLength(13));
     expect(repository.families, hasLength(1));

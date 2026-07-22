@@ -62,6 +62,7 @@
     "description": "这是一条宽敞坚实的青石板大道，大道两旁种着整齐的花木，从这里往北通往水烟阁，往东则是衔接雪亭镇街道的路口。",
     "mapX": 0,
     "mapY": 3,
+    "outdoorAreaId": "snow",
     "exits": {"north": "snow_waterfog_road", "east": "snow_official_road", "southwest": "canyon_gate"},
     "npcIds": ["snow_crazy_dog"]
   },
@@ -72,6 +73,7 @@
     "description": "这是一条宽敞坚实的青石板大道，大道两旁种着整齐的花木，从这里往西通往水烟阁，往南则是衔接雪亭镇街道的路口。",
     "mapX": 0,
     "mapY": 2,
+    "outdoorAreaId": "snow",
     "exits": {"west": "waterfog_sroad1", "south": "snow_stone_road"}
   },
   {
@@ -81,6 +83,7 @@
     "description": "这是一条宽敞坚实的青石板铺成的大道，路上车马的痕迹已经在路面上留下一条条明显的凹痕，往东是一条较小的街道通往雪亭镇。",
     "mapX": 1,
     "mapY": 3,
+    "outdoorAreaId": "snow",
     "exits": {"west": "snow_stone_road", "east": "snow_west_street"}
   },
   {
@@ -90,6 +93,7 @@
     "description": "这里是雪亭镇的街道，你的北边有一家客栈，从这里就可以听到客栈里人们饮酒谈笑的声音，街道往东不远处有个转角往北，往西则可以走到车马来往络绎不绝的官道。",
     "mapX": 2,
     "mapY": 3,
+    "outdoorAreaId": "snow",
     "exits": {"west": "snow_official_road", "east": "snow_south_street", "south": "snow_academy"},
     "npcIds": ["snow_farmer", "snow_farmer_2"]
   },
@@ -110,6 +114,7 @@
     "description": "这里是雪亭镇的街道，往北是一个热闹的广场，东边则有一条小径沿着山腰通往山上，往西是一条比较窄的街道，参差不齐的瓦屋之间传来几声犬吠。",
     "mapX": 3,
     "mapY": 3,
+    "outdoorAreaId": "snow",
     "exits": {"west": "snow_west_street", "north": "snow_square", "east": "snow_east_path1"}
   },
   {
@@ -119,6 +124,7 @@
     "description": "广场铺着整齐大石板，中央的木架已经饱经风雨，四周人来人往。",
     "mapX": 3,
     "mapY": 2,
+    "outdoorAreaId": "snow",
     "exits": {"south": "snow_south_street", "north": "snow_main_street", "west": "snow_inn", "east": "snow_temple"},
     "npcIds": ["snow_square_blade_traveller", "snow_square_blade_traveller_2", "snow_square_blade_traveller_3"]
   },
@@ -129,6 +135,7 @@
     "description": "东边高大宅院门前旗杆上写着“淳风武馆”，院内不时传来刀剑碰撞声。",
     "mapX": 3,
     "mapY": 1,
+    "outdoorAreaId": "snow",
     "exits": {"south": "snow_square", "north": "snow_main_street2", "west": "snow_bank", "east": "chunfeng_school_gate"}
   },
   {
@@ -138,6 +145,7 @@
     "description": "大街向南通往镇前广场，东边是一间大宅院，西边打铁铺叮叮当当的声音远远便能听见。街上一个醉汉和收破烂的在人群间晃荡。",
     "mapX": 3,
     "mapY": 0,
+    "outdoorAreaId": "snow",
     "exits": {"south": "snow_main_street", "north": "snow_main_street3", "west": "snow_smithy", "east": "snow_workplace"},
     "npcIds": ["snow_drunk", "snow_scavenger"]
   },
@@ -179,6 +187,7 @@
     "description": "这里是雪亭镇大街。东边陈旧店铺的门上写着一个大大的“当”字，西边是一间闻不到药味、只飘着淡淡檀香的药铺。",
     "mapX": 3,
     "mapY": -1,
+    "outdoorAreaId": "snow",
     "exits": {"south": "snow_main_street2", "north": "snow_main_street4", "west": "snow_herbshop", "east": "snow_hockshop"}
   },
   {
@@ -197,6 +206,7 @@
     "description": "这里是一处山坳，往南就是雪亭镇，一条蜿蜒的小径往东通往另一个邻近的小山村，一块官府立的告示牌立在路旁，上面写着有关野羊山土匪出没的警告标志。",
     "mapX": 3,
     "mapY": -3,
+    "outdoorAreaId": "snow",
     "exits": {"south": "snow_main_street4"}
   },
   {
@@ -310,6 +320,7 @@
     "description": "两只巨大石狮镇守着红漆大门，门后许多灰衣汉子正在操练。",
     "mapX": 4,
     "mapY": 1,
+    "outdoorAreaId": "snow",
     "exits": {"west": "snow_main_street", "east": "chunfeng_training_ground"},
     "npcIds": ["liu_anlu"]
   },
@@ -320,6 +331,7 @@
     "description": "宽敞场地铺着黄色细砂，武馆弟子在吆喝声中反复演练拳脚剑术。",
     "mapX": 5,
     "mapY": 1,
+    "outdoorAreaId": "snow",
     "exits": {"west": "chunfeng_school_gate", "east": "chunfeng_schoolhall", "north": "chunfeng_weapon_storage"},
     "npcIds": ["fengshan_trainee", "fengshan_duty_trainee", "li_huoshi"]
   },
@@ -387,6 +399,7 @@
     "description": "这里是淳风武馆中的天井，往西走可以回到正厅，北边是书房，南边是招待客人的厢房，东边长廊通向武馆内院。天井中种满奇花异草，中央石柱刻着“剑气指天、剑心内敛、剑芒不显、剑神如电”。",
     "mapX": 7,
     "mapY": 1,
+    "outdoorAreaId": "snow",
     "exits": {
       "west": "chunfeng_schoolhall",
       "north": "chunfeng_study",
@@ -431,6 +444,7 @@
     "description": "普通黄土小径弯弯曲曲地向东盘旋上山，西面可回雪亭镇，路旁林木渐渐茂密。",
     "mapX": 4,
     "mapY": 3,
+    "outdoorAreaId": "snow",
     "exits": {"north": "snow_temple", "west": "snow_south_street", "east": "snow_east_path2"}
   },
   {
@@ -440,6 +454,7 @@
     "description": "小径穿过一片山间坡地，西面还能望见雪亭镇错落的房屋，东边道路继续上山。",
     "mapX": 5,
     "mapY": 3,
+    "outdoorAreaId": "snow",
     "exits": {"west": "snow_east_path1", "east": "snow_east_mountain_road"},
     "npcIds": ["snow_wild_dog", "snow_wild_dog_2"]
   },
@@ -450,6 +465,7 @@
     "description": "几块长满青苔的大石铺成一条不宽不窄的山路。西面是黄土小径，向南便进入当地人所说的老松林。",
     "mapX": 6,
     "mapY": 3,
-    "exits": {"west": "snow_east_path2", "south": "oldpine_north_path1"}
+    "outdoorAreaId": "snow",
+    "exits": {"west": "snow_east_path2", "south": "oldpine_north_path1", "east": "temple_sroad"}
   }
 ]

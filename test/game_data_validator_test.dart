@@ -11,8 +11,8 @@ void main() {
       await validator.validate('assets/data/demo_world.json');
 
       expect(validator.errors, isEmpty);
-      expect(validator.countFor('areas'), 7);
-      expect(validator.countFor('rooms'), 144);
+      expect(validator.countFor('areas'), 8);
+      expect(validator.countFor('rooms'), 169);
       expect(validator.countFor('quests'), 4);
     },
     timeout: const Timeout(Duration(seconds: 10)),

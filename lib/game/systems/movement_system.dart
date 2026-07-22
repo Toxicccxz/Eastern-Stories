@@ -18,7 +18,7 @@ class MovementSystem {
     return state.copyWith(
       currentRoomId: nextRoomId,
       visitedRoomIds: {...state.visitedRoomIds, nextRoomId},
-      log: state.logWith('你向${direction.label}走去，来到${nextRoom.name}。'),
+      log: state.logWith('你${direction.actionLabel}，来到${nextRoom.name}。'),
     );
   }
 

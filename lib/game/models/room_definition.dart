@@ -17,6 +17,7 @@ class RoomDefinition {
     this.actions = const [],
     this.allowsCultivation = false,
     this.allowsCombat = true,
+    this.outdoorAreaId,
   });
 
   factory RoomDefinition.fromJson(Map<String, Object?> json) {
@@ -39,6 +40,7 @@ class RoomDefinition {
       ],
       allowsCultivation: json['allowsCultivation'] as bool? ?? false,
       allowsCombat: json['allowsCombat'] as bool? ?? true,
+      outdoorAreaId: json['outdoorAreaId'] as String?,
     );
   }
 
@@ -55,6 +57,9 @@ class RoomDefinition {
   final List<RoomActionDefinition> actions;
   final bool allowsCultivation;
   final bool allowsCombat;
+  final String? outdoorAreaId;
+
+  bool get isOutdoor => outdoorAreaId != null;
 
   List<String> visibleItemIds(GameState state) {
     return state.roomItemOverrides[id] ?? itemIds;
