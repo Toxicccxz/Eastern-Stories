@@ -73,5 +73,447 @@
     "name": "富家公子",
     "description": "这名锦衣公子腰佩美玉，面前摆着好酒好菜，说起武考时神色颇为自得。",
     "greeting": "富家公子晃着酒杯笑道：校武场上的名次，未必全靠拳脚挣来。"
+  },
+  {
+    "id": "shangshu_gatekeeper",
+    "name": "门房",
+    "description": "他是尚书府的门房，衣着普通却眼神精明，守在门前多年，早已熟悉京师权贵间的规矩。",
+    "greeting": "门房打量了你一眼，说道：这里是尚书府，进去后说话行事都要小心。",
+    "dialogueOptions": [
+      {
+        "id": "ask_about_manor_rules",
+        "label": "询问府中规矩",
+        "response": "门房压低声音道：原本没有尚书府的记号不得入内，不过近日府里人手杂乱，你若只是拜访，别乱闯就是。"
+      }
+    ],
+    "combat": {
+      "maxHp": 44,
+      "attack": 7,
+      "defense": 5,
+      "rewardExperience": 4,
+      "dropItemIds": ["shangshu_white_cloth"]
+    }
+  },
+  {
+    "id": "shangshu_yu",
+    "name": "庾子建",
+    "description": "他是当朝兵部尚书，年过半百，神色威严。案前堆满军务文书，腰间佩刀仍保养得寒光隐现。",
+    "greeting": "庾子建抬眼看了看你，淡淡道：江湖人入京，多半不是为了闲游。",
+    "dialogueOptions": [
+      {
+        "id": "ask_about_capital",
+        "label": "询问京师近况",
+        "response": "庾子建道：京师表面太平，暗处却有不少风声。若想保全自己，少问朝堂事。"
+      }
+    ],
+    "combat": {
+      "maxHp": 150,
+      "attack": 22,
+      "defense": 16,
+      "rewardExperience": 28,
+      "dropItemIds": ["shangshu_shortsong_blade"],
+      "specialMove": {
+        "name": "短歌刀",
+        "interval": 3,
+        "damageBonus": 6,
+        "message": "庾子建刀势忽沉，一式短歌刀斩向你的破绽。"
+      }
+    }
+  },
+  {
+    "id": "shangshu_guard_huyuan",
+    "name": "尚书府护院",
+    "description": "一名尚书府护院，身形结实，手持单刀，目光始终扫视着往来的人。",
+    "greeting": "护院按着刀柄说道：府中内院，不该看的少看。",
+    "combat": {
+      "maxHp": 76,
+      "attack": 12,
+      "defense": 8,
+      "rewardExperience": 10,
+      "dropItemIds": ["shangshu_shortsong_blade"],
+      "respawnAfterMoves": 24
+    }
+  },
+  {
+    "id": "shangshu_guard_huyuan1",
+    "name": "尚书府护院",
+    "description": "这名护院脚步轻稳，似乎练过一些身法，站在路口时不动声色地挡住去处。",
+    "greeting": "护院低声道：客人？主人吩咐我守着，我也不知道。",
+    "dialogueOptions": [
+      {
+        "id": "ask_about_guest",
+        "label": "询问客人",
+        "response": "护院摇头道：我也不知道，主人吩咐我守着的。"
+      }
+    ],
+    "combat": {
+      "maxHp": 82,
+      "attack": 13,
+      "defense": 9,
+      "rewardExperience": 11,
+      "dropItemIds": ["shangshu_shortsong_blade"],
+      "respawnAfterMoves": 24
+    }
+  },
+  {
+    "id": "shangshu_maid",
+    "name": "丫鬟",
+    "description": "她是尚书府司职厨务的丫鬟，一年四季待在厨房中。粗重杂活也掩不住她天生丽质。",
+    "greeting": "丫鬟低头理着灶台，只轻声说：厨房杂乱，客人莫久留。",
+    "combat": {
+      "maxHp": 34,
+      "attack": 5,
+      "defense": 3,
+      "rewardExperience": 3,
+      "dropItemIds": ["shangshu_pink_cloth"]
+    }
+  },
+  {
+    "id": "shangshu_gardener",
+    "name": "花匠",
+    "description": "一个老老实实、本本分分的庄园花匠，多年的风霜刻满额头。他总是默默在花园里做事，似乎从不引人注意。",
+    "greeting": "花匠剪下一段枯枝，像是随口说道：花木有根，人也有根。",
+    "dialogueOptions": [
+      {
+        "id": "ask_about_maoshan",
+        "label": "询问茅山派",
+        "response": "花匠望向远处，低声道：那是我的师门。许多年不曾回去了。"
+      },
+      {
+        "id": "ask_about_lin_ji",
+        "label": "询问林忌",
+        "response": "花匠说道：林忌？你问我师兄？好久没见着他了。"
+      },
+      {
+        "id": "ask_about_qing_chen",
+        "label": "询问庾清尘",
+        "response": "花匠手中剪子一顿：什么？清尘出事了？"
+      }
+    ],
+    "familyId": "maoshan_taoist",
+    "familyGeneration": 6,
+    "combat": {
+      "maxHp": 130,
+      "attack": 20,
+      "defense": 14,
+      "rewardExperience": 24,
+      "dropItemIds": ["shangshu_guard_sword"],
+      "specialMove": {
+        "name": "幽冥符",
+        "interval": 4,
+        "damageBonus": 7,
+        "message": "花匠袖中符影一闪，一道阴寒法力向你袭来。"
+      }
+    }
+  },
+  {
+    "id": "shangshu_qing_chen",
+    "name": "庾清尘",
+    "description": "她是尚书府的千金，平日总待在自己的绣房里。传闻她文雅娴淑，近来却笃信道教，一切讲究素雅。",
+    "greeting": "庾清尘合上手中经卷，轻声道：世间荣华，终究不如一念清静。",
+    "dialogueOptions": [
+      {
+        "id": "ask_about_taoism",
+        "label": "询问道法",
+        "response": "庾清尘说道：我不过初窥门径，真正高明的道法，还在山中。"
+      }
+    ],
+    "familyId": "maoshan_taoist",
+    "familyGeneration": 7,
+    "combat": {
+      "maxHp": 96,
+      "attack": 15,
+      "defense": 11,
+      "rewardExperience": 16,
+      "dropItemIds": ["shangshu_white_cloth", "shangshu_guard_sword"],
+      "specialMove": {
+        "name": "引魂咒",
+        "interval": 4,
+        "damageBonus": 5,
+        "message": "庾清尘低声诵咒，阴冷的气息缠上你的手脚。"
+      }
+    }
+  },
+  {
+    "id": "capital_bank_owner",
+    "name": "黑你没商量",
+    "description": "钱庄老板本名魏阮，看起来相当精明。京师居民对他颇有怨言，但谁也不愿轻易招惹他。",
+    "greeting": "黑你没商量翻了翻眼皮，说道：换钱？钱可要自己点清楚。",
+    "dialogueOptions": [
+      {
+        "id": "ask_about_bank",
+        "label": "询问钱庄",
+        "response": "黑你没商量压低声音道：我在上面可有人。兑换钱币可以，少了别找我。"
+      }
+    ],
+    "combat": {
+      "maxHp": 118,
+      "attack": 18,
+      "defense": 13,
+      "rewardSilver": 12,
+      "rewardExperience": 18,
+      "dropItemIds": ["capital_plain_longsword"],
+      "specialMove": {
+        "name": "黑气反击",
+        "interval": 4,
+        "damageBonus": 5,
+        "message": "黑你没商量三角眼倒立，身前闪过几道黑气。"
+      }
+    }
+  },
+  {
+    "id": "capital_master_chen",
+    "name": "陈天星",
+    "description": "振远镖局总镖头，江湖人称“刀掌双绝”。他经营镖局多年，在京师武林中颇有声望。",
+    "greeting": "陈天星拈须道：振远镖局吃的是刀头饭，讲的是一个信字。",
+    "dialogueOptions": [
+      {
+        "id": "ask_about_biaoju",
+        "label": "询问振远镖局",
+        "response": "陈天星说道：这可是我一手创下的镖局。可惜我也老了。"
+      },
+      {
+        "id": "ask_about_chen_jianqiu",
+        "label": "询问陈剑秋",
+        "response": "陈天星说道：他是我侄子，有什么事找他？"
+      }
+    ],
+    "combat": {
+      "maxHp": 190,
+      "attack": 27,
+      "defense": 19,
+      "rewardExperience": 36,
+      "dropItemIds": ["capital_duoqing_blade"],
+      "specialMove": {
+        "name": "春风快意刀",
+        "interval": 3,
+        "damageBonus": 8,
+        "message": "陈天星一刀挥出，刀风快意，逼得你连退半步。"
+      }
+    }
+  },
+  {
+    "id": "capital_weaponor",
+    "name": "万晓生",
+    "description": "万晓生是个须发皆白的老人，闯荡江湖已近五十年，如今在京师武器店掌柜台。",
+    "greeting": "万晓生说道：客官，自个儿挑一件称手的兵器吧。",
+    "dialogueOptions": [
+      {
+        "id": "ask_about_weapon_shop",
+        "label": "询问武器",
+        "response": "万晓生道：本店专卖各种长短兵器，刀、剑、杖、鞭都有。"
+      }
+    ],
+    "shop": {
+      "products": [
+        {"itemId": "capital_wuqing_sword", "initialStock": -1},
+        {"itemId": "capital_duoqing_blade", "initialStock": -1},
+        {"itemId": "capital_rain_whip", "initialStock": -1},
+        {"itemId": "capital_demon_staff", "initialStock": -1},
+        {"itemId": "capital_bronze_shield", "initialStock": -1}
+      ]
+    }
+  },
+  {
+    "id": "capital_clother",
+    "name": "老板娘",
+    "description": "绸缎店老板娘年近三十，神色友善，守着这间顾客稀少的新店铺。",
+    "greeting": "老板娘笑道：这位客官，您需要什么样的衣服？",
+    "dialogueOptions": [
+      {
+        "id": "ask_about_clothes",
+        "label": "询问衣服",
+        "response": "老板娘说道：本店新进几匹料子，做日常穿戴最合适。"
+      }
+    ],
+    "shop": {
+      "products": [
+        {"itemId": "capital_lady_dress", "initialStock": -1},
+        {"itemId": "capital_green_cloth", "initialStock": -1},
+        {"itemId": "capital_color_cloth", "initialStock": -1}
+      ]
+    }
+  },
+  {
+    "id": "capital_shoer",
+    "name": "李掌柜",
+    "description": "李掌柜经营祖传鞋店多年，是京师街面上出了名的会做生意。",
+    "greeting": "李掌柜道：这位客官，您需要什么样的鞋？",
+    "dialogueOptions": [
+      {
+        "id": "ask_about_boots",
+        "label": "询问鞋靴",
+        "response": "李掌柜说道：鹿皮靴轻便，象皮靴结实，花靴则更讲究体面。"
+      }
+    ],
+    "shop": {
+      "products": [
+        {"itemId": "capital_deer_boots", "initialStock": -1},
+        {"itemId": "capital_elephant_boots", "initialStock": -1},
+        {"itemId": "capital_flower_boots", "initialStock": -1}
+      ]
+    }
+  },
+  {
+    "id": "capital_cake_vendor",
+    "name": "卖饼大叔",
+    "description": "一个相貌朴实的卖饼大叔，憨厚的脸上挂着和蔼的笑容。",
+    "greeting": "卖饼大叔吆喝道：卖饼哟！又香又脆的大饼！",
+    "shop": {
+      "products": [
+        {"itemId": "capital_big_cake", "initialStock": -1}
+      ]
+    }
+  },
+  {
+    "id": "capital_dumpling_seller",
+    "name": "卖包子的",
+    "description": "这个卖包子的小贩对你微微一笑，蒸笼里冒着热气。",
+    "greeting": "卖包子的吆喝道：包子！热腾腾的包子！",
+    "shop": {
+      "products": [
+        {"itemId": "capital_dumpling", "initialStock": -1}
+      ]
+    }
+  },
+  {
+    "id": "capital_east_gate_guard_1",
+    "name": "京师守城兵",
+    "description": "守城官兵训练有素，正在盘查东一门来往行人。",
+    "greeting": "守城兵扶着刀柄说道：东门暂不放行，莫要在城门口久留。",
+    "combat": {
+      "maxHp": 62,
+      "attack": 10,
+      "defense": 8,
+      "rewardExperience": 8,
+      "respawnAfterMoves": 24
+    }
+  },
+  {
+    "id": "capital_east_gate_guard_2",
+    "name": "京师守城兵",
+    "description": "守城官兵站在东二门下，神情严肃，目光不断扫过围观布告的人。",
+    "greeting": "守城兵说道：看布告可以，别挡住城门。",
+    "combat": {
+      "maxHp": 64,
+      "attack": 10,
+      "defense": 8,
+      "rewardExperience": 8,
+      "respawnAfterMoves": 24
+    }
+  },
+  {
+    "id": "capital_west_gate_guard_1",
+    "name": "京师守城兵",
+    "description": "守城官兵守在西一门，身后是厚重的城门和几张官府布告。",
+    "greeting": "守城兵说道：城外道路未开，客人请回城中。",
+    "combat": {
+      "maxHp": 62,
+      "attack": 10,
+      "defense": 8,
+      "rewardExperience": 8,
+      "respawnAfterMoves": 24
+    }
+  },
+  {
+    "id": "capital_west_gate_guard_2",
+    "name": "京师守城兵",
+    "description": "守城官兵在西二门下巡看，城墙上的布告被风吹得猎猎作响。",
+    "greeting": "守城兵沉声道：无官府通令，不得擅自出入。",
+    "combat": {
+      "maxHp": 64,
+      "attack": 10,
+      "defense": 8,
+      "rewardExperience": 8,
+      "respawnAfterMoves": 24
+    }
+  },
+  {
+    "id": "capital_south_gate_guard",
+    "name": "京师守城兵",
+    "description": "南门官兵戒备森严，城墙上的官家布告墨迹尚新。",
+    "greeting": "守城兵说道：今年文武大选，南门盘查更严。",
+    "combat": {
+      "maxHp": 66,
+      "attack": 11,
+      "defense": 8,
+      "rewardExperience": 9,
+      "respawnAfterMoves": 24
+    }
+  },
+  {
+    "id": "capital_palace_guard",
+    "name": "禁卫军",
+    "description": "禁卫军守在神武门下，甲胄整齐，目光冷峻，显然不会让闲杂人等靠近宫门。",
+    "greeting": "禁卫军冷冷说道：宫门重地，速速离开。",
+    "combat": {
+      "maxHp": 78,
+      "attack": 13,
+      "defense": 10,
+      "rewardExperience": 12,
+      "respawnAfterMoves": 24
+    }
+  },
+  {
+    "id": "capital_walker",
+    "name": "行人",
+    "description": "一个在京师街道上往来奔走的普通行人，衣着朴素，神色间带着几分疲惫。",
+    "greeting": "行人摇了摇头，说道：世事无常，只苦了我们这些老百姓。",
+    "dialogueOptions": [
+      {
+        "id": "ask_about_office_buying",
+        "label": "询问买官",
+        "response": "行人低声道：全是那些朝中权贵作的孽。"
+      }
+    ],
+    "combat": {
+      "maxHp": 46,
+      "attack": 7,
+      "defense": 5,
+      "rewardExperience": 5,
+      "respawnAfterMoves": 18
+    }
+  },
+  {
+    "id": "capital_walker_2",
+    "name": "行人",
+    "description": "一名路过京师东街的行人，见你望来，立刻把声音压低了几分。",
+    "greeting": "行人叹了口气：这年头，几个臭钱就能买到官。唉。",
+    "combat": {
+      "maxHp": 44,
+      "attack": 7,
+      "defense": 5,
+      "rewardExperience": 5,
+      "respawnAfterMoves": 18
+    }
+  },
+  {
+    "id": "capital_route_trader",
+    "name": "商人",
+    "description": "一位从关外来的商人，满面风尘，口中不断抱怨京师生意不好做。",
+    "greeting": "商人说道：什么世道，几个臭钱就可以买官做。",
+    "combat": {
+      "maxHp": 58,
+      "attack": 9,
+      "defense": 7,
+      "rewardSilver": 6,
+      "rewardExperience": 7,
+      "respawnAfterMoves": 20
+    }
+  },
+  {
+    "id": "capital_blade_trader",
+    "name": "商人",
+    "description": "这位商人身边带着一柄护身刀，脚步轻快，似乎常年在各地奔走。",
+    "greeting": "商人按了按腰间刀柄，说道：这年头，生意不好做啊。",
+    "combat": {
+      "maxHp": 64,
+      "attack": 11,
+      "defense": 7,
+      "rewardSilver": 8,
+      "rewardExperience": 8,
+      "dropItemIds": ["capital_hu_blade"],
+      "respawnAfterMoves": 20
+    }
   }
 ]

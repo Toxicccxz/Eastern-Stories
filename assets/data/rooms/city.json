@@ -76,7 +76,7 @@
     "description": "南边是京师闻名的太白酒楼，北边是一所荒废多年的旧园。园中荒草摇曳，几乎无人敢进。",
     "mapX": 0,
     "mapY": 5,
-    "exits": {"east": "capital_west_huguo_street", "north": "capital_abandoned_garden", "south": "capital_taibai_inn"}
+    "exits": {"east": "capital_west_huguo_street", "west": "capital_city_street14", "north": "capital_abandoned_garden", "south": "capital_taibai_inn"}
   },
   {
     "id": "capital_abandoned_garden",
@@ -130,9 +130,9 @@
     "name": "护国道东段",
     "areaId": "city",
     "description": "护国道东段青石铺地，街面整洁。南面的人声最为嘈杂，那里便是京师天桥。",
-    "mapX": 3,
+    "mapX": 4,
     "mapY": 5,
-    "exits": {"west": "capital_huguo_crossroads", "east": "capital_bridge"}
+    "exits": {"west": "capital_huguo_crossroads", "east": "capital_bridge", "north": "shangshu_gate"}
   },
   {
     "id": "capital_bridge",
@@ -141,7 +141,7 @@
     "description": "天桥人声鼎沸，杂耍、卖艺和小买卖应有尽有。若仔细寻找，说不定能买到些有用之物。北边是校武场。",
     "mapX": 3,
     "mapY": 6,
-    "exits": {"north": "capital_training_ground", "west": "capital_east_huguo_street"},
+    "exits": {"north": "capital_training_ground", "west": "capital_east_huguo_street", "east": "capital_city_street11", "south": "capital_city_street17"},
     "npcIds": ["capital_street_performer", "capital_trader"]
   },
   {
@@ -163,7 +163,11 @@
     "description": "这里是紫禁城午门。北面的庄严大门紧闭，两侧石狮虎视眈眈地盯着来往人群；南面便是历年选拔武状元的校武场。",
     "mapX": 3,
     "mapY": 8,
-    "exits": {"south": "capital_training_ground"}
+    "exits": {
+      "south": "capital_training_ground",
+      "east": "capital_palace_east_street3",
+      "west": "capital_palace_west_street4"
+    }
   },
   {
     "id": "capital_altar",
@@ -172,6 +176,544 @@
     "description": "宽阔广场中央是皇家祭坛，重大典礼时皇帝与文武百官会在此祭祀。平日只有禁卫军和宫中杂役偶尔经过。",
     "mapX": 2,
     "mapY": 6,
-    "exits": {"north": "capital_huguo_crossroads"}
+    "exits": {"north": "capital_huguo_crossroads", "south": "capital_shenwu_gate"}
+  },
+  {
+    "id": "shangshu_gate",
+    "name": "尚书府大门",
+    "areaId": "city",
+    "description": "朱漆大门紧闭半掩，门楣上悬着“兵部尚书府”的匾额。门房守在阶前，来往行人到了这里都会不自觉放轻脚步。",
+    "mapX": 4,
+    "mapY": 4,
+    "exits": {"south": "capital_east_huguo_street", "east": "shangshu_yard"},
+    "npcIds": ["shangshu_gatekeeper"]
+  },
+  {
+    "id": "shangshu_yard",
+    "name": "尚书府庭院",
+    "areaId": "city",
+    "description": "庭院收拾得十分整齐，青石小径通向四面。东边是待客的厅堂，南边隐约可见花木，北边则通向府中客房。",
+    "mapX": 5,
+    "mapY": 4,
+    "exits": {
+      "west": "shangshu_gate",
+      "east": "shangshu_hall",
+      "north": "shangshu_north_path",
+      "south": "shangshu_garden_path"
+    }
+  },
+  {
+    "id": "shangshu_hall",
+    "name": "尚书府客厅",
+    "areaId": "city",
+    "description": "客厅陈设古朴，墙上挂着几幅边关军图。厅中一张大案后坐着府主人，案头文卷堆得很高。",
+    "mapX": 6,
+    "mapY": 4,
+    "exits": {"west": "shangshu_yard"},
+    "npcIds": ["shangshu_yu"]
+  },
+  {
+    "id": "shangshu_north_path",
+    "name": "小径",
+    "areaId": "city",
+    "description": "一条石径沿院墙向北延伸，几名护院在此巡看。东侧有一间客房，院中静得有些过分。",
+    "mapX": 5,
+    "mapY": 3,
+    "exits": {
+      "south": "shangshu_yard",
+      "north": "shangshu_north_path_end",
+      "east": "shangshu_guest_room"
+    },
+    "npcIds": ["shangshu_guard_huyuan", "shangshu_guard_huyuan1"]
+  },
+  {
+    "id": "shangshu_north_path_end",
+    "name": "小径",
+    "areaId": "city",
+    "description": "这里靠近内院北端，花木遮住了大半天光。东边有一间小屋，门窗都关得很严。",
+    "mapX": 5,
+    "mapY": 2,
+    "exits": {"south": "shangshu_north_path", "east": "shangshu_dark_room"},
+    "npcIds": ["shangshu_guard_huyuan"]
+  },
+  {
+    "id": "shangshu_guest_room",
+    "name": "客房",
+    "areaId": "city",
+    "description": "客房收拾得干净，桌上有几册诗文书卷，似乎是府中待客时备下的消遣。",
+    "mapX": 6,
+    "mapY": 3,
+    "exits": {"west": "shangshu_north_path"},
+    "actions": [
+      {
+        "id": "read_shangshu_guest_books",
+        "label": "翻看书卷",
+        "description": "翻开桌上几册诗文书卷。",
+        "resultRoomId": "shangshu_guest_room",
+        "log": "你随手翻了翻桌上的书卷，多是旧日诗文，并无紧要线索。"
+      }
+    ]
+  },
+  {
+    "id": "shangshu_dark_room",
+    "name": "小屋",
+    "areaId": "city",
+    "description": "屋中光线昏暗，陈设极少，像是临时安置客人的地方。空气里有一丝久闭不散的药草味。",
+    "mapX": 6,
+    "mapY": 2,
+    "exits": {"west": "shangshu_north_path_end"}
+  },
+  {
+    "id": "shangshu_garden_path",
+    "name": "花园小径",
+    "areaId": "city",
+    "description": "小径两旁栽着修剪整齐的花木，南边通向府中花园，东边传来锅勺碰撞的声音。",
+    "mapX": 5,
+    "mapY": 5,
+    "exits": {
+      "north": "shangshu_yard",
+      "south": "shangshu_garden",
+      "east": "shangshu_kitchen"
+    }
+  },
+  {
+    "id": "shangshu_kitchen",
+    "name": "厨房",
+    "areaId": "city",
+    "description": "厨房里炉火未熄，案上堆着刚洗好的青菜。一个丫鬟在灶前忙碌，似乎并不愿多理会外人。",
+    "mapX": 6,
+    "mapY": 5,
+    "exits": {"west": "shangshu_garden_path"},
+    "npcIds": ["shangshu_maid"]
+  },
+  {
+    "id": "shangshu_garden",
+    "name": "花园",
+    "areaId": "city",
+    "description": "花园里草木扶疏，几处假山错落其间。花匠默默修枝剪叶，像是已经在这里待了许多年。",
+    "mapX": 5,
+    "mapY": 6,
+    "exits": {
+      "north": "shangshu_garden_path",
+      "east": "shangshu_inner_house",
+      "west": "shangshu_side_path"
+    },
+    "npcIds": ["shangshu_gardener"]
+  },
+  {
+    "id": "shangshu_inner_house",
+    "name": "内宅",
+    "areaId": "city",
+    "description": "这里是尚书府内宅，布置素雅，香炉中一缕青烟袅袅。屏风后隐约传来女子诵经般的低语。",
+    "mapX": 6,
+    "mapY": 6,
+    "exits": {"west": "shangshu_garden"},
+    "npcIds": ["shangshu_qing_chen"]
+  },
+  {
+    "id": "shangshu_side_path",
+    "name": "小路",
+    "areaId": "city",
+    "description": "一条偏僻小路绕过花园西侧，地上落叶很厚，显然平日很少有人经过。",
+    "mapX": 4,
+    "mapY": 6,
+    "exits": {"east": "shangshu_garden", "south": "shangshu_abandoned_room"}
+  },
+  {
+    "id": "shangshu_abandoned_room",
+    "name": "废屋",
+    "areaId": "city",
+    "description": "废屋里堆着破旧桌椅，蛛网挂满梁角。这里离花园不远，却像被尚书府刻意遗忘了。",
+    "mapX": 4,
+    "mapY": 7,
+    "exits": {"north": "shangshu_side_path"}
+  },
+  {
+    "id": "capital_city_street11",
+    "name": "京师街道",
+    "areaId": "city",
+    "description": "这里是京师的大街。西边是热闹的天桥，行人匆匆往来；北边是一家鞋店，东边仍是延伸不尽的街市。",
+    "mapX": 11,
+    "mapY": 6,
+    "exits": {
+      "west": "capital_bridge",
+      "north": "capital_boots_shop",
+      "east": "capital_city_street10",
+      "south": "capital_residential_lane"
+    }
+  },
+  {
+    "id": "capital_city_street10",
+    "name": "京师街道",
+    "areaId": "city",
+    "description": "大街上人声嘈杂，小贩沿街叫卖。再往东便是京师东二门，城楼上的旗帜在风里猎猎作响。",
+    "mapX": 12,
+    "mapY": 6,
+    "exits": {
+      "west": "capital_city_street11",
+      "north": "capital_city_street9",
+      "east": "capital_east_gate_2"
+    },
+    "npcIds": ["capital_cake_vendor", "capital_dumpling_seller"]
+  },
+  {
+    "id": "capital_city_street9",
+    "name": "京师街道",
+    "areaId": "city",
+    "description": "你正走在京师的大街上。东边就是京师东一门，北边是京城有名的武器铺，往西则能走到钱庄所在的街口。",
+    "mapX": 12,
+    "mapY": 5,
+    "exits": {
+      "west": "capital_city_street8",
+      "east": "capital_east_gate_1",
+      "north": "capital_weapon_shop",
+      "south": "capital_city_street10"
+    }
+  },
+  {
+    "id": "capital_city_street8",
+    "name": "京师街道",
+    "areaId": "city",
+    "description": "街面宽阔，商旅往来不绝。北边是京城唯一的钱庄，东边可去武器铺一带，西边通向更深的街巷。",
+    "mapX": 10,
+    "mapY": 5,
+    "exits": {
+      "east": "capital_city_street9",
+      "north": "capital_bank",
+      "west": "capital_city_street7"
+    }
+  },
+  {
+    "id": "capital_city_street7",
+    "name": "京师街道",
+    "areaId": "city",
+    "description": "这里街市稍显清静，偶尔有僧人和脚夫经过。北边是振远镖局，往西可接到京师中轴街口。",
+    "mapX": 9,
+    "mapY": 5,
+    "exits": {
+      "east": "capital_city_street8",
+      "west": "capital_huguo_crossroads",
+      "north": "capital_biaoju"
+    }
+  },
+  {
+    "id": "capital_bank",
+    "name": "旺金钱庄",
+    "areaId": "city",
+    "description": "这是一间素来不讲信用的钱庄，里里外外却打扫得干干净净。柜台后坐着一个精瘦的中年人，柜台上摆着一块服务牌。",
+    "mapX": 10,
+    "mapY": 4,
+    "exits": {"south": "capital_city_street8"},
+    "npcIds": ["capital_bank_owner"],
+    "allowsCombat": false,
+    "actions": [
+      {
+        "id": "read_capital_bank_sign",
+        "label": "查看服务牌",
+        "description": "看看钱庄柜台上的服务牌。",
+        "resultRoomId": "capital_bank",
+        "log": "牌上写着：本庄提供兑换钱币服务，出门后发现少钱概不负责。"
+      }
+    ]
+  },
+  {
+    "id": "capital_biaoju",
+    "name": "振远总局",
+    "areaId": "city",
+    "description": "镖局虽然不大，但在京师这块地上已无人不知其名。总镖头以京城武林领袖自居，厅中挂着几面旧镖旗。",
+    "mapX": 9,
+    "mapY": 4,
+    "exits": {"south": "capital_city_street7"},
+    "npcIds": ["capital_master_chen"]
+  },
+  {
+    "id": "capital_weapon_shop",
+    "name": "京师武器店",
+    "areaId": "city",
+    "description": "店铺宽敞，红砖铺地。四周墙上挂满各式刀剑，北墙的大柜台后几个伙计正在忙碌。",
+    "mapX": 12,
+    "mapY": 4,
+    "exits": {"south": "capital_city_street9"},
+    "npcIds": ["capital_weaponor"],
+    "actions": [
+      {
+        "id": "read_capital_weapon_sign",
+        "label": "查看招牌",
+        "description": "看看武器店门口的金字招牌。",
+        "resultRoomId": "capital_weapon_shop",
+        "log": "招牌写着：京师武器店专营各式兵刃。"
+      }
+    ]
+  },
+  {
+    "id": "capital_boots_shop",
+    "name": "李记鞋店",
+    "areaId": "city",
+    "description": "这里是京师中最大的一家鞋店，店铺宽大，弥漫着特殊皮革的气味，货架上摆满各式皮靴。",
+    "mapX": 11,
+    "mapY": 5,
+    "exits": {"south": "capital_city_street11"},
+    "npcIds": ["capital_shoer"],
+    "actions": [
+      {
+        "id": "read_capital_boots_sign",
+        "label": "查看招牌",
+        "description": "看看鞋店门口的金字招牌。",
+        "resultRoomId": "capital_boots_shop",
+        "log": "招牌写着：专卖各式鞋。"
+      }
+    ]
+  },
+  {
+    "id": "capital_cloth_shop",
+    "name": "四喜绸缎店",
+    "areaId": "city",
+    "description": "四喜绸缎店是京师一家新开的衣帽商店。店内顾客稀少，柜台上凌乱地摆着几匹绸缎。",
+    "mapX": -1,
+    "mapY": 6,
+    "exits": {"south": "capital_city_street14"},
+    "npcIds": ["capital_clother"],
+    "actions": [
+      {
+        "id": "read_capital_cloth_sign",
+        "label": "查看招牌",
+        "description": "看看绸缎店堂上的新招牌。",
+        "resultRoomId": "capital_cloth_shop",
+        "log": "匾上三个大字：闻名堂。"
+      }
+    ]
+  },
+  {
+    "id": "capital_residential_lane",
+    "name": "民宅小巷",
+    "areaId": "city",
+    "description": "这里是一片民宅，炊烟缭绕，偶尔有孩童从门缝里探头张望。街巷虽窄，却颇有烟火气。",
+    "mapX": 11,
+    "mapY": 7,
+    "exits": {"north": "capital_city_street11"}
+  },
+  {
+    "id": "capital_east_gate_1",
+    "name": "京师东一门",
+    "areaId": "city",
+    "description": "城门口十来个士兵正在检查过往行人。城墙上有一张陈旧的布告，东边的城门暂未开放。",
+    "mapX": 13,
+    "mapY": 5,
+    "exits": {"west": "capital_city_street9"},
+    "npcIds": ["capital_east_gate_guard_1"]
+  },
+  {
+    "id": "capital_east_gate_2",
+    "name": "京师东二门",
+    "areaId": "city",
+    "description": "城门上插着几面旗帜，标志着本门的守城将领。城墙上贴着一张新布告，围观的人正低声议论。",
+    "mapX": 13,
+    "mapY": 6,
+    "exits": {"west": "capital_city_street10"},
+    "npcIds": ["capital_east_gate_guard_2"]
+  },
+  {
+    "id": "capital_city_street14",
+    "name": "京师街道",
+    "areaId": "city",
+    "description": "这里是京师西侧的大街，西边就是京师西一门。护国寺的僧人西去取经时也常从此经过。",
+    "mapX": -1,
+    "mapY": 5,
+    "exits": {
+      "east": "capital_west_street",
+      "west": "capital_west_gate_1",
+      "north": "capital_city_street13",
+      "south": "capital_cloth_shop"
+    }
+  },
+  {
+    "id": "capital_city_street13",
+    "name": "京师街道",
+    "areaId": "city",
+    "description": "街道西边是京师西二门，南边原是京师监狱所在。站在这里，仿佛还能听见旧日刑狱中的鞭声。",
+    "mapX": -1,
+    "mapY": 4,
+    "exits": {"west": "capital_west_gate_2", "south": "capital_city_street14"}
+  },
+  {
+    "id": "capital_west_gate_1",
+    "name": "京师西一门",
+    "areaId": "city",
+    "description": "你来到京师西一门。城墙上贴着几张官家布告，西边城门外可望见远处连绵群山。",
+    "mapX": -2,
+    "mapY": 5,
+    "exits": {"east": "capital_city_street14"},
+    "npcIds": ["capital_west_gate_guard_1"]
+  },
+  {
+    "id": "capital_west_gate_2",
+    "name": "京师西二门",
+    "areaId": "city",
+    "description": "西二门虽不如其他城门高大，但厚重城墙仍非寻常人所能翻越。城外的道路暂未开放。",
+    "mapX": -2,
+    "mapY": 4,
+    "exits": {"east": "capital_city_street13"},
+    "npcIds": ["capital_west_gate_guard_2"]
+  },
+  {
+    "id": "capital_city_street17",
+    "name": "京师街道",
+    "areaId": "city",
+    "description": "你来到京师南侧大街。南边是京师南门，北边便是人声鼎沸的天桥，西侧原是刑场所在。",
+    "mapX": 3,
+    "mapY": 9,
+    "exits": {"north": "capital_bridge", "south": "capital_south_gate"}
+  },
+  {
+    "id": "capital_south_gate",
+    "name": "京师南门",
+    "areaId": "city",
+    "description": "高大的城门上“京师南门”几个大字格外显眼。城墙上贴着官家布告，守城官兵戒备森严。",
+    "mapX": 3,
+    "mapY": 10,
+    "exits": {"north": "capital_city_street17"},
+    "npcIds": ["capital_south_gate_guard"]
+  },
+  {
+    "id": "capital_shenwu_gate",
+    "name": "神武门",
+    "areaId": "city",
+    "description": "你来到紫禁城的北门神武门。南向的大门通往宫城深处，却极少开启；门上缠着大铁锁，还有士兵把守。",
+    "mapX": 2,
+    "mapY": 7,
+    "exits": {
+      "north": "capital_altar",
+      "east": "capital_palace_east_street1",
+      "west": "capital_palace_west_street6"
+    },
+    "npcIds": ["capital_palace_guard"]
+  },
+  {
+    "id": "capital_palace_east_street1",
+    "name": "京师东街",
+    "areaId": "city",
+    "description": "这里是京师东街的北段。北边可见振远总局的旗杆，西向是庄严的神武门，向南则通往尚书府和午门一带。",
+    "mapX": 5,
+    "mapY": 7,
+    "exits": {
+      "north": "capital_biaoju",
+      "south": "capital_palace_east_street2",
+      "west": "capital_shenwu_gate"
+    },
+    "npcIds": ["capital_walker", "capital_walker_2"]
+  },
+  {
+    "id": "capital_palace_east_street2",
+    "name": "京师东街",
+    "areaId": "city",
+    "description": "你走在京师东街的中段。这里夹在紫禁城城墙与尚书府院墙之间，南向道路通往午门，北方镖局旗杆依稀可见。",
+    "mapX": 5,
+    "mapY": 8,
+    "exits": {
+      "north": "capital_palace_east_street1",
+      "south": "capital_palace_east_street3"
+    },
+    "npcIds": ["capital_walker"]
+  },
+  {
+    "id": "capital_palace_east_street3",
+    "name": "京师东街",
+    "areaId": "city",
+    "description": "这是京师东街的南段。东边是尚书府大门，西边便是午门，南边则是尚书府高耸的院墙。",
+    "mapX": 4,
+    "mapY": 8,
+    "exits": {
+      "east": "shangshu_gate",
+      "west": "capital_meridian_gate",
+      "north": "capital_palace_east_street2"
+    },
+    "actions": [
+      {
+        "id": "climb_shangshu_wall",
+        "label": "攀上院墙",
+        "description": "沿着尚书府院墙寻找可以借力攀爬的地方。",
+        "resultRoomId": "capital_shangshu_wall",
+        "log": "你抓住墙缝几处凸起，翻身攀上尚书府的院墙。"
+      }
+    ]
+  },
+  {
+    "id": "capital_shangshu_wall",
+    "name": "院墙",
+    "areaId": "city",
+    "description": "你爬上了尚书府的院墙。墙里人来人往，颇为热闹；墙外便是京师东街。",
+    "mapX": 6,
+    "mapY": 8,
+    "exits": {
+      "out": "capital_palace_east_street3",
+      "enter": "shangshu_abandoned_room"
+    },
+    "actions": [
+      {
+        "id": "jump_into_shangshu",
+        "label": "跳入府中",
+        "description": "从院墙内侧跳下去。",
+        "resultRoomId": "shangshu_abandoned_room",
+        "log": "你纵身跳下院墙，落在尚书府一间废屋附近。"
+      },
+      {
+        "id": "jump_out_of_shangshu",
+        "label": "跳回街上",
+        "description": "从院墙外侧跳回京师东街。",
+        "resultRoomId": "capital_palace_east_street3",
+        "log": "你小心翻回墙外，重新落在京师东街。"
+      }
+    ]
+  },
+  {
+    "id": "capital_palace_west_street4",
+    "name": "京师西街",
+    "areaId": "city",
+    "description": "你正走在京师西街上。东边是进出紫禁城的午门，西边则是相国府，北边不远处能听见太白酒楼的喧哗声。",
+    "mapX": 2,
+    "mapY": 8,
+    "exits": {
+      "east": "capital_meridian_gate",
+      "west": "capital_xiangguo_gate",
+      "north": "capital_palace_west_street5"
+    },
+    "npcIds": ["capital_walker", "capital_route_trader"]
+  },
+  {
+    "id": "capital_xiangguo_gate",
+    "name": "相国府大门",
+    "areaId": "city",
+    "description": "你来到相国府的大门处。相国在朝中地位显赫，但府第比起尚书府显得寒酸得多，只有牌匾上的“相国府”提醒着主人的身份。",
+    "mapX": 1,
+    "mapY": 8,
+    "exits": {"east": "capital_palace_west_street4"}
+  },
+  {
+    "id": "capital_palace_west_street5",
+    "name": "京师西街",
+    "areaId": "city",
+    "description": "街道西边就是太白酒楼，三教九流的人物都聚在那里。东侧紧邻紫禁城的城墙，道路向南北延伸。",
+    "mapX": 1,
+    "mapY": 9,
+    "exits": {
+      "west": "capital_taibai_inn",
+      "south": "capital_palace_west_street4",
+      "north": "capital_palace_west_street6"
+    }
+  },
+  {
+    "id": "capital_palace_west_street6",
+    "name": "京师西街",
+    "areaId": "city",
+    "description": "你走在紫禁城西北侧的街道上。东边是神武门，北边有一所荒废多年的旧园，西边则通向绸缎店附近。",
+    "mapX": 1,
+    "mapY": 10,
+    "exits": {
+      "east": "capital_shenwu_gate",
+      "south": "capital_palace_west_street5",
+      "west": "capital_cloth_shop",
+      "north": "capital_abandoned_garden"
+    },
+    "npcIds": ["capital_walker", "capital_blade_trader"]
   }
 ]

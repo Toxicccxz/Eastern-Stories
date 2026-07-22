@@ -13,6 +13,7 @@ class WorldCondition {
     this.requiredFamilyId,
     this.requiredFamilyRankIds = const {},
     this.requiredFamilyTaskId,
+    this.requiredGender,
   });
 
   factory WorldCondition.fromJson(Map<String, Object?> json) {
@@ -40,6 +41,10 @@ class WorldCondition {
       requiredFamilyId: json['requiredFamilyId'] as String?,
       requiredFamilyRankIds: _stringSet(json['requiredFamilyRankIds']),
       requiredFamilyTaskId: json['requiredFamilyTaskId'] as String?,
+      requiredGender:
+          json['requiredGender'] == null
+              ? null
+              : PlayerGender.values.byName(json['requiredGender'] as String),
     );
   }
 
@@ -52,6 +57,7 @@ class WorldCondition {
   final String? requiredFamilyId;
   final Set<String> requiredFamilyRankIds;
   final String? requiredFamilyTaskId;
+  final PlayerGender? requiredGender;
 
   bool isSatisfiedBy(GameState state) {
     if (!requiredFlags.every(state.questFlags.contains) ||
@@ -86,6 +92,9 @@ class WorldCondition {
         state.apprenticeship?.activeTask?.taskId != requiredFamilyTaskId) {
       return false;
     }
+    if (requiredGender != null && state.player.gender != requiredGender) {
+      return false;
+    }
     return minimumAttributes.entries.every(
       (entry) => state.player.attributes.valueFor(entry.key) >= entry.value,
     );
@@ -98,6 +107,14 @@ class WorldCondition {
       }
     }
     return null;
+  }
+
+  String? genderFailureReason(GameState state) {
+    final gender = requiredGender;
+    if (gender == null || state.player.gender == gender) {
+      return null;
+    }
+    return '你的性别不合要求，需要为${gender.label}。';
   }
 }
 

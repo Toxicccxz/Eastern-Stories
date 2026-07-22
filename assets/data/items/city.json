@@ -28,5 +28,180 @@
     "restoreHp": 45,
     "buyPrice": 25,
     "sellPrice": 10
+  },
+  {
+    "id": "shangshu_shortsong_blade",
+    "name": "单刀",
+    "description": "一柄常见的单刀，份量约有六七斤重。尚书府护院和兵部武人都常用这种兵刃。",
+    "attackPower": 11,
+    "weaponSkillUsage": "blade",
+    "buyPrice": 500,
+    "sellPrice": 120
+  },
+  {
+    "id": "shangshu_guard_sword",
+    "name": "长剑",
+    "description": "一柄看起来相当普通的长剑，份量约有十来斤左右。",
+    "attackPower": 10,
+    "weaponSkillUsage": "sword",
+    "buyPrice": 400,
+    "sellPrice": 100
+  },
+  {
+    "id": "shangshu_pink_cloth",
+    "name": "粉红绸衣",
+    "description": "一件粉红色的绸衣，上面绣着几只黄鸟，闻起来还有一股淡香。",
+    "equipmentSlot": "body",
+    "defensePower": 1,
+    "buyPrice": 600,
+    "sellPrice": 150
+  },
+  {
+    "id": "shangshu_white_cloth",
+    "name": "月白色长裙",
+    "description": "简简单单的一套月白色长裙，并无太多装饰，却给人一种天外仙子的感觉。",
+    "equipmentSlot": "body",
+    "defensePower": 1,
+    "buyPrice": 600,
+    "sellPrice": 150
+  },
+  {
+    "id": "capital_big_cake",
+    "name": "大饼",
+    "description": "刚出炉的大饼，又香又脆，适合赶路时填肚子。",
+    "restoreHp": 14,
+    "buyPrice": 6,
+    "sellPrice": 2
+  },
+  {
+    "id": "capital_dumpling",
+    "name": "包子",
+    "description": "热腾腾的包子，咬开后有一股朴素的肉香。",
+    "restoreHp": 16,
+    "buyPrice": 7,
+    "sellPrice": 3
+  },
+  {
+    "id": "capital_wuqing_sword",
+    "name": "无情剑",
+    "description": "一柄寒气逼人的长剑，剑锋细薄，适合剑法老练的人使用。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "sword",
+    "attackPower": 15,
+    "buyPrice": 260,
+    "sellPrice": 90
+  },
+  {
+    "id": "capital_duoqing_blade",
+    "name": "多情刀",
+    "description": "刀身略弯，出鞘时带着一声清亮刀吟，是京师武器店里颇受欢迎的刀。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "blade",
+    "attackPower": 16,
+    "buyPrice": 280,
+    "sellPrice": 95
+  },
+  {
+    "id": "capital_rain_whip",
+    "name": "雨丝鞭",
+    "description": "一条柔韧长鞭，挥动时如细雨连绵。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "whip",
+    "attackPower": 13,
+    "buyPrice": 220,
+    "sellPrice": 75
+  },
+  {
+    "id": "capital_demon_staff",
+    "name": "降魔杖",
+    "description": "一根沉重木杖，杖身乌黑，握在手中颇有分量。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "staff",
+    "attackPower": 14,
+    "buyPrice": 240,
+    "sellPrice": 80
+  },
+  {
+    "id": "capital_bronze_shield",
+    "name": "紫铜战盾",
+    "description": "一面紫铜战盾，边缘已有些磨损，但依旧坚固。",
+    "equipmentSlot": "accessory",
+    "defensePower": 4,
+    "buyPrice": 180,
+    "sellPrice": 60
+  },
+  {
+    "id": "capital_lady_dress",
+    "name": "仕女裙",
+    "description": "一件裁剪细致的仕女裙，轻软雅致。",
+    "equipmentSlot": "body",
+    "defensePower": 1,
+    "buyPrice": 120,
+    "sellPrice": 40
+  },
+  {
+    "id": "capital_green_cloth",
+    "name": "青布衣",
+    "description": "一件青色布衣，做工平整，适合日常穿着。",
+    "equipmentSlot": "body",
+    "defensePower": 2,
+    "buyPrice": 90,
+    "sellPrice": 30
+  },
+  {
+    "id": "capital_color_cloth",
+    "name": "彩缎衣",
+    "description": "一件色彩鲜亮的绸缎衣，穿上后颇为惹眼。",
+    "equipmentSlot": "body",
+    "defensePower": 2,
+    "buyPrice": 150,
+    "sellPrice": 50
+  },
+  {
+    "id": "capital_deer_boots",
+    "name": "鹿皮靴",
+    "description": "一双轻便的鹿皮靴，走远路时比寻常布鞋舒服得多。",
+    "equipmentSlot": "feet",
+    "defensePower": 1,
+    "buyPrice": 110,
+    "sellPrice": 35
+  },
+  {
+    "id": "capital_elephant_boots",
+    "name": "象皮靴",
+    "description": "一双厚重结实的象皮靴，防护不错，只是略显笨重。",
+    "equipmentSlot": "feet",
+    "defensePower": 2,
+    "buyPrice": 160,
+    "sellPrice": 55
+  },
+  {
+    "id": "capital_flower_boots",
+    "name": "花靴",
+    "description": "一双绣着花纹的皮靴，式样比实用性更讲究。",
+    "equipmentSlot": "feet",
+    "defensePower": 1,
+    "buyPrice": 140,
+    "sellPrice": 45
+  },
+  {
+    "id": "capital_plain_longsword",
+    "name": "长剑",
+    "description": "一柄普通长剑，剑身保养尚可。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "sword",
+    "attackPower": 10,
+    "buyPrice": 100,
+    "sellPrice": 30
+  },
+  {
+    "id": "capital_hu_blade",
+    "name": "护身刀",
+    "description": "一柄商旅常用的护身刀，刀身不长，但足以应付路上的小麻烦。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "blade",
+    "attackPower": 9,
+    "buyPrice": 80,
+    "sellPrice": 24
   }
 ]

@@ -90,7 +90,16 @@
     "mapY": 1,
     "allowsCultivation": true,
     "exits": {"south": "temple_square", "west": "temple_corridor2", "east": "temple_corridor1"},
-    "npcIds": ["temple_taolord", "temple_trainer", "temple_tfighter"]
+    "npcIds": ["temple_taolord", "temple_trainer", "temple_tfighter"],
+    "actions": [
+      {
+        "id": "read_taoist_board",
+        "label": "查看留言板",
+        "description": "看看殿旁那块供茅山派弟子留言记事的木板。",
+        "resultRoomId": "temple_main_hall",
+        "log": "这是供茅山派弟子留言记事的留言板，木面被香烟熏得微微发暗。"
+      }
+    ]
   },
   {
     "id": "temple_corridor1",
@@ -166,7 +175,8 @@
     "mapY": -2,
     "allowsCultivation": true,
     "exits": {"south": "temple_corridor4"},
-    "npcIds": ["temple_taoist", "temple_taoist2"]
+    "npcIds": ["temple_taoist", "temple_taoist2"],
+    "itemIds": ["temple_bamboo_broom"]
   },
   {
     "id": "temple_corridor3",
@@ -185,7 +195,8 @@
     "mapX": 3,
     "mapY": 0,
     "exits": {"west": "temple_corridor7"},
-    "npcIds": ["temple_old_taoist"]
+    "npcIds": ["temple_old_taoist"],
+    "itemIds": ["temple_old_robe"]
   },
   {
     "id": "temple_restroom2",
@@ -227,10 +238,17 @@
       "southeast": "temple_road1",
       "enter": {
         "roomId": "temple_book_room1",
-        "conditions": {"requiredFlags": ["maoshan_library_access"]}
+        "conditions": {"requiredFamilyId": "maoshan_taoist"}
       }
     },
-    "npcIds": ["temple_guard_taoist", "temple_taoist_guard"],
+    "npcIds": [
+      "temple_guard_taoist",
+      "temple_guard_taoist2",
+      "temple_guard_taoist3",
+      "temple_taoist_guard",
+      "temple_taoist_guard2",
+      "temple_taoist_guard3"
+    ],
     "actions": [
       {
         "id": "read_temple_library_slab",
@@ -257,6 +275,7 @@
     "description": "上了楼来，首先看到一幅张天师的画像挂在对面墙上，画像下方摆着一张覆着红布的桌子，桌上整齐地放着茅山的镇教秘籍。",
     "mapX": 0,
     "mapY": -4,
-    "exits": {"down": "temple_book_room1"}
+    "exits": {"down": "temple_book_room1"},
+    "itemIds": ["temple_magic_book", "temple_spells_book"]
   }
 ]

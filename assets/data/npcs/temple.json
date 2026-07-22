@@ -5,6 +5,38 @@
     "description": "林忌号称六指真人，是一位道行十分高深的修道者。他的眼珠一个是黑色，一个是金色，正是谷衣心法修炼到极高境界的征兆。",
     "greeting": "林忌淡淡说道：茅山派世代以降妖伏魔为己任，入我门者，当先正其心。",
     "intelligence": 30,
+    "familyId": "maoshan_taoist",
+    "familyGeneration": 5,
+    "canAcceptApprentices": true,
+    "apprenticeTitle": "弟子",
+    "apprenticeshipConditions": {"requiredGender": "male"},
+    "apprenticeshipFailureMessage": "贫道是出家人，不便收女徒，得罪了。",
+    "teachingSkills": [
+      {"skillId": "literate", "maxLevel": 50, "access": "direct"},
+      {"skillId": "basic_force", "maxLevel": 50, "access": "direct"},
+      {"skillId": "basic_dodge", "maxLevel": 40, "access": "direct"},
+      {
+        "skillId": "gouyee",
+        "maxLevel": 50,
+        "access": "direct",
+        "requiredSkillLevels": {"basic_force": 1}
+      },
+      {
+        "skillId": "taoism",
+        "maxLevel": 50,
+        "access": "direct",
+        "requiredSkillLevels": {"literate": 1}
+      },
+      {
+        "skillId": "necromancy",
+        "maxLevel": 50,
+        "access": "direct",
+        "requiredRankId": "ritual_disciple",
+        "requiredContribution": 10,
+        "requiredSkillLevels": {"taoism": 1},
+        "contributionCost": 1
+      }
+    ],
     "dialogueOptions": [
       {
         "id": "ask_maoshan_school",
@@ -22,6 +54,12 @@
       "attack": 22,
       "defense": 18,
       "rewardExperience": 120,
+      "dropItemIds": [
+        "temple_wangzhou_sword",
+        "temple_taolord_robe",
+        "temple_trimystic_hat",
+        "temple_cloudy_shoes"
+      ],
       "specialMove": {
         "name": "茅山符法",
         "interval": 3,
@@ -60,6 +98,7 @@
       "attack": 10,
       "defense": 7,
       "rewardExperience": 30,
+      "dropItemIds": ["temple_whisk", "temple_magic_book", "temple_spells_book"],
       "specialMove": {
         "name": "尸气",
         "interval": 3,
@@ -78,6 +117,7 @@
       "attack": 13,
       "defense": 9,
       "rewardExperience": 45,
+      "dropItemIds": ["temple_green_robe"],
       "specialMove": {
         "name": "黑袍突袭",
         "interval": 3,
@@ -91,21 +131,43 @@
     "name": "清虚",
     "description": "一位神色和平的中年道士，正在教授徒弟如何运功导气。",
     "greeting": "清虚说道：运功导气，贵在绵长，不可贪急。",
-    "combat": {"maxHp": 46, "attack": 8, "defense": 6, "rewardExperience": 22}
+    "combat": {
+      "maxHp": 46,
+      "attack": 8,
+      "defense": 6,
+      "rewardExperience": 22,
+      "dropItemIds": [
+        "temple_green_robe",
+        "temple_copper_hat",
+        "temple_black_boots"
+      ]
+    }
   },
   {
     "id": "temple_taoist2",
     "name": "明心",
     "description": "一位身材魁梧的年轻道士，正在练拳，拳风舞得虎虎生风。",
     "greeting": "明心收拳说道：练拳先练气，气息浮了，拳便散了。",
-    "combat": {"maxHp": 34, "attack": 6, "defense": 4, "rewardExperience": 14}
+    "combat": {
+      "maxHp": 34,
+      "attack": 6,
+      "defense": 4,
+      "rewardExperience": 14,
+      "dropItemIds": ["temple_green_robe", "temple_copper_hat", "temple_black_boots"]
+    }
   },
   {
     "id": "temple_old_taoist",
     "name": "老道士",
     "description": "一位四处云游的老道士正在灵心观挂单，看他饱经沧桑的脸孔，似乎经历过不少风浪。",
     "greeting": "老道士捻须笑道：行路不难，难的是知道自己为何而行。",
-    "combat": {"maxHp": 28, "attack": 5, "defense": 4, "rewardExperience": 10}
+    "combat": {
+      "maxHp": 28,
+      "attack": 5,
+      "defense": 4,
+      "rewardExperience": 10,
+      "dropItemIds": ["temple_old_robe"]
+    }
   },
   {
     "id": "temple_guard_taoist",
@@ -117,6 +179,7 @@
       "attack": 12,
       "defense": 8,
       "rewardExperience": 38,
+      "dropItemIds": ["temple_bagua_robe", "temple_jade_hat"],
       "specialMove": {
         "name": "符诀",
         "interval": 3,
@@ -135,11 +198,88 @@
       "attack": 12,
       "defense": 8,
       "rewardExperience": 38,
+      "dropItemIds": ["temple_bagua_robe", "temple_jade_hat"],
       "specialMove": {
         "name": "茅山咒",
         "interval": 3,
         "damageBonus": 3,
         "message": "清风低声念咒，脚下步法忽然变得飘忽。"
+      }
+    }
+  },
+  {
+    "id": "temple_guard_taoist2",
+    "name": "清平",
+    "description": "一位神情专注的道士，正轮值看守藏经楼。",
+    "greeting": "清平拦在路旁说道：藏经楼乃本派重地，外客止步。",
+    "combat": {
+      "maxHp": 69,
+      "attack": 12,
+      "defense": 8,
+      "rewardExperience": 37,
+      "dropItemIds": ["temple_bagua_robe", "temple_jade_hat"],
+      "specialMove": {
+        "name": "幽冥符",
+        "interval": 3,
+        "damageBonus": 3,
+        "message": "清平袖中符纸一翻，一点幽火贴地飞来。"
+      }
+    }
+  },
+  {
+    "id": "temple_guard_taoist3",
+    "name": "清玄",
+    "description": "一位神情专注的道士，正轮值看守藏经楼。",
+    "greeting": "清玄低声说道：非茅山弟子，不得擅近藏经楼。",
+    "combat": {
+      "maxHp": 70,
+      "attack": 12,
+      "defense": 8,
+      "rewardExperience": 38,
+      "dropItemIds": ["temple_bagua_robe", "temple_jade_hat"],
+      "specialMove": {
+        "name": "茅山符火",
+        "interval": 3,
+        "damageBonus": 3,
+        "message": "清玄屈指一点，黄符化火，直扑面门。"
+      }
+    }
+  },
+  {
+    "id": "temple_taoist_guard2",
+    "name": "清音",
+    "description": "一位神情专注的道士，正轮值看守藏经楼。",
+    "greeting": "清音望了你一眼，说道：石碑上的规矩已经写得明白。",
+    "combat": {
+      "maxHp": 72,
+      "attack": 13,
+      "defense": 8,
+      "rewardExperience": 39,
+      "dropItemIds": ["temple_bagua_robe", "temple_jade_hat"],
+      "specialMove": {
+        "name": "摄魂咒",
+        "interval": 3,
+        "damageBonus": 4,
+        "message": "清音口中咒声骤急，四周空气似乎一沉。"
+      }
+    }
+  },
+  {
+    "id": "temple_taoist_guard3",
+    "name": "清云",
+    "description": "一位神情专注的道士，正轮值看守藏经楼。",
+    "greeting": "清云拂袖说道：藏经楼清静之地，莫要在此喧哗。",
+    "combat": {
+      "maxHp": 71,
+      "attack": 13,
+      "defense": 8,
+      "rewardExperience": 39,
+      "dropItemIds": ["temple_bagua_robe", "temple_jade_hat"],
+      "specialMove": {
+        "name": "定魂符",
+        "interval": 3,
+        "damageBonus": 4,
+        "message": "清云袖中飞出一道符影，寒意直透骨髓。"
       }
     }
   }

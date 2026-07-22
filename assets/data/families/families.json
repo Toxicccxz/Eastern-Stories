@@ -85,5 +85,68 @@
         }
       }
     ]
+  },
+  {
+    "id": "maoshan_taoist",
+    "name": "茅山派",
+    "description": "灵心观所承道门法脉，自张天师开山立派以来，世代以降妖伏魔为己任。",
+    "tasks": [
+      {
+        "id": "maoshan_sweep_ladder",
+        "title": "清扫山阶",
+        "description": "到山门下的石英岩石阶问候玄真，看看山门前是否打扫干净。",
+        "issuerNpcId": "temple_taolord",
+        "type": "talkToNpc",
+        "targetId": "temple_little_taoist1",
+        "rewardExperience": 15,
+        "rewardPotential": 4,
+        "rewardContribution": 4
+      },
+      {
+        "id": "maoshan_visit_library_gate",
+        "title": "巡看藏经楼",
+        "description": "到藏经楼前巡看石碑与门户，再回来向林忌复命。",
+        "issuerNpcId": "temple_taolord",
+        "type": "visitRoom",
+        "targetId": "temple_road2",
+        "rewardExperience": 20,
+        "rewardPotential": 5,
+        "rewardContribution": 5
+      },
+      {
+        "id": "maoshan_inner_patrol",
+        "title": "观内巡行",
+        "description": "依次巡看大殿、天井、后殿与藏经楼，确认观中安宁无事。",
+        "issuerNpcId": "temple_taolord",
+        "type": "patrolRooms",
+        "targetId": "temple_main_hall",
+        "targetIds": [
+          "temple_main_hall",
+          "temple_inner_yard",
+          "temple_back_hall",
+          "temple_road2"
+        ],
+        "rewardExperience": 25,
+        "rewardPotential": 6,
+        "rewardContribution": 6,
+        "conditions": {"requiredFamilyRankIds": ["disciple"]}
+      }
+    ],
+    "ranks": [
+      {
+        "id": "disciple",
+        "title": "弟子"
+      },
+      {
+        "id": "ritual_disciple",
+        "title": "入门道士",
+        "minimumContribution": 15,
+        "minimumCompletedTasks": 2,
+        "requiredSkillLevels": {
+          "basic_force": 3,
+          "gouyee": 2
+        }
+      }
+    ]
   }
 ]

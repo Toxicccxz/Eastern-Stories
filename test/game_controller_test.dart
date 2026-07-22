@@ -2,6 +2,7 @@ import 'package:eastern_stories/game/core/game_action.dart';
 import 'package:eastern_stories/game/core/game_controller.dart';
 import 'package:eastern_stories/game/models/direction.dart';
 import 'package:eastern_stories/game/models/game_state.dart';
+import 'package:eastern_stories/game/models/innate_attributes.dart';
 import 'package:eastern_stories/game/models/quest_definition.dart';
 import 'package:eastern_stories/game/models/skill_definition.dart';
 import 'package:eastern_stories/game/models/skill_progress.dart';
@@ -145,22 +146,48 @@ void main() {
             .map((npc) => npc.id),
         containsAll(['temple_taolord', 'temple_trainer', 'temple_tfighter']),
       );
+      expect(
+        repository
+            .room('temple_main_hall')
+            .availableActions(controller.state)
+            .map((action) => action.id),
+        contains('read_taoist_board'),
+      );
     },
   );
 
-  test('Lingxin Temple library keeps the original Maoshan-only entrance', () {
+  test('Lingxin Temple library opens for Maoshan disciples only', () {
     final initialState = repository.createInitialState().copyWith(
-      currentRoomId: 'temple_road2',
-      visitedRoomIds: {'snow_inn', 'temple_road2'},
+      currentRoomId: 'temple_main_hall',
+      visitedRoomIds: {'snow_inn', 'temple_main_hall'},
     );
     final controller = GameController(
       repository: repository,
       initialState: initialState,
     );
 
+    controller.replaceState(
+      controller.state.copyWith(
+        currentRoomId: 'temple_road2',
+        visitedRoomIds: {...controller.state.visitedRoomIds, 'temple_road2'},
+      ),
+    );
     expect(
       repository.room('temple_road2').availableExits(controller.state),
       isNot(contains(Direction.enter)),
+    );
+    expect(
+      repository
+          .visibleNpcsInRoom(controller.state, 'temple_road2')
+          .map((npc) => npc.id),
+      containsAll([
+        'temple_guard_taoist',
+        'temple_guard_taoist2',
+        'temple_guard_taoist3',
+        'temple_taoist_guard',
+        'temple_taoist_guard2',
+        'temple_taoist_guard3',
+      ]),
     );
     expect(
       repository
@@ -176,8 +203,16 @@ void main() {
     expect(controller.state.log.last, contains('非茅山弟子不得进入'));
 
     controller.replaceState(
+      controller.state.copyWith(currentRoomId: 'temple_main_hall'),
+    );
+    controller.dispatch(const GameAction.apprenticeTo('temple_taolord'));
+    expect(controller.state.apprenticeship?.familyId, 'maoshan_taoist');
+    expect(controller.state.apprenticeship?.generation, 6);
+
+    controller.replaceState(
       controller.state.copyWith(
-        questFlags: {...controller.state.questFlags, 'maoshan_library_access'},
+        currentRoomId: 'temple_road2',
+        visitedRoomIds: {...controller.state.visitedRoomIds, 'temple_road2'},
       ),
     );
     expect(
@@ -188,6 +223,43 @@ void main() {
     expect(controller.state.currentRoomId, 'temple_book_room1');
     controller.dispatch(const GameAction.move(Direction.up));
     expect(controller.state.currentRoomId, 'temple_book_room2');
+    expect(
+      repository
+          .visibleItemsInRoom(controller.state, 'temple_book_room2')
+          .map((item) => item.id),
+      containsAll(['temple_magic_book', 'temple_spells_book']),
+    );
+  });
+
+  test('Lin Ji follows the original male-only apprentice rule', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'temple_main_hall',
+        visitedRoomIds: {'snow_inn', 'temple_main_hall'},
+        player: initialState.player.copyWith(gender: PlayerGender.female),
+      ),
+    );
+
+    controller.dispatch(const GameAction.apprenticeTo('temple_taolord'));
+
+    expect(controller.state.apprenticeship, isNull);
+    expect(controller.state.log.last, contains('不便收女徒'));
+  });
+
+  test('Lin Ji carries the original Taoist master equipment', () {
+    final dropItemIds = repository.npc('temple_taolord').combat?.dropItemIds;
+
+    expect(
+      dropItemIds,
+      containsAll([
+        'temple_wangzhou_sword',
+        'temple_taolord_robe',
+        'temple_trimystic_hat',
+        'temple_cloudy_shoes',
+      ]),
+    );
   });
 
   test(
@@ -588,6 +660,189 @@ void main() {
       isEmpty,
     );
   });
+
+  test('capital route reaches the original Ministry manor', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'capital_east_huguo_street',
+        visitedRoomIds: {
+          ...initialState.visitedRoomIds,
+          'capital_east_huguo_street',
+        },
+      ),
+    );
+
+    controller.dispatch(const GameAction.move(Direction.north));
+    expect(controller.state.currentRoomId, 'shangshu_gate');
+    expect(
+      repository
+          .visibleNpcsInRoom(controller.state, 'shangshu_gate')
+          .map((npc) => npc.id),
+      contains('shangshu_gatekeeper'),
+    );
+
+    controller.dispatch(const GameAction.move(Direction.east));
+    expect(controller.state.currentRoomId, 'shangshu_yard');
+    controller.dispatch(const GameAction.move(Direction.east));
+    expect(controller.state.currentRoomId, 'shangshu_hall');
+    expect(
+      repository
+          .visibleNpcsInRoom(controller.state, 'shangshu_hall')
+          .map((npc) => npc.id),
+      contains('shangshu_yu'),
+    );
+
+    controller.dispatch(const GameAction.move(Direction.west));
+    controller.dispatch(const GameAction.move(Direction.south));
+    controller.dispatch(const GameAction.move(Direction.south));
+    expect(controller.state.currentRoomId, 'shangshu_garden');
+    expect(
+      repository
+          .visibleNpcsInRoom(controller.state, 'shangshu_garden')
+          .map((npc) => npc.id),
+      contains('shangshu_gardener'),
+    );
+    controller.dispatch(
+      const GameAction.selectDialogue('shangshu_gardener', 'ask_about_maoshan'),
+    );
+    expect(controller.state.log.last, contains('师门'));
+
+    controller.dispatch(const GameAction.move(Direction.east));
+    expect(controller.state.currentRoomId, 'shangshu_inner_house');
+    expect(
+      repository
+          .visibleNpcsInRoom(controller.state, 'shangshu_inner_house')
+          .map((npc) => npc.id),
+      contains('shangshu_qing_chen'),
+    );
+  });
+
+  test('capital public shops and city gates are reachable', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'capital_bridge',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'capital_bridge'},
+        player: initialState.player.copyWith(silver: 500),
+      ),
+    );
+
+    controller.dispatch(const GameAction.move(Direction.east));
+    expect(controller.state.currentRoomId, 'capital_city_street11');
+    controller.dispatch(const GameAction.move(Direction.north));
+    expect(controller.state.currentRoomId, 'capital_boots_shop');
+    expect(
+      repository.npc('capital_shoer').shop?.products.map((item) => item.itemId),
+      containsAll([
+        'capital_deer_boots',
+        'capital_elephant_boots',
+        'capital_flower_boots',
+      ]),
+    );
+
+    controller.dispatch(const GameAction.move(Direction.south));
+    controller.dispatch(const GameAction.move(Direction.east));
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(const GameAction.move(Direction.north));
+    expect(controller.state.currentRoomId, 'capital_weapon_shop');
+    controller.dispatch(
+      const GameAction.buyItem('capital_weaponor', 'capital_wuqing_sword'),
+    );
+    expect(controller.state.inventoryItemIds, contains('capital_wuqing_sword'));
+
+    controller.dispatch(const GameAction.move(Direction.south));
+    controller.dispatch(const GameAction.move(Direction.east));
+    expect(controller.state.currentRoomId, 'capital_east_gate_1');
+
+    controller.replaceState(
+      controller.state.copyWith(currentRoomId: 'capital_west_street'),
+    );
+    controller.dispatch(const GameAction.move(Direction.west));
+    expect(controller.state.currentRoomId, 'capital_city_street14');
+    controller.dispatch(const GameAction.move(Direction.south));
+    expect(controller.state.currentRoomId, 'capital_cloth_shop');
+    expect(
+      repository
+          .npc('capital_clother')
+          .shop
+          ?.products
+          .map((item) => item.itemId),
+      containsAll([
+        'capital_lady_dress',
+        'capital_green_cloth',
+        'capital_color_cloth',
+      ]),
+    );
+
+    controller.replaceState(
+      controller.state.copyWith(currentRoomId: 'capital_bridge'),
+    );
+    controller.dispatch(const GameAction.move(Direction.south));
+    controller.dispatch(const GameAction.move(Direction.south));
+    expect(controller.state.currentRoomId, 'capital_south_gate');
+  });
+
+  test(
+    'capital palace ring links Shenwu Gate, Meridian Gate, and manor wall',
+    () {
+      final initialState = repository.createInitialState();
+      final controller = GameController(
+        repository: repository,
+        initialState: initialState.copyWith(
+          currentRoomId: 'capital_altar',
+          visitedRoomIds: {...initialState.visitedRoomIds, 'capital_altar'},
+        ),
+      );
+
+      controller.dispatch(const GameAction.move(Direction.south));
+      expect(controller.state.currentRoomId, 'capital_shenwu_gate');
+      expect(
+        repository
+            .visibleNpcsInRoom(controller.state, 'capital_shenwu_gate')
+            .map((npc) => npc.id),
+        contains('capital_palace_guard'),
+      );
+
+      controller.dispatch(const GameAction.move(Direction.east));
+      expect(controller.state.currentRoomId, 'capital_palace_east_street1');
+      controller.dispatch(const GameAction.move(Direction.south));
+      controller.dispatch(const GameAction.move(Direction.south));
+      expect(controller.state.currentRoomId, 'capital_palace_east_street3');
+      expect(
+        repository
+            .room('capital_palace_east_street3')
+            .availableActions(controller.state)
+            .map((action) => action.id),
+        contains('climb_shangshu_wall'),
+      );
+      controller.dispatch(
+        const GameAction.performRoomAction('climb_shangshu_wall'),
+      );
+      expect(controller.state.currentRoomId, 'capital_shangshu_wall');
+      controller.dispatch(
+        const GameAction.performRoomAction('jump_into_shangshu'),
+      );
+      expect(controller.state.currentRoomId, 'shangshu_abandoned_room');
+
+      controller.replaceState(
+        controller.state.copyWith(currentRoomId: 'capital_meridian_gate'),
+      );
+      controller.dispatch(const GameAction.move(Direction.west));
+      expect(controller.state.currentRoomId, 'capital_palace_west_street4');
+      controller.dispatch(const GameAction.move(Direction.west));
+      expect(controller.state.currentRoomId, 'capital_xiangguo_gate');
+
+      controller.replaceState(
+        controller.state.copyWith(currentRoomId: 'capital_palace_west_street4'),
+      );
+      controller.dispatch(const GameAction.move(Direction.north));
+      controller.dispatch(const GameAction.move(Direction.west));
+      expect(controller.state.currentRoomId, 'capital_taibai_inn');
+    },
+  );
 
   test('waterfog mountain route reaches the fighter guild hall', () {
     final initialState = repository.createInitialState();
@@ -1413,6 +1668,59 @@ void main() {
     );
     controller.dispatch(const GameAction.studyItem('canyon_old_sword'));
     expect(controller.state.log.last, contains('实战经验不足'));
+  });
+
+  test('Lingxin Temple books teach original magic and spells basics', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        inventoryItemIds: const ['temple_magic_book', 'temple_spells_book'],
+        player: initialState.player.copyWith(combatExperience: 100),
+        skillProgress: const {
+          'literate': SkillProgress(level: 10, experience: 0),
+        },
+      ),
+    );
+
+    controller.dispatch(const GameAction.studyItem('temple_magic_book'));
+    controller.dispatch(const GameAction.studyItem('temple_spells_book'));
+
+    expect(controller.state.learnedSkillIds, containsAll(['magic', 'spells']));
+  });
+
+  test('Lingxin Temple original equipment can be found and dropped', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'temple_training_room',
+        visitedRoomIds: {'snow_inn', 'temple_training_room'},
+      ),
+    );
+
+    controller.dispatch(const GameAction.pickUp('temple_bamboo_broom'));
+    controller.dispatch(const GameAction.equipItem('temple_bamboo_broom'));
+
+    expect(controller.state.inventoryItemIds, contains('temple_bamboo_broom'));
+    expect(controller.state.equippedWeaponId, 'temple_bamboo_broom');
+    expect(controller.characterStats().attack, greaterThan(5));
+
+    controller.replaceState(
+      controller.state.copyWith(
+        currentRoomId: 'temple_road2',
+        visitedRoomIds: {...controller.state.visitedRoomIds, 'temple_road2'},
+        player: controller.state.player.copyWith(hp: 1000, maxHp: 1000),
+      ),
+    );
+    _defeatNpc(controller, 'temple_taoist_guard');
+
+    expect(
+      repository
+          .visibleItemsInRoom(controller.state, 'temple_road2')
+          .map((item) => item.id),
+      containsAll(['temple_bagua_robe', 'temple_jade_hat']),
+    );
   });
 
   test('practicing an enabled special skill consumes vitals', () {

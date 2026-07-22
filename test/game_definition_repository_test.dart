@@ -1,5 +1,6 @@
 import 'package:eastern_stories/game/repositories/game_definition_repository.dart';
 import 'package:eastern_stories/game/models/family_definition.dart';
+import 'package:eastern_stories/game/models/innate_attributes.dart';
 import 'package:eastern_stories/game/models/world_condition.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -12,10 +13,11 @@ void main() {
 
     expect(repository.startingRoomId, 'snow_inn');
     expect(repository.areas, hasLength(8));
-    expect(rooms, hasLength(169));
+    expect(rooms, hasLength(210));
+    expect(repository.items, hasLength(61));
     expect(repository.quests, hasLength(4));
-    expect(repository.skills, hasLength(13));
-    expect(repository.families, hasLength(1));
+    expect(repository.skills, hasLength(18));
+    expect(repository.families, hasLength(2));
 
     for (final area in repository.areas) {
       expect(
@@ -380,6 +382,14 @@ void _expectValidCondition(
           .any((task) => task.id == familyTaskId),
       isTrue,
       reason: 'condition references unknown family task $familyTaskId',
+    );
+  }
+  final requiredGender = condition.requiredGender;
+  if (requiredGender != null) {
+    expect(
+      PlayerGender.values,
+      contains(requiredGender),
+      reason: 'condition references unknown player gender $requiredGender',
     );
   }
 }

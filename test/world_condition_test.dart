@@ -1,4 +1,5 @@
 import 'package:eastern_stories/game/models/game_state.dart';
+import 'package:eastern_stories/game/models/innate_attributes.dart';
 import 'package:eastern_stories/game/models/quest_definition.dart';
 import 'package:eastern_stories/game/models/room_definition.dart';
 import 'package:eastern_stories/game/models/world_condition.dart';
@@ -30,6 +31,29 @@ void main() {
     expect(
       condition.isSatisfiedBy(state.copyWith(questFlags: {'gate_sealed'})),
       isFalse,
+    );
+  });
+
+  test('world condition can require player gender', () {
+    final state = GameState.initial(startingRoomId: 'gate');
+
+    expect(
+      const WorldCondition(
+        requiredGender: PlayerGender.male,
+      ).isSatisfiedBy(state),
+      isTrue,
+    );
+    expect(
+      const WorldCondition(
+        requiredGender: PlayerGender.female,
+      ).isSatisfiedBy(state),
+      isFalse,
+    );
+    expect(
+      const WorldCondition(
+        requiredGender: PlayerGender.female,
+      ).genderFailureReason(state),
+      contains('女性'),
     );
   });
 

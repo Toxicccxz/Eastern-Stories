@@ -1,0 +1,73 @@
+[
+  {
+    "id": "magic",
+    "name": "基本法术",
+    "description": "理解奇门术数、法力运行与符箓科仪的基础，是修习道家法门的根基。",
+    "kind": "basic",
+    "usages": ["magic"],
+    "maxLevel": 50,
+    "practiceExperience": 18
+  },
+  {
+    "id": "spells",
+    "name": "基本咒文",
+    "description": "辨识符咒、默诵咒诀与感应阴阳灵机的基础，是施展咒术的根基。",
+    "kind": "basic",
+    "usages": ["spells"],
+    "maxLevel": 50,
+    "practiceExperience": 18
+  },
+  {
+    "id": "gouyee",
+    "name": "谷衣心法",
+    "description": "茅山派为对抗邪魔外道所创的内功心法，讲究敛气存神，内息阴阳互济。",
+    "kind": "special",
+    "usages": ["force"],
+    "requiredFamilyId": "maoshan_taoist",
+    "requiredSkillLevels": {"basic_force": 1},
+    "canPractice": false,
+    "maxLevel": 60,
+    "practiceExperience": 20
+  },
+  {
+    "id": "taoism",
+    "name": "道学心法",
+    "description": "茅山派修道法门的根基，讲究明心见性，通晓符箓科仪与阴阳变化。",
+    "kind": "special",
+    "usages": ["magic", "knowledge"],
+    "requiredFamilyId": "maoshan_taoist",
+    "requiredSkillLevels": {"literate": 1},
+    "practiceHpCost": 12,
+    "practiceInnerPowerCost": 2,
+    "maxLevel": 60,
+    "practiceExperience": 18
+  },
+  {
+    "id": "necromancy",
+    "name": "通灵术",
+    "description": "茅山派降妖伏魔的咒术，能以符咒感应阴灵邪祟，临敌时化作幽冥雷火。",
+    "kind": "special",
+    "usages": ["spells"],
+    "requiredFamilyId": "maoshan_taoist",
+    "requiredSkillLevels": {"taoism": 1},
+    "practiceHpCost": 18,
+    "practiceInnerPowerCost": 4,
+    "attackMessages": [
+      "你手掐法诀，一道黄符化作幽光飞向{enemy}。",
+      "你低声念咒，符火倏然卷向{enemy}。"
+    ],
+    "moves": [
+      {
+        "id": "netherbolt",
+        "name": "幽冥雷",
+        "effectType": "damage",
+        "innerPowerCost": 8,
+        "damageBonus": 9,
+        "minimumSkillLevel": 5,
+        "combatMessage": "你催动通灵术，一道幽冥雷火直击{enemy}。"
+      }
+    ],
+    "maxLevel": 60,
+    "practiceExperience": 20
+  }
+]

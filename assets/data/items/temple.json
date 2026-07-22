@@ -1,0 +1,131 @@
+[
+  {
+    "id": "temple_magic_book",
+    "name": "魔法入门",
+    "description": "一本魔法的入门书，里面说了一些稀奇古怪、和一般武学不同的东西。",
+    "studySkillId": "magic",
+    "studyMaxSkillLevel": 20,
+    "studyExperience": 35,
+    "studyRequiredCombatExperience": 100,
+    "studySpiritCost": 30,
+    "studyDifficulty": 10,
+    "sellPrice": 26
+  },
+  {
+    "id": "temple_spells_book",
+    "name": "符咒简介",
+    "description": "一本符咒的简介，里面画着一些稀奇古怪的符号。",
+    "studySkillId": "spells",
+    "studyMaxSkillLevel": 20,
+    "studyExperience": 35,
+    "studyRequiredCombatExperience": 100,
+    "studySpiritCost": 30,
+    "studyDifficulty": 10,
+    "sellPrice": 26
+  },
+  {
+    "id": "temple_green_robe",
+    "name": "青布道袍",
+    "description": "一件式样简单的青布道袍。",
+    "equipmentSlot": "body",
+    "defensePower": 1,
+    "sellPrice": 10
+  },
+  {
+    "id": "temple_bagua_robe",
+    "name": "八卦道袍",
+    "description": "一件胸前绣有八卦的黄色道袍。",
+    "equipmentSlot": "body",
+    "defensePower": 2,
+    "maxInnerPowerBonus": 6,
+    "sellPrice": 80
+  },
+  {
+    "id": "temple_old_robe",
+    "name": "旧道袍",
+    "description": "一件补了又补、洗到泛白的旧道袍。",
+    "equipmentSlot": "body",
+    "defensePower": 1,
+    "sellPrice": 1
+  },
+  {
+    "id": "temple_jade_hat",
+    "name": "碧玉冠",
+    "description": "一顶镶着一块碧玉的道冠。",
+    "equipmentSlot": "head",
+    "defensePower": 1,
+    "maxInnerPowerBonus": 4,
+    "sellPrice": 20
+  },
+  {
+    "id": "temple_copper_hat",
+    "name": "青铜道冠",
+    "description": "一顶青铜道冠，入手颇沉。",
+    "equipmentSlot": "head",
+    "defensePower": 1,
+    "sellPrice": 5
+  },
+  {
+    "id": "temple_black_boots",
+    "name": "黑布鞋",
+    "description": "一双黑布鞋，鞋底纳得很密。",
+    "equipmentSlot": "feet",
+    "defensePower": 1,
+    "sellPrice": 1
+  },
+  {
+    "id": "temple_bamboo_broom",
+    "name": "竹扫把",
+    "description": "一把快秃了头的竹扫把。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "staff",
+    "attackPower": 3,
+    "sellPrice": 1
+  },
+  {
+    "id": "temple_whisk",
+    "name": "拂尘",
+    "description": "一柄以藤木为柄、马尾为丝的拂尘。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "whip",
+    "attackPower": 10,
+    "sellPrice": 10
+  },
+  {
+    "id": "temple_wangzhou_sword",
+    "name": "王咒剑",
+    "description": "一把桃木雕成的古剑，剑身刻着许多难辨的咒文，剑柄处隐约可见“王咒”二字。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "sword",
+    "attackPower": 44,
+    "maxInnerPowerBonus": 8,
+    "sellPrice": 180
+  },
+  {
+    "id": "temple_taolord_robe",
+    "name": "天师道袍",
+    "description": "一件茅山天师所穿的道袍，布料沉厚，隐隐有符纹藏在针脚之间。",
+    "equipmentSlot": "body",
+    "defensePower": 3,
+    "maxInnerPowerBonus": 12,
+    "sellPrice": 100
+  },
+  {
+    "id": "temple_trimystic_hat",
+    "name": "三清神冠",
+    "description": "一顶三清神冠，冠上云纹层叠，带着清冷的道门气息。",
+    "equipmentSlot": "head",
+    "defensePower": 1,
+    "maxInnerPowerBonus": 8,
+    "sellPrice": 70
+  },
+  {
+    "id": "temple_cloudy_shoes",
+    "name": "七星翻云鞋",
+    "description": "一双轻便的道鞋，鞋面绣着七星纹，走动时几乎没有声息。",
+    "equipmentSlot": "feet",
+    "defensePower": 2,
+    "maxHpBonus": 4,
+    "sellPrice": 60
+  }
+]

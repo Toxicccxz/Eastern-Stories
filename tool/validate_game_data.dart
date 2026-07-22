@@ -11,6 +11,52 @@ const _categories = <String>[
   'families',
 ];
 
+const _playerGenders = {'male', 'female'};
+const _directions = {
+  'north',
+  'south',
+  'east',
+  'west',
+  'northeast',
+  'northwest',
+  'southeast',
+  'southwest',
+  'up',
+  'down',
+  'northup',
+  'southup',
+  'eastup',
+  'westup',
+  'northdown',
+  'southdown',
+  'eastdown',
+  'westdown',
+  'enter',
+  'out',
+};
+const _equipmentSlots = {'weapon', 'head', 'body', 'feet', 'accessory'};
+const _skillKinds = {'basic', 'special'};
+const _skillUsages = {
+  'unarmed',
+  'sword',
+  'blade',
+  'stick',
+  'staff',
+  'throwing',
+  'force',
+  'parry',
+  'dodge',
+  'magic',
+  'spells',
+  'move',
+  'array',
+  'whip',
+  'knowledge',
+};
+const _skillEffectTypes = {'damage', 'defend', 'heal'};
+const _questStatuses = {'notStarted', 'active', 'completed'};
+const _teachingAccess = {'public', 'family', 'direct'};
+
 Future<void> main(List<String> arguments) async {
   final manifestPath = arguments.firstOrNull ?? 'assets/data/demo_world.json';
   final validator = GameDataValidator();
@@ -155,6 +201,12 @@ class GameDataValidator {
 
       final exits = _optionalObject(room.data['exits'], '$context.exits');
       for (final entry in exits.entries) {
+        _validateEnum(
+          entry.key,
+          _directions,
+          '$context.exits.${entry.key}',
+          'direction',
+        );
         final value = entry.value;
         final target =
             value is String
@@ -182,6 +234,14 @@ class GameDataValidator {
           '$actionContext.givesItemIds',
         );
         _validateCondition(action['conditions'], '$actionContext.conditions');
+        for (final field in [
+          'hpCost',
+          'spiritCost',
+          'silverCost',
+          'rewardSilver',
+        ]) {
+          _validateOptionalInt(action[field], '$actionContext.$field');
+        }
       }
     }
   }
@@ -202,6 +262,31 @@ class GameDataValidator {
       );
 
       final combat = _optionalObject(npc.data['combat'], '$context.combat');
+      _validateOptionalPositiveInt(combat['maxHp'], '$context.combat.maxHp');
+      for (final field in [
+        'attack',
+        'defense',
+        'rewardSilver',
+        'rewardExperience',
+      ]) {
+        _validateOptionalInt(combat[field], '$context.combat.$field');
+      }
+      _validateOptionalPositiveInt(
+        combat['respawnAfterMoves'],
+        '$context.combat.respawnAfterMoves',
+      );
+      final specialMove = _optionalObject(
+        combat['specialMove'],
+        '$context.combat.specialMove',
+      );
+      _validateOptionalPositiveInt(
+        specialMove['interval'],
+        '$context.combat.specialMove.interval',
+      );
+      _validateOptionalInt(
+        specialMove['damageBonus'],
+        '$context.combat.specialMove.damageBonus',
+      );
       _requireReferences(
         'items',
         combat['dropItemIds'],
@@ -213,6 +298,10 @@ class GameDataValidator {
         '$context.shop.products',
       )) {
         _requireReference('items', product['itemId'], '$context shop product');
+        _validateOptionalInt(
+          product['initialStock'],
+          '$context shop product initialStock',
+        );
       }
 
       for (final option in _objects(
@@ -283,6 +372,20 @@ class GameDataValidator {
           teaching['requiredSkillLevels'],
           '$context teaching requirements',
         );
+        _validateEnum(
+          teaching['access'],
+          _teachingAccess,
+          '$context teaching access',
+          'teaching access',
+          optional: true,
+        );
+        _validateOptionalPositiveInt(
+          teaching['maxLevel'],
+          '$context teaching maxLevel',
+        );
+        for (final field in ['requiredContribution', 'contributionCost']) {
+          _validateOptionalInt(teaching[field], '$context teaching $field');
+        }
         final requiredRankId = teaching['requiredRankId'];
         if (requiredRankId != null &&
             (requiredRankId is! String ||
@@ -305,6 +408,37 @@ class GameDataValidator {
         '$context.studySkillId',
         optional: true,
       );
+      _validateEnum(
+        item.data['equipmentSlot'],
+        _equipmentSlots,
+        '$context.equipmentSlot',
+        'equipment slot',
+        optional: true,
+      );
+      _validateEnum(
+        item.data['weaponSkillUsage'],
+        _skillUsages,
+        '$context.weaponSkillUsage',
+        'skill usage',
+        optional: true,
+      );
+      for (final field in [
+        'attackPower',
+        'restoreHp',
+        'restoreInnerPower',
+        'buyPrice',
+        'sellPrice',
+        'defensePower',
+        'maxHpBonus',
+        'maxInnerPowerBonus',
+        'studyMaxSkillLevel',
+        'studyExperience',
+        'studyRequiredCombatExperience',
+        'studySpiritCost',
+        'studyDifficulty',
+      ]) {
+        _validateOptionalInt(item.data[field], '$context.$field');
+      }
       _validateCondition(item.data['conditions'], '$context.conditions');
     }
   }
@@ -354,6 +488,35 @@ class GameDataValidator {
   void _validateSkills() {
     for (final skill in _all('skills')) {
       final context = 'skill "${skill.id}" (${skill.source})';
+      _validateEnum(
+        skill.data['kind'],
+        _skillKinds,
+        '$context.kind',
+        'skill kind',
+      );
+      for (final usage in _stringList(
+        skill.data['usages'],
+        '$context.usages',
+      )) {
+        _validateEnum(usage, _skillUsages, '$context.usages', 'skill usage');
+      }
+      _validateEnum(
+        skill.data['requiredEquipmentSlot'],
+        _equipmentSlots,
+        '$context.requiredEquipmentSlot',
+        'equipment slot',
+        optional: true,
+      );
+      for (final field in [
+        'damageReduction',
+        'maxLevel',
+        'practiceExperience',
+        'minimumMaxInnerPower',
+        'practiceHpCost',
+        'practiceInnerPowerCost',
+      ]) {
+        _validateOptionalInt(skill.data[field], '$context.$field');
+      }
       _requireMapKeys(
         'skills',
         skill.data['requiredSkillLevels'],
@@ -365,18 +528,45 @@ class GameDataValidator {
         '$context.requiredFamilyId',
         optional: true,
       );
+      for (final move in _objects(skill.data['moves'], '$context.moves')) {
+        final moveId = move['id'] ?? '<missing id>';
+        final moveContext = '$context move "$moveId"';
+        _validateEnum(
+          move['effectType'],
+          _skillEffectTypes,
+          '$moveContext.effectType',
+          'skill effect type',
+          optional: true,
+        );
+        _validateEnum(
+          move['requiredEquipmentSlot'],
+          _equipmentSlots,
+          '$moveContext.requiredEquipmentSlot',
+          'equipment slot',
+          optional: true,
+        );
+        for (final field in [
+          'innerPowerCost',
+          'damageBonus',
+          'defenseBonus',
+          'healAmount',
+          'minimumSkillLevel',
+        ]) {
+          _validateOptionalInt(move[field], '$moveContext.$field');
+        }
+      }
     }
   }
 
   void _validateFamilies() {
     final taskIds = <String>{};
-    final rankIds = <String>{};
     for (final family in _all('families')) {
       final context = 'family "${family.id}" (${family.source})';
+      final rankIds = <String>{};
       for (final rank in _objects(family.data['ranks'], '$context.ranks')) {
         final id = rank['id'];
         if (id is String && !rankIds.add(id)) {
-          errors.add('Family rank id "$id" is duplicated.');
+          errors.add('$context has duplicated rank id "$id".');
         }
         _requireMapKeys(
           'skills',
@@ -415,6 +605,13 @@ class GameDataValidator {
             _requireReference(category, target, '$context task "$id" target');
           }
         }
+        for (final field in [
+          'rewardExperience',
+          'rewardPotential',
+          'rewardContribution',
+        ]) {
+          _validateOptionalInt(task[field], '$context task "$id" $field');
+        }
         _validateCondition(task['conditions'], '$context task "$id"');
       }
     }
@@ -428,6 +625,18 @@ class GameDataValidator {
       condition['requiredQuestStatuses'],
       '$context.requiredQuestStatuses',
     );
+    for (final status
+        in _optionalObject(
+          condition['requiredQuestStatuses'],
+          '$context.requiredQuestStatuses',
+        ).values) {
+      _validateEnum(
+        status,
+        _questStatuses,
+        '$context.requiredQuestStatuses',
+        'quest status',
+      );
+    }
     _requireReferences(
       'npcs',
       condition['requiredDefeatedNpcIds'],
@@ -456,6 +665,14 @@ class GameDataValidator {
     if (familyTaskId != null &&
         (familyTaskId is! String || !_familyTaskIds().contains(familyTaskId))) {
       errors.add('$context references unknown family task "$familyTaskId".');
+    }
+    final requiredGender = condition['requiredGender'];
+    if (requiredGender != null &&
+        (requiredGender is! String ||
+            !_playerGenders.contains(requiredGender))) {
+      errors.add(
+        '$context references unknown player gender "$requiredGender".',
+      );
     }
   }
 
@@ -490,6 +707,34 @@ class GameDataValidator {
 
   Iterable<_Definition> _all(String category) =>
       _definitions[category]?.values ?? const [];
+
+  void _validateEnum(
+    Object? value,
+    Set<String> allowedValues,
+    String context,
+    String label, {
+    bool optional = false,
+  }) {
+    if (value == null && optional) return;
+    if (value is! String || !allowedValues.contains(value)) {
+      errors.add(
+        '$context must be a valid $label: ${allowedValues.join(', ')}.',
+      );
+    }
+  }
+
+  void _validateOptionalInt(Object? value, String context) {
+    if (value != null && value is! int) {
+      errors.add('$context must be an integer.');
+    }
+  }
+
+  void _validateOptionalPositiveInt(Object? value, String context) {
+    if (value == null) return;
+    if (value is! int || value <= 0) {
+      errors.add('$context must be a positive integer.');
+    }
+  }
 
   Set<String> _familyRankIds() => {
     for (final family in _all('families'))

@@ -40,6 +40,12 @@ class ApprenticeshipSystem {
       if (attributeReason != null) {
         return _withLog(state, '${master.name}摇了摇头：$attributeReason');
       }
+      final genderReason = master.apprenticeshipConditions?.genderFailureReason(
+        state,
+      );
+      if (genderReason != null && failureMessage == null) {
+        return _withLog(state, '${master.name}摇了摇头：$genderReason');
+      }
       if (failureMessage != null) {
         return _withLog(state, '${master.name}说道：“$failureMessage”');
       }

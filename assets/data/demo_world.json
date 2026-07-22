@@ -28,7 +28,8 @@
       "assets/data/items/canyon.json",
       "assets/data/items/snow.json",
       "assets/data/items/city.json",
-      "assets/data/items/oldpine.json"
+      "assets/data/items/oldpine.json",
+      "assets/data/items/temple.json"
     ],
     "quests": [
       "assets/data/quests/village.json",
@@ -39,7 +40,8 @@
     ],
     "skills": [
       "assets/data/skills/village.json",
-      "assets/data/skills/snow.json"
+      "assets/data/skills/snow.json",
+      "assets/data/skills/temple.json"
     ],
     "families": ["assets/data/families/families.json"]
   }
