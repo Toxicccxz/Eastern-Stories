@@ -10,7 +10,11 @@
       "assets/data/rooms/waterfog.json",
       "assets/data/rooms/city.json",
       "assets/data/rooms/oldpine.json",
-      "assets/data/rooms/temple.json"
+      "assets/data/rooms/temple.json",
+      "assets/data/rooms/sanyen.json",
+      "assets/data/rooms/cloud.json",
+      "assets/data/rooms/dragonhill.json",
+      "assets/data/rooms/latemoon.json"
     ],
     "npcs": [
       "assets/data/npcs/village.json",
@@ -20,7 +24,11 @@
       "assets/data/npcs/city.json",
       "assets/data/npcs/waterfog.json",
       "assets/data/npcs/oldpine.json",
-      "assets/data/npcs/temple.json"
+      "assets/data/npcs/temple.json",
+      "assets/data/npcs/sanyen.json",
+      "assets/data/npcs/cloud.json",
+      "assets/data/npcs/dragonhill.json",
+      "assets/data/npcs/latemoon.json"
     ],
     "items": [
       "assets/data/items/village.json",
@@ -29,7 +37,11 @@
       "assets/data/items/snow.json",
       "assets/data/items/city.json",
       "assets/data/items/oldpine.json",
-      "assets/data/items/temple.json"
+      "assets/data/items/temple.json",
+      "assets/data/items/sanyen.json",
+      "assets/data/items/cloud.json",
+      "assets/data/items/dragonhill.json",
+      "assets/data/items/latemoon.json"
     ],
     "quests": [
       "assets/data/quests/village.json",
@@ -41,7 +53,8 @@
     "skills": [
       "assets/data/skills/village.json",
       "assets/data/skills/snow.json",
-      "assets/data/skills/temple.json"
+      "assets/data/skills/temple.json",
+      "assets/data/skills/latemoon.json"
     ],
     "families": ["assets/data/families/families.json"]
   }

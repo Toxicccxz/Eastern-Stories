@@ -1,0 +1,78 @@
+[
+  {
+    "id": "sanyen_shoes",
+    "name": "僧鞋",
+    "description": "一双普通僧鞋，鞋底纳得很密。",
+    "equipmentSlot": "feet",
+    "defensePower": 1,
+    "sellPrice": 1
+  },
+  {
+    "id": "sanyen_cloth",
+    "name": "青布僧衣",
+    "description": "一件青布僧衣，布料朴素，穿起来轻便。",
+    "equipmentSlot": "body",
+    "defensePower": 1,
+    "sellPrice": 5
+  },
+  {
+    "id": "sanyen_monk_cloth",
+    "name": "灰布僧衣",
+    "description": "一件灰布僧衣，洗得有些发白。",
+    "equipmentSlot": "body",
+    "defensePower": 2,
+    "sellPrice": 8
+  },
+  {
+    "id": "sanyen_eye_patch",
+    "name": "黑眼罩",
+    "description": "一副黑色眼罩，边缘已经磨得发亮。",
+    "equipmentSlot": "accessory",
+    "attackPower": 3,
+    "defensePower": -1,
+    "sellPrice": 6
+  },
+  {
+    "id": "sanyen_blade",
+    "name": "戒刀",
+    "description": "一把僧人练武用的戒刀，份量大约四、五斤重。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "blade",
+    "attackPower": 16,
+    "sellPrice": 30
+  },
+  {
+    "id": "sanyen_brass_staff",
+    "name": "黄铜禅杖",
+    "description": "一条又粗又长、非常沉重的黄铜禅杖，上面镶着六个铜环。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "staff",
+    "attackPower": 22,
+    "sellPrice": 120
+  },
+  {
+    "id": "sanyen_broom",
+    "name": "竹扫把",
+    "description": "一把快秃了头的竹扫把。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "staff",
+    "attackPower": 3,
+    "sellPrice": 1
+  },
+  {
+    "id": "sanyen_carver",
+    "name": "菜刀",
+    "description": "一把不很利的菜刀，不过拿来切菜砍肉还是绰绰有余。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "blade",
+    "attackPower": 8,
+    "sellPrice": 18
+  },
+  {
+    "id": "sanyen_maintal",
+    "name": "馒头",
+    "description": "一个香喷喷、热腾腾的大馒头。",
+    "restoreHp": 12,
+    "sellPrice": 1
+  }
+]

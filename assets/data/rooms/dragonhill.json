@@ -1,0 +1,53 @@
+[
+  {
+    "id": "dragonhill_sroad",
+    "name": "黄土路",
+    "areaId": "dragonhill",
+    "description": "这里是雪亭镇通往绮云镇的必经之路。南面就是绮云镇，北面通往卧龙岗。早先官府想在此修条大路连接两镇，无奈地势所限，只留下这条被行人踏平的黄土路。",
+    "mapX": 0,
+    "mapY": 4,
+    "outdoorAreaId": "dragonhill",
+    "exits": {"northwest": "dragonhill_south_foot", "southeast": "cloud_entrance"}
+  },
+  {
+    "id": "dragonhill_south_foot",
+    "name": "卧龙岗南坡",
+    "areaId": "dragonhill",
+    "description": "这是卧龙岗的东南坡。东南的路通向绮云镇，往北就要过岗了。",
+    "mapX": -1,
+    "mapY": 3,
+    "outdoorAreaId": "dragonhill",
+    "exits": {"northup": "dragonhill_hummock", "southeast": "dragonhill_sroad"}
+  },
+  {
+    "id": "dragonhill_hummock",
+    "name": "卧龙岗",
+    "areaId": "dragonhill",
+    "description": "这是位于雪亭和绮云两镇间的一道山梁。据说山上时常有强盗拦路抢劫，路人经过这里总要加快脚步。",
+    "mapX": -1,
+    "mapY": 2,
+    "outdoorAreaId": "dragonhill",
+    "exits": {"northdown": "dragonhill_north_foot", "southdown": "dragonhill_south_foot"},
+    "npcIds": ["dragonhill_gangster", "dragonhill_gangster_2"]
+  },
+  {
+    "id": "dragonhill_north_foot",
+    "name": "卧龙岗北坡",
+    "areaId": "dragonhill",
+    "description": "从这往西北有条路通往雪亭镇，向南爬就是卧龙岗。",
+    "mapX": -1,
+    "mapY": 1,
+    "outdoorAreaId": "dragonhill",
+    "exits": {"northwest": "dragonhill_nroad", "southup": "dragonhill_hummock"}
+  },
+  {
+    "id": "dragonhill_nroad",
+    "name": "黄土路",
+    "areaId": "dragonhill",
+    "description": "这里是雪亭镇通往绮云镇的必经之路。北面就是雪亭镇，南面通往卧龙岗。路面虽然简陋，却被过往的人踩得很平。",
+    "mapX": -2,
+    "mapY": 0,
+    "outdoorAreaId": "dragonhill",
+    "exits": {"north": "snow_stone_road", "southeast": "dragonhill_north_foot"}
+  }
+]

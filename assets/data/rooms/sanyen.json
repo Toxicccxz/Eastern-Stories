@@ -1,0 +1,212 @@
+[
+  {
+    "id": "sunhill_road4",
+    "name": "山路",
+    "areaId": "sunhill",
+    "description": "这是一条崎岖的黄土小径，山路从这里继续向北盘旋，西南方则通往山烟寺外的山路。",
+    "mapX": -8,
+    "mapY": 11,
+    "outdoorAreaId": "sunhill",
+    "exits": {"north": "sunhill_road3", "southwest": "sanyen_sroad1"}
+  },
+  {
+    "id": "sanyen_sroad1",
+    "name": "山路",
+    "areaId": "sanyen",
+    "description": "这是一条铺着生满青苔大石的山路，路面常有人行走，倒也不算湿滑。往南是缓缓下山的石阶，往北则通往山中。东面的山壁上刻着“山烟寺”几个大字。",
+    "mapX": 0,
+    "mapY": 8,
+    "outdoorAreaId": "sanyen",
+    "exits": {"west": "sanyen_sroad2", "northeast": "sunhill_road4"}
+  },
+  {
+    "id": "sanyen_sroad2",
+    "name": "山路",
+    "areaId": "sanyen",
+    "description": "山路在这里转了个弯，往东穿过山壁上的隧道，往北则可抵达山烟寺山门。",
+    "mapX": -1,
+    "mapY": 8,
+    "outdoorAreaId": "sanyen",
+    "exits": {"east": "sanyen_sroad1", "north": "sanyen_gate"}
+  },
+  {
+    "id": "sanyen_gate",
+    "name": "山烟寺山门",
+    "areaId": "sanyen",
+    "description": "这里是往山烟寺的山门。山烟寺就在西面不远，因寺中老方丈玄智和尚医术通神，不少受过恩惠的富豪把寺院修整得金碧辉煌，规模虽不及京城大寺，名气却大得多。",
+    "mapX": -1,
+    "mapY": 7,
+    "outdoorAreaId": "sanyen",
+    "exits": {"south": "sanyen_sroad2", "north": "sanyen_front_yard", "west": "sanyen_tunnele"},
+    "npcIds": ["sanyen_greeting_bonze"]
+  },
+  {
+    "id": "sanyen_front_yard",
+    "name": "山烟寺前广场",
+    "areaId": "sanyen",
+    "description": "这里是山烟寺前的空地，平时僧人们就在这里练武强身。空地四周种着一排白杨树，北边放着一堆用来锻炼腕力的砖头，寺门就在北方。",
+    "mapX": -1,
+    "mapY": 6,
+    "outdoorAreaId": "sanyen",
+    "exits": {"north": "sanyen_door", "south": "sanyen_gate"},
+    "npcIds": ["sanyen_bonze", "sanyen_work_bonze"]
+  },
+  {
+    "id": "sanyen_door",
+    "name": "山烟寺寺门",
+    "areaId": "sanyen",
+    "description": "眼前是一座宏伟壮丽的寺门，上方覆着镏金瓦片，匾额上写着“山烟寺”三个烫金大字。正中大门紧闭，只有两旁偏门敞开。",
+    "mapX": -1,
+    "mapY": 5,
+    "outdoorAreaId": "sanyen",
+    "exits": {"north": "sanyen_road1", "south": "sanyen_front_yard"}
+  },
+  {
+    "id": "sanyen_road1",
+    "name": "石板大道",
+    "areaId": "sanyen",
+    "description": "一条铺着青石板的大道，两旁种着花草。北方就是大雄宝殿，一座覆着金瓦的雄伟建筑。东边有条小一点的石板路，阵阵药香从那里传来。",
+    "mapX": -1,
+    "mapY": 4,
+    "outdoorAreaId": "sanyen",
+    "exits": {"north": "sanyen_temple", "south": "sanyen_door", "east": "sanyen_road2"},
+    "npcIds": ["sanyen_one_eyed_monk"]
+  },
+  {
+    "id": "sanyen_road2",
+    "name": "石板小径",
+    "areaId": "sanyen",
+    "description": "你正走在一条青石板铺成的小径上，两旁种着花草。药香随风送来，原来北边是一片广大的药圃。",
+    "mapX": 0,
+    "mapY": 4,
+    "outdoorAreaId": "sanyen",
+    "exits": {"west": "sanyen_road1", "north": "sanyen_drug_field"},
+    "npcIds": ["sanyen_bonze"]
+  },
+  {
+    "id": "sanyen_drug_field",
+    "name": "药圃",
+    "areaId": "sanyen",
+    "description": "一片广阔的药圃，药香正是从这里散发出来。药材分畦种植，哪边种当归，哪边种枸杞，都规整得清清楚楚。",
+    "mapX": 0,
+    "mapY": 3,
+    "outdoorAreaId": "sanyen",
+    "exits": {"south": "sanyen_road2"}
+  },
+  {
+    "id": "sanyen_temple",
+    "name": "大雄宝殿",
+    "areaId": "sanyen",
+    "description": "耀眼的金光迎面而来，殿中供奉着丈八金身的如来佛像。香炉里青烟缓缓上飘，南方是敞开的金门，西边传来流水声，北边黄布幔后似乎有一条通道。",
+    "mapX": -1,
+    "mapY": 3,
+    "allowsCultivation": true,
+    "exits": {"south": "sanyen_road1", "west": "sanyen_inner_yard", "north": "sanyen_corridor"}
+  },
+  {
+    "id": "sanyen_inner_yard",
+    "name": "庭园",
+    "areaId": "sanyen",
+    "description": "你站在山烟寺的庭园里。这里花草茂盛，小桥流水，假山凉亭一应俱全。北边有间雅房，东边穿过拱门便是大殿。",
+    "mapX": -4,
+    "mapY": 3,
+    "outdoorAreaId": "sanyen",
+    "exits": {"north": "sanyen_heal_room", "east": "sanyen_temple"},
+    "npcIds": ["sanyen_cripple_bonze"]
+  },
+  {
+    "id": "sanyen_heal_room",
+    "name": "流云轩",
+    "areaId": "sanyen",
+    "description": "一阵刺鼻药味扑面而来。这里是玄智方丈替人看病，也是存放药草的地方。与屋顶齐高的木柜分成许多抽屉，分别摆放药材，墙上还挂着许多檀木匾额。",
+    "mapX": -4,
+    "mapY": 2,
+    "exits": {"south": "sanyen_inner_yard"},
+    "npcIds": ["sanyen_drug_bonze"],
+    "actions": [
+      {
+        "id": "read_heal_room_plaques",
+        "label": "查看匾额",
+        "description": "看看墙上挂着的檀木匾额。",
+        "resultRoomId": "sanyen_heal_room",
+        "log": "匾额上多是受过玄智方丈医治的人所赠，言辞夸张，却也能看出山烟寺医名远播。"
+      }
+    ]
+  },
+  {
+    "id": "sanyen_corridor",
+    "name": "走廊",
+    "areaId": "sanyen",
+    "description": "你走在一条长廊上，两旁种着月桂树。南边布幔后是大殿，北方是后殿，西边还有一段长廊通往厨房。",
+    "mapX": -1,
+    "mapY": 2,
+    "exits": {"west": "sanyen_corridor1", "north": "sanyen_back_temple", "south": "sanyen_temple"}
+  },
+  {
+    "id": "sanyen_corridor1",
+    "name": "走廊",
+    "areaId": "sanyen",
+    "description": "长廊向东西两边延伸，两侧墙上画着观世音菩萨救苦救难的故事。西边尽头是一间相当大的房屋。",
+    "mapX": -2,
+    "mapY": 2,
+    "exits": {"west": "sanyen_kitchen", "east": "sanyen_corridor"}
+  },
+  {
+    "id": "sanyen_kitchen",
+    "name": "香积厨",
+    "areaId": "sanyen",
+    "description": "一间整理得很干净的厨房，角落里砌着两口大灶，灶火正旺。锅与蒸笼冒着热气和香味，让人忍不住想打开看看。",
+    "mapX": -3,
+    "mapY": 2,
+    "exits": {"east": "sanyen_corridor1"},
+    "npcIds": ["sanyen_cook_bonze"],
+    "actions": [
+      {
+        "id": "open_steampot",
+        "label": "打开蒸笼",
+        "description": "掀开蒸笼看看里面有什么。",
+        "resultRoomId": "sanyen_kitchen",
+        "log": "烧饭僧在旁边盯着，你只闻到一阵热腾腾的麦香，终究不好伸手。"
+      }
+    ]
+  },
+  {
+    "id": "sanyen_back_temple",
+    "name": "后殿",
+    "areaId": "sanyen",
+    "description": "这是一间宽大的后殿，正中供着药师如来的金身塑像。四周墙上彩绘着十八罗汉，每一尊旁边都写着得道升天的过程。",
+    "mapX": -1,
+    "mapY": 1,
+    "exits": {"south": "sanyen_corridor", "east": "sanyen_tower"},
+    "npcIds": ["sanyen_little_bonze"]
+  },
+  {
+    "id": "sanyen_tower",
+    "name": "塔林",
+    "areaId": "sanyen",
+    "description": "你站在两座高塔前，左边名为明心塔，右方名为见性塔。历来山烟寺高僧圆寂火化后的舍利子便存放在塔中。",
+    "mapX": 0,
+    "mapY": 1,
+    "outdoorAreaId": "sanyen",
+    "exits": {"west": "sanyen_back_temple"},
+    "npcIds": ["sanyen_work_bonze"]
+  },
+  {
+    "id": "sanyen_tunnele",
+    "name": "隧道口",
+    "areaId": "sanyen",
+    "description": "你走进一个凿穿山壁开成的隧道，东边是山烟寺山门，往西不远也能看见另一个出口。硫磺味从石壁间飘来，附近似乎有温泉或火山。",
+    "mapX": -2,
+    "mapY": 7,
+    "exits": {"west": "sanyen_tunnel", "east": "sanyen_gate"}
+  },
+  {
+    "id": "sanyen_tunnel",
+    "name": "隧道",
+    "areaId": "sanyen",
+    "description": "这是一个凿穿山壁开成的隧道，并不算长。西边是通往夜月庄方向的出口，东边则回到山烟寺山门附近。",
+    "mapX": -3,
+    "mapY": 7,
+    "exits": {"east": "sanyen_tunnele"}
+  }
+]

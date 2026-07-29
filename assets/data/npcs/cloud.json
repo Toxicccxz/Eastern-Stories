@@ -1,0 +1,430 @@
+[
+  {
+    "id": "cloud_boater",
+    "name": "船夫",
+    "description": "一个常年往来泗水两岸的船夫，皮肤被江风吹得又黑又粗。",
+    "greeting": "船夫说道：过江看天色，泗水浪急，心急不得。",
+    "dialogueOptions": [
+      {
+        "id": "ask_cloud_boat",
+        "label": "询问渡江",
+        "response": "船夫说道：南岸是日照山，过了山路便能到山烟寺；北岸就是绮云镇，茶客商旅都从这里走。"
+      }
+    ]
+  },
+  {
+    "id": "cloud_garrison",
+    "name": "官兵",
+    "description": "一名守在市场里的官兵，腰刀擦得很亮，正盯着往来人群。",
+    "greeting": "官兵说道：市集人多，少惹事。",
+    "combat": {"maxHp": 42, "attack": 7, "defense": 5, "rewardExperience": 24}
+  },
+  {
+    "id": "cloud_garrison_2",
+    "name": "官兵",
+    "description": "一名守在市场里的官兵，腰刀擦得很亮，正盯着往来人群。",
+    "greeting": "官兵说道：市集人多，少惹事。",
+    "combat": {"maxHp": 42, "attack": 7, "defense": 5, "rewardExperience": 24}
+  },
+  {
+    "id": "cloud_worker",
+    "name": "茶工",
+    "description": "一个在茶场采茶的工人，袖口沾满细碎茶叶。",
+    "greeting": "茶工说道：绮云茶看叶色，也看火候，采早采晚都差一味。",
+    "combat": {
+      "maxHp": 26,
+      "attack": 4,
+      "defense": 2,
+      "rewardExperience": 8,
+      "dropItemIds": ["cloud_tea_leaf"]
+    }
+  },
+  {
+    "id": "cloud_worker_2",
+    "name": "茶工",
+    "description": "一个在茶场采茶的工人，背着半满的竹篓。",
+    "greeting": "茶工说道：天亮采茶，日斜收篓，日子也就这样过。",
+    "combat": {
+      "maxHp": 26,
+      "attack": 4,
+      "defense": 2,
+      "rewardExperience": 8,
+      "dropItemIds": ["cloud_tea_leaf"]
+    }
+  },
+  {
+    "id": "cloud_worker_3",
+    "name": "茶工",
+    "description": "一个在茶场采茶的工人，手指被茶枝划出几道细口。",
+    "greeting": "茶工说道：今年雨水好，茶香也厚。",
+    "combat": {
+      "maxHp": 26,
+      "attack": 4,
+      "defense": 2,
+      "rewardExperience": 8,
+      "dropItemIds": ["cloud_tea_leaf"]
+    }
+  },
+  {
+    "id": "cloud_book_seller",
+    "name": "书商",
+    "description": "一个精明的书商，手边摆着几册线装书。",
+    "greeting": "书商说道：要读书识字，先从便宜本子看起。",
+    "intelligence": 22,
+    "shop": {
+      "products": [
+        {"itemId": "cloud_literate_book", "initialStock": -1},
+        {"itemId": "cloud_old_force_book", "initialStock": -1},
+        {"itemId": "cloud_torn_sword_book", "initialStock": 3}
+      ]
+    },
+    "teachingSkills": [
+      {"skillId": "literate", "maxLevel": 35, "access": "public"}
+    ]
+  },
+  {
+    "id": "cloud_doctor",
+    "name": "郎中",
+    "description": "一名坐堂郎中，指尖常年带着草药气味。",
+    "greeting": "郎中说道：小伤早治，大病早防，江湖人最怕拖。",
+    "dialogueOptions": [
+      {
+        "id": "ask_cloud_doctor_sanyen",
+        "label": "询问山烟寺",
+        "response": "郎中说道：山烟寺玄智方丈医术极高，我这点本事，许多还是从寺里传出的方子里学来的。"
+      }
+    ],
+    "shop": {
+      "products": [
+        {"itemId": "cloud_hurt_drug", "initialStock": -1},
+        {"itemId": "cloud_herbal_tea", "initialStock": -1}
+      ]
+    }
+  },
+  {
+    "id": "cloud_weaponor",
+    "name": "兵器铺老板",
+    "description": "兵器铺老板身材结实，手掌上全是磨刀留下的老茧。",
+    "greeting": "兵器铺老板说道：刀剑无眼，买之前先掂掂自己手劲。",
+    "shop": {
+      "products": [
+        {"itemId": "cloud_rope", "initialStock": -1},
+        {"itemId": "cloud_knife", "initialStock": -1},
+        {"itemId": "cloud_monk_stick", "initialStock": -1}
+      ]
+    }
+  },
+  {
+    "id": "cloud_tea_waiter",
+    "name": "茶博士",
+    "description": "茶博士手脚利落，端茶倒水间还不忘招呼客人。",
+    "greeting": "茶博士笑道：客官坐坐，绮云茶香，过路人喝一盏再走。",
+    "dialogueOptions": [
+      {
+        "id": "ask_cloud_tea",
+        "label": "打听绮云茶",
+        "response": "茶博士说道：镇东茶场的叶子最好，春茶一到，商人能把整条街堵住。"
+      }
+    ],
+    "shop": {
+      "products": [
+        {"itemId": "cloud_herbal_tea", "initialStock": -1},
+        {"itemId": "cloud_tea_leaf", "initialStock": -1}
+      ]
+    }
+  },
+  {
+    "id": "cloud_seller",
+    "name": "杂货铺老板",
+    "description": "杂货铺老板笑容满面，算盘珠子拨得飞快。",
+    "greeting": "杂货铺老板说道：出门在外，小东西最要紧，别等用时才想起买。",
+    "shop": {
+      "products": [
+        {"itemId": "cloud_rope", "initialStock": -1},
+        {"itemId": "cloud_cloth", "initialStock": -1},
+        {"itemId": "cloud_tea_leaf", "initialStock": -1}
+      ]
+    }
+  },
+  {
+    "id": "cloud_butcher",
+    "name": "屠户",
+    "description": "屠户膀大腰圆，围裙上沾着血迹，手边剁刀寒光闪闪。",
+    "greeting": "屠户说道：买肉趁早，晚了只剩骨头。",
+    "combat": {
+      "maxHp": 58,
+      "attack": 9,
+      "defense": 5,
+      "rewardExperience": 38,
+      "dropItemIds": ["cloud_knife", "cloud_skin_belt", "cloud_beef"],
+      "specialMove": {
+        "name": "剁骨刀",
+        "interval": 3,
+        "damageBonus": 3,
+        "message": "屠户抡起剁刀，带着一股腥风斩来。"
+      }
+    }
+  },
+  {
+    "id": "cloud_tailor",
+    "name": "裁缝",
+    "description": "裁缝正低头量布，案边放着剪刀和尺子。",
+    "greeting": "裁缝说道：衣服合身，人也精神三分。",
+    "shop": {
+      "products": [
+        {"itemId": "cloud_cloth", "initialStock": -1},
+        {"itemId": "cloud_black_cloth", "initialStock": 2}
+      ]
+    },
+    "combat": {
+      "maxHp": 34,
+      "attack": 5,
+      "defense": 3,
+      "rewardExperience": 12,
+      "dropItemIds": ["cloud_scissors", "cloud_ruler"]
+    }
+  },
+  {
+    "id": "cloud_biaoju_header",
+    "name": "镖头",
+    "description": "镖头神情沉稳，腰间佩刀，身上有一股风尘气。",
+    "greeting": "镖头说道：走镖最重信义，失了货还能赔，失了信便完了。",
+    "combat": {
+      "maxHp": 74,
+      "attack": 11,
+      "defense": 7,
+      "rewardExperience": 70,
+      "dropItemIds": ["cloud_moon_blade"],
+      "specialMove": {
+        "name": "护镖刀法",
+        "interval": 3,
+        "damageBonus": 4,
+        "message": "镖头沉肩进步，刀势稳稳护住中门。"
+      }
+    }
+  },
+  {
+    "id": "cloud_biaoju_fighter",
+    "name": "镖师",
+    "description": "一名镖师正在擦拭兵刃，动作干净利落。",
+    "greeting": "镖师说道：镖局饭不好吃，路上睡觉都得睁半只眼。",
+    "combat": {"maxHp": 52, "attack": 8, "defense": 5, "rewardExperience": 32, "dropItemIds": ["cloud_knife"]}
+  },
+  {
+    "id": "cloud_monk_trainer",
+    "name": "武师",
+    "description": "武馆里的教头，站姿沉稳，目光如炬。",
+    "greeting": "武师说道：练武先练架子，架子散了，招式再好看也没用。",
+    "teachingSkills": [
+      {"skillId": "basic_unarmed", "maxLevel": 40, "access": "public"},
+      {"skillId": "basic_dodge", "maxLevel": 30, "access": "public"}
+    ],
+    "combat": {
+      "maxHp": 68,
+      "attack": 10,
+      "defense": 7,
+      "rewardExperience": 55,
+      "dropItemIds": ["cloud_monk_stick", "cloud_jiasha"]
+    }
+  },
+  {
+    "id": "cloud_chess_player",
+    "name": "弈者",
+    "description": "一位十分文气的男子，装束像个雅儒，面前摆着一副棋局。",
+    "greeting": "弈者抬头看了你一眼，说道：要比试一盘？",
+    "dialogueOptions": [
+      {
+        "id": "ask_cloud_chess",
+        "label": "请教棋局",
+        "response": "弈者说道：棋如江湖，争一角容易，识全局难。原版里胜了他有机会得到棋子。"
+      }
+    ],
+    "combat": {
+      "maxHp": 30,
+      "attack": 4,
+      "defense": 4,
+      "rewardExperience": 10,
+      "dropItemIds": ["cloud_chess_piece"]
+    }
+  },
+  {
+    "id": "cloud_judge",
+    "name": "宝官",
+    "description": "他脸上的表情仿佛已经看见了你口袋里的钱。",
+    "greeting": "宝官喊道：快来赌，快来赌啊！",
+    "dialogueOptions": [
+      {
+        "id": "ask_cloud_judge_bet",
+        "label": "询问赌局",
+        "response": "宝官说道：客官把钱给我就行。原版是给钱后随机输赢，等后面做给物和投注系统再完整恢复。"
+      }
+    ],
+    "combat": {"maxHp": 36, "attack": 6, "defense": 4, "rewardExperience": 18}
+  },
+  {
+    "id": "cloud_mother",
+    "name": "鸨母",
+    "description": "一个浓妆艳抹的中年女子，身材微胖，全身上下珠光宝气。",
+    "greeting": "鸨母笑道：哎哟，客官里面请。",
+    "dialogueOptions": [
+      {
+        "id": "ask_cloud_mother_jiyuan",
+        "label": "打听怡红院",
+        "response": "鸨母说道：哎哟，就是我们这里啊，楼上姑娘们都在呢。"
+      }
+    ],
+    "combat": {"maxHp": 42, "attack": 7, "defense": 5, "rewardExperience": 16}
+  },
+  {
+    "id": "cloud_girl",
+    "name": "李师师",
+    "title": "名妓",
+    "description": "李师师是怡红院的名妓，精通琴棋书画，周围的纨绔子弟常往这里钻。",
+    "greeting": "李师师轻轻一笑，没有立刻说话。",
+    "dialogueOptions": [
+      {
+        "id": "ask_cloud_girl_art",
+        "label": "请教学艺",
+        "response": "李师师说道：请您留下件信物。原版这里需要特定条件与信物才会认你。"
+      }
+    ]
+  },
+  {
+    "id": "cloud_matchmaker",
+    "name": "媒婆",
+    "title": "红娘庄",
+    "description": "一位精明能干的老媒婆，专替镇上人家缔结和解除婚约。",
+    "greeting": "媒婆笑道：姻缘这回事，急不得，也耽误不得。",
+    "dialogueOptions": [
+      {
+        "id": "ask_cloud_matchmaker_marry",
+        "label": "询问婚约",
+        "response": "媒婆说道：这里可以缔结和解除婚约。单机版暂时先保留这个原版场景，不开放婚约系统。"
+      }
+    ]
+  },
+  {
+    "id": "cloud_thief",
+    "name": "飞贼",
+    "description": "飞贼经常出没于大户人家，因为轻功高强，官府也拿他没有办法。",
+    "greeting": "飞贼冷笑道：小心我把你变成穷光蛋！",
+    "combat": {
+      "maxHp": 62,
+      "attack": 10,
+      "defense": 7,
+      "rewardExperience": 46,
+      "dropItemIds": ["cloud_black_cloth"],
+      "specialMove": {
+        "name": "飞身掠影",
+        "interval": 3,
+        "damageBonus": 4,
+        "message": "飞贼身形一晃，忽然从侧面抢进来。"
+      }
+    }
+  },
+  {
+    "id": "cloud_room_guard",
+    "name": "护院",
+    "description": "张府门前的护院，身板结实，神情警惕。",
+    "greeting": "护院喝道：张府门前，不得喧哗。",
+    "combat": {"maxHp": 50, "attack": 8, "defense": 6, "rewardExperience": 30}
+  },
+  {
+    "id": "cloud_room_guard_2",
+    "name": "护院",
+    "description": "张府门前的护院，手按腰间兵刃，不时扫视路人。",
+    "greeting": "护院说道：闲人少在这里逗留。",
+    "combat": {"maxHp": 50, "attack": 8, "defense": 6, "rewardExperience": 30}
+  },
+  {
+    "id": "cloud_room_guard_3",
+    "name": "护院",
+    "description": "张府门前的护院，脚步沉稳，看起来练过几手。",
+    "greeting": "护院说道：张老爷今日不见客。",
+    "combat": {"maxHp": 50, "attack": 8, "defense": 6, "rewardExperience": 30}
+  },
+  {
+    "id": "cloud_millionaire",
+    "name": "张百万",
+    "title": "主人",
+    "description": "一位精明能干的大财主，衣着华贵，神色从容。",
+    "greeting": "张百万说道：买卖讲的是眼力，江湖讲的也是眼力。",
+    "combat": {"maxHp": 72, "attack": 10, "defense": 8, "rewardExperience": 60}
+  },
+  {
+    "id": "cloud_jiading",
+    "name": "家丁",
+    "title": "张府家丁",
+    "description": "张府家丁的俸禄极高，能在张府做事，武功自然也不弱。",
+    "greeting": "家丁抱拳说道：请勿惊扰老爷。",
+    "combat": {"maxHp": 78, "attack": 12, "defense": 8, "rewardExperience": 72, "dropItemIds": ["cloud_knife"]}
+  },
+  {
+    "id": "cloud_jiading_2",
+    "name": "家丁",
+    "title": "张府家丁",
+    "description": "张府家丁的俸禄极高，能在张府做事，武功自然也不弱。",
+    "greeting": "家丁盯着你，没有多说。",
+    "combat": {"maxHp": 78, "attack": 12, "defense": 8, "rewardExperience": 72, "dropItemIds": ["cloud_knife"]}
+  },
+  {
+    "id": "cloud_box_boss",
+    "name": "林三爷",
+    "title": "棺材铺老板",
+    "description": "这位面目慈善的老人经营棺材铺已经有很多年了。",
+    "greeting": "林三爷说道：您这么年轻就要棺材，早了点吧？",
+    "dialogueOptions": [
+      {
+        "id": "ask_cloud_box_boss_tearoom",
+        "label": "打听香茗坊",
+        "response": "林三爷说道：您也知道碧海银针？茶楼就在街对面，我常去的。"
+      }
+    ],
+    "combat": {"maxHp": 58, "attack": 8, "defense": 8, "rewardExperience": 32}
+  },
+  {
+    "id": "cloud_box_waiter",
+    "name": "伙计",
+    "title": "棺材铺",
+    "description": "他一副垂头丧气的样子，一脸倒霉相。",
+    "greeting": "伙计低声说道：客官慢看。",
+    "combat": {"maxHp": 52, "attack": 7, "defense": 6, "rewardExperience": 24}
+  },
+  {
+    "id": "cloud_box_waiter_2",
+    "name": "伙计",
+    "title": "棺材铺",
+    "description": "他一副垂头丧气的样子，一脸倒霉相。",
+    "greeting": "伙计低声说道：小心脚下木料。",
+    "combat": {"maxHp": 52, "attack": 7, "defense": 6, "rewardExperience": 24}
+  },
+  {
+    "id": "cloud_box_waiter_3",
+    "name": "伙计",
+    "title": "棺材铺",
+    "description": "他一副垂头丧气的样子，一脸倒霉相。",
+    "greeting": "伙计低着头搬木板。",
+    "combat": {"maxHp": 52, "attack": 7, "defense": 6, "rewardExperience": 24}
+  },
+  {
+    "id": "cloud_god",
+    "name": "神秘人",
+    "description": "前厅里坐着一个气派不凡的人，神情冷淡，让人不敢贸然靠近。",
+    "greeting": "神秘人淡淡说道：能走到这里，也算有些胆色。",
+    "combat": {"maxHp": 96, "attack": 14, "defense": 10, "rewardExperience": 95}
+  },
+  {
+    "id": "cloud_beggar",
+    "name": "乞丐",
+    "description": "一个蹲在斋院角落里的乞丐，衣衫褴褛，却眼神灵动。",
+    "greeting": "乞丐说道：行行好，给口吃的。",
+    "combat": {"maxHp": 28, "attack": 4, "defense": 3, "rewardExperience": 8}
+  },
+  {
+    "id": "cloud_beggar_2",
+    "name": "乞丐",
+    "description": "一个蹲在斋院角落里的乞丐，衣衫褴褛，却眼神灵动。",
+    "greeting": "乞丐看了看蒸饺，又看了看你。",
+    "combat": {"maxHp": 28, "attack": 4, "defense": 3, "rewardExperience": 8}
+  }
+]

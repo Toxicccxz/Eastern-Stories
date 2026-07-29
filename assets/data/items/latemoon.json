@@ -1,0 +1,392 @@
+[
+  {
+    "id": "latemoon_skirt",
+    "name": "罗裙",
+    "description": "晚月庄女子常穿的罗裙，料子轻柔，行动时衣摆如水。",
+    "equipmentSlot": "body",
+    "defensePower": 2,
+    "buyPrice": 60,
+    "sellPrice": 18
+  },
+  {
+    "id": "latemoon_needle",
+    "name": "绣花针",
+    "description": "蓝雨梅随身带着的绣花针，细小却十分锋利。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "throwing",
+    "attackPower": 6,
+    "buyPrice": 24,
+    "sellPrice": 8
+  },
+  {
+    "id": "latemoon_deer_boot",
+    "name": "鹿皮靴",
+    "description": "一双柔软轻便的鹿皮靴，适合舞步和轻身移动。",
+    "equipmentSlot": "feet",
+    "defensePower": 1,
+    "buyPrice": 90,
+    "sellPrice": 30
+  },
+  {
+    "id": "latemoon_bamboo_sword",
+    "name": "竹剑",
+    "description": "以青竹削成的细剑，轻巧灵便，带着淡淡竹香。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "sword",
+    "attackPower": 16,
+    "buyPrice": 70,
+    "sellPrice": 22
+  },
+  {
+    "id": "latemoon_whip",
+    "name": "软鞭",
+    "description": "晚月庄弟子随身带着的软鞭，舞动时如花枝摇曳。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "whip",
+    "attackPower": 13,
+    "buyPrice": 75,
+    "sellPrice": 24
+  },
+  {
+    "id": "latemoon_bamboo",
+    "name": "青竹",
+    "description": "竹林里的一截青竹，可以削成小玩物，也可以用来制成竹剑。",
+    "buyPrice": 6,
+    "sellPrice": 2
+  },
+  {
+    "id": "latemoon_teacup",
+    "name": "茶杯",
+    "description": "蓝雨梅递上的茶杯，杯中盛着上等金蓉茶。",
+    "restoreInnerPower": 8,
+    "buyPrice": 10,
+    "sellPrice": 3
+  },
+  {
+    "id": "latemoon_food",
+    "name": "点心",
+    "description": "膳房里摆着的精致点心，香气诱人。",
+    "restoreHp": 18,
+    "buyPrice": 8,
+    "sellPrice": 2
+  },
+  {
+    "id": "latemoon_food2",
+    "name": "菜肴",
+    "description": "大饭厅桌上的佳肴，用料讲究，色香俱佳。",
+    "restoreHp": 24,
+    "buyPrice": 12,
+    "sellPrice": 4
+  },
+  {
+    "id": "latemoon_food3",
+    "name": "糕点",
+    "description": "一碟小巧甜糕，入口绵软。",
+    "restoreSpirit": 8,
+    "buyPrice": 10,
+    "sellPrice": 3
+  },
+  {
+    "id": "latemoon_food3_2",
+    "name": "糕点",
+    "description": "一碟小巧甜糕，入口绵软。",
+    "restoreSpirit": 8,
+    "buyPrice": 10,
+    "sellPrice": 3
+  },
+  {
+    "id": "latemoon_wine",
+    "name": "酒",
+    "description": "晚月庄膳房中的酒，香味清冽。",
+    "restoreInnerPower": 12,
+    "buyPrice": 16,
+    "sellPrice": 5
+  },
+  {
+    "id": "latemoon_fire",
+    "name": "火盆",
+    "description": "厨房里烧得正旺的火盆，靠近时能感到扑面的热气。",
+    "buyPrice": 5,
+    "sellPrice": 1
+  },
+  {
+    "id": "latemoon_longsword",
+    "name": "长剑",
+    "description": "一柄晚月庄弟子佩带的长剑，剑身修长。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "sword",
+    "attackPower": 28,
+    "buyPrice": 160,
+    "sellPrice": 50
+  },
+  {
+    "id": "latemoon_token",
+    "name": "令牌",
+    "description": "冷面客身上带着的一块令牌，质地沉重，来历不明。",
+    "buyPrice": 80,
+    "sellPrice": 20
+  },
+  {
+    "id": "latemoon_hankie",
+    "name": "手帕",
+    "description": "密室里遗落的一方手帕，边角绣着精致花纹。",
+    "buyPrice": 30,
+    "sellPrice": 8
+  },
+  {
+    "id": "latemoon_necklace",
+    "name": "项链",
+    "description": "一串做工细巧的项链，珠光温润。",
+    "equipmentSlot": "accessory",
+    "defensePower": 1,
+    "buyPrice": 120,
+    "sellPrice": 36
+  },
+  {
+    "id": "latemoon_rare_flower",
+    "name": "小花蕊",
+    "description": "翠嶂西府海棠旁摘下的金黄色小花蕊，带着淡淡奇香，似乎是一种珍贵药材。",
+    "restoreSpirit": 12,
+    "buyPrice": 60,
+    "sellPrice": 18
+  },
+  {
+    "id": "latemoon_guihua",
+    "name": "桂花",
+    "description": "桂花园中采下的桂花，香气清甜。",
+    "restoreSpirit": 6,
+    "buyPrice": 8,
+    "sellPrice": 2
+  },
+  {
+    "id": "latemoon_amulet",
+    "name": "护符",
+    "description": "晚月庄弟子身上的护符，刻着细小纹路。",
+    "equipmentSlot": "accessory",
+    "defensePower": 2,
+    "buyPrice": 140,
+    "sellPrice": 42
+  },
+  {
+    "id": "latemoon_flower_boot",
+    "name": "花靴",
+    "description": "一双绣着细小花纹的靴子，轻便柔软。",
+    "equipmentSlot": "feet",
+    "defensePower": 2,
+    "buyPrice": 130,
+    "sellPrice": 40
+  },
+  {
+    "id": "latemoon_belt",
+    "name": "束带",
+    "description": "晚月庄弟子束腰用的带子，质地柔韧。",
+    "equipmentSlot": "accessory",
+    "defensePower": 1,
+    "buyPrice": 90,
+    "sellPrice": 26
+  },
+  {
+    "id": "latemoon_redbelt",
+    "name": "红束带",
+    "description": "一条红色束带，颜色鲜明，织工精巧。",
+    "equipmentSlot": "accessory",
+    "defensePower": 2,
+    "buyPrice": 120,
+    "sellPrice": 36
+  },
+  {
+    "id": "latemoon_clasp",
+    "name": "扣饰",
+    "description": "晚月庄女子常用的精巧扣饰，可系在衣带上。",
+    "equipmentSlot": "accessory",
+    "defensePower": 1,
+    "buyPrice": 100,
+    "sellPrice": 30
+  },
+  {
+    "id": "latemoon_cake",
+    "name": "糕",
+    "description": "缀芳阁里摆着的一块糕点，甜香温和。",
+    "restoreSpirit": 10,
+    "buyPrice": 10,
+    "sellPrice": 3
+  },
+  {
+    "id": "latemoon_skirt2",
+    "name": "青绫绸裙",
+    "description": "晚月庄弟子常穿的青绫绸裙，料子轻柔，裙摆随步法微微翻动。",
+    "equipmentSlot": "body",
+    "defensePower": 4,
+    "buyPrice": 140,
+    "sellPrice": 42
+  },
+  {
+    "id": "latemoon_skirt3",
+    "name": "绿罗裙",
+    "description": "一袭绿罗裙，色泽清润，行动时如风拂新柳。",
+    "equipmentSlot": "body",
+    "defensePower": 4,
+    "buyPrice": 210,
+    "sellPrice": 63
+  },
+  {
+    "id": "latemoon_skirt4",
+    "name": "青纱裙",
+    "description": "一件青纱裙，质地轻薄，适合晚月庄弟子练舞时穿着。",
+    "equipmentSlot": "body",
+    "defensePower": 2,
+    "buyPrice": 70,
+    "sellPrice": 21
+  },
+  {
+    "id": "latemoon_skirt5",
+    "name": "绵裙",
+    "description": "一件柔软绵裙，做工朴素，穿在身上很是轻便。",
+    "equipmentSlot": "body",
+    "defensePower": 2,
+    "buyPrice": 70,
+    "sellPrice": 21
+  },
+  {
+    "id": "latemoon_skirt6",
+    "name": "白布裙",
+    "description": "一件白布裙，干净素雅，是庄中寻常衣物。",
+    "equipmentSlot": "body",
+    "defensePower": 1,
+    "buyPrice": 40,
+    "sellPrice": 12
+  },
+  {
+    "id": "latemoon_blue_dress",
+    "name": "宝蓝缎衫",
+    "description": "一件宝蓝色缎衫，光泽温润，衣料极好。",
+    "equipmentSlot": "body",
+    "defensePower": 10,
+    "buyPrice": 4000,
+    "sellPrice": 1200
+  },
+  {
+    "id": "latemoon_bracelet",
+    "name": "玛瑙手镯",
+    "description": "一个由玛瑙作成的美丽手镯，触手温润。",
+    "equipmentSlot": "accessory",
+    "defensePower": 2,
+    "buyPrice": 500,
+    "sellPrice": 150
+  },
+  {
+    "id": "latemoon_dance_book",
+    "name": "舞曲谱",
+    "description": "一卷写满舞曲身法的谱子，曲意凄美，字迹清秀。",
+    "studySkillId": "stormdance",
+    "studyMaxSkillLevel": 8,
+    "studyExperience": 35,
+    "studySpiritCost": 8,
+    "studyDifficulty": 16,
+    "buyPrice": 1000,
+    "sellPrice": 300
+  },
+  {
+    "id": "latemoon_music_book",
+    "name": "舞曲谱",
+    "description": "一卷偏重音律节拍的舞曲谱，可从曲调里体会身法变化。",
+    "studySkillId": "stormdance",
+    "studyMaxSkillLevel": 6,
+    "studyExperience": 28,
+    "studySpiritCost": 8,
+    "studyDifficulty": 16,
+    "buyPrice": 1000,
+    "sellPrice": 300
+  },
+  {
+    "id": "latemoon_dragonfly",
+    "name": "竹蜻蜓",
+    "description": "用青竹削成的小竹蜻蜓，做工灵巧，是芳猾喜欢的小玩意。",
+    "buyPrice": 20,
+    "sellPrice": 6
+  },
+  {
+    "id": "latemoon_yu_blade",
+    "name": "柳玉刀",
+    "description": "一柄纤细的柳玉刀，轻薄短小，适合贴身携带。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "blade",
+    "attackPower": 20,
+    "buyPrice": 120,
+    "sellPrice": 36
+  },
+  {
+    "id": "latemoon_yu_sword",
+    "name": "紫玉宝剑",
+    "description": "一把隐含神秘力量的紫玉宝剑，剑身透着淡淡玉色。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "sword",
+    "attackPower": 32,
+    "buyPrice": 220,
+    "sellPrice": 66
+  },
+  {
+    "id": "latemoon_brooch",
+    "name": "钻石胸针",
+    "description": "一个用钻石镶成的美丽胸饰，光彩耀眼。",
+    "equipmentSlot": "accessory",
+    "defensePower": 2,
+    "buyPrice": 150,
+    "sellPrice": 45
+  },
+  {
+    "id": "latemoon_earring",
+    "name": "耳环",
+    "description": "一串用宝石镶串成的闪亮耳环。",
+    "equipmentSlot": "accessory",
+    "defensePower": 1,
+    "buyPrice": 150,
+    "sellPrice": 45
+  },
+  {
+    "id": "latemoon_gold_token",
+    "name": "黄金令牌",
+    "description": "一个闪闪发亮的黄金令牌，上有一些图腾标志。",
+    "equipmentSlot": "accessory",
+    "defensePower": 1,
+    "buyPrice": 300,
+    "sellPrice": 90
+  },
+  {
+    "id": "latemoon_secret_letter",
+    "name": "密函",
+    "description": "一封用蜡密封起来的信件，上面有奇怪图案。",
+    "buyPrice": 120,
+    "sellPrice": 36
+  },
+  {
+    "id": "latemoon_whip_book",
+    "name": "鞭法图谱",
+    "description": "一卷记录软鞭运劲的图谱，笔法细密。",
+    "studySkillId": "snowwhip",
+    "studyMaxSkillLevel": 6,
+    "studyExperience": 24,
+    "studySpiritCost": 8,
+    "studyDifficulty": 14,
+    "buyPrice": 180,
+    "sellPrice": 54
+  },
+  {
+    "id": "latemoon_sen_bean",
+    "name": "仙豆",
+    "description": "一粒有点奇怪的豆子，闻起来有上等药材的气味。",
+    "restoreHp": 40,
+    "restoreInnerPower": 20,
+    "buyPrice": 50,
+    "sellPrice": 15
+  },
+  {
+    "id": "latemoon_white_pill",
+    "name": "白凤丸",
+    "description": "一颗洁白药丸，药香清苦，可用于调理气血。",
+    "restoreHp": 80,
+    "restoreInnerPower": 30,
+    "buyPrice": 100,
+    "sellPrice": 30
+  }
+]

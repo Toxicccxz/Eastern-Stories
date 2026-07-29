@@ -1,0 +1,113 @@
+[
+  {
+    "id": "sanyen_greeting_bonze",
+    "name": "知客僧",
+    "description": "一位在山门迎送香客的僧人，神色和气，举止周到。",
+    "greeting": "知客僧合十说道：施主远来辛苦，山烟寺香火清静，入寺还请放轻脚步。",
+    "combat": {"maxHp": 36, "attack": 5, "defense": 3, "rewardExperience": 16}
+  },
+  {
+    "id": "sanyen_bonze",
+    "name": "僧人",
+    "description": "一个笑眯眯的僧人对着你微微颔首。",
+    "greeting": "僧人说道：寺中不可喧哗，施主若要进香，可往北去大雄宝殿。",
+    "combat": {
+      "maxHp": 52,
+      "attack": 7,
+      "defense": 5,
+      "rewardExperience": 30,
+      "dropItemIds": ["sanyen_cloth", "sanyen_shoes"]
+    }
+  },
+  {
+    "id": "sanyen_one_eyed_monk",
+    "name": "独眼头陀",
+    "description": "这个头陀少了一只眼，却仍气势逼人。腰间挂着戒刀，黑眼罩下的目光十分锐利。",
+    "greeting": "独眼头陀冷冷说道：佛门清净地，也容得下江湖人一身杀气。",
+    "combat": {
+      "maxHp": 145,
+      "attack": 16,
+      "defense": 10,
+      "rewardExperience": 180,
+      "rewardSilver": 18,
+      "dropItemIds": ["sanyen_blade", "sanyen_eye_patch", "sanyen_monk_cloth", "sanyen_shoes"],
+      "specialMove": {
+        "name": "戒刀横斩",
+        "interval": 3,
+        "damageBonus": 6,
+        "message": "独眼头陀拔刀横斩，刀风贴着青石地面卷来。"
+      }
+    }
+  },
+  {
+    "id": "sanyen_cripple_bonze",
+    "name": "跛僧人",
+    "description": "这个僧人跛了右腿，脸上没有什么表情，一副若有所思的样子。",
+    "greeting": "跛僧人望着庭园流水说道：脚下路慢些也无妨，怕的是心里走得太急。",
+    "combat": {
+      "maxHp": 66,
+      "attack": 8,
+      "defense": 7,
+      "rewardExperience": 45,
+      "dropItemIds": ["sanyen_cloth", "sanyen_shoes"],
+      "specialMove": {
+        "name": "莲台定步",
+        "interval": 3,
+        "damageBonus": 3,
+        "message": "跛僧人脚步虽缓，掌势却忽然沉稳如山。"
+      }
+    }
+  },
+  {
+    "id": "sanyen_drug_bonze",
+    "name": "药僧",
+    "description": "一位长得相当精壮的年轻僧人，正在整理药材。",
+    "greeting": "药僧说道：这些药材晒不得太久，也潮不得半分，施主请莫碰乱。",
+    "combat": {
+      "maxHp": 58,
+      "attack": 8,
+      "defense": 5,
+      "rewardExperience": 34,
+      "dropItemIds": ["sanyen_cloth", "sanyen_shoes"]
+    }
+  },
+  {
+    "id": "sanyen_cook_bonze",
+    "name": "烧饭僧",
+    "description": "一位肥胖和气的中年僧人，守着灶火和蒸笼。",
+    "greeting": "烧饭僧笑道：锅里是寺中斋饭，香是香，可也得等钟声响了才开饭。",
+    "combat": {
+      "maxHp": 48,
+      "attack": 7,
+      "defense": 4,
+      "rewardExperience": 24,
+      "dropItemIds": ["sanyen_carver", "sanyen_cloth", "sanyen_shoes"]
+    }
+  },
+  {
+    "id": "sanyen_little_bonze",
+    "name": "小沙弥",
+    "description": "一个天真无邪的小和尚，圆滚滚的光头让人看了忍不住想笑。",
+    "greeting": "小沙弥眨眼说道：师父说后殿要安静，可塔林那边风一吹就像有人念经。",
+    "combat": {
+      "maxHp": 28,
+      "attack": 4,
+      "defense": 3,
+      "rewardExperience": 12,
+      "dropItemIds": ["sanyen_cloth", "sanyen_shoes"]
+    }
+  },
+  {
+    "id": "sanyen_work_bonze",
+    "name": "扫地僧",
+    "description": "一个低眉顺目的扫地僧，手里拿着快秃了头的竹扫把。",
+    "greeting": "扫地僧低声说道：扫地扫地，尘土扫得尽，心尘却难扫。",
+    "combat": {
+      "maxHp": 32,
+      "attack": 5,
+      "defense": 3,
+      "rewardExperience": 10,
+      "dropItemIds": ["sanyen_broom", "sanyen_monk_cloth", "sanyen_shoes"]
+    }
+  }
+]

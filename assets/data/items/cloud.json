@@ -1,0 +1,209 @@
+[
+  {
+    "id": "cloud_literate_book",
+    "name": "说文解字",
+    "description": "一本介绍读书识字的入门书籍，开篇写着人之初、性本善之类的句子。",
+    "studySkillId": "literate",
+    "studyMaxSkillLevel": 30,
+    "studyExperience": 45,
+    "studySpiritCost": 30,
+    "studyDifficulty": 20,
+    "buyPrice": 80,
+    "sellPrice": 25
+  },
+  {
+    "id": "cloud_torn_sword_book",
+    "name": "残破剑诀",
+    "description": "一本残破的剑谱前几页，虽无招式详解，却写着不少剑法总纲与精义。",
+    "studySkillId": "basic_sword",
+    "studyMaxSkillLevel": 40,
+    "studyExperience": 55,
+    "studyRequiredCombatExperience": 100,
+    "studySpiritCost": 30,
+    "studyDifficulty": 20,
+    "buyPrice": 120,
+    "sellPrice": 40
+  },
+  {
+    "id": "cloud_old_force_book",
+    "name": "旧书",
+    "description": "纸张已经泛黄的旧书，字迹模糊，似乎提到了一些呼吸吐纳的方法。",
+    "studySkillId": "basic_force",
+    "studyMaxSkillLevel": 10,
+    "studyExperience": 35,
+    "studySpiritCost": 30,
+    "studyDifficulty": 20,
+    "buyPrice": 35,
+    "sellPrice": 10
+  },
+  {
+    "id": "cloud_rope",
+    "name": "麻绳",
+    "description": "一条结实的麻绳，既可作杂物，也能勉强当作软鞭使用。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "whip",
+    "attackPower": 1,
+    "buyPrice": 4,
+    "sellPrice": 1
+  },
+  {
+    "id": "cloud_cloth",
+    "name": "布衣",
+    "description": "一件普通布衣，料子粗糙，却很耐穿。",
+    "equipmentSlot": "body",
+    "defensePower": 1,
+    "buyPrice": 12,
+    "sellPrice": 4
+  },
+  {
+    "id": "cloud_black_cloth",
+    "name": "夜行衣",
+    "description": "一件夜行人用来掩藏行踪的黑色紧身衣。",
+    "equipmentSlot": "body",
+    "defensePower": 1,
+    "buyPrice": 160,
+    "sellPrice": 50
+  },
+  {
+    "id": "cloud_beef",
+    "name": "熟牛肉",
+    "description": "一块香喷喷的熟牛肉，吃下去很顶饿。",
+    "restoreHp": 26,
+    "buyPrice": 12,
+    "sellPrice": 4
+  },
+  {
+    "id": "cloud_dog_meat",
+    "name": "狗肉",
+    "description": "一块炖得很香的狗肉，江湖客常拿来下酒。",
+    "restoreHp": 20,
+    "buyPrice": 8,
+    "sellPrice": 3
+  },
+  {
+    "id": "cloud_tea_leaf",
+    "name": "茶叶",
+    "description": "绮云茶场采下的新茶叶，叶色青翠，带着淡淡清香。",
+    "restoreInnerPower": 6,
+    "buyPrice": 5,
+    "sellPrice": 2
+  },
+  {
+    "id": "cloud_knife",
+    "name": "解牛刀",
+    "description": "一把很锋利的钢刀，只是短了一些。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "blade",
+    "attackPower": 10,
+    "buyPrice": 55,
+    "sellPrice": 18
+  },
+  {
+    "id": "cloud_skin_belt",
+    "name": "牛皮束带",
+    "description": "一条结实的牛皮束带，能护住腰腹，只是有些碍身法。",
+    "equipmentSlot": "accessory",
+    "defensePower": 2,
+    "buyPrice": 180,
+    "sellPrice": 60
+  },
+  {
+    "id": "cloud_moon_blade",
+    "name": "霜月刀",
+    "description": "一把耀眼的利刃，刀背带有一道凹槽，是镖头陈剑秀的成名兵器。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "blade",
+    "attackPower": 40,
+    "buyPrice": 360,
+    "sellPrice": 120
+  },
+  {
+    "id": "cloud_scissors",
+    "name": "裁衣剪",
+    "description": "一把长而锐利的剪刀，握在手中也能作短剑使用。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "sword",
+    "attackPower": 15,
+    "buyPrice": 35,
+    "sellPrice": 12
+  },
+  {
+    "id": "cloud_ruler",
+    "name": "量衣尺",
+    "description": "一把量衣用的尺子，比一般的宽些。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "sword",
+    "attackPower": 2,
+    "buyPrice": 8,
+    "sellPrice": 2
+  },
+  {
+    "id": "cloud_monk_stick",
+    "name": "僧棍",
+    "description": "一根又粗又长的僧棍，表面已经被磨得十分光滑。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "staff",
+    "attackPower": 13,
+    "buyPrice": 45,
+    "sellPrice": 15
+  },
+  {
+    "id": "cloud_jiasha",
+    "name": "青布袈裟",
+    "description": "一件青色僧衣，洗得很干净。",
+    "equipmentSlot": "body",
+    "defensePower": 2,
+    "buyPrice": 40,
+    "sellPrice": 14
+  },
+  {
+    "id": "cloud_hurt_drug",
+    "name": "金创药",
+    "description": "云梦药店出售的外伤药，适合敷治寻常皮肉伤。",
+    "restoreHp": 24,
+    "buyPrice": 18,
+    "sellPrice": 7
+  },
+  {
+    "id": "cloud_herbal_tea",
+    "name": "清茶",
+    "description": "香茗坊泡好的热茶，入口微苦，回味甘甜。",
+    "restoreInnerPower": 10,
+    "buyPrice": 6,
+    "sellPrice": 2
+  },
+  {
+    "id": "cloud_chess_piece",
+    "name": "棋子",
+    "description": "香茗坊二楼弈者随身带着的棋子，握在手里微微发凉。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "throwing",
+    "attackPower": 4,
+    "buyPrice": 20,
+    "sellPrice": 6
+  },
+  {
+    "id": "cloud_dumpling",
+    "name": "素饺",
+    "description": "斋院里供人充饥的素饺，皮薄馅清。",
+    "restoreHp": 12,
+    "buyPrice": 4,
+    "sellPrice": 1
+  },
+  {
+    "id": "cloud_dumpling_2",
+    "name": "素饺",
+    "description": "斋院里供人充饥的素饺，皮薄馅清。",
+    "restoreHp": 12,
+    "buyPrice": 4,
+    "sellPrice": 1
+  },
+  {
+    "id": "cloud_dumpling_3",
+    "name": "素饺",
+    "description": "斋院里供人充饥的素饺，皮薄馅清。",
+    "restoreHp": 12,
+    "buyPrice": 4,
+    "sellPrice": 1
+  }
+]

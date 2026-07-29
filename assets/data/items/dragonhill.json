@@ -1,0 +1,12 @@
+[
+  {
+    "id": "dragonhill_gangster_blade",
+    "name": "强盗刀",
+    "description": "卧龙岗强盗随身带着的刀，刀身粗劣，却很沉重。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "blade",
+    "attackPower": 18,
+    "buyPrice": 80,
+    "sellPrice": 24
+  }
+]

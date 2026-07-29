@@ -1,0 +1,552 @@
+[
+  {
+    "id": "sunhill_road3",
+    "name": "盘山小径",
+    "areaId": "sunhill",
+    "description": "这是一条崎岖的黄土小径，山风从林间吹过，路面被来往行人踩得发硬。",
+    "mapX": -8,
+    "mapY": 10,
+    "outdoorAreaId": "sunhill",
+    "exits": {"east": "sunhill_road2", "south": "sunhill_road4"}
+  },
+  {
+    "id": "sunhill_road2",
+    "name": "盘山小径",
+    "areaId": "sunhill",
+    "description": "这是一条崎岖的黄土小径，往西继续绕山而行，往北则渐渐下到山脚。",
+    "mapX": -7,
+    "mapY": 10,
+    "outdoorAreaId": "sunhill",
+    "exits": {"north": "sunhill_road1", "west": "sunhill_road3"}
+  },
+  {
+    "id": "sunhill_road1",
+    "name": "山脚小路",
+    "areaId": "sunhill",
+    "description": "这是一条崎岖的黄土小径，北面通向渡口，南面小路蜿蜒而上通往山顶，东边则是乔阴县北门方向。",
+    "mapX": -7,
+    "mapY": 9,
+    "outdoorAreaId": "sunhill",
+    "exits": {"north": "sunhill_dukou", "southup": "sunhill_road2", "east": "choyin_n_gate"}
+  },
+  {
+    "id": "choyin_n_gate",
+    "name": "乔阴县北门",
+    "areaId": "choyin",
+    "description": "这里是乔阴县北门外的道路，西边回到日山山脚。城门内的街市尚未探明，只能先从这里折返。",
+    "mapX": -6,
+    "mapY": 9,
+    "outdoorAreaId": "choyin",
+    "exits": {"west": "sunhill_road1"}
+  },
+  {
+    "id": "sunhill_dukou",
+    "name": "江南渡口",
+    "areaId": "sunhill",
+    "description": "这里是泗水南岸，再往南不远就是日照山了。北面江水寒冷，渡船往来于两岸之间。",
+    "mapX": -7,
+    "mapY": 8,
+    "outdoorAreaId": "sunhill",
+    "exits": {"north": "sunhill_southriver", "south": "sunhill_road1"}
+  },
+  {
+    "id": "sunhill_southriver",
+    "name": "泗水南侧",
+    "areaId": "sunhill",
+    "description": "这里靠近南岸，江水甚是寒冷。从这里已能望到山烟寺的一角。",
+    "mapX": -7,
+    "mapY": 7,
+    "outdoorAreaId": "sunhill",
+    "exits": {"north": "sunhill_midriver", "south": "sunhill_dukou"}
+  },
+  {
+    "id": "sunhill_midriver",
+    "name": "江心",
+    "areaId": "sunhill",
+    "description": "这里虽说是泗水最窄的地方，可江水在这里转了个弯，暗流时常出现。风大浪急时，就连熟悉水性的船夫也不敢轻忽。",
+    "mapX": -7,
+    "mapY": 6,
+    "outdoorAreaId": "sunhill",
+    "exits": {"north": "sunhill_northriver", "south": "sunhill_southriver"}
+  },
+  {
+    "id": "sunhill_northriver",
+    "name": "泗水北侧",
+    "areaId": "sunhill",
+    "description": "这里已经靠近北岸，江水齐胸深，偶尔一个漩流卷过来，仿佛要将人打入江底。",
+    "mapX": -7,
+    "mapY": 5,
+    "outdoorAreaId": "sunhill",
+    "exits": {"north": "cloud_dukou", "south": "sunhill_midriver"}
+  },
+  {
+    "id": "cloud_dukou",
+    "name": "江北渡口",
+    "areaId": "cloud",
+    "description": "这是个不算大却过客甚多的渡口。往北去是通往绮云镇里的青石道，南面就是无风亦起浪的泗水。向南望去，隐约可见对岸日照山的轮廓。",
+    "mapX": 0,
+    "mapY": 6,
+    "outdoorAreaId": "cloud",
+    "exits": {"north": "cloud_sroad1", "south": "sunhill_northriver"},
+    "npcIds": ["cloud_boater"]
+  },
+  {
+    "id": "cloud_sroad1",
+    "name": "绮云镇街道",
+    "areaId": "cloud",
+    "description": "这里是绮云镇南，通往过江的渡口。青石路向北延伸，镇中的喧闹声已经隐约可闻。",
+    "mapX": 0,
+    "mapY": 5,
+    "outdoorAreaId": "cloud",
+    "exits": {"north": "cloud_cross", "south": "cloud_dukou"}
+  },
+  {
+    "id": "cloud_cross",
+    "name": "十字路口",
+    "areaId": "cloud",
+    "description": "绮云镇的两条青石路在这里交叉，路旁栽着古槐，有两人合抱那么粗。槐树下有个告示，像是官府所立。",
+    "mapX": 0,
+    "mapY": 4,
+    "outdoorAreaId": "cloud",
+    "exits": {"west": "cloud_wroad2", "north": "cloud_nroad2", "south": "cloud_sroad1", "east": "cloud_eroad1"},
+    "actions": [
+      {
+        "id": "read_cloud_cross_notice",
+        "label": "查看告示",
+        "description": "看看槐树下官府所立的告示。",
+        "resultRoomId": "cloud_cross",
+        "log": "告示上写着镇中禁斗、渡口夜间封船等规矩，末尾盖着乔阴县衙的印。"
+      }
+    ]
+  },
+  {
+    "id": "cloud_nroad2",
+    "name": "南市场",
+    "areaId": "cloud",
+    "description": "这里是绮云镇的南市场，西面是杂货铺，向东可看到怡红院的二楼。",
+    "mapX": 0,
+    "mapY": 3,
+    "outdoorAreaId": "cloud",
+    "exits": {"west": "cloud_zaihuoy", "north": "cloud_nroad1", "south": "cloud_cross", "east": "cloud_jiyuan"}
+  },
+  {
+    "id": "cloud_nroad1",
+    "name": "东市场",
+    "areaId": "cloud",
+    "description": "这里是绮云镇的东市场，北面是药店，东面是兵器店。",
+    "mapX": 0,
+    "mapY": 2,
+    "outdoorAreaId": "cloud",
+    "exits": {"west": "cloud_nwroad3", "north": "cloud_drugstore", "south": "cloud_nroad2", "east": "cloud_weapony"}
+  },
+  {
+    "id": "cloud_nwroad3",
+    "name": "中市场",
+    "areaId": "cloud",
+    "description": "这里是绮云镇的中市场，北面是茶楼，南面是杂货铺。",
+    "mapX": -1,
+    "mapY": 2,
+    "outdoorAreaId": "cloud",
+    "exits": {"west": "cloud_nwroad2", "north": "cloud_tearoom", "south": "cloud_zaihuoy", "east": "cloud_nroad1"},
+    "npcIds": ["cloud_garrison", "cloud_garrison_2"]
+  },
+  {
+    "id": "cloud_nwroad2",
+    "name": "西市场",
+    "areaId": "cloud",
+    "description": "这里是绮云镇的西市场，西边是家棺材铺，南面是家布庄。",
+    "mapX": -2,
+    "mapY": 2,
+    "outdoorAreaId": "cloud",
+    "exits": {"north": "cloud_nwroad1", "south": "cloud_tailory", "west": "cloud_woodboxy", "east": "cloud_nwroad3"}
+  },
+  {
+    "id": "cloud_nwroad1",
+    "name": "北市场",
+    "areaId": "cloud",
+    "description": "这里是绮云镇的北市场，再向北就是镇口了。茶香与腥膻气味混在一起，西首铺子外挂着牛头，东面是家二层茶楼。",
+    "mapX": -2,
+    "mapY": 1,
+    "outdoorAreaId": "cloud",
+    "exits": {"west": "cloud_butchery", "north": "cloud_entrance", "south": "cloud_nwroad2", "east": "cloud_tearoom"}
+  },
+  {
+    "id": "cloud_entrance",
+    "name": "绮云镇口",
+    "areaId": "cloud",
+    "description": "这里是绮云镇的入口。绮云镇坐落在泗水北岸，以商业发达和盛产茶叶而为往来客商青睐。北边过了卧龙岗便是雪亭镇，镇南渡江则可去山烟寺。",
+    "mapX": -2,
+    "mapY": 0,
+    "outdoorAreaId": "cloud",
+    "exits": {"north": "dragonhill_sroad", "south": "cloud_nwroad1"},
+    "actions": [
+      {
+        "id": "read_cloud_entrance_sign",
+        "label": "查看公告",
+        "description": "看看镇口官府公告写着什么。",
+        "resultRoomId": "cloud_entrance",
+        "log": "公告上写着：由此入镇，按货物多少收取市税。旁边还有几行小字，提醒旅人夜间不要独自过江。"
+      }
+    ]
+  },
+  {
+    "id": "cloud_eroad1",
+    "name": "绮云镇街道",
+    "areaId": "cloud",
+    "description": "这里是十字路口的东侧，两边房子里都很吵闹。北面似乎是家春楼，不时可听到女子笑声；南面则像是赌场。",
+    "mapX": 1,
+    "mapY": 4,
+    "outdoorAreaId": "cloud",
+    "exits": {"west": "cloud_cross", "east": "cloud_eroad2", "north": "cloud_jiyuan", "south": "cloud_duchang"}
+  },
+  {
+    "id": "cloud_eroad2",
+    "name": "绮云镇街道",
+    "areaId": "cloud",
+    "description": "这里是绮云镇东，通往茶场的路。南边是一家有名的大镖局，北面则是绮云张家的宅院。",
+    "mapX": 2,
+    "mapY": 4,
+    "outdoorAreaId": "cloud",
+    "exits": {"west": "cloud_eroad1", "south": "cloud_biaoju", "north": "cloud_park", "northeast": "cloud_eroad3"}
+  },
+  {
+    "id": "cloud_eroad3",
+    "name": "绮云镇街道",
+    "areaId": "cloud",
+    "description": "这里是绮云镇东头，北面是张家宅院，东南方便是茶场。",
+    "mapX": 3,
+    "mapY": 3,
+    "outdoorAreaId": "cloud",
+    "exits": {"southwest": "cloud_eroad2", "southeast": "cloud_eroad4", "north": "cloud_rich"}
+  },
+  {
+    "id": "cloud_eroad4",
+    "name": "茶场",
+    "areaId": "cloud",
+    "description": "这里是绮云镇的茶场。绮云盛产茶叶，因此这里有不少茶工正在采茶。",
+    "mapX": 4,
+    "mapY": 4,
+    "outdoorAreaId": "cloud",
+    "exits": {"northwest": "cloud_eroad3"},
+    "npcIds": ["cloud_worker", "cloud_worker_2", "cloud_worker_3"]
+  },
+  {
+    "id": "cloud_wroad2",
+    "name": "绮云镇街道",
+    "areaId": "cloud",
+    "description": "这里是绮云镇西，东边就是十字路口。南面的院子里甚是喧闹，像是有很多人的样子。",
+    "mapX": -1,
+    "mapY": 4,
+    "outdoorAreaId": "cloud",
+    "exits": {"west": "cloud_wroad1", "south": "cloud_monky", "east": "cloud_cross"}
+  },
+  {
+    "id": "cloud_wroad1",
+    "name": "绮云镇街道",
+    "areaId": "cloud",
+    "description": "东边青板石铺路，西边则是碎石小径。南面是家书局，西面似乎有座庄院，隐约传来曲乐声。",
+    "mapX": -2,
+    "mapY": 4,
+    "outdoorAreaId": "cloud",
+    "exits": {"south": "cloud_bookstore", "west": "cloud_wroad0", "east": "cloud_wroad2"}
+  },
+  {
+    "id": "cloud_wroad0",
+    "name": "绮云镇街道",
+    "areaId": "cloud",
+    "description": "这里是镇西碎石小径尽头，西面通向夜月庄方向，北面是红娘庄，常有人来往。",
+    "mapX": -3,
+    "mapY": 4,
+    "outdoorAreaId": "cloud",
+    "exits": {"north": "cloud_marry_room", "west": "latemoon_entrance", "east": "cloud_wroad1"}
+  },
+  {
+    "id": "cloud_bookstore",
+    "name": "书局",
+    "areaId": "cloud",
+    "description": "你正站在书局里。靠近门口的地方有一块乌木雕成的招牌，上面只写着一个“书”字。",
+    "mapX": -2,
+    "mapY": 5,
+    "exits": {"north": "cloud_wroad1"},
+    "npcIds": ["cloud_book_seller"]
+  },
+  {
+    "id": "cloud_drugstore",
+    "name": "药店",
+    "areaId": "cloud",
+    "description": "你正站在药店里。靠近门口的地方有一块乌木雕成的招牌，药柜中散出淡淡草药味。",
+    "mapX": 0,
+    "mapY": 1,
+    "allowsCombat": false,
+    "exits": {"south": "cloud_nroad1"},
+    "npcIds": ["cloud_doctor"]
+  },
+  {
+    "id": "cloud_weapony",
+    "name": "兵器屋",
+    "areaId": "cloud",
+    "description": "你正站在兵器屋里。靠近门口的地方有一块乌木招牌，屋内刀剑枪棒分门别类地摆在架上。",
+    "mapX": 1,
+    "mapY": 2,
+    "exits": {"west": "cloud_nroad1"},
+    "npcIds": ["cloud_weaponor"]
+  },
+  {
+    "id": "cloud_tearoom",
+    "name": "香茗坊",
+    "areaId": "cloud",
+    "description": "你来到绮云镇西边的一家茶坊里。它的历史不下百年，金字招牌十分醒目，茶香让人精神一振。",
+    "mapX": -1,
+    "mapY": 1,
+    "allowsCombat": false,
+    "exits": {"south": "cloud_nwroad3", "west": "cloud_nwroad1", "up": "cloud_tearoom2", "north": "cloud_tea_corridor"},
+    "npcIds": ["cloud_tea_waiter"],
+    "actions": [
+      {
+        "id": "read_cloud_tearoom_sign",
+        "label": "查看招牌",
+        "description": "看看茶坊高悬的金匾。",
+        "resultRoomId": "cloud_tearoom",
+        "log": "匾上写着：香茗坊。旁边一排小字题着“御赐亲笔”。"
+      }
+    ]
+  },
+  {
+    "id": "cloud_zaihuoy",
+    "name": "杂货铺",
+    "areaId": "cloud",
+    "description": "你正站在杂货铺里。门口乌木招牌上写着“商”字，货架上堆着针线、火折、油纸和各色小物。",
+    "mapX": -1,
+    "mapY": 3,
+    "exits": {"north": "cloud_nwroad3", "east": "cloud_nroad2"},
+    "npcIds": ["cloud_seller"]
+  },
+  {
+    "id": "cloud_butchery",
+    "name": "镇北肉铺",
+    "areaId": "cloud",
+    "description": "肉架上挂满血淋淋的生肉，一股腥气扑面而来。靠近门口的地方挂着牛骨雕成的招牌。",
+    "mapX": -3,
+    "mapY": 1,
+    "exits": {"east": "cloud_nwroad1"},
+    "npcIds": ["cloud_butcher"]
+  },
+  {
+    "id": "cloud_tailory",
+    "name": "布庄",
+    "areaId": "cloud",
+    "description": "你正站在布庄里，墙上挂着各色布匹和几件剪裁好的衣裳。门边有块招牌，上写一个“衣”字。",
+    "mapX": -2,
+    "mapY": 3,
+    "exits": {"north": "cloud_nwroad2"},
+    "npcIds": ["cloud_tailor"]
+  },
+  {
+    "id": "cloud_biaoju",
+    "name": "镖局",
+    "areaId": "cloud",
+    "description": "你正站在镖局里。靠近门口的地方有一块乌木雕成的招牌，院内几名镖师正擦拭兵刃。",
+    "mapX": 2,
+    "mapY": 5,
+    "exits": {"north": "cloud_eroad2"},
+    "npcIds": ["cloud_biaoju_header", "cloud_biaoju_fighter"]
+  },
+  {
+    "id": "cloud_monky",
+    "name": "武馆",
+    "areaId": "cloud",
+    "description": "这是一座十分热闹的武馆，院内拳脚声、喝彩声不断。墙边摆着木人桩和沙袋。",
+    "mapX": -1,
+    "mapY": 5,
+    "allowsCultivation": true,
+    "exits": {"north": "cloud_wroad2"},
+    "npcIds": ["cloud_monk_trainer", "cloud_beggar", "cloud_beggar_2"],
+    "itemIds": ["cloud_dumpling", "cloud_dumpling_2", "cloud_dumpling_3"]
+  },
+  {
+    "id": "cloud_tearoom2",
+    "name": "香茗坊二楼",
+    "areaId": "cloud",
+    "description": "这里是香茗坊的二楼，镇里的读书人常在这里品茶、吟诗、下棋。窗外能看见绮云镇市集上人来人往，桌上摆着一副棋局。",
+    "mapX": 0,
+    "mapY": 0,
+    "allowsCombat": false,
+    "exits": {"down": "cloud_tearoom"},
+    "npcIds": ["cloud_chess_player"]
+  },
+  {
+    "id": "cloud_tea_corridor",
+    "name": "香茗坊茶窖",
+    "areaId": "cloud",
+    "description": "这里是香茗坊后面的茶窖，竹篓里堆满新茶，空气中有一股清苦的茶香。掌柜不大喜欢外人久留。",
+    "mapX": -1,
+    "mapY": 0,
+    "allowsCombat": false,
+    "exits": {"south": "cloud_tearoom"},
+    "actions": [
+      {
+        "id": "inspect_cloud_tea_baskets",
+        "label": "查看茶篓",
+        "description": "看看茶窖里堆着的竹篓。",
+        "resultRoomId": "cloud_tea_corridor",
+        "log": "竹篓里装着晒好的绮云茶，茶叶细嫩，显然是刚从镇东茶场送来的。"
+      }
+    ]
+  },
+  {
+    "id": "cloud_duchang",
+    "name": "赌场",
+    "areaId": "cloud",
+    "description": "你现在正站在赌场里。四周赌客喧哗，桌上骰盅碰得叮当作响，门口挂着一块乌木招牌。",
+    "mapX": 1,
+    "mapY": 5,
+    "exits": {"north": "cloud_eroad1", "up": "cloud_duchang2"},
+    "npcIds": ["cloud_judge"],
+    "actions": [
+      {
+        "id": "read_cloud_casino_sign",
+        "label": "查看招牌",
+        "description": "看看赌场门口的招牌。",
+        "resultRoomId": "cloud_duchang",
+        "log": "招牌上写着：小赌怡情，大赌伤身。旁边却又贴着赔率规矩，引得路人驻足。"
+      }
+    ]
+  },
+  {
+    "id": "cloud_duchang2",
+    "name": "赌场二楼",
+    "areaId": "cloud",
+    "description": "这是赌场二楼，赌客围得水泄不通，吆喝声一阵高过一阵。原版这里需要下注给宝官，单机版暂时只保留场景与氛围。",
+    "mapX": 1,
+    "mapY": 6,
+    "exits": {"down": "cloud_duchang"},
+    "actions": [
+      {
+        "id": "watch_cloud_gambling",
+        "label": "围观赌局",
+        "description": "站在旁边看一局骰盅。",
+        "resultRoomId": "cloud_duchang2",
+        "log": "宝官揭开骰盅，围观的人群一阵叹息，又有人立刻把银钱推了上去。"
+      }
+    ]
+  },
+  {
+    "id": "cloud_jiyuan",
+    "name": "怡红院",
+    "areaId": "cloud",
+    "description": "你现在正站在怡红院里。靠近门口的地方有一块乌木雕成的招牌，楼上传来丝竹和笑语声。",
+    "mapX": 1,
+    "mapY": 3,
+    "allowsCombat": false,
+    "exits": {"south": "cloud_eroad1", "up": "cloud_jiyuan2"},
+    "npcIds": ["cloud_mother"],
+    "actions": [
+      {
+        "id": "read_cloud_jiyuan_sign",
+        "label": "查看招牌",
+        "description": "看看怡红院门口的招牌。",
+        "resultRoomId": "cloud_jiyuan",
+        "log": "招牌上写着：怡红院。乌木牌面被擦得发亮。"
+      }
+    ]
+  },
+  {
+    "id": "cloud_jiyuan2",
+    "name": "怡红院二楼",
+    "areaId": "cloud",
+    "description": "这是怡红院姑娘们陪客人饮酒品茗、吟诗作赋的地方，装饰颇为风雅。",
+    "mapX": 2,
+    "mapY": 1,
+    "allowsCombat": false,
+    "exits": {"down": "cloud_jiyuan"},
+    "npcIds": ["cloud_girl"]
+  },
+  {
+    "id": "cloud_marry_room",
+    "name": "红娘庄",
+    "areaId": "cloud",
+    "description": "你现在正站在红娘庄里，这里专门替人缔结婚约和解除婚约，镇里许多夫妇都曾在这里喜结良缘。靠近门口有一块乌木招牌。",
+    "mapX": -3,
+    "mapY": 3,
+    "allowsCombat": false,
+    "exits": {"south": "cloud_wroad0"},
+    "npcIds": ["cloud_matchmaker"],
+    "actions": [
+      {
+        "id": "read_cloud_marry_sign",
+        "label": "查看招牌",
+        "description": "看看红娘庄门口的招牌。",
+        "resultRoomId": "cloud_marry_room",
+        "log": "招牌上写着：缔结或解除婚约。单机旅途里，这暂时只是一处保留原版风味的场景。"
+      }
+    ]
+  },
+  {
+    "id": "cloud_park",
+    "name": "张家花园",
+    "areaId": "cloud",
+    "description": "你现在正站在张家花园里。亭台花木看得出曾经修整得极好，只是角落里似乎有人影一闪。",
+    "mapX": 2,
+    "mapY": 3,
+    "exits": {"south": "cloud_eroad2"},
+    "npcIds": ["cloud_thief"]
+  },
+  {
+    "id": "cloud_rich",
+    "name": "张百万家",
+    "areaId": "cloud",
+    "description": "你现在正站在张百万家门前。靠近门口的地方有一块乌木雕成的招牌，院内家丁来回巡视。",
+    "mapX": 3,
+    "mapY": 2,
+    "exits": {"south": "cloud_eroad3", "north": "cloud_m_house"},
+    "npcIds": ["cloud_room_guard", "cloud_room_guard_2", "cloud_room_guard_3"]
+  },
+  {
+    "id": "cloud_m_house",
+    "name": "张百万家",
+    "areaId": "cloud",
+    "description": "这里是张百万的府宅，陈设富丽而规矩森严，常人很难随意进入。",
+    "mapX": 3,
+    "mapY": 1,
+    "exits": {"south": "cloud_rich"},
+    "npcIds": ["cloud_millionaire", "cloud_jiading", "cloud_jiading_2"]
+  },
+  {
+    "id": "cloud_woodboxy",
+    "name": "棺材铺",
+    "areaId": "cloud",
+    "description": "你现在正站在棺材铺里。靠近门口的地方有一块乌木雕成的招牌，屋内木气阴沉，伙计们沉默地忙着。",
+    "mapX": -3,
+    "mapY": 2,
+    "exits": {"east": "cloud_nwroad2", "west": "cloud_god1"},
+    "npcIds": ["cloud_box_boss", "cloud_box_waiter", "cloud_box_waiter_2", "cloud_box_waiter_3"],
+    "actions": [
+      {
+        "id": "read_cloud_woodboxy_sign",
+        "label": "查看招牌",
+        "description": "看看棺材铺门前的招牌。",
+        "resultRoomId": "cloud_woodboxy",
+        "log": "招牌上只写着一个字：棺。笔画很重，像是刻进木头深处。"
+      }
+    ]
+  },
+  {
+    "id": "cloud_god1",
+    "name": "场院",
+    "areaId": "cloud",
+    "description": "这里好像是大户人家子弟玩乐的场院，原来建有秋千架的草地已经变成荆棘丛生的荒场。再往西是一座凉亭，亭子似乎也快要倒塌了。",
+    "mapX": -4,
+    "mapY": 2,
+    "exits": {"east": "cloud_woodboxy", "west": "cloud_god2"}
+  },
+  {
+    "id": "cloud_god2",
+    "name": "场院前厅",
+    "areaId": "cloud",
+    "description": "这里是这座场院的前厅，简单陈设中透出一股尊贵不凡的气派。大堂中央摆着一张黑漆镶金的八仙桌，两侧各有一张太师椅。",
+    "mapX": -5,
+    "mapY": 2,
+    "exits": {"east": "cloud_god1"},
+    "npcIds": ["cloud_god"]
+  }
+]

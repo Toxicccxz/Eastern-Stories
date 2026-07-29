@@ -1,0 +1,847 @@
+[
+  {
+    "id": "latemoon_entrance",
+    "name": "碎石小径",
+    "areaId": "latemoon",
+    "description": "这是一条用鹅卵石铺成的小路，往西可见一座淡青色围墙围住的庭院，门楣下写着“晚月庄”。墙那边飘出阵阵曲声，隐约还能闻到一股香气。",
+    "mapX": 0,
+    "mapY": 0,
+    "outdoorAreaId": "latemoon",
+    "exits": {"west": "latemoon_gate", "east": "cloud_wroad0"},
+    "npcIds": ["latemoon_guard", "latemoon_guard_2"]
+  },
+  {
+    "id": "latemoon_gate",
+    "name": "晚月庄大门",
+    "areaId": "latemoon",
+    "description": "小径尽头立着一座朱红漆大门，门口挂着两串灯笼，庄院四周林木茂密，显得既华丽又突兀。",
+    "mapX": -1,
+    "mapY": 0,
+    "outdoorAreaId": "latemoon",
+    "exits": {"east": "latemoon_entrance", "west": "latemoon_front_yard"},
+    "actions": [
+      {
+        "id": "read_latemoon_lantern",
+        "label": "查看灯笼",
+        "description": "看看门口灯笼上的字。",
+        "resultRoomId": "latemoon_gate",
+        "log": "灯笼上写着：晚霞西照人影依稀，月影高悬和风婉约。"
+      }
+    ]
+  },
+  {
+    "id": "latemoon_front_yard",
+    "name": "晚月庄前庭",
+    "areaId": "latemoon",
+    "description": "一走入庭园，扑鼻而来的是一股若有似无、却又沁人心脾的花香。庭园宽敞，奇花异石错落其间，西侧花丛间可见主屋屋角。",
+    "mapX": -2,
+    "mapY": 0,
+    "outdoorAreaId": "latemoon",
+    "exits": {"east": "latemoon_gate", "west": "latemoon_hall", "south": "latemoon_park_yard1"},
+    "npcIds": ["latemoon_huei_ru"]
+  },
+  {
+    "id": "latemoon_hall",
+    "name": "晚月庄大厅",
+    "areaId": "latemoon",
+    "description": "大厅中挂着紫红描金帷幔，屏风将宽敞厅堂隔成两半。东西两侧摆着紫檀雕桌，白玉花瓶里插着粉红花枝，富贵气中透着一股秀气。",
+    "mapX": -3,
+    "mapY": 0,
+    "allowsCombat": false,
+    "exits": {"east": "latemoon_front_yard", "north": "latemoon_parlor", "west": "latemoon_back_yard"},
+    "npcIds": ["latemoon_servant", "latemoon_servant_2", "latemoon_master"]
+  },
+  {
+    "id": "latemoon_parlor",
+    "name": "侧厅",
+    "areaId": "latemoon",
+    "description": "这里是晚月庄接待宾客的侧厅，厅中摆着桌几、茶壶和上等茗茶。",
+    "mapX": -3,
+    "mapY": -1,
+    "allowsCombat": false,
+    "exits": {"south": "latemoon_hall"},
+    "npcIds": ["latemoon_yumay"]
+  },
+  {
+    "id": "latemoon_back_yard",
+    "name": "大厅后院",
+    "areaId": "latemoon",
+    "description": "这里是晚月庄后的庭院，面积不大，却花木扶疏，种满了梅花。清风徐来，梅花特有的清香弥漫在风中。",
+    "mapX": -4,
+    "mapY": 0,
+    "exits": {"north": "latemoon_back_corridor_east", "west": "latemoon_back_corridor_west", "east": "latemoon_hall", "south": "latemoon_inner_passage"}
+  },
+  {
+    "id": "latemoon_inner_hall",
+    "name": "内厅",
+    "areaId": "latemoon",
+    "description": "内厅里铺着红毯，四面雕漆椅相对而设。厅中摆着小屏风，旁边有一只小橱子，里面似乎放着几件美丽衣饰。",
+    "mapX": -2,
+    "mapY": 2,
+    "allowsCombat": false,
+    "exits": {"west": "latemoon_inner_passage"},
+    "npcIds": ["latemoon_zauron"],
+    "itemIds": ["latemoon_skirt"]
+  },
+  {
+    "id": "latemoon_inner_passage",
+    "name": "内厅穿堂",
+    "areaId": "latemoon",
+    "description": "你从后廊往西出了内厅，进入穿堂。往北是内院，一条宽过道通向后厅，西面立着一面粉油大影壁。",
+    "mapX": -3,
+    "mapY": 1,
+    "exits": {"north": "latemoon_back_yard", "east": "latemoon_inner_hall", "south": "latemoon_twoc"}
+  },
+  {
+    "id": "latemoon_twoc",
+    "name": "仪门",
+    "areaId": "latemoon",
+    "description": "你走在后厅内院的仪门，是晚月庄后厅内院长廊走道的直接路口。东面是往膳房的夹道，西面是长廊夹道，南面到后厅，往北则可回到前院。",
+    "mapX": -3,
+    "mapY": 2,
+    "exits": {"north": "latemoon_inner_passage", "south": "latemoon_lcenter", "east": "latemoon_eat1", "west": "latemoon_two1"}
+  },
+  {
+    "id": "latemoon_back_corridor_east",
+    "name": "后院走道",
+    "areaId": "latemoon",
+    "description": "你走在一条长廊上，两旁都是庭台堂庑，廊上弥漫着一股香郁的气息。西侧似有一扇铜门，后面是一间书房。",
+    "mapX": -4,
+    "mapY": -1,
+    "exits": {"west": "latemoon_closed_room", "south": "latemoon_back_yard"}
+  },
+  {
+    "id": "latemoon_closed_room",
+    "name": "禁闭房",
+    "areaId": "latemoon",
+    "description": "这里四面都是单调的石墙。庄内弟子犯错后常被关在这里反省。墙上隐约浮现出似有似无的景象。",
+    "mapX": -5,
+    "mapY": -1,
+    "exits": {"east": "latemoon_back_corridor_east"},
+    "npcIds": ["latemoon_funlin"],
+    "actions": [
+      {
+        "id": "inspect_latemoon_wall",
+        "label": "查看石墙",
+        "description": "仔细看看禁闭房的墙壁。",
+        "resultRoomId": "latemoon_closed_room",
+        "log": "墙上隐隐约约显出一幅渺茫景象，像幻境，又像某种舞步留下的影子。"
+      }
+    ]
+  },
+  {
+    "id": "latemoon_back_corridor_west",
+    "name": "后院走道",
+    "areaId": "latemoon",
+    "description": "长廊向东西延伸，东边是后院，西边有一间书房，南侧石门后似乎另有密室。",
+    "mapX": -5,
+    "mapY": 0,
+    "exits": {"east": "latemoon_back_yard", "west": "latemoon_latebook", "south": "latemoon_secret_room"}
+  },
+  {
+    "id": "latemoon_latebook",
+    "name": "后院书房",
+    "areaId": "latemoon",
+    "description": "这是一间小小的书房，窗明几净，一张古意盎然的红木书桌上放着香炉和几本善本书。墙上挂着一幅“沧海龙吟”的舞曲图画。",
+    "mapX": -6,
+    "mapY": 0,
+    "allowsCombat": false,
+    "exits": {"east": "latemoon_back_corridor_west"},
+    "npcIds": ["latemoon_girl"],
+    "itemIds": ["latemoon_music_book"],
+    "actions": [
+      {
+        "id": "inspect_latemoon_dragon_dance",
+        "label": "查看舞图",
+        "description": "看看墙上的舞曲图画。",
+        "resultRoomId": "latemoon_latebook",
+        "log": "画上几名女子以不同姿态起舞，图旁另绘有《西出阳关》与《有凤来仪》的舞步名。"
+      }
+    ]
+  },
+  {
+    "id": "latemoon_secret_room",
+    "name": "密室",
+    "areaId": "latemoon",
+    "description": "这是一间密室，地上铺着可供打坐的大理石床。墙上挂着兵器，正面墙写着偌大的“舞”字，地板隐约能看到先天八卦图。",
+    "mapX": -6,
+    "mapY": 1,
+    "exits": {"north": "latemoon_back_corridor_west"},
+    "itemIds": ["latemoon_dance_book", "latemoon_whip_book"],
+    "actions": [
+      {
+        "id": "inspect_latemoon_bagua",
+        "label": "查看八卦图",
+        "description": "看看密室地上的八卦图。",
+        "resultRoomId": "latemoon_secret_room",
+        "log": "八卦图中央似乎藏着某种舞步机关。原版可通过 dancing out / dancing yu-fong 触发传送，后续可改成特殊交互。"
+      }
+    ]
+  },
+  {
+    "id": "latemoon_park_yard1",
+    "name": "湘园小院",
+    "areaId": "latemoon",
+    "description": "这是晚月庄南侧的小院，花木围绕，向北回到前庭，向南可往庄外山路。",
+    "mapX": -2,
+    "mapY": 1,
+    "outdoorAreaId": "latemoon",
+    "exits": {"north": "latemoon_front_yard", "south": "latemoon_park_flower2"}
+  },
+  {
+    "id": "latemoon_sroad1",
+    "name": "山路",
+    "areaId": "latemoon",
+    "description": "你走在一条蜿蜒的小径上，小径两旁是半个人高的杂草，清凉的微风从两侧吹来。",
+    "mapX": -2,
+    "mapY": 3,
+    "outdoorAreaId": "latemoon",
+    "exits": {"north": "latemoon_park_yard1", "southeast": "latemoon_sroad2"}
+  },
+  {
+    "id": "latemoon_sroad2",
+    "name": "蜿蜒小径",
+    "areaId": "latemoon",
+    "description": "本来向北走的小径被一道峭壁挡住，因此从这里弯向东边去。西侧是杂草和几棵小树。",
+    "mapX": -1,
+    "mapY": 4,
+    "outdoorAreaId": "latemoon",
+    "exits": {"northwest": "latemoon_sroad1", "east": "latemoon_sroad3"}
+  },
+  {
+    "id": "latemoon_sroad3",
+    "name": "小径",
+    "areaId": "latemoon",
+    "description": "这条蜿蜒的小径通往东南方，东面是一道峭壁，南边是一片浓密竹林。",
+    "mapX": 0,
+    "mapY": 4,
+    "outdoorAreaId": "latemoon",
+    "exits": {"northwest": "latemoon_sroad2", "east": "latemoon_sroad4"}
+  },
+  {
+    "id": "latemoon_sroad4",
+    "name": "蜿蜒小径",
+    "areaId": "latemoon",
+    "description": "小径两旁是绿油油的草地，凉风从草地上吹拂而过，像嬉戏的儿童溜过你的足畔。",
+    "mapX": 1,
+    "mapY": 4,
+    "outdoorAreaId": "latemoon",
+    "exits": {"west": "latemoon_sroad3", "south": "latemoon_sroad5"},
+    "npcIds": ["latemoon_butterfly"]
+  },
+  {
+    "id": "latemoon_sroad5",
+    "name": "小径",
+    "areaId": "latemoon",
+    "description": "这条蜿蜒的小径通往东南方，东面是一处陡坡，西边是一座茂密竹林。",
+    "mapX": 1,
+    "mapY": 5,
+    "outdoorAreaId": "latemoon",
+    "exits": {"north": "latemoon_sroad4", "south": "latemoon_bamboo3", "east": "sanyen_tunnel"},
+    "npcIds": ["latemoon_butterfly_2"]
+  },
+  {
+    "id": "latemoon_bamboo3",
+    "name": "竹林",
+    "areaId": "latemoon",
+    "description": "这是一座茂密的竹林。进入后仿佛失去了方向，只听得竹叶在风中沙沙作响。",
+    "mapX": 1,
+    "mapY": 6,
+    "outdoorAreaId": "latemoon",
+    "exits": {"north": "latemoon_sroad5", "east": "latemoon_bamboo", "west": "latemoon_bamboo2", "south": "latemoon_bamboo"}
+  },
+  {
+    "id": "latemoon_bamboo",
+    "name": "竹林",
+    "areaId": "latemoon",
+    "description": "竹影重重，四周方向难辨，似乎每一条路都通向相似的深处。",
+    "mapX": 2,
+    "mapY": 6,
+    "outdoorAreaId": "latemoon",
+    "exits": {"west": "latemoon_bamboo3", "east": "latemoon_bamboo4", "north": "latemoon_bamboo1", "south": "latemoon_bamboo2"}
+  },
+  {
+    "id": "latemoon_bamboo1",
+    "name": "竹林",
+    "areaId": "latemoon",
+    "description": "这里竹枝交错，风过时像有许多人在低声细语。",
+    "mapX": 2,
+    "mapY": 5,
+    "outdoorAreaId": "latemoon",
+    "exits": {"south": "latemoon_bamboo", "east": "latemoon_bamboo4"}
+  },
+  {
+    "id": "latemoon_bamboo2",
+    "name": "竹林",
+    "areaId": "latemoon",
+    "description": "竹林越往里越密，脚下落叶厚得几乎听不见自己的脚步声。",
+    "mapX": 2,
+    "mapY": 7,
+    "outdoorAreaId": "latemoon",
+    "exits": {"north": "latemoon_bamboo", "west": "latemoon_bamboo3"}
+  },
+  {
+    "id": "latemoon_bamboo4",
+    "name": "竹林",
+    "areaId": "latemoon",
+    "description": "这里仍是茂密竹林，地上有一截青竹，看起来像是刚被人削下来的。",
+    "mapX": 3,
+    "mapY": 6,
+    "outdoorAreaId": "latemoon",
+    "exits": {"west": "latemoon_bamboo", "north": "latemoon_bamboo1", "south": "latemoon_bamboo2"},
+    "itemIds": ["latemoon_bamboo", "latemoon_dragonfly"]
+  },
+  {
+    "id": "latemoon_two1",
+    "name": "夹道",
+    "areaId": "latemoon",
+    "description": "你走在后厅内院的夹道上。庄内像这样的走廊很多，若没有地理概念很容易迷路。长廊中纯金铸成的灯架上挂着一排宫灯。",
+    "mapX": -4,
+    "mapY": 1,
+    "exits": {"south": "latemoon_guest1", "east": "latemoon_twoc", "west": "latemoon_two2"}
+  },
+  {
+    "id": "latemoon_two2",
+    "name": "夹道",
+    "areaId": "latemoon",
+    "description": "你走在后厅内院更深处的夹道上，灯火辉煌，墙边花草陈设得极为讲究。",
+    "mapX": -5,
+    "mapY": 1,
+    "exits": {"south": "latemoon_guest2", "east": "latemoon_two1"}
+  },
+  {
+    "id": "latemoon_guest1",
+    "name": "客房",
+    "areaId": "latemoon",
+    "description": "这是一间客房，两边摆着一对小茶几，彩绘瓶中插着琼花。房间简朴幽静，是晚月庄供外客留宿的一间厢房。",
+    "mapX": -4,
+    "mapY": 2,
+    "exits": {"north": "latemoon_two1"},
+    "npcIds": ["latemoon_guest"]
+  },
+  {
+    "id": "latemoon_guest2",
+    "name": "上等厢房",
+    "areaId": "latemoon",
+    "description": "这是一间上等厢房，光线适中，近窗边有书桌与书橱，还有一架古琴放在平台上，常给远道贵客休憩夜宿。",
+    "mapX": -5,
+    "mapY": 2,
+    "exits": {"north": "latemoon_two2"},
+    "npcIds": ["latemoon_tguest"]
+  },
+  {
+    "id": "latemoon_eat1",
+    "name": "大饭厅",
+    "areaId": "latemoon",
+    "description": "你走进一间装饰华丽的大饭厅，一张杜木雕饰的大圆桌摆在厅中，丝绸彩桌帏、南湖紫玉盘与银匙金筷极尽奢华。",
+    "mapX": -1,
+    "mapY": 1,
+    "exits": {"east": "latemoon_eat2", "west": "latemoon_twoc"},
+    "itemIds": ["latemoon_food2", "latemoon_food3", "latemoon_food3_2"]
+  },
+  {
+    "id": "latemoon_eat2",
+    "name": "膳房",
+    "areaId": "latemoon",
+    "description": "这里是平常庄内上下用膳的地方，中央摆着两张大圆桌，周围三十二张雕饰木椅。东边是厨房，西边是大饭厅。",
+    "mapX": -1,
+    "mapY": 2,
+    "exits": {"east": "latemoon_kitchen", "west": "latemoon_eat1"},
+    "itemIds": ["latemoon_wine", "latemoon_food"]
+  },
+  {
+    "id": "latemoon_kitchen",
+    "name": "厨房",
+    "areaId": "latemoon",
+    "description": "厨房里有许多烹调用具，小蒸笼、大锅、平炊炉、烧饭灶一应俱全。掌厨师傅们忙里忙外，香味扑鼻。",
+    "mapX": 0,
+    "mapY": 2,
+    "exits": {"west": "latemoon_eat2"},
+    "npcIds": ["latemoon_fochin"],
+    "itemIds": ["latemoon_fire"]
+  },
+  {
+    "id": "latemoon_lcenter",
+    "name": "后厅",
+    "areaId": "latemoon",
+    "description": "你进入后厅，这是后院上房五间中最大的一间厅房。厅上摆着二十六张檀木交椅，庄内对外展示舞步表演，多在这里举行。",
+    "mapX": -3,
+    "mapY": 3,
+    "allowsCombat": false,
+    "exits": {"east": "latemoon_lroad1", "north": "latemoon_twoc", "west": "latemoon_lroad3", "south": "latemoon_lstudio"},
+    "npcIds": ["latemoon_spring2", "latemoon_yushou"]
+  },
+  {
+    "id": "latemoon_lroad1",
+    "name": "后厅走道",
+    "areaId": "latemoon",
+    "description": "后厅内院的夹道上灯火明亮，长长的走廊两侧摆设着奇花异草，空气中弥漫着淡淡香气。",
+    "mapX": -1,
+    "mapY": 3,
+    "exits": {"south": "latemoon_eroad2", "west": "latemoon_lcenter"}
+  },
+  {
+    "id": "latemoon_eroad2",
+    "name": "东厢房走道",
+    "areaId": "latemoon",
+    "description": "这里通往东厢房，走道两旁陈设着许多奇花异草，形态各异。",
+    "mapX": -2,
+    "mapY": 4,
+    "exits": {"north": "latemoon_lroad1", "south": "latemoon_eroad1"}
+  },
+  {
+    "id": "latemoon_eroad1",
+    "name": "东厢房走道",
+    "areaId": "latemoon",
+    "description": "通过后厅走道，你走进东厢房走道。东面有一扇雕饰厢门，西面可回到内厅交叉走廊。",
+    "mapX": -2,
+    "mapY": 5,
+    "exits": {"east": "latemoon_eastroom", "west": "latemoon_corridor7", "north": "latemoon_eroad2"}
+  },
+  {
+    "id": "latemoon_eastroom",
+    "name": "东厢房",
+    "areaId": "latemoon",
+    "description": "东厢房临窗铺着猩红毛毯，红漆小几上摆着茗碗花具，是一间上等厢房。",
+    "mapX": -1,
+    "mapY": 5,
+    "exits": {"west": "latemoon_eroad1"},
+    "npcIds": ["latemoon_servant_3", "latemoon_elon"]
+  },
+  {
+    "id": "latemoon_corridor7",
+    "name": "内厅",
+    "areaId": "latemoon",
+    "description": "你进入内厅，迎面挂着葱绿洒花软帘。四面墙壁玲珑剔透，琴剑书画悬挂其上，南边垂花门后通往花房。",
+    "mapX": -3,
+    "mapY": 5,
+    "exits": {"south": "latemoon_flower1", "east": "latemoon_eroad1", "west": "latemoon_wroad2"},
+    "npcIds": ["latemoon_yuchoun"]
+  },
+  {
+    "id": "latemoon_wroad2",
+    "name": "西厢房走道",
+    "areaId": "latemoon",
+    "description": "你走在西厢房走道上。长灯架上挂着一排宫灯，走道两旁摆设许多奇花异草。西面有一扇门，南面可上前堂楼。",
+    "mapX": -4,
+    "mapY": 5,
+    "exits": {"north": "latemoon_wroad1", "east": "latemoon_corridor7", "west": "latemoon_westroom", "southup": "latemoon_upstar2"}
+  },
+  {
+    "id": "latemoon_wroad1",
+    "name": "西厢房走道",
+    "areaId": "latemoon",
+    "description": "西厢房走道中纯金灯架照得四下明亮，长栏上雕画着许多彩绘图形。",
+    "mapX": -4,
+    "mapY": 4,
+    "exits": {"north": "latemoon_lroad3", "south": "latemoon_wroad2"}
+  },
+  {
+    "id": "latemoon_westroom",
+    "name": "西厢房",
+    "areaId": "latemoon",
+    "description": "西厢房里摆着四张椅子，文王鼎、匕箸香盒与花卉茗具分列几上。隔窗望去，隐约可见花园景色。",
+    "mapX": -5,
+    "mapY": 5,
+    "exits": {"east": "latemoon_wroad2"},
+    "npcIds": ["latemoon_servant_4", "latemoon_annihi"]
+  },
+  {
+    "id": "latemoon_lroad3",
+    "name": "后厅走道",
+    "areaId": "latemoon",
+    "description": "你走在后厅内院的夹道上，西面接另一间房，南面通往西厢房走道，北面可上前堂楼。",
+    "mapX": -4,
+    "mapY": 3,
+    "exits": {"east": "latemoon_lcenter", "west": "latemoon_room4", "south": "latemoon_wroad1", "northup": "latemoon_upstar1"}
+  },
+  {
+    "id": "latemoon_room4",
+    "name": "偏房",
+    "areaId": "latemoon",
+    "description": "这是一间靠近后厅的小偏房，陈设简单，门外便是后厅走道。",
+    "mapX": -5,
+    "mapY": 3,
+    "exits": {"east": "latemoon_lroad3"},
+    "npcIds": ["latemoon_servant_5"]
+  },
+  {
+    "id": "latemoon_lstudio",
+    "name": "内书房",
+    "areaId": "latemoon",
+    "description": "这是一间安静的书房，光线适中。近窗边有一张桌子，旁有书橱，还有一张古琴放在平台上，室内有浓郁清新的书香气息。",
+    "mapX": -3,
+    "mapY": 4,
+    "exits": {"north": "latemoon_lcenter"},
+    "npcIds": ["latemoon_old", "latemoon_killer"]
+  },
+  {
+    "id": "latemoon_flower1",
+    "name": "垂花门",
+    "areaId": "latemoon",
+    "description": "通过垂花门便是后院。东面一扇小门通往沐浴更衣室，南面似乎还有一处更隐秘的内厅。",
+    "mapX": -3,
+    "mapY": 6,
+    "exits": {"north": "latemoon_corridor7", "east": "latemoon_bathroom1", "south": "latemoon_miroom2"},
+    "npcIds": ["latemoon_shaoin"]
+  },
+  {
+    "id": "latemoon_bathroom1",
+    "name": "沐浴更衣室",
+    "areaId": "latemoon",
+    "description": "这里有许多柜子，衣架上挂着衣服饰品。东侧蓝青洒花软帘后隐约可见小花池，一团雾气氤氲。",
+    "mapX": -2,
+    "mapY": 6,
+    "allowsCombat": false,
+    "exits": {"west": "latemoon_flower1", "east": "latemoon_bathroom"},
+    "npcIds": ["latemoon_shinyu"]
+  },
+  {
+    "id": "latemoon_bathroom",
+    "name": "小花池",
+    "areaId": "latemoon",
+    "description": "小花池水清澈，含着淡淡幽香。池周围有许多奇花异草，花瓣飘在水面上，云岫羽衣中，仿佛有许多师姐妹嬉戏起舞。",
+    "mapX": -1,
+    "mapY": 6,
+    "allowsCombat": false,
+    "exits": {"west": "latemoon_bathroom1"},
+    "npcIds": ["latemoon_fireangel", "latemoon_eton"],
+    "actions": [
+      {
+        "id": "take_latemoon_bath",
+        "label": "沐浴休憩",
+        "description": "在小花池中稍作休憩。",
+        "resultRoomId": "latemoon_bathroom",
+        "restoreSpirit": 8,
+        "log": "你在池边稍作休憩，清香水气让精神略微舒展。"
+      }
+    ]
+  },
+  {
+    "id": "latemoon_miroom2",
+    "name": "内厅",
+    "areaId": "latemoon",
+    "description": "这里又是一处内厅，墙壁玲珑剔透，琴剑书画悬挂其上，南面垂花门后隐约通往一间密室。",
+    "mapX": -3,
+    "mapY": 7,
+    "exits": {"north": "latemoon_flower1", "south": "latemoon_miroom"},
+    "npcIds": ["latemoon_shaowei"]
+  },
+  {
+    "id": "latemoon_miroom",
+    "name": "密室",
+    "areaId": "latemoon",
+    "description": "这是一间更隐秘的密室，地上铺着可打坐的大理石床，墙上挂着兵器，正面墙上写着偌大的“舞”字。",
+    "mapX": -3,
+    "mapY": 8,
+    "exits": {"north": "latemoon_miroom2"},
+    "itemIds": ["latemoon_hankie"],
+    "actions": [
+      {
+        "id": "inspect_latemoon_inner_bagua",
+        "label": "查看八卦图",
+        "description": "看看这间密室中的舞字和八卦图。",
+        "resultRoomId": "latemoon_miroom",
+        "log": "八卦图与墙上的舞步图相互呼应，似乎能通往竹林深处。"
+      }
+    ]
+  },
+  {
+    "id": "latemoon_upstar1",
+    "name": "二楼走廊",
+    "areaId": "latemoon",
+    "description": "你走在后厅二楼的走廊上。长长的走道中，纯金铸成的灯架上挂着一排宫灯，入夜之后灯火辉煌。",
+    "mapX": -7,
+    "mapY": -2,
+    "exits": {"east": "latemoon_upstar4", "south": "latemoon_upcenter", "northdown": "latemoon_lroad3"}
+  },
+  {
+    "id": "latemoon_upstar2",
+    "name": "二楼走廊",
+    "areaId": "latemoon",
+    "description": "你走在后厅二楼的走廊上，庄内这样的走廊很多，没有熟人引路很容易迷失。",
+    "mapX": -7,
+    "mapY": 2,
+    "exits": {"east": "latemoon_upstar3", "north": "latemoon_upcenter", "southdown": "latemoon_wroad2"}
+  },
+  {
+    "id": "latemoon_upcenter",
+    "name": "佛堂门前",
+    "areaId": "latemoon",
+    "description": "这里是庄院二楼的佛堂门前，你能闻到一股浓郁的檀香气息。站在这里有一种庄严宁静的感觉。",
+    "mapX": -7,
+    "mapY": 0,
+    "exits": {"north": "latemoon_upstar1", "south": "latemoon_upstar2", "west": "latemoon_uproom"}
+  },
+  {
+    "id": "latemoon_upstar3",
+    "name": "二楼走廊",
+    "areaId": "latemoon",
+    "description": "二楼走廊向东延伸，窗外可以看见晚月庄后院的花影。",
+    "mapX": -6,
+    "mapY": 2,
+    "exits": {"west": "latemoon_upstar2", "east": "latemoon_uplook", "south": "latemoon_uproom3"}
+  },
+  {
+    "id": "latemoon_upstar4",
+    "name": "二楼走廊",
+    "areaId": "latemoon",
+    "description": "二楼走廊北侧静悄悄的，栏外夜风吹过，远处山色隐约可见。",
+    "mapX": -6,
+    "mapY": -2,
+    "exits": {"west": "latemoon_upstar1", "east": "latemoon_uplook", "north": "latemoon_uproom2"}
+  },
+  {
+    "id": "latemoon_uproom",
+    "name": "佛堂",
+    "areaId": "latemoon",
+    "description": "佛堂里檀香缭绕，陈设素净，与楼下华丽厅堂相比多了几分清寂。更深处的佛堂细节后续再继续迁移。",
+    "mapX": -8,
+    "mapY": 0,
+    "allowsCombat": false,
+    "exits": {"east": "latemoon_upcenter"},
+    "npcIds": ["latemoon_statue"]
+  },
+  {
+    "id": "latemoon_uplook",
+    "name": "观景台",
+    "areaId": "latemoon",
+    "description": "这里是晚月庄前堂楼观景台，站在台前可以看到整个庄院布局，瀚烟山美丽景色尽收眼底。微风拂面，远处钟声和飞鸟鸣啭交织成画。",
+    "mapX": -5,
+    "mapY": -2,
+    "outdoorAreaId": "latemoon",
+    "exits": {"west": "latemoon_upcenter"},
+    "npcIds": ["latemoon_bird", "latemoon_bird_2"],
+    "actions": [
+      {
+        "id": "jump_from_latemoon_uplook",
+        "label": "跳下观景台",
+        "description": "从观景台跃向前庭方向。",
+        "resultRoomId": "latemoon_park_yard1",
+        "log": "你扶栏望了望，顺着低处轻轻跃下，落在湘园小院附近。"
+      }
+    ]
+  },
+  {
+    "id": "latemoon_park_flower2",
+    "name": "月洞门",
+    "areaId": "latemoon",
+    "description": "走进月洞门，只见迎面一带翠嶂挡在南面。白石嶙峋，或如鬼怪，或如猛兽，石间苔藓掩映，隐约露出羊肠小径。",
+    "mapX": 5,
+    "mapY": 0,
+    "outdoorAreaId": "latemoon",
+    "exits": {"north": "latemoon_park_yard1", "south": "latemoon_park_moonc"}
+  },
+  {
+    "id": "latemoon_park_moonc",
+    "name": "翠嶂",
+    "areaId": "latemoon",
+    "description": "穿过竹篱和花架编成的月洞门，眼前是一片粉墙环抱、绿柳周垂的翠嶂。两边游廊分别通往桃花林与长廊曲洞。",
+    "mapX": 5,
+    "mapY": 1,
+    "outdoorAreaId": "latemoon",
+    "exits": {
+      "north": "latemoon_park_flower2",
+      "south": "latemoon_park_bridge1",
+      "west": "latemoon_park_moon2",
+      "east": "latemoon_park_moon1"
+    },
+    "actions": [
+      {
+        "id": "pick_latemoon_flower",
+        "label": "摘小花蕊",
+        "description": "摘下西府海棠旁那朵金黄色小花蕊。",
+        "resultRoomId": "latemoon_park_moonc",
+        "givesItemIds": ["latemoon_rare_flower"],
+        "log": "你从西府海棠旁摘下一朵略成金黄色的小花蕊，香气淡而奇异。"
+      }
+    ]
+  },
+  {
+    "id": "latemoon_park_moon1",
+    "name": "长廊曲洞",
+    "areaId": "latemoon",
+    "description": "你走入一条长廊曲洞，洞中有几处山石，种着芭蕉。可以听到潺潺流水声，顺着曲径望去是一座石板桥。",
+    "mapX": 6,
+    "mapY": 1,
+    "outdoorAreaId": "latemoon",
+    "exits": {"west": "latemoon_park_moonc", "southeast": "latemoon_park_bridge3"}
+  },
+  {
+    "id": "latemoon_park_moon2",
+    "name": "湘园小径",
+    "areaId": "latemoon",
+    "description": "湘园的桃花小径以不同颜色细石砌成各种图案。沿路观赏，美不胜收。",
+    "mapX": 4,
+    "mapY": 1,
+    "outdoorAreaId": "latemoon",
+    "exits": {"south": "latemoon_park_moon5", "east": "latemoon_park_moonc"}
+  },
+  {
+    "id": "latemoon_park_moon5",
+    "name": "桂花园",
+    "areaId": "latemoon",
+    "description": "这里是一片桂花园，园内桂花树枝干苍劲、枝叶茂盛。清香阵阵，行人衣发常留馨香。",
+    "mapX": 4,
+    "mapY": 2,
+    "outdoorAreaId": "latemoon",
+    "exits": {"north": "latemoon_park_moon2", "south": "latemoon_park_moon3"},
+    "npcIds": [
+      "latemoon_flower_girl",
+      "latemoon_flower_girl_2",
+      "latemoon_flower_girl_3",
+      "latemoon_flower_girl_4"
+    ]
+  },
+  {
+    "id": "latemoon_park_moon3",
+    "name": "甬路",
+    "areaId": "latemoon",
+    "description": "桂花园的石子甬道以不同颜色细石砌成图案。往西有一间紫翠小轩，东南方则通往园中小桥。",
+    "mapX": 4,
+    "mapY": 3,
+    "outdoorAreaId": "latemoon",
+    "exits": {"north": "latemoon_park_moon5", "west": "latemoon_park_moroom", "southeast": "latemoon_park_paroad2"}
+  },
+  {
+    "id": "latemoon_park_moroom",
+    "name": "紫翠小轩",
+    "areaId": "latemoon",
+    "description": "小轩中异香扑鼻，奇草仙藤越冷越苍翠。屋内雪洞一般清凉，桌上有土定瓶、菊花、书卷和茶具。",
+    "mapX": 3,
+    "mapY": 3,
+    "allowsCombat": false,
+    "exits": {"east": "latemoon_park_moon3"},
+    "npcIds": ["latemoon_girl_yu", "latemoon_dodo"]
+  },
+  {
+    "id": "latemoon_park_bridge1",
+    "name": "沁芳桥",
+    "areaId": "latemoon",
+    "description": "你走到大桥前，只见水如晶帘一般奔入，扶着藤栏望去，水上落花愈多，水也愈清。",
+    "mapX": 5,
+    "mapY": 2,
+    "outdoorAreaId": "latemoon",
+    "exits": {"north": "latemoon_park_moonc", "south": "latemoon_park_pavilion1"}
+  },
+  {
+    "id": "latemoon_park_pavilion1",
+    "name": "沁芳亭",
+    "areaId": "latemoon",
+    "description": "亭子坐落在园中小水池上，栏板精巧，亭边石桥飞架，通萦赏楼，是园中一大奇景。",
+    "mapX": 5,
+    "mapY": 3,
+    "outdoorAreaId": "latemoon",
+    "exits": {"north": "latemoon_park_bridge1", "south": "latemoon_park_bridge2"},
+    "npcIds": ["latemoon_shiren"]
+  },
+  {
+    "id": "latemoon_park_bridge2",
+    "name": "翠烟桥",
+    "areaId": "latemoon",
+    "description": "这是一座精美石桥，青石桥面，汉白玉栏杆，栏板上刻着精致花纹。",
+    "mapX": 5,
+    "mapY": 4,
+    "outdoorAreaId": "latemoon",
+    "exits": {
+      "north": "latemoon_park_pavilion1",
+      "southeast": "latemoon_park_paroad1",
+      "west": "latemoon_park_paroad2"
+    }
+  },
+  {
+    "id": "latemoon_park_bridge3",
+    "name": "朱栏板桥",
+    "areaId": "latemoon",
+    "description": "走在桥上，可以远观山坡峭脉，俯视清流泻雪石，朱红玉石为栏，环抱池沿。",
+    "mapX": 7,
+    "mapY": 2,
+    "outdoorAreaId": "latemoon",
+    "exits": {"northwest": "latemoon_park_moon1", "south": "latemoon_park_moon4"}
+  },
+  {
+    "id": "latemoon_park_moon4",
+    "name": "暖香榭",
+    "areaId": "latemoon",
+    "description": "暖香榭位于水池东岸，依岩为屋，结构曲折，极幽致。走进此处，仿佛置身仙境。",
+    "mapX": 7,
+    "mapY": 3,
+    "outdoorAreaId": "latemoon",
+    "exits": {"north": "latemoon_park_bridge3", "southwest": "latemoon_park_paroad1"},
+    "npcIds": ["latemoon_maysan", "latemoon_park_bird", "latemoon_park_bird_2"]
+  },
+  {
+    "id": "latemoon_park_paroad1",
+    "name": "甬路",
+    "areaId": "latemoon",
+    "description": "你走在石子墁的花园甬路上，西方通往园中小桥，东北可见暖香榭，南面则是晚月庄后门。",
+    "mapX": 6,
+    "mapY": 5,
+    "outdoorAreaId": "latemoon",
+    "exits": {"northwest": "latemoon_park_bridge2", "northeast": "latemoon_park_moon4", "south": "latemoon_park_moondoor"}
+  },
+  {
+    "id": "latemoon_park_paroad2",
+    "name": "素香榭",
+    "areaId": "latemoon",
+    "description": "转过翠烟桥，隐隐露出一带黄泥短墙，墙头稻茎掩护，外面种着各色树木，旁边有一口井和石牌。",
+    "mapX": 4,
+    "mapY": 4,
+    "outdoorAreaId": "latemoon",
+    "exits": {"east": "latemoon_park_bridge2", "northwest": "latemoon_park_moon3"},
+    "npcIds": ["latemoon_rabbit", "latemoon_rabbit_2"],
+    "actions": [
+      {
+        "id": "read_latemoon_park_sign",
+        "label": "查看石牌",
+        "description": "看看素香榭旁的石牌。",
+        "resultRoomId": "latemoon_park_paroad2",
+        "log": "石牌上写着几行隐晦词句：六神、四魄、三灵，旋芷震日月，宝剑护河山。"
+      }
+    ]
+  },
+  {
+    "id": "latemoon_park_moondoor",
+    "name": "晚月庄后门",
+    "areaId": "latemoon",
+    "description": "这里是晚月庄的后门，在美丽的湘园南侧。走出门外，便是通往山路的小径。",
+    "mapX": 6,
+    "mapY": 6,
+    "outdoorAreaId": "latemoon",
+    "exits": {"north": "latemoon_park_paroad1", "south": "latemoon_sroad1"}
+  },
+  {
+    "id": "latemoon_uproom2",
+    "name": "翠湘阁",
+    "areaId": "latemoon",
+    "description": "这里是晚月庄的舞曲步法研究室，名曰“翠湘”。墙上刻画着基本步法和诗词曲赋，几位师姐正低头思索如何运用。",
+    "mapX": -6,
+    "mapY": -3,
+    "allowsCombat": false,
+    "exits": {"south": "latemoon_upstar4"},
+    "npcIds": ["latemoon_shinfun"]
+  },
+  {
+    "id": "latemoon_uproom3",
+    "name": "缀芳阁",
+    "areaId": "latemoon",
+    "description": "这里是晚月庄弟子静修的地方，布置简单，檀香炉静静燃着。空气中有一种空灵气息，使人容易进入忘我境界。",
+    "mapX": -6,
+    "mapY": 3,
+    "allowsCultivation": true,
+    "allowsCombat": false,
+    "exits": {"north": "latemoon_upstar3"},
+    "npcIds": ["latemoon_huei"],
+    "itemIds": ["latemoon_cake"],
+    "actions": [
+      {
+        "id": "ponder_latemoon_uproom3",
+        "label": "静坐凝神",
+        "description": "在缀芳阁安静坐下。",
+        "resultRoomId": "latemoon_uproom3",
+        "restoreSpirit": 10,
+        "log": "你双手合拢，安静地坐了一会儿，心绪渐渐平和。"
+      }
+    ]
+  }
+]

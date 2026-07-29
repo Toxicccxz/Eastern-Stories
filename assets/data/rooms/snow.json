@@ -63,7 +63,7 @@
     "mapX": 0,
     "mapY": 3,
     "outdoorAreaId": "snow",
-    "exits": {"north": "snow_waterfog_road", "east": "snow_official_road", "southwest": "canyon_gate"},
+    "exits": {"north": "snow_waterfog_road", "east": "snow_official_road", "south": "dragonhill_nroad", "southwest": "canyon_gate"},
     "npcIds": ["snow_crazy_dog"]
   },
   {

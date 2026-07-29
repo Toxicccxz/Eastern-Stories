@@ -1,0 +1,54 @@
+[
+  {
+    "id": "dragonhill_gangster",
+    "name": "卧龙岗强盗",
+    "description": "这强盗满脸伤疤，虎背熊腰，一副凶狠霸道的样子。",
+    "greeting": "强盗喝道：此山是我开，此树乃我栽。要想从此过，留下买路财！",
+    "dialogueOptions": [
+      {
+        "id": "ask_dragonhill_toll",
+        "label": "询问买路钱",
+        "response": "强盗说道：看你也不像有钱的样子，大爷我只要十两金子意思一下。"
+      }
+    ],
+    "combat": {
+      "maxHp": 86,
+      "attack": 13,
+      "defense": 8,
+      "rewardExperience": 82,
+      "dropItemIds": ["dragonhill_gangster_blade"],
+      "specialMove": {
+        "name": "拦路一刀",
+        "interval": 3,
+        "damageBonus": 5,
+        "message": "强盗高喝一声，刀锋贴着山风劈来。"
+      }
+    }
+  },
+  {
+    "id": "dragonhill_gangster_2",
+    "name": "卧龙岗强盗",
+    "description": "这强盗满脸伤疤，虎背熊腰，一副凶狠霸道的样子。",
+    "greeting": "强盗上下打量着你，似乎在盘算你身上有多少银钱。",
+    "dialogueOptions": [
+      {
+        "id": "ask_dragonhill_toll_2",
+        "label": "询问买路钱",
+        "response": "强盗说道：识相的放下买路钱，走你的路。"
+      }
+    ],
+    "combat": {
+      "maxHp": 86,
+      "attack": 13,
+      "defense": 8,
+      "rewardExperience": 82,
+      "dropItemIds": ["dragonhill_gangster_blade"],
+      "specialMove": {
+        "name": "凶蛮冲杀",
+        "interval": 3,
+        "damageBonus": 5,
+        "message": "强盗显是以劫为生，刀刀冲要害而来。"
+      }
+    }
+  }
+]
