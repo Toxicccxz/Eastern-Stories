@@ -26,15 +26,20 @@ class QuestSystem {
     final npc = _repository.npc(npcId);
     return [
       for (final option in npc.dialogueOptions)
-        if (_canShowDialogueOption(state, option)) option,
+        if (_canShowDialogueOption(state, npcId, option)) option,
     ];
   }
 
   List<GiveItemOption> giveItemOptionsFor(GameState state, String npcId) {
     final npc = _repository.npc(npcId);
+    final npcState = state.npcStates[npcId];
     final options = <GiveItemOption>[];
     for (final option in npc.giveItemOptions) {
       if (!(option.conditions?.isSatisfiedBy(state) ?? true)) {
+        continue;
+      }
+      if (!(npcState?.matchesStateValues(option.requiredNpcStateValues) ??
+          option.requiredNpcStateValues.isEmpty)) {
         continue;
       }
       if (option.acceptsAnyItem) {
@@ -65,11 +70,20 @@ class QuestSystem {
     final npc = _repository.npc(npcId);
     final option =
         npc.dialogueOptions.where((item) => item.id == optionId).firstOrNull;
-    if (option == null || !_canShowDialogueOption(state, option)) {
+    if (option == null || !_canShowDialogueOption(state, npcId, option)) {
       return _withLog(state, '${npc.name}没有回应。');
+    }
+    if (state.player.silver < option.silverCost) {
+      return _withLog(
+        state,
+        '${npc.name}说道：“${option.insufficientSilverResponse ?? '你带的银两不够。'}”',
+      );
     }
 
     var nextState = state.copyWith(
+      player: state.player.copyWith(
+        silver: state.player.silver - option.silverCost,
+      ),
       log: state.logWith('${npc.name}说道：“${option.response}”'),
     );
     final startsQuestId = option.startsQuestId;
@@ -92,6 +106,13 @@ class QuestSystem {
       );
     }
 
+    nextState = _applyNpcStateChanges(
+      nextState,
+      npcId,
+      setValues: option.setNpcStateValues,
+      incrementValues: option.incrementNpcStateValues,
+    );
+
     final destinationRoomId = option.movesNpcToRoomId;
     final npcState = nextState.npcStates[npcId];
     if (destinationRoomId != null && npcState != null) {
@@ -110,6 +131,12 @@ class QuestSystem {
           npcId: npcState.copyWith(
             roomId: nextState.currentRoomId,
             isFollowing: true,
+            followUntilTurn:
+                option.followingDurationTurns == null
+                    ? null
+                    : nextState.worldTurn + option.followingDurationTurns!,
+            followReturnRoomId:
+                option.followingDurationTurns == null ? null : npcState.roomId,
           ),
         },
       );
@@ -165,6 +192,12 @@ class QuestSystem {
               ? state.questFlags
               : {...state.questFlags, option.setsQuestFlag!},
       log: state.logWith('${npc.name}说道：“${option.response}”'),
+    );
+    nextState = _applyNpcStateChanges(
+      nextState,
+      npcId,
+      setValues: option.setNpcStateValues,
+      incrementValues: option.incrementNpcStateValues,
     );
     if (option.startsFollowing) {
       final npcState = nextState.npcStates[npcId];
@@ -250,8 +283,17 @@ class QuestSystem {
     );
   }
 
-  bool _canShowDialogueOption(GameState state, DialogueOption option) {
+  bool _canShowDialogueOption(
+    GameState state,
+    String npcId,
+    DialogueOption option,
+  ) {
     if (!(option.conditions?.isSatisfiedBy(state) ?? true)) {
+      return false;
+    }
+    final npcState = state.npcStates[npcId];
+    if (!(npcState?.matchesStateValues(option.requiredNpcStateValues) ??
+        option.requiredNpcStateValues.isEmpty)) {
       return false;
     }
     final requiredQuestId = option.requiredQuestId;
@@ -260,6 +302,27 @@ class QuestSystem {
       return true;
     }
     return _questStatus(state, requiredQuestId) == requiredQuestStatus;
+  }
+
+  GameState _applyNpcStateChanges(
+    GameState state,
+    String npcId, {
+    required Map<String, int> setValues,
+    required Map<String, int> incrementValues,
+  }) {
+    final npcState = state.npcStates[npcId];
+    if (npcState == null || (setValues.isEmpty && incrementValues.isEmpty)) {
+      return state;
+    }
+    return state.copyWith(
+      npcStates: {
+        ...state.npcStates,
+        npcId: npcState.applyStateChanges(
+          setValues: setValues,
+          incrementValues: incrementValues,
+        ),
+      },
+    );
   }
 
   ApprenticeshipState? _rewardApprenticeship(

@@ -51,7 +51,10 @@ void main() {
           respawnAtTurn: 15,
           hasDroppedLoot: true,
           isFollowing: true,
+          followUntilTurn: 20,
+          followReturnRoomId: 'ice_cave',
           isRemoved: false,
+          stateValues: {'trust': 2},
         ),
       },
       shopStates: {
@@ -97,7 +100,13 @@ void main() {
     expect(loaded?.npcStates['white_ice_dragon']?.respawnAtTurn, 15);
     expect(loaded?.npcStates['white_ice_dragon']?.hasDroppedLoot, isTrue);
     expect(loaded?.npcStates['white_ice_dragon']?.isFollowing, isTrue);
+    expect(loaded?.npcStates['white_ice_dragon']?.followUntilTurn, 20);
+    expect(
+      loaded?.npcStates['white_ice_dragon']?.followReturnRoomId,
+      'ice_cave',
+    );
     expect(loaded?.npcStates['white_ice_dragon']?.isRemoved, isFalse);
+    expect(loaded?.npcStates['white_ice_dragon']?.stateValues, {'trust': 2});
     expect(loaded?.shopStates['meloner']?.stockByItemId, {'water_melon': 3});
     expect(loaded?.questStatuses['old_liu_daughter'], QuestStatus.active);
     expect(loaded?.questFlags, {'flower_girl_found'});

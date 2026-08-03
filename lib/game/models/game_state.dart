@@ -411,8 +411,11 @@ class NpcRuntimeState {
     this.respawnAtTurn,
     this.hasDroppedLoot = false,
     this.isFollowing = false,
+    this.followUntilTurn,
+    this.followReturnRoomId,
     this.isRemoved = false,
     this.patrolStep = 0,
+    this.stateValues = const {},
   });
 
   factory NpcRuntimeState.fromJson(Map<String, Object?> json) {
@@ -423,8 +426,12 @@ class NpcRuntimeState {
       respawnAtTurn: json['respawnAtTurn'] as int?,
       hasDroppedLoot: json['hasDroppedLoot'] as bool? ?? false,
       isFollowing: json['isFollowing'] as bool? ?? false,
+      followUntilTurn: json['followUntilTurn'] as int?,
+      followReturnRoomId: json['followReturnRoomId'] as String?,
       isRemoved: json['isRemoved'] as bool? ?? false,
       patrolStep: json['patrolStep'] as int? ?? 0,
+      stateValues: (json['stateValues'] as Map<String, Object?>? ?? const {})
+          .map((key, value) => MapEntry(key, value as int)),
     );
   }
 
@@ -434,8 +441,33 @@ class NpcRuntimeState {
   final int? respawnAtTurn;
   final bool hasDroppedLoot;
   final bool isFollowing;
+  final int? followUntilTurn;
+  final String? followReturnRoomId;
   final bool isRemoved;
   final int patrolStep;
+  final Map<String, int> stateValues;
+
+  int valueFor(String key) => stateValues[key] ?? 0;
+
+  bool matchesStateValues(Map<String, int> requiredValues) {
+    return requiredValues.entries.every(
+      (entry) => valueFor(entry.key) == entry.value,
+    );
+  }
+
+  NpcRuntimeState applyStateChanges({
+    Map<String, int> setValues = const {},
+    Map<String, int> incrementValues = const {},
+  }) {
+    if (setValues.isEmpty && incrementValues.isEmpty) {
+      return this;
+    }
+    final nextValues = {...stateValues, ...setValues};
+    for (final entry in incrementValues.entries) {
+      nextValues[entry.key] = (nextValues[entry.key] ?? 0) + entry.value;
+    }
+    return copyWith(stateValues: nextValues);
+  }
 
   Map<String, Object?> toJson() {
     return {
@@ -445,8 +477,11 @@ class NpcRuntimeState {
       'respawnAtTurn': respawnAtTurn,
       'hasDroppedLoot': hasDroppedLoot,
       'isFollowing': isFollowing,
+      'followUntilTurn': followUntilTurn,
+      'followReturnRoomId': followReturnRoomId,
       'isRemoved': isRemoved,
       'patrolStep': patrolStep,
+      'stateValues': stateValues,
     };
   }
 
@@ -457,8 +492,11 @@ class NpcRuntimeState {
     Object? respawnAtTurn = _unchanged,
     bool? hasDroppedLoot,
     bool? isFollowing,
+    Object? followUntilTurn = _unchanged,
+    Object? followReturnRoomId = _unchanged,
     bool? isRemoved,
     int? patrolStep,
+    Map<String, int>? stateValues,
   }) {
     return NpcRuntimeState(
       roomId: roomId ?? this.roomId,
@@ -470,8 +508,17 @@ class NpcRuntimeState {
               : respawnAtTurn as int?,
       hasDroppedLoot: hasDroppedLoot ?? this.hasDroppedLoot,
       isFollowing: isFollowing ?? this.isFollowing,
+      followUntilTurn:
+          followUntilTurn == _unchanged
+              ? this.followUntilTurn
+              : followUntilTurn as int?,
+      followReturnRoomId:
+          followReturnRoomId == _unchanged
+              ? this.followReturnRoomId
+              : followReturnRoomId as String?,
       isRemoved: isRemoved ?? this.isRemoved,
       patrolStep: patrolStep ?? this.patrolStep,
+      stateValues: stateValues ?? this.stateValues,
     );
   }
 }

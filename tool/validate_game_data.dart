@@ -251,6 +251,18 @@ class GameDataValidator {
   void _validateNpcs() {
     for (final npc in _all('npcs')) {
       final context = 'npc "${npc.id}" (${npc.source})';
+      _validateIntegerMap(
+        npc.data['initialStateValues'],
+        '$context.initialStateValues',
+      );
+      _validateIntegerMap(
+        npc.data['followEndStateValues'],
+        '$context.followEndStateValues',
+      );
+      if (npc.data['followEndMessage'] case final value?
+          when value is! String || value.isEmpty) {
+        errors.add('$context.followEndMessage must be non-empty text.');
+      }
       _validateCondition(npc.data['conditions'], '$context.conditions');
       _validateCondition(
         npc.data['apprenticeshipConditions'],
@@ -369,6 +381,7 @@ class GameDataValidator {
             '$reactionContext cannot start combat without combat data.',
           );
         }
+        _validateNpcStateFields(reaction, reactionContext);
       }
       final shop = _optionalObject(npc.data['shop'], '$context.shop');
       for (final product in _objects(
@@ -411,6 +424,27 @@ class GameDataValidator {
             optional: true,
           );
         }
+        _validateNpcStateFields(option, optionContext);
+        _validateOptionalNonNegativeInt(
+          option['silverCost'],
+          '$optionContext.silverCost',
+        );
+        if (option['insufficientSilverResponse'] case final value?
+            when value is! String || value.isEmpty) {
+          errors.add(
+            '$optionContext.insufficientSilverResponse must be non-empty text.',
+          );
+        }
+        _validateOptionalPositiveInt(
+          option['followingDurationTurns'],
+          '$optionContext.followingDurationTurns',
+        );
+        if (option['followingDurationTurns'] != null &&
+            option['startsFollowing'] != true) {
+          errors.add(
+            '$optionContext.followingDurationTurns requires startsFollowing.',
+          );
+        }
       }
 
       for (final option in _objects(
@@ -434,6 +468,7 @@ class GameDataValidator {
           optional: true,
         );
         _validateCondition(option['conditions'], '$optionContext.conditions');
+        _validateNpcStateFields(option, optionContext);
       }
 
       for (final teaching in _objects(
@@ -463,6 +498,16 @@ class GameDataValidator {
         );
         for (final field in ['requiredContribution', 'contributionCost']) {
           _validateOptionalInt(teaching[field], '$context teaching $field');
+        }
+        _validateIntegerMap(
+          teaching['requiredNpcStateValues'],
+          '$context teaching requiredNpcStateValues',
+        );
+        if (teaching['npcStateFailureMessage'] case final value?
+            when value is! String || value.isEmpty) {
+          errors.add(
+            '$context teaching npcStateFailureMessage must be non-empty text.',
+          );
         }
         final requiredRankId = teaching['requiredRankId'];
         if (requiredRankId != null &&
@@ -880,10 +925,39 @@ class GameDataValidator {
     }
   }
 
+  void _validateIntegerMap(Object? value, String context) {
+    final values = _optionalObject(value, context);
+    for (final entry in values.entries) {
+      if (entry.value is! int) {
+        errors.add('$context.${entry.key} must be an integer.');
+      }
+    }
+  }
+
+  void _validateNpcStateFields(
+    Map<String, Object?> definition,
+    String context,
+  ) {
+    for (final field in [
+      'requiredNpcStateValues',
+      'setNpcStateValues',
+      'incrementNpcStateValues',
+    ]) {
+      _validateIntegerMap(definition[field], '$context.$field');
+    }
+  }
+
   void _validateOptionalPositiveInt(Object? value, String context) {
     if (value == null) return;
     if (value is! int || value <= 0) {
       errors.add('$context must be a positive integer.');
+    }
+  }
+
+  void _validateOptionalNonNegativeInt(Object? value, String context) {
+    if (value == null) return;
+    if (value is! int || value < 0) {
+      errors.add('$context must be a non-negative integer.');
     }
   }
 

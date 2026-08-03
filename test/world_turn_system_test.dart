@@ -159,6 +159,39 @@ void main() {
       }).patrolStep,
       0,
     );
+    expect(
+      NpcRuntimeState.fromJson({
+        'roomId': 'snow_main_street3',
+        'currentHp': 1,
+        'isDefeated': false,
+      }).stateValues,
+      isEmpty,
+    );
+    final legacyState = NpcRuntimeState.fromJson({
+      'roomId': 'snow_main_street3',
+      'currentHp': 1,
+      'isDefeated': false,
+      'isFollowing': true,
+    });
+    expect(legacyState.followUntilTurn, isNull);
+    expect(legacyState.followReturnRoomId, isNull);
+  });
+
+  test('npc private state supports requirements, assignment, and counters', () {
+    const state = NpcRuntimeState(
+      roomId: 'snow_east_path2',
+      currentHp: 18,
+      isDefeated: false,
+      stateValues: {'trust': 1},
+    );
+
+    expect(state.matchesStateValues({'trust': 1, 'warned': 0}), isTrue);
+    final changed = state.applyStateChanges(
+      setValues: {'mood': 2},
+      incrementValues: {'trust': 2, 'visits': 1},
+    );
+
+    expect(changed.stateValues, {'trust': 3, 'mood': 2, 'visits': 1});
   });
 
   test('visible npc cycles original ambient messages on world turns', () {

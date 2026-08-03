@@ -162,6 +162,10 @@ class LocationInfoPanel extends StatelessWidget {
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       title: Text(option.label),
+                      subtitle:
+                          option.silverCost > 0
+                              ? Text('花费 ${option.silverCost} 两银子')
+                              : null,
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () {
                         controller.dispatch(

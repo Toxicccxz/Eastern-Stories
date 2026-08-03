@@ -211,6 +211,11 @@ class CultivationSystem {
     NpcDefinition teacher,
     TeachingSkillDefinition teaching,
   ) {
+    final npcState = state.npcStates[teacher.id];
+    if (!(npcState?.matchesStateValues(teaching.requiredNpcStateValues) ??
+        teaching.requiredNpcStateValues.isEmpty)) {
+      return teaching.npcStateFailureMessage ?? '${teacher.name}现在还不肯传授这门技艺。';
+    }
     final apprenticeship = state.apprenticeship;
     final accessFailure = switch (teaching.access) {
       TeachingAccess.public => null,

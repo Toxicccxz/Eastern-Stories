@@ -295,6 +295,7 @@ class GameDefinitionRepository {
             roomId: room.id,
             currentHp: _npcs[npcId]?.combat?.maxHp ?? 0,
             isDefeated: false,
+            stateValues: _npcs[npcId]?.initialStateValues ?? const {},
           ),
     };
   }

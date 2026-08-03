@@ -23,6 +23,11 @@ class WorldSystem {
         if (!(reaction.conditions?.isSatisfiedBy(nextState) ?? true)) {
           continue;
         }
+        final npcState = nextState.npcStates[npc.id];
+        if (!(npcState?.matchesStateValues(reaction.requiredNpcStateValues) ??
+            reaction.requiredNpcStateValues.isEmpty)) {
+          continue;
+        }
         if (reaction.messages.isNotEmpty) {
           final message =
               reaction.messages[nextState.worldTurn % reaction.messages.length];
@@ -31,6 +36,19 @@ class WorldSystem {
         if (reaction.setsFlag != null) {
           nextState = nextState.copyWith(
             questFlags: {...nextState.questFlags, reaction.setsFlag!},
+          );
+        }
+        if (npcState != null &&
+            (reaction.setNpcStateValues.isNotEmpty ||
+                reaction.incrementNpcStateValues.isNotEmpty)) {
+          nextState = nextState.copyWith(
+            npcStates: {
+              ...nextState.npcStates,
+              npc.id: npcState.applyStateChanges(
+                setValues: reaction.setNpcStateValues,
+                incrementValues: reaction.incrementNpcStateValues,
+              ),
+            },
           );
         }
         if (reaction.startsCombat) {
@@ -151,6 +169,7 @@ class WorldSystem {
     }
 
     var nextState = state;
+    final npc = _repository.npc(npcId);
     var justRespawned = false;
     final respawnAtTurn = state.respawnAtTurn;
     if (state.isDefeated &&
@@ -165,6 +184,22 @@ class WorldSystem {
       justRespawned = true;
     }
 
+    final followUntilTurn = nextState.followUntilTurn;
+    if (nextState.isFollowing &&
+        followUntilTurn != null &&
+        followUntilTurn <= worldTurn) {
+      return _NpcAdvanceResult(
+        nextState
+            .copyWith(
+              roomId: nextState.followReturnRoomId ?? nextState.roomId,
+              isFollowing: false,
+              followUntilTurn: null,
+              followReturnRoomId: null,
+            )
+            .applyStateChanges(setValues: npc.followEndStateValues),
+        message: npc.followEndMessage ?? '${npc.name}向你告辞，转身离开了。',
+      );
+    }
     if (nextState.isFollowing) {
       return _NpcAdvanceResult(nextState.copyWith(roomId: playerRoomId));
     }
@@ -172,7 +207,6 @@ class WorldSystem {
       return _NpcAdvanceResult(nextState);
     }
 
-    final npc = _repository.npc(npcId);
     final patrol = npc.patrol;
     if (patrol == null ||
         patrol.roomIds.length < 2 ||

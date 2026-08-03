@@ -177,6 +177,9 @@
     "description": "逄义是封山剑派中和柳淳风同辈的弟子，生性好赌，常年外出，虽辈分颇高却不担任门中要职。",
     "greeting": "逄义倚在客房里笑道：江湖路远，手边若有几两银子，总比空谈侠义稳当。",
     "intelligence": 16,
+    "initialStateValues": {"employed": 0},
+    "followEndMessage": "逄义抱拳说道：今天就到此为止，承蒙阁下照顾，后会有期。",
+    "followEndStateValues": {"employed": 0},
     "familyId": "fengshan_sword",
     "familyGeneration": 13,
     "teachingSkills": [
@@ -200,6 +203,17 @@
         "id": "ask_money",
         "label": "谈赚钱",
         "response": "逄义眼睛一亮：真的？哪里有钱赚？只要不违侠义道，逄某倒也愿意帮忙。"
+      },
+      {
+        "id": "hire_pang_yi",
+        "label": "雇佣逄义一天",
+        "response": "逄义笑道：太好了，阁下但有吩咐，逄某定当竭力以赴！",
+        "silverCost": 100,
+        "insufficientSilverResponse": "这……阁下好意在下心领就是，请回吧。",
+        "startsFollowing": true,
+        "followingDurationTurns": 12,
+        "requiredNpcStateValues": {"employed": 0},
+        "setNpcStateValues": {"employed": 1}
       },
       {
         "id": "ask_liu_chunfeng",
@@ -471,11 +485,13 @@
     "name": "野狗",
     "description": "一只浑身脏兮兮的野狗，绕着路边嗅来嗅去。",
     "greeting": "野狗用鼻子闻了闻你的脚，又对着你摇了摇尾巴。",
+    "initialStateValues": {"fedCount": 0},
     "giveItemOptions": [
       {
         "itemId": "snow_bone",
         "label": "给它骨头",
         "response": "野狗高兴地汪汪叫了起来，摇着尾巴跟在你身边。",
+        "incrementNpcStateValues": {"fedCount": 1},
         "startsFollowing": true
       }
     ],
@@ -499,11 +515,13 @@
     "name": "野狗",
     "description": "一只浑身脏兮兮的野狗在路边嗅来嗅去，偶尔抬头望着过路人。",
     "greeting": "野狗在你的脚边挨挨擦擦的，像是想讨点东西吃。",
+    "initialStateValues": {"fedCount": 0},
     "giveItemOptions": [
       {
         "itemId": "snow_bone",
         "label": "给它骨头",
         "response": "野狗高兴地汪汪叫了起来，摇着尾巴跟在你身边。",
+        "incrementNpcStateValues": {"fedCount": 1},
         "startsFollowing": true
       }
     ],
@@ -528,14 +546,30 @@
     "description": "魏无极是个博学多闻的教书先生，年轻时曾经中过举人，因为生性喜爱自由而不愿做官，如今在雪亭镇以教书为业。",
     "greeting": "魏无极说道：读书识字是做人的第一步，若有心向学，什么时候开始都不算晚。",
     "intelligence": 26,
+    "initialStateValues": {"student": 0},
     "teachingSkills": [
-      {"skillId": "literate", "maxLevel": 50, "access": "direct"}
+      {
+        "skillId": "literate",
+        "maxLevel": 50,
+        "access": "public",
+        "requiredNpcStateValues": {"student": 1},
+        "npcStateFailureMessage": "魏无极说道：咦？我不记得收过你这个学生啊……"
+      }
     ],
     "dialogueOptions": [
       {
         "id": "ask_tuition",
         "label": "询问学费",
         "response": "魏无极说道：学问是金钱买不到的，不过若你有心，五两银子便可入门。"
+      },
+      {
+        "id": "pay_tuition",
+        "label": "缴纳学费",
+        "response": "魏无极点了点头，说道：很好，从今天起你随时可以来问我有关读书识字的任何问题。",
+        "silverCost": 5,
+        "insufficientSilverResponse": "你的诚意不够，这钱还是拿回去吧。",
+        "requiredNpcStateValues": {"student": 0},
+        "setNpcStateValues": {"student": 1}
       },
       {
         "id": "ask_liu_anlu_secret",
@@ -597,6 +631,9 @@
     "name": "苦力",
     "description": "一个苦力打扮的汉子站在这里，像是在等人来雇用。",
     "greeting": "苦力拱手说道：小人的工资一天只要一百文钱，大人只管吩咐。",
+    "initialStateValues": {"employed": 0},
+    "followEndMessage": "苦力向你鞠了一躬，说道：小的下工时间到了。",
+    "followEndStateValues": {"employed": 0},
     "dialogueOptions": [
       {
         "id": "ask_worker_home",
@@ -607,6 +644,17 @@
         "id": "ask_worker_employment",
         "label": "询问雇佣",
         "response": "苦力说道：一百文钱一天，一个子儿也不能少。"
+      },
+      {
+        "id": "hire_worker",
+        "label": "雇佣苦力一天",
+        "response": "苦力说道：谢谢大人！有什么事只管吩咐！",
+        "silverCost": 1,
+        "insufficientSilverResponse": "一百文钱一天，一个子儿也不能少。",
+        "startsFollowing": true,
+        "followingDurationTurns": 12,
+        "requiredNpcStateValues": {"employed": 0},
+        "setNpcStateValues": {"employed": 1}
       }
     ]
   },

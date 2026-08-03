@@ -26,6 +26,9 @@ class NpcDefinition {
     this.patrol,
     this.ambient,
     this.entryReactions = const [],
+    this.initialStateValues = const {},
+    this.followEndMessage,
+    this.followEndStateValues = const {},
   });
 
   factory NpcDefinition.fromJson(Map<String, Object?> json) {
@@ -92,6 +95,9 @@ class NpcDefinition {
             in json['entryReactions'] as List<Object?>? ?? const [])
           NpcEntryReactionDefinition.fromJson(reaction as Map<String, Object?>),
       ],
+      initialStateValues: _intMap(json['initialStateValues']),
+      followEndMessage: json['followEndMessage'] as String?,
+      followEndStateValues: _intMap(json['followEndStateValues']),
     );
   }
 
@@ -116,6 +122,9 @@ class NpcDefinition {
   final NpcPatrolDefinition? patrol;
   final NpcAmbientDefinition? ambient;
   final List<NpcEntryReactionDefinition> entryReactions;
+  final Map<String, int> initialStateValues;
+  final String? followEndMessage;
+  final Map<String, int> followEndStateValues;
 
   String greetingFor(GameState state) {
     for (final variant in greetingVariants) {
@@ -167,6 +176,9 @@ class NpcEntryReactionDefinition {
     this.conditions,
     this.setsFlag,
     this.startsCombat = false,
+    this.requiredNpcStateValues = const {},
+    this.setNpcStateValues = const {},
+    this.incrementNpcStateValues = const {},
   });
 
   factory NpcEntryReactionDefinition.fromJson(Map<String, Object?> json) {
@@ -175,6 +187,9 @@ class NpcEntryReactionDefinition {
       conditions: worldConditionFromJson(json['conditions']),
       setsFlag: json['setsFlag'] as String?,
       startsCombat: json['startsCombat'] as bool? ?? false,
+      requiredNpcStateValues: _intMap(json['requiredNpcStateValues']),
+      setNpcStateValues: _intMap(json['setNpcStateValues']),
+      incrementNpcStateValues: _intMap(json['incrementNpcStateValues']),
     );
   }
 
@@ -182,6 +197,9 @@ class NpcEntryReactionDefinition {
   final WorldCondition? conditions;
   final String? setsFlag;
   final bool startsCombat;
+  final Map<String, int> requiredNpcStateValues;
+  final Map<String, int> setNpcStateValues;
+  final Map<String, int> incrementNpcStateValues;
 }
 
 class TeachingSkillDefinition {
@@ -193,6 +211,8 @@ class TeachingSkillDefinition {
     this.requiredContribution = 0,
     this.requiredSkillLevels = const {},
     this.contributionCost = 0,
+    this.requiredNpcStateValues = const {},
+    this.npcStateFailureMessage,
   });
 
   factory TeachingSkillDefinition.fromJson(Map<String, Object?> json) {
@@ -208,6 +228,8 @@ class TeachingSkillDefinition {
           (json['requiredSkillLevels'] as Map<String, Object?>? ?? const {})
               .map((skillId, level) => MapEntry(skillId, level as int)),
       contributionCost: json['contributionCost'] as int? ?? 0,
+      requiredNpcStateValues: _intMap(json['requiredNpcStateValues']),
+      npcStateFailureMessage: json['npcStateFailureMessage'] as String?,
     );
   }
 
@@ -218,6 +240,8 @@ class TeachingSkillDefinition {
   final int requiredContribution;
   final Map<String, int> requiredSkillLevels;
   final int contributionCost;
+  final Map<String, int> requiredNpcStateValues;
+  final String? npcStateFailureMessage;
 }
 
 enum TeachingAccess { public, family, direct }
@@ -233,6 +257,9 @@ class GiveItemOption {
     this.setsQuestFlag,
     this.completesQuestId,
     this.startsFollowing = false,
+    this.requiredNpcStateValues = const {},
+    this.setNpcStateValues = const {},
+    this.incrementNpcStateValues = const {},
   });
 
   factory GiveItemOption.fromJson(Map<String, Object?> json) {
@@ -247,6 +274,9 @@ class GiveItemOption {
       setsQuestFlag: json['setsQuestFlag'] as String?,
       completesQuestId: json['completesQuestId'] as String?,
       startsFollowing: json['startsFollowing'] as bool? ?? false,
+      requiredNpcStateValues: _intMap(json['requiredNpcStateValues']),
+      setNpcStateValues: _intMap(json['setNpcStateValues']),
+      incrementNpcStateValues: _intMap(json['incrementNpcStateValues']),
     );
   }
 
@@ -259,6 +289,9 @@ class GiveItemOption {
   final String? setsQuestFlag;
   final String? completesQuestId;
   final bool startsFollowing;
+  final Map<String, int> requiredNpcStateValues;
+  final Map<String, int> setNpcStateValues;
+  final Map<String, int> incrementNpcStateValues;
 
   bool get acceptsAnyItem => itemId == '*';
 
@@ -273,6 +306,9 @@ class GiveItemOption {
       setsQuestFlag: setsQuestFlag,
       completesQuestId: completesQuestId,
       startsFollowing: startsFollowing,
+      requiredNpcStateValues: requiredNpcStateValues,
+      setNpcStateValues: setNpcStateValues,
+      incrementNpcStateValues: incrementNpcStateValues,
     );
   }
 }
@@ -426,6 +462,12 @@ class DialogueOption {
     this.conditions,
     this.startsFollowing = false,
     this.despawnNpcIds = const [],
+    this.requiredNpcStateValues = const {},
+    this.setNpcStateValues = const {},
+    this.incrementNpcStateValues = const {},
+    this.silverCost = 0,
+    this.insufficientSilverResponse,
+    this.followingDurationTurns,
   });
 
   factory DialogueOption.fromJson(Map<String, Object?> json) {
@@ -445,6 +487,12 @@ class DialogueOption {
       startsFollowing: json['startsFollowing'] as bool? ?? false,
       despawnNpcIds:
           (json['despawnNpcIds'] as List<Object?>? ?? const []).cast<String>(),
+      requiredNpcStateValues: _intMap(json['requiredNpcStateValues']),
+      setNpcStateValues: _intMap(json['setNpcStateValues']),
+      incrementNpcStateValues: _intMap(json['incrementNpcStateValues']),
+      silverCost: json['silverCost'] as int? ?? 0,
+      insufficientSilverResponse: json['insufficientSilverResponse'] as String?,
+      followingDurationTurns: json['followingDurationTurns'] as int?,
     );
   }
 
@@ -460,4 +508,16 @@ class DialogueOption {
   final WorldCondition? conditions;
   final bool startsFollowing;
   final List<String> despawnNpcIds;
+  final Map<String, int> requiredNpcStateValues;
+  final Map<String, int> setNpcStateValues;
+  final Map<String, int> incrementNpcStateValues;
+  final int silverCost;
+  final String? insufficientSilverResponse;
+  final int? followingDurationTurns;
+}
+
+Map<String, int> _intMap(Object? value) {
+  return (value as Map<String, Object?>? ?? const {}).map(
+    (key, value) => MapEntry(key, value as int),
+  );
 }

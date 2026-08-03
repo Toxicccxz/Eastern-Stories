@@ -389,7 +389,7 @@ void main() {
     final initialState = repository.createInitialState().copyWith(
       currentRoomId: 'snow_east_path2',
       visitedRoomIds: {'snow_inn', 'snow_east_path2'},
-      inventoryItemIds: ['snow_bone'],
+      inventoryItemIds: ['snow_bone', 'snow_bone'],
     );
     final controller = GameController(
       repository: repository,
@@ -406,8 +406,27 @@ void main() {
     controller.dispatch(
       const GameAction.giveItem('snow_wild_dog', 'snow_bone'),
     );
-    expect(controller.state.inventoryItemIds, isNot(contains('snow_bone')));
+    expect(controller.state.inventory.countOf('snow_bone'), 1);
     expect(controller.state.npcStates['snow_wild_dog']?.isFollowing, isTrue);
+    expect(
+      controller.state.npcStates['snow_wild_dog']?.valueFor('fedCount'),
+      1,
+    );
+
+    expect(
+      controller
+          .giveItemOptionsFor('snow_wild_dog')
+          .map((option) => option.itemId),
+      contains('snow_bone'),
+    );
+    controller.dispatch(
+      const GameAction.giveItem('snow_wild_dog', 'snow_bone'),
+    );
+    expect(controller.state.inventory.countOf('snow_bone'), 0);
+    expect(
+      controller.state.npcStates['snow_wild_dog']?.valueFor('fedCount'),
+      2,
+    );
 
     controller.dispatch(const GameAction.move(Direction.west));
     expect(controller.state.currentRoomId, 'snow_east_path1');
@@ -415,6 +434,133 @@ void main() {
       controller.state.npcStates['snow_wild_dog']?.roomId,
       'snow_east_path1',
     );
+  });
+
+  test('Wei Wuji requires the original tuition before teaching literacy', () {
+    final initialState = repository.createInitialState().copyWith(
+      currentRoomId: 'snow_academy',
+      visitedRoomIds: {'snow_inn', 'snow_academy'},
+      player: repository.createInitialState().player.copyWith(silver: 4),
+    );
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState,
+    );
+
+    controller.dispatch(
+      const GameAction.learnFromNpc('snow_teacher_wei', 'literate'),
+    );
+    expect(controller.state.skillProgress, isNot(contains('literate')));
+    expect(controller.state.log.last, contains('不记得收过你'));
+
+    controller.dispatch(
+      const GameAction.selectDialogue('snow_teacher_wei', 'pay_tuition'),
+    );
+    expect(controller.state.player.silver, 4);
+    expect(
+      controller.state.npcStates['snow_teacher_wei']?.valueFor('student'),
+      0,
+    );
+    expect(controller.state.log.last, contains('诚意不够'));
+
+    controller.replaceState(
+      controller.state.copyWith(
+        player: controller.state.player.copyWith(silver: 5),
+      ),
+    );
+    controller.dispatch(
+      const GameAction.selectDialogue('snow_teacher_wei', 'pay_tuition'),
+    );
+    expect(controller.state.player.silver, 0);
+    expect(
+      controller.state.npcStates['snow_teacher_wei']?.valueFor('student'),
+      1,
+    );
+    expect(
+      controller
+          .dialogueOptionsFor('snow_teacher_wei')
+          .map((option) => option.id),
+      isNot(contains('pay_tuition')),
+    );
+
+    controller.dispatch(
+      const GameAction.learnFromNpc('snow_teacher_wei', 'literate'),
+    );
+    expect(controller.state.skillProgress['literate']?.level, 1);
+  });
+
+  test('Snow Pavilion worker can be hired and returns when duty ends', () {
+    final baseState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: baseState.copyWith(
+        currentRoomId: 'snow_workplace',
+        visitedRoomIds: {...baseState.visitedRoomIds, 'snow_workplace'},
+        player: baseState.player.copyWith(silver: 1),
+      ),
+    );
+
+    controller.dispatch(
+      const GameAction.selectDialogue('snow_worker', 'hire_worker'),
+    );
+    final hiredState = controller.state.npcStates['snow_worker'];
+    expect(controller.state.player.silver, 0);
+    expect(hiredState?.isFollowing, isTrue);
+    expect(hiredState?.followUntilTurn, 12);
+    expect(hiredState?.followReturnRoomId, 'snow_workplace');
+    expect(hiredState?.valueFor('employed'), 1);
+    expect(
+      controller.dialogueOptionsFor('snow_worker').map((option) => option.id),
+      isNot(contains('hire_worker')),
+    );
+
+    controller.dispatch(const GameAction.move(Direction.west));
+    expect(
+      controller.state.npcStates['snow_worker']?.roomId,
+      'snow_main_street2',
+    );
+    controller.replaceState(controller.state.copyWith(worldTurn: 11));
+    controller.dispatch(const GameAction.move(Direction.north));
+
+    final endedState = controller.state.npcStates['snow_worker'];
+    expect(controller.state.worldTurn, 12);
+    expect(endedState?.isFollowing, isFalse);
+    expect(endedState?.roomId, 'snow_workplace');
+    expect(endedState?.followUntilTurn, isNull);
+    expect(endedState?.followReturnRoomId, isNull);
+    expect(endedState?.valueFor('employed'), 0);
+    expect(controller.state.log, contains(contains('下工时间到了')));
+  });
+
+  test('Pang Yi requires the original one hundred tael hiring fee', () {
+    final baseState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: baseState.copyWith(
+        currentRoomId: 'chunfeng_guest_room',
+        visitedRoomIds: {...baseState.visitedRoomIds, 'chunfeng_guest_room'},
+        player: baseState.player.copyWith(silver: 99),
+      ),
+    );
+
+    controller.dispatch(
+      const GameAction.selectDialogue('pang_yi', 'hire_pang_yi'),
+    );
+    expect(controller.state.player.silver, 99);
+    expect(controller.state.npcStates['pang_yi']?.isFollowing, isFalse);
+
+    controller.replaceState(
+      controller.state.copyWith(
+        player: controller.state.player.copyWith(silver: 100),
+      ),
+    );
+    controller.dispatch(
+      const GameAction.selectDialogue('pang_yi', 'hire_pang_yi'),
+    );
+    expect(controller.state.player.silver, 0);
+    expect(controller.state.npcStates['pang_yi']?.isFollowing, isTrue);
+    expect(controller.state.npcStates['pang_yi']?.followUntilTurn, 12);
+    expect(controller.state.npcStates['pang_yi']?.valueFor('employed'), 1);
   });
 
   test('defeating a Snow Pavilion dog leaves a bone to pick up', () {
