@@ -25,13 +25,15 @@ class GameDefinitionRepository {
     required Map<String, QuestDefinition> quests,
     required Map<String, SkillDefinition> skills,
     required Map<String, FamilyDefinition> families,
+    required Map<String, StatusEffectDefinition> statusEffects,
   }) : _areas = areas,
        _rooms = rooms,
        _npcs = npcs,
        _items = items,
        _quests = quests,
        _skills = skills,
-       _families = families;
+       _families = families,
+       _statusEffects = statusEffects;
 
   factory GameDefinitionRepository.fromWorld(GameWorldDefinition world) {
     return GameDefinitionRepository(
@@ -43,6 +45,7 @@ class GameDefinitionRepository {
       quests: world.quests,
       skills: world.skills,
       families: world.families,
+      statusEffects: world.statusEffects,
     );
   }
 
@@ -76,6 +79,7 @@ class GameDefinitionRepository {
       _loadDefinitionFiles(assetBundle, sources, 'quests'),
       _loadDefinitionFiles(assetBundle, sources, 'skills'),
       _loadDefinitionFiles(assetBundle, sources, 'families'),
+      _loadDefinitionFiles(assetBundle, sources, 'statusEffects'),
     ]);
 
     return GameDefinitionRepository.fromWorld(
@@ -88,6 +92,7 @@ class GameDefinitionRepository {
         'quests': definitions[4],
         'skills': definitions[5],
         'families': definitions[6],
+        'statusEffects': definitions[7],
       }),
     );
   }
@@ -100,6 +105,7 @@ class GameDefinitionRepository {
   final Map<String, QuestDefinition> _quests;
   final Map<String, SkillDefinition> _skills;
   final Map<String, FamilyDefinition> _families;
+  final Map<String, StatusEffectDefinition> _statusEffects;
 
   Iterable<AreaDefinition> get areas => _areas.values;
 
@@ -118,6 +124,8 @@ class GameDefinitionRepository {
   Iterable<SkillDefinition> get skills => _skills.values;
 
   Iterable<FamilyDefinition> get families => _families.values;
+
+  Iterable<StatusEffectDefinition> get statusEffects => _statusEffects.values;
 
   GameState createInitialState({
     String playerName = '少侠',
@@ -157,6 +165,10 @@ class GameDefinitionRepository {
       }
     }
     final combat = state.combat;
+    final playerStatusEffects =
+        state.playerStatusEffects.isNotEmpty
+            ? state.playerStatusEffects
+            : combat?.playerStatusEffects ?? const <StatusEffectState>[];
     final activeNpcState = combat == null ? null : npcStates[combat.npcId];
     if (combat != null &&
         activeNpcState != null &&
@@ -181,6 +193,8 @@ class GameDefinitionRepository {
       questStatuses: questStatuses,
       questFlags: questFlags,
       apprenticeship: apprenticeship,
+      playerStatusEffects: playerStatusEffects,
+      combat: combat?.copyWith(playerStatusEffects: const []),
     );
   }
 
@@ -258,6 +272,10 @@ class GameDefinitionRepository {
       }
     }
     return null;
+  }
+
+  StatusEffectDefinition? statusEffectOrNull(String? id) {
+    return id == null ? null : _statusEffects[id];
   }
 
   FamilyDefinition family(String id) {

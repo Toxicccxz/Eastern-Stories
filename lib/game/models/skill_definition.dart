@@ -129,6 +129,8 @@ class CombatMoveDefinition {
     this.minimumSkillLevel = 1,
     this.requiredEquipmentSlot,
     this.combatMessage,
+    this.statusEffectId,
+    this.statusEffect,
   });
 
   factory CombatMoveDefinition.fromJson(Map<String, Object?> json) {
@@ -150,6 +152,13 @@ class CombatMoveDefinition {
                 json['requiredEquipmentSlot'] as String,
               ),
       combatMessage: json['combatMessage'] as String?,
+      statusEffectId: json['statusEffectId'] as String?,
+      statusEffect:
+          json['statusEffect'] == null
+              ? null
+              : StatusEffectDefinition.fromJson(
+                json['statusEffect'] as Map<String, Object?>,
+              ),
     );
   }
 
@@ -163,6 +172,8 @@ class CombatMoveDefinition {
   final int minimumSkillLevel;
   final EquipmentSlot? requiredEquipmentSlot;
   final String? combatMessage;
+  final String? statusEffectId;
+  final StatusEffectDefinition? statusEffect;
 
   int damageBonusAtLevel(int level) => damageBonus + level;
 
@@ -176,4 +187,54 @@ class CombatMoveDefinition {
     }
     return (innerPowerCost - level ~/ 10).clamp(1, innerPowerCost);
   }
+}
+
+class StatusEffectDefinition {
+  const StatusEffectDefinition({
+    required this.id,
+    required this.name,
+    required this.duration,
+    this.damagePerRound = 0,
+    this.spiritDamagePerRound = 0,
+    this.innerPowerDamagePerRound = 0,
+    this.hpRecoveryPerRound = 0,
+    this.attackPenalty = 0,
+    this.defensePenalty = 0,
+    this.blocksAction = false,
+    this.applicationMessage,
+    this.tickMessage,
+    this.expireMessage,
+  });
+
+  factory StatusEffectDefinition.fromJson(Map<String, Object?> json) {
+    return StatusEffectDefinition(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      duration: json['duration'] as int,
+      damagePerRound: json['damagePerRound'] as int? ?? 0,
+      spiritDamagePerRound: json['spiritDamagePerRound'] as int? ?? 0,
+      innerPowerDamagePerRound: json['innerPowerDamagePerRound'] as int? ?? 0,
+      hpRecoveryPerRound: json['hpRecoveryPerRound'] as int? ?? 0,
+      attackPenalty: json['attackPenalty'] as int? ?? 0,
+      defensePenalty: json['defensePenalty'] as int? ?? 0,
+      blocksAction: json['blocksAction'] as bool? ?? false,
+      applicationMessage: json['applicationMessage'] as String?,
+      tickMessage: json['tickMessage'] as String?,
+      expireMessage: json['expireMessage'] as String?,
+    );
+  }
+
+  final String id;
+  final String name;
+  final int duration;
+  final int damagePerRound;
+  final int spiritDamagePerRound;
+  final int innerPowerDamagePerRound;
+  final int hpRecoveryPerRound;
+  final int attackPenalty;
+  final int defensePenalty;
+  final bool blocksAction;
+  final String? applicationMessage;
+  final String? tickMessage;
+  final String? expireMessage;
 }

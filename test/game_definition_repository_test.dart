@@ -16,8 +16,19 @@ void main() {
     expect(rooms, hasLength(353));
     expect(repository.items, hasLength(137));
     expect(repository.quests, hasLength(4));
-    expect(repository.skills, hasLength(21));
-    expect(repository.families, hasLength(2));
+    expect(repository.skills, hasLength(22));
+    expect(repository.families, hasLength(3));
+    expect(repository.statusEffects, hasLength(5));
+
+    expect(repository.statusEffectOrNull('iceshock')?.name, '寒震');
+    expect(repository.statusEffectOrNull('rose_poison')?.duration, 4);
+    expect(
+      repository.statusEffectOrNull('snake_poison')?.spiritDamagePerRound,
+      3,
+    );
+    expect(repository.statusEffectOrNull('slumber_drug')?.blocksAction, isTrue);
+    expect(repository.statusEffectOrNull('bandaged')?.hpRecoveryPerRound, 3);
+    expect(repository.statusEffectOrNull('missing_effect'), isNull);
 
     for (final area in repository.areas) {
       expect(

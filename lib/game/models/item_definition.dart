@@ -10,6 +10,9 @@ class ItemDefinition {
     this.attackPower = 0,
     this.restoreHp = 0,
     this.restoreInnerPower = 0,
+    this.appliesStatusEffectId,
+    this.reducesStatusEffectId,
+    this.statusEffectReduction = 0,
     this.studySkillId,
     this.studyMaxSkillLevel = 1,
     this.studyExperience = 0,
@@ -34,6 +37,9 @@ class ItemDefinition {
       attackPower: json['attackPower'] as int? ?? 0,
       restoreHp: json['restoreHp'] as int? ?? 0,
       restoreInnerPower: json['restoreInnerPower'] as int? ?? 0,
+      appliesStatusEffectId: json['appliesStatusEffectId'] as String?,
+      reducesStatusEffectId: json['reducesStatusEffectId'] as String?,
+      statusEffectReduction: json['statusEffectReduction'] as int? ?? 0,
       studySkillId: json['studySkillId'] as String?,
       studyMaxSkillLevel: json['studyMaxSkillLevel'] as int? ?? 1,
       studyExperience: json['studyExperience'] as int? ?? 0,
@@ -61,6 +67,9 @@ class ItemDefinition {
   final int attackPower;
   final int restoreHp;
   final int restoreInnerPower;
+  final String? appliesStatusEffectId;
+  final String? reducesStatusEffectId;
+  final int statusEffectReduction;
   final String? studySkillId;
   final int studyMaxSkillLevel;
   final int studyExperience;
@@ -80,7 +89,11 @@ class ItemDefinition {
 
   bool get canStudy => studySkillId != null;
 
-  bool get canUse => restoreHp > 0 || restoreInnerPower > 0;
+  bool get canUse =>
+      restoreHp > 0 ||
+      restoreInnerPower > 0 ||
+      appliesStatusEffectId != null ||
+      reducesStatusEffectId != null;
 }
 
 EquipmentSlot? _equipmentSlot(Map<String, Object?> json) {

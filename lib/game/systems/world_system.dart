@@ -1,10 +1,12 @@
 import '../models/game_state.dart';
 import '../repositories/game_definition_repository.dart';
+import 'player_condition_system.dart';
 
 class WorldSystem {
-  const WorldSystem(this._repository);
+  const WorldSystem(this._repository, this._playerConditionSystem);
 
   final GameDefinitionRepository _repository;
+  final PlayerConditionSystem _playerConditionSystem;
 
   GameState advanceAfterTravel(GameState previous, GameState next) {
     if (previous.currentRoomId == next.currentRoomId) {
@@ -21,12 +23,31 @@ class WorldSystem {
           next.currentRoomId,
         ),
     };
-    return next.copyWith(
+    final advancedState = next.copyWith(
       worldTurn: worldTurn,
       npcStates: npcStates,
       player: next.player.copyWith(
         spirit: (next.player.spirit + 2).clamp(0, next.player.maxSpirit),
       ),
+    );
+    final tickedState = _playerConditionSystem.advance(advancedState).state;
+    if (tickedState.player.hp > 0) {
+      return tickedState;
+    }
+    final startingRoomId = _repository.startingRoomId;
+    return tickedState.copyWith(
+      currentRoomId: startingRoomId,
+      visitedRoomIds: {...tickedState.visitedRoomIds, startingRoomId},
+      player: tickedState.player.copyWith(
+        hp: (tickedState.player.maxHp ~/ 2).clamp(1, tickedState.player.maxHp),
+        innerPower: (tickedState.player.maxInnerPower ~/ 2).clamp(
+          0,
+          tickedState.player.maxInnerPower,
+        ),
+      ),
+      playerStatusEffects: const [],
+      combat: null,
+      log: tickedState.logWith('你在途中毒发昏倒，醒来时已经回到饮风客栈。'),
     );
   }
 

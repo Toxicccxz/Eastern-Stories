@@ -56,6 +56,7 @@
       "assets/data/skills/temple.json",
       "assets/data/skills/latemoon.json"
     ],
-    "families": ["assets/data/families/families.json"]
+    "families": ["assets/data/families/families.json"],
+    "statusEffects": ["assets/data/status_effects/status_effects.json"]
   }
 }

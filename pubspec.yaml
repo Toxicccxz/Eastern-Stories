@@ -66,6 +66,7 @@ flutter:
     - assets/data/quests/
     - assets/data/skills/
     - assets/data/families/
+    - assets/data/status_effects/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

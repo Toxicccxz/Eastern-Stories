@@ -16,6 +16,7 @@ class GameWorldDefinition {
     required this.quests,
     required this.skills,
     required this.families,
+    required this.statusEffects,
   });
 
   factory GameWorldDefinition.fromJson(Map<String, Object?> json) {
@@ -47,6 +48,10 @@ class GameWorldDefinition {
       for (final value in json['families'] as List<Object?>)
         FamilyDefinition.fromJson(value as Map<String, Object?>),
     ];
+    final statusEffects = [
+      for (final value in json['statusEffects'] as List<Object?>? ?? const [])
+        StatusEffectDefinition.fromJson(value as Map<String, Object?>),
+    ];
 
     return GameWorldDefinition(
       startingRoomId: json['startingRoomId'] as String,
@@ -57,6 +62,9 @@ class GameWorldDefinition {
       quests: {for (final quest in quests) quest.id: quest},
       skills: {for (final skill in skills) skill.id: skill},
       families: {for (final family in families) family.id: family},
+      statusEffects: {
+        for (final statusEffect in statusEffects) statusEffect.id: statusEffect,
+      },
     );
   }
 
@@ -68,4 +76,5 @@ class GameWorldDefinition {
   final Map<String, QuestDefinition> quests;
   final Map<String, SkillDefinition> skills;
   final Map<String, FamilyDefinition> families;
+  final Map<String, StatusEffectDefinition> statusEffects;
 }

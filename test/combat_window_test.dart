@@ -1,5 +1,6 @@
 import 'package:eastern_stories/game/core/game_action.dart';
 import 'package:eastern_stories/game/core/game_controller.dart';
+import 'package:eastern_stories/game/models/game_state.dart';
 import 'package:eastern_stories/game/repositories/game_definition_repository.dart';
 import 'package:eastern_stories/ui/screens/main_game_screen.dart';
 import 'package:flutter/material.dart';
@@ -47,5 +48,49 @@ void main() {
 
     expect(find.text('交战'), findsNothing);
     expect(controller.state.combat, isNull);
+  });
+
+  testWidgets('combat window shows active status effects', (tester) async {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'latemoon_entrance',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'latemoon_entrance'},
+        combat: const CombatState(
+          npcId: 'latemoon_guard',
+          enemyHp: 30,
+          playerStatusEffects: [
+            StatusEffectState(
+              id: 'rose_poison',
+              name: '玫瑰花毒',
+              remainingRounds: 2,
+              damagePerRound: 4,
+              defensePenalty: 1,
+            ),
+          ],
+          enemyStatusEffects: [
+            StatusEffectState(
+              id: 'iceshock',
+              name: '寒震',
+              remainingRounds: 3,
+              damagePerRound: 3,
+              attackPenalty: 2,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(home: MainGameScreen(controller: controller)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('敌方状态'), findsOneWidget);
+    expect(find.text('寒震 3'), findsOneWidget);
+    expect(find.text('玫瑰花毒 2'), findsNWidgets(2));
+    expect(find.byIcon(Icons.ac_unit), findsOneWidget);
+    expect(find.byIcon(Icons.local_florist), findsOneWidget);
   });
 }

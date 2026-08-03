@@ -239,6 +239,66 @@ void main() {
     expect(controller.state.apprenticeship?.contribution, 19);
   });
 
+  test('Latemoon apprenticeship teaches original iceforce path', () {
+    final initialState = repository
+        .createInitialState(
+          gender: PlayerGender.female,
+          attributes: const InnateAttributes.standard().copyWith(composure: 20),
+        )
+        .copyWith(
+          currentRoomId: 'latemoon_hall',
+          visitedRoomIds: {'latemoon_hall'},
+          skillProgress: const {
+            'basic_force': SkillProgress(level: 5, experience: 0),
+          },
+        );
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState,
+    );
+
+    controller.dispatch(const GameAction.apprenticeTo('latemoon_master'));
+    expect(controller.state.apprenticeship?.familyId, 'latemoon_dancer');
+    expect(controller.state.apprenticeship?.generation, 2);
+
+    controller.dispatch(
+      const GameAction.learnFromNpc('latemoon_master', 'iceforce'),
+    );
+    expect(controller.state.learnedSkillIds, contains('iceforce'));
+
+    controller.dispatch(
+      const GameAction.enableSkill('iceforce', SkillUsage.force),
+    );
+    expect(controller.state.enabledSkillIds[SkillUsage.force], 'iceforce');
+
+    controller.dispatch(
+      const GameAction.learnFromNpc('latemoon_master', 'snowwhip'),
+    );
+    expect(controller.state.learnedSkillIds, isNot(contains('snowwhip')));
+    expect(controller.state.log.last, contains('入室弟子'));
+
+    controller.replaceState(
+      controller.state.copyWith(
+        currentRoomId: 'latemoon_entrance',
+        visitedRoomIds: {'latemoon_hall', 'latemoon_entrance'},
+        player: controller.state.player.copyWith(innerPower: 100),
+        skillProgress: {
+          ...controller.state.skillProgress,
+          'iceforce': const SkillProgress(level: 8, experience: 0),
+        },
+      ),
+    );
+    controller.dispatch(const GameAction.startCombat('latemoon_guard'));
+    controller.dispatch(
+      const GameAction.useCombatMove('iceforce', 'chillgaze'),
+    );
+
+    expect(
+      controller.state.combat?.enemyStatusEffects.map((effect) => effect.id),
+      contains('iceshock'),
+    );
+  });
+
   test(
     'family teachers can teach same-family disciples without being master',
     () {

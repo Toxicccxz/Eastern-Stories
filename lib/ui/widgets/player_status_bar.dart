@@ -94,7 +94,63 @@ class PlayerStatusBar extends StatelessWidget {
               ),
             ],
           ),
+          if (state.playerStatusEffects.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                for (final effect in state.playerStatusEffects)
+                  _ConditionChip(effect: effect),
+              ],
+            ),
+          ],
         ],
+      ),
+    );
+  }
+}
+
+class _ConditionChip extends StatelessWidget {
+  const _ConditionChip({required this.effect});
+
+  final StatusEffectState effect;
+
+  @override
+  Widget build(BuildContext context) {
+    final isRecovery = effect.hpRecoveryPerRound > 0;
+    final color =
+        isRecovery
+            ? const Color(0xFF39724E)
+            : Theme.of(context).colorScheme.error;
+    final icon =
+        effect.blocksAction
+            ? Icons.bedtime_outlined
+            : isRecovery
+            ? Icons.healing_outlined
+            : Icons.warning_amber_rounded;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 13, color: color),
+            const SizedBox(width: 4),
+            Text(
+              '${effect.name} ${effect.remainingRounds}',
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: color,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

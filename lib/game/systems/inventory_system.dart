@@ -3,17 +3,20 @@ import '../models/skill_definition.dart';
 import '../repositories/game_definition_repository.dart';
 import 'equipment_system.dart';
 import 'cultivation_system.dart';
+import 'player_condition_system.dart';
 
 class InventorySystem {
   const InventorySystem(
     this._repository,
     this._equipmentSystem,
     this._cultivationSystem,
+    this._playerConditionSystem,
   );
 
   final GameDefinitionRepository _repository;
   final EquipmentSystem _equipmentSystem;
   final CultivationSystem _cultivationSystem;
+  final PlayerConditionSystem _playerConditionSystem;
 
   List<SkillDefinition> learnedSkills(GameState state) {
     return [
@@ -55,10 +58,17 @@ class InventorySystem {
     if (!item.canUse) {
       return _withLog(state, '${item.name}现在不能使用。');
     }
+    final reducedEffectId = item.reducesStatusEffectId;
+    if (reducedEffectId != null &&
+        !state.playerStatusEffects.any(
+          (effect) => effect.id == reducedEffectId,
+        )) {
+      return _withLog(state, '你现在不需要使用${item.name}。');
+    }
 
     final inventory = [...state.inventoryItemIds]..remove(itemId);
     final stats = _equipmentSystem.statsFor(state);
-    return state.copyWith(
+    var nextState = state.copyWith(
       player: state.player.copyWith(
         hp: (state.player.hp + item.restoreHp).clamp(0, stats.maxHp),
         innerPower: (state.player.innerPower + item.restoreInnerPower).clamp(
@@ -69,6 +79,18 @@ class InventorySystem {
       inventoryItemIds: inventory,
       log: state.logWith('你用了${item.name}，精神稍振。'),
     );
+    final appliedEffectId = item.appliesStatusEffectId;
+    if (appliedEffectId != null) {
+      nextState = _playerConditionSystem.apply(nextState, appliedEffectId);
+    }
+    if (reducedEffectId != null) {
+      nextState = _playerConditionSystem.reduce(
+        nextState,
+        reducedEffectId,
+        item.statusEffectReduction,
+      );
+    }
+    return nextState;
   }
 
   GameState dropItem(GameState state, String itemId) {

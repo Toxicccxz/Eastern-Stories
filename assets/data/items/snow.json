@@ -66,6 +66,8 @@
     "name": "蛇药",
     "description": "杨掌柜配制的蛇伤药散，带着淡淡檀香。",
     "restoreHp": 12,
+    "reducesStatusEffectId": "snake_poison",
+    "statusEffectReduction": 1,
     "buyPrice": 12,
     "sellPrice": 5
   },

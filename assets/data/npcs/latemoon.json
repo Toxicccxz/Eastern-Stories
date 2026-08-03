@@ -39,7 +39,61 @@
         "response": "庄主说道：晚月庄以舞入武，以神换技。更深的师承系统后续可按原版继续细化。"
       }
     ],
-    "combat": {"maxHp": 120, "attack": 16, "defense": 12, "rewardExperience": 140}
+    "combat": {
+      "maxHp": 120,
+      "attack": 16,
+      "defense": 12,
+      "rewardExperience": 140,
+      "specialMove": {
+        "name": "玫瑰花毒",
+        "interval": 3,
+        "damageBonus": 0,
+        "message": "晚月庄主嫣然一笑，袖边似有花瓣轻轻拂过。",
+        "statusEffectId": "rose_poison"
+      }
+    },
+    "intelligence": 28,
+    "familyId": "latemoon_dancer",
+    "familyGeneration": 1,
+    "canAcceptApprentices": true,
+    "apprenticeTitle": "弟子",
+    "apprenticeshipConditions": {
+      "requiredGender": "female",
+      "minimumAttributes": {"composure": 18}
+    },
+    "apprenticeshipFailureMessage": "晚月庄只收女子，且须心性从容。",
+    "teachingSkills": [
+      {"skillId": "basic_dodge", "maxLevel": 50, "access": "direct"},
+      {"skillId": "basic_unarmed", "maxLevel": 45, "access": "direct"},
+      {"skillId": "parry", "maxLevel": 50, "access": "direct"},
+      {"skillId": "basic_force", "maxLevel": 40, "access": "direct"},
+      {
+        "skillId": "iceforce",
+        "maxLevel": 50,
+        "access": "direct",
+        "requiredSkillLevels": {"basic_force": 5}
+      },
+      {
+        "skillId": "stormdance",
+        "maxLevel": 50,
+        "access": "direct",
+        "requiredSkillLevels": {"basic_dodge": 5}
+      },
+      {
+        "skillId": "tenderzhi",
+        "maxLevel": 45,
+        "access": "direct",
+        "requiredSkillLevels": {"basic_unarmed": 5}
+      },
+      {
+        "skillId": "snowwhip",
+        "maxLevel": 35,
+        "access": "direct",
+        "requiredRankId": "inner_dancer",
+        "requiredContribution": 15,
+        "requiredSkillLevels": {"parry": 5}
+      }
+    ]
   },
   {
     "id": "latemoon_yumay",
@@ -60,9 +114,11 @@
     ],
     "combat": {"maxHp": 96, "attack": 13, "defense": 10, "rewardExperience": 90, "dropItemIds": ["latemoon_needle", "latemoon_deer_boot", "latemoon_skirt3"], "specialMove": {"name": "落月移形", "interval": 3, "damageBonus": 5, "message": "蓝雨梅脚下舞步一错，身影如风贴近，借“落月移形”反手一点。"}},
     "intelligence": 16,
+    "familyId": "latemoon_dancer",
+    "familyGeneration": 2,
     "teachingSkills": [
-      {"skillId": "stormdance", "maxLevel": 12},
-      {"skillId": "tenderzhi", "maxLevel": 8}
+      {"skillId": "stormdance", "maxLevel": 12, "access": "family"},
+      {"skillId": "tenderzhi", "maxLevel": 8, "access": "family"}
     ]
   },
   {
@@ -78,8 +134,10 @@
       }
     ],
     "teachingSkills": [
-      {"skillId": "stormdance", "maxLevel": 10}
+      {"skillId": "stormdance", "maxLevel": 10, "access": "family"}
     ],
+    "familyId": "latemoon_dancer",
+    "familyGeneration": 2,
     "combat": {
       "maxHp": 110,
       "attack": 14,
@@ -158,8 +216,10 @@
     "description": "晚月庄后厅中的女子，双手纤巧，似乎精于舞中暗器。",
     "greeting": "玉手微微一笑，指尖轻轻拂过袖口。",
     "combat": {"maxHp": 62, "attack": 10, "defense": 8, "rewardExperience": 48, "dropItemIds": ["latemoon_needle", "latemoon_earring", "latemoon_brooch"], "specialMove": {"name": "云端一点", "interval": 4, "damageBonus": 5, "message": "玉手指尖轻轻一弹，使出“云端一点”点向你的腕脉。"}},
+    "familyId": "latemoon_dancer",
+    "familyGeneration": 3,
     "teachingSkills": [
-      {"skillId": "tenderzhi", "maxLevel": 8}
+      {"skillId": "tenderzhi", "maxLevel": 8, "access": "family"}
     ]
   },
   {
@@ -182,9 +242,11 @@
     "description": "内厅中的晚月弟子，静静立在软帘旁。",
     "greeting": "玉琼说道：垂花门内是庄中女弟子居所，外客慎入。",
     "combat": {"maxHp": 68, "attack": 10, "defense": 9, "rewardExperience": 58, "dropItemIds": ["latemoon_skirt3"], "specialMove": {"name": "柔云指", "interval": 4, "damageBonus": 4, "message": "玉琼掌势虚引，忽然并指如兰，点向你胸前空门。"}},
+    "familyId": "latemoon_dancer",
+    "familyGeneration": 3,
     "teachingSkills": [
-      {"skillId": "stormdance", "maxLevel": 10},
-      {"skillId": "tenderzhi", "maxLevel": 10}
+      {"skillId": "stormdance", "maxLevel": 10, "access": "family"},
+      {"skillId": "tenderzhi", "maxLevel": 10, "access": "family"}
     ]
   },
   {
@@ -389,9 +451,11 @@
     ],
     "combat": {"maxHp": 108, "attack": 14, "defense": 11, "rewardExperience": 112, "dropItemIds": ["latemoon_deer_boot", "latemoon_belt", "latemoon_clasp"], "specialMove": {"name": "风影回旋", "interval": 3, "damageBonus": 6, "message": "莫欣芳身形一散，借旋身之势避开来势，回袖轻击。"}},
     "intelligence": 18,
+    "familyId": "latemoon_dancer",
+    "familyGeneration": 2,
     "teachingSkills": [
-      {"skillId": "stormdance", "maxLevel": 18},
-      {"skillId": "tenderzhi", "maxLevel": 16}
+      {"skillId": "stormdance", "maxLevel": 18, "access": "family"},
+      {"skillId": "tenderzhi", "maxLevel": 16, "access": "family"}
     ]
   },
   {
@@ -401,10 +465,24 @@
     "greeting": "邢千慧安静地守在缀芳阁中。",
     "combat": {"maxHp": 116, "attack": 15, "defense": 12, "rewardExperience": 125, "dropItemIds": ["latemoon_deer_boot", "latemoon_redbelt", "latemoon_clasp"], "specialMove": {"name": "落月移形", "interval": 3, "damageBonus": 7, "message": "邢千慧步影忽隐忽现，一式“落月移形”贴身攻来。"}},
     "intelligence": 18,
+    "familyId": "latemoon_dancer",
+    "familyGeneration": 2,
     "teachingSkills": [
-      {"skillId": "stormdance", "maxLevel": 20},
-      {"skillId": "tenderzhi", "maxLevel": 18},
-      {"skillId": "snowwhip", "maxLevel": 10}
+      {"skillId": "stormdance", "maxLevel": 20, "access": "family"},
+      {"skillId": "tenderzhi", "maxLevel": 18, "access": "family"},
+      {
+        "skillId": "iceforce",
+        "maxLevel": 18,
+        "access": "family",
+        "requiredSkillLevels": {"basic_force": 5}
+      },
+      {
+        "skillId": "snowwhip",
+        "maxLevel": 10,
+        "access": "family",
+        "requiredRankId": "inner_dancer",
+        "requiredContribution": 10
+      }
     ]
   },
   {

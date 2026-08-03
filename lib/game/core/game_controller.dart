@@ -20,6 +20,7 @@ import '../systems/cultivation_system.dart';
 import '../systems/apprenticeship_system.dart';
 import '../systems/inner_power_system.dart';
 import '../systems/family_task_system.dart';
+import '../systems/player_condition_system.dart';
 import 'game_action.dart';
 
 class GameController extends ChangeNotifier {
@@ -32,6 +33,10 @@ class GameController extends ChangeNotifier {
                ? repository.createInitialState()
                : repository.hydrateState(initialState) {
     _equipmentSystem = EquipmentSystem(repository);
+    _playerConditionSystem = PlayerConditionSystem(
+      repository,
+      _equipmentSystem,
+    );
     _skillMappingSystem = SkillMappingSystem(repository);
     final skillProgressionSystem = SkillProgressionSystem(
       repository,
@@ -56,6 +61,7 @@ class GameController extends ChangeNotifier {
       repository,
       _equipmentSystem,
       _cultivationSystem,
+      _playerConditionSystem,
     );
     _questSystem = QuestSystem(repository, progressionSystem);
     _combatSystem = CombatSystem(
@@ -64,8 +70,9 @@ class GameController extends ChangeNotifier {
       _equipmentSystem,
       skillProgressionSystem,
       _skillMappingSystem,
+      _playerConditionSystem,
     );
-    _worldSystem = WorldSystem(repository);
+    _worldSystem = WorldSystem(repository, _playerConditionSystem);
     _tradeSystem = TradeSystem(repository, _equipmentSystem);
   }
 
@@ -82,6 +89,7 @@ class GameController extends ChangeNotifier {
   late final ApprenticeshipSystem _apprenticeshipSystem;
   late final InnerPowerSystem _innerPowerSystem;
   late final FamilyTaskSystem _familyTaskSystem;
+  late final PlayerConditionSystem _playerConditionSystem;
   GameState _state;
 
   GameDefinitionRepository get repository => _repository;

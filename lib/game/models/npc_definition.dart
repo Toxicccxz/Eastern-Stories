@@ -1,5 +1,6 @@
 import 'game_state.dart';
 import 'quest_definition.dart';
+import 'skill_definition.dart';
 import 'world_condition.dart';
 
 class NpcDefinition {
@@ -302,6 +303,8 @@ class EnemyMoveDefinition {
     required this.interval,
     required this.damageBonus,
     required this.message,
+    this.statusEffectId,
+    this.statusEffect,
   });
 
   factory EnemyMoveDefinition.fromJson(Map<String, Object?> json) {
@@ -310,6 +313,13 @@ class EnemyMoveDefinition {
       interval: json['interval'] as int,
       damageBonus: json['damageBonus'] as int? ?? 0,
       message: json['message'] as String,
+      statusEffectId: json['statusEffectId'] as String?,
+      statusEffect:
+          json['statusEffect'] == null
+              ? null
+              : StatusEffectDefinition.fromJson(
+                json['statusEffect'] as Map<String, Object?>,
+              ),
     );
   }
 
@@ -317,6 +327,8 @@ class EnemyMoveDefinition {
   final int interval;
   final int damageBonus;
   final String message;
+  final String? statusEffectId;
+  final StatusEffectDefinition? statusEffect;
 }
 
 class DialogueOption {

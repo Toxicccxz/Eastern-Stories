@@ -45,6 +45,7 @@ class CombatPanel extends StatelessWidget {
               ),
             ],
           ),
+          _StatusEffectRow(label: '自身状态', effects: state.playerStatusEffects),
           const SizedBox(height: 10),
           Text(
             npc.name,
@@ -81,6 +82,7 @@ class CombatPanel extends StatelessWidget {
             maxValue: combatDefinition.maxHp,
             color: const Color(0xFF7B5FA4),
           ),
+          _StatusEffectRow(label: '敌方状态', effects: combat.enemyStatusEffects),
           if (combatDefinition.specialMove case final specialMove?) ...[
             const SizedBox(height: 8),
             Text(
@@ -133,6 +135,191 @@ class CombatPanel extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+class _StatusEffectRow extends StatelessWidget {
+  const _StatusEffectRow({required this.label, required this.effects});
+
+  final String label;
+  final List<StatusEffectState> effects;
+
+  @override
+  Widget build(BuildContext context) {
+    if (effects.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 5),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: [
+              for (final effect in effects) _StatusEffectChip(effect: effect),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatusEffectChip extends StatelessWidget {
+  const _StatusEffectChip({required this.effect});
+
+  final StatusEffectState effect;
+
+  @override
+  Widget build(BuildContext context) {
+    final visual = _StatusEffectVisual.fromEffect(context, effect);
+    final details = <String>[
+      if (effect.damagePerRound > 0) '每回合气血 -${effect.damagePerRound}',
+      if (effect.spiritDamagePerRound > 0)
+        '每回合精神 -${effect.spiritDamagePerRound}',
+      if (effect.innerPowerDamagePerRound > 0)
+        '每回合内力 -${effect.innerPowerDamagePerRound}',
+      if (effect.hpRecoveryPerRound > 0) '每回合气血 +${effect.hpRecoveryPerRound}',
+      if (effect.attackPenalty > 0) '攻 -${effect.attackPenalty}',
+      if (effect.defensePenalty > 0) '防 -${effect.defensePenalty}',
+      if (effect.blocksAction) '无法行动',
+    ].join(' / ');
+
+    return Tooltip(
+      message: details.isEmpty ? effect.name : details,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: visual.background,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: visual.border),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(visual.icon, size: 13, color: visual.foreground),
+              const SizedBox(width: 4),
+              Text(
+                '${effect.name} ${effect.remainingRounds}',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: visual.foreground,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusEffectVisual {
+  const _StatusEffectVisual({
+    required this.icon,
+    required this.background,
+    required this.foreground,
+    required this.border,
+  });
+
+  final IconData icon;
+  final Color background;
+  final Color foreground;
+  final Color border;
+
+  factory _StatusEffectVisual.fromEffect(
+    BuildContext context,
+    StatusEffectState effect,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final id = effect.id.toLowerCase();
+
+    if (id.contains('ice')) {
+      const color = Color(0xFF2E6F9E);
+      return _StatusEffectVisual(
+        icon: Icons.ac_unit,
+        background: color.withValues(alpha: 0.13),
+        foreground: color,
+        border: color.withValues(alpha: 0.35),
+      );
+    }
+
+    if (id.contains('poison')) {
+      const color = Color(0xFF8B3A62);
+      return _StatusEffectVisual(
+        icon: Icons.local_florist,
+        background: color.withValues(alpha: 0.13),
+        foreground: color,
+        border: color.withValues(alpha: 0.35),
+      );
+    }
+
+    if (effect.blocksAction) {
+      const color = Color(0xFF665C8E);
+      return _StatusEffectVisual(
+        icon: Icons.bedtime_outlined,
+        background: color.withValues(alpha: 0.13),
+        foreground: color,
+        border: color.withValues(alpha: 0.35),
+      );
+    }
+
+    if (effect.hpRecoveryPerRound > 0) {
+      const color = Color(0xFF39724E);
+      return _StatusEffectVisual(
+        icon: Icons.healing_outlined,
+        background: color.withValues(alpha: 0.13),
+        foreground: color,
+        border: color.withValues(alpha: 0.35),
+      );
+    }
+
+    if (effect.damagePerRound > 0) {
+      const color = Color(0xFFB04535);
+      return _StatusEffectVisual(
+        icon: Icons.local_fire_department,
+        background: color.withValues(alpha: 0.12),
+        foreground: color,
+        border: color.withValues(alpha: 0.34),
+      );
+    }
+
+    if (effect.attackPenalty > 0) {
+      const color = Color(0xFF9A5B16);
+      return _StatusEffectVisual(
+        icon: Icons.trending_down,
+        background: color.withValues(alpha: 0.12),
+        foreground: color,
+        border: color.withValues(alpha: 0.34),
+      );
+    }
+
+    if (effect.defensePenalty > 0) {
+      const color = Color(0xFF6E5F20);
+      return _StatusEffectVisual(
+        icon: Icons.shield_outlined,
+        background: color.withValues(alpha: 0.12),
+        foreground: color,
+        border: color.withValues(alpha: 0.34),
+      );
+    }
+
+    return _StatusEffectVisual(
+      icon: Icons.auto_awesome,
+      background: colorScheme.tertiaryContainer,
+      foreground: colorScheme.onTertiaryContainer,
+      border: colorScheme.tertiary.withValues(alpha: 0.32),
     );
   }
 }

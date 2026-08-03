@@ -9,6 +9,7 @@ const _categories = <String>[
   'quests',
   'skills',
   'families',
+  'statusEffects',
 ];
 
 const _playerGenders = {'male', 'female'};
@@ -125,6 +126,7 @@ class GameDataValidator {
     _validateQuests();
     _validateSkills();
     _validateFamilies();
+    _validateStatusEffects();
   }
 
   Future<Map<String, _Definition>> _loadCategory(
@@ -287,6 +289,12 @@ class GameDataValidator {
         specialMove['damageBonus'],
         '$context.combat.specialMove.damageBonus',
       );
+      _requireReference(
+        'statusEffects',
+        specialMove['statusEffectId'],
+        '$context.combat.specialMove.statusEffectId',
+        optional: true,
+      );
       _requireReferences(
         'items',
         combat['dropItemIds'],
@@ -408,6 +416,29 @@ class GameDataValidator {
         '$context.studySkillId',
         optional: true,
       );
+      _requireReference(
+        'statusEffects',
+        item.data['appliesStatusEffectId'],
+        '$context.appliesStatusEffectId',
+        optional: true,
+      );
+      _requireReference(
+        'statusEffects',
+        item.data['reducesStatusEffectId'],
+        '$context.reducesStatusEffectId',
+        optional: true,
+      );
+      if (item.data['reducesStatusEffectId'] != null) {
+        _validateOptionalPositiveInt(
+          item.data['statusEffectReduction'],
+          '$context.statusEffectReduction',
+        );
+      } else {
+        _validateOptionalInt(
+          item.data['statusEffectReduction'],
+          '$context.statusEffectReduction',
+        );
+      }
       _validateEnum(
         item.data['equipmentSlot'],
         _equipmentSlots,
@@ -554,6 +585,40 @@ class GameDataValidator {
         ]) {
           _validateOptionalInt(move[field], '$moveContext.$field');
         }
+        _requireReference(
+          'statusEffects',
+          move['statusEffectId'],
+          '$moveContext.statusEffectId',
+          optional: true,
+        );
+      }
+    }
+  }
+
+  void _validateStatusEffects() {
+    for (final effect in _all('statusEffects')) {
+      final context = 'status effect "${effect.id}" (${effect.source})';
+      final name = effect.data['name'];
+      if (name is! String || name.trim().isEmpty) {
+        errors.add('$context.name must be a non-empty string.');
+      }
+      final duration = effect.data['duration'];
+      if (duration is! int || duration <= 0) {
+        errors.add('$context.duration must be a positive integer.');
+      }
+      for (final field in [
+        'damagePerRound',
+        'spiritDamagePerRound',
+        'innerPowerDamagePerRound',
+        'hpRecoveryPerRound',
+        'attackPenalty',
+        'defensePenalty',
+      ]) {
+        _validateOptionalInt(effect.data[field], '$context.$field');
+      }
+      final blocksAction = effect.data['blocksAction'];
+      if (blocksAction != null && blocksAction is! bool) {
+        errors.add('$context.blocksAction must be a boolean.');
       }
     }
   }

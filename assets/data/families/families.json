@@ -148,5 +148,108 @@
         }
       }
     ]
+  },
+  {
+    "id": "latemoon_dancer",
+    "name": "晚月庄",
+    "description": "晚月庄以舞入武，门下多习飘风舞步、柔云指与寒雪鞭法。原版中庄主蓝止萍为晚月庄第一代庄主，只收女弟子。",
+    "tasks": [
+      {
+        "id": "latemoon_garden_patrol",
+        "title": "巡看月园",
+        "description": "依次巡看晚月庄前院、月园中心、月下亭与月影深处，确认园中无人惊扰。",
+        "issuerNpcId": "latemoon_master",
+        "type": "patrolRooms",
+        "targetId": "latemoon_front_yard",
+        "targetIds": [
+          "latemoon_front_yard",
+          "latemoon_park_moonc",
+          "latemoon_park_pavilion1",
+          "latemoon_park_moon4"
+        ],
+        "rewardExperience": 25,
+        "rewardPotential": 6,
+        "rewardContribution": 6
+      },
+      {
+        "id": "latemoon_visit_scripture",
+        "title": "整理书房",
+        "description": "到晚月书房查看舞谱和曲谱是否收妥，再回来向庄主复命。",
+        "issuerNpcId": "latemoon_master",
+        "type": "visitRoom",
+        "targetId": "latemoon_latebook",
+        "rewardExperience": 18,
+        "rewardPotential": 5,
+        "rewardContribution": 4
+      },
+      {
+        "id": "latemoon_ask_yumay",
+        "title": "问候雨梅",
+        "description": "去向蓝雨梅问候今日待客之事，听她说完再回来。",
+        "issuerNpcId": "latemoon_master",
+        "type": "talkToNpc",
+        "targetId": "latemoon_yumay",
+        "rewardExperience": 15,
+        "rewardPotential": 4,
+        "rewardContribution": 4
+      },
+      {
+        "id": "latemoon_inner_patrol",
+        "title": "内院巡行",
+        "description": "依次巡看内院、走廊、浴房和密室一带，确认内院安静无事。",
+        "issuerNpcId": "latemoon_master",
+        "type": "patrolRooms",
+        "targetId": "latemoon_lcenter",
+        "targetIds": [
+          "latemoon_lcenter",
+          "latemoon_corridor7",
+          "latemoon_bathroom1",
+          "latemoon_miroom2"
+        ],
+        "rewardExperience": 30,
+        "rewardPotential": 8,
+        "rewardContribution": 7,
+        "conditions": {"requiredFamilyRankIds": ["inner_dancer"]}
+      },
+      {
+        "id": "latemoon_sparring_yuchoun",
+        "title": "同门试指",
+        "description": "到内厅与玉琮切磋柔云指，取胜后回来向庄主复命。",
+        "issuerNpcId": "latemoon_master",
+        "type": "defeatNpc",
+        "targetId": "latemoon_yuchoun",
+        "rewardExperience": 35,
+        "rewardPotential": 8,
+        "rewardContribution": 8,
+        "conditions": {"requiredFamilyRankIds": ["inner_dancer"]}
+      }
+    ],
+    "ranks": [
+      {
+        "id": "disciple",
+        "title": "弟子"
+      },
+      {
+        "id": "inner_dancer",
+        "title": "入室弟子",
+        "minimumContribution": 20,
+        "minimumCompletedTasks": 2,
+        "requiredSkillLevels": {
+          "stormdance": 5,
+          "iceforce": 3
+        }
+      },
+      {
+        "id": "echo_dancer",
+        "title": "回音弟子",
+        "minimumContribution": 45,
+        "minimumCompletedTasks": 5,
+        "requiredSkillLevels": {
+          "stormdance": 10,
+          "tenderzhi": 6,
+          "iceforce": 8
+        }
+      }
+    ]
   }
 ]

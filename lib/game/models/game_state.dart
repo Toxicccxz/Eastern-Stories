@@ -20,6 +20,7 @@ class GameState {
     required this.shopStates,
     required this.questStatuses,
     required this.questFlags,
+    required this.playerStatusEffects,
     required this.combat,
     required this.log,
   });
@@ -66,6 +67,7 @@ class GameState {
       shopStates: shopStates,
       questStatuses: const {},
       questFlags: const {},
+      playerStatusEffects: const [],
       combat: null,
       log: const ['你在晨雾中醒来，东方故事就此开始。'],
     );
@@ -114,6 +116,7 @@ class GameState {
         (questId, status) => MapEntry(questId, _questStatusFromName(status)),
       ),
       questFlags: (json['questFlags'] as List<Object?>).cast<String>().toSet(),
+      playerStatusEffects: _playerStatusEffectsFromJson(json),
       combat:
           json['combat'] == null
               ? null
@@ -136,6 +139,7 @@ class GameState {
   final Map<String, ShopRuntimeState> shopStates;
   final Map<String, QuestStatus> questStatuses;
   final Set<String> questFlags;
+  final List<StatusEffectState> playerStatusEffects;
   final CombatState? combat;
   final List<String> log;
 
@@ -169,6 +173,9 @@ class GameState {
         (questId, status) => MapEntry(questId, status.name),
       ),
       'questFlags': questFlags.toList(),
+      'playerStatusEffects': [
+        for (final effect in playerStatusEffects) effect.toJson(),
+      ],
       'combat': combat?.toJson(),
       'log': log,
     };
@@ -191,6 +198,7 @@ class GameState {
     Map<String, ShopRuntimeState>? shopStates,
     Map<String, QuestStatus>? questStatuses,
     Set<String>? questFlags,
+    List<StatusEffectState>? playerStatusEffects,
     Object? combat = _unchanged,
     List<String>? log,
   }) {
@@ -231,6 +239,7 @@ class GameState {
       shopStates: shopStates ?? this.shopStates,
       questStatuses: questStatuses ?? this.questStatuses,
       questFlags: questFlags ?? this.questFlags,
+      playerStatusEffects: playerStatusEffects ?? this.playerStatusEffects,
       combat: combat == _unchanged ? this.combat : combat as CombatState?,
       log: log ?? this.log,
     );
@@ -587,6 +596,8 @@ class CombatState {
     required this.npcId,
     required this.enemyHp,
     this.round = 0,
+    this.playerStatusEffects = const [],
+    this.enemyStatusEffects = const [],
   });
 
   factory CombatState.fromJson(Map<String, Object?> json) {
@@ -594,23 +605,137 @@ class CombatState {
       npcId: json['npcId'] as String,
       enemyHp: json['enemyHp'] as int,
       round: json['round'] as int? ?? 0,
+      playerStatusEffects: [
+        for (final effect
+            in json['playerStatusEffects'] as List<Object?>? ?? const [])
+          StatusEffectState.fromJson(effect as Map<String, Object?>),
+      ],
+      enemyStatusEffects: [
+        for (final effect
+            in json['enemyStatusEffects'] as List<Object?>? ?? const [])
+          StatusEffectState.fromJson(effect as Map<String, Object?>),
+      ],
     );
   }
 
   final String npcId;
   final int enemyHp;
   final int round;
+  final List<StatusEffectState> playerStatusEffects;
+  final List<StatusEffectState> enemyStatusEffects;
 
   Map<String, Object?> toJson() {
-    return {'npcId': npcId, 'enemyHp': enemyHp, 'round': round};
+    return {
+      'npcId': npcId,
+      'enemyHp': enemyHp,
+      'round': round,
+      'playerStatusEffects': [
+        for (final effect in playerStatusEffects) effect.toJson(),
+      ],
+      'enemyStatusEffects': [
+        for (final effect in enemyStatusEffects) effect.toJson(),
+      ],
+    };
   }
 
-  CombatState copyWith({int? enemyHp, int? round}) {
+  CombatState copyWith({
+    int? enemyHp,
+    int? round,
+    List<StatusEffectState>? playerStatusEffects,
+    List<StatusEffectState>? enemyStatusEffects,
+  }) {
     return CombatState(
       npcId: npcId,
       enemyHp: enemyHp ?? this.enemyHp,
       round: round ?? this.round,
+      playerStatusEffects: playerStatusEffects ?? this.playerStatusEffects,
+      enemyStatusEffects: enemyStatusEffects ?? this.enemyStatusEffects,
     );
+  }
+}
+
+class StatusEffectState {
+  const StatusEffectState({
+    required this.id,
+    required this.name,
+    required this.remainingRounds,
+    this.damagePerRound = 0,
+    this.spiritDamagePerRound = 0,
+    this.innerPowerDamagePerRound = 0,
+    this.hpRecoveryPerRound = 0,
+    this.attackPenalty = 0,
+    this.defensePenalty = 0,
+    this.blocksAction = false,
+    this.tickMessage,
+    this.expireMessage,
+  });
+
+  factory StatusEffectState.fromJson(Map<String, Object?> json) {
+    return StatusEffectState(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      remainingRounds: json['remainingRounds'] as int,
+      damagePerRound: json['damagePerRound'] as int? ?? 0,
+      spiritDamagePerRound: json['spiritDamagePerRound'] as int? ?? 0,
+      innerPowerDamagePerRound: json['innerPowerDamagePerRound'] as int? ?? 0,
+      hpRecoveryPerRound: json['hpRecoveryPerRound'] as int? ?? 0,
+      attackPenalty: json['attackPenalty'] as int? ?? 0,
+      defensePenalty: json['defensePenalty'] as int? ?? 0,
+      blocksAction: json['blocksAction'] as bool? ?? false,
+      tickMessage: json['tickMessage'] as String?,
+      expireMessage: json['expireMessage'] as String?,
+    );
+  }
+
+  final String id;
+  final String name;
+  final int remainingRounds;
+  final int damagePerRound;
+  final int spiritDamagePerRound;
+  final int innerPowerDamagePerRound;
+  final int hpRecoveryPerRound;
+  final int attackPenalty;
+  final int defensePenalty;
+  final bool blocksAction;
+  final String? tickMessage;
+  final String? expireMessage;
+
+  Map<String, Object?> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'remainingRounds': remainingRounds,
+      'damagePerRound': damagePerRound,
+      'spiritDamagePerRound': spiritDamagePerRound,
+      'innerPowerDamagePerRound': innerPowerDamagePerRound,
+      'hpRecoveryPerRound': hpRecoveryPerRound,
+      'attackPenalty': attackPenalty,
+      'defensePenalty': defensePenalty,
+      'blocksAction': blocksAction,
+      'tickMessage': tickMessage,
+      'expireMessage': expireMessage,
+    };
+  }
+
+  StatusEffectState copyWith({int? remainingRounds}) {
+    return StatusEffectState(
+      id: id,
+      name: name,
+      remainingRounds: remainingRounds ?? this.remainingRounds,
+      damagePerRound: damagePerRound,
+      spiritDamagePerRound: spiritDamagePerRound,
+      innerPowerDamagePerRound: innerPowerDamagePerRound,
+      hpRecoveryPerRound: hpRecoveryPerRound,
+      attackPenalty: attackPenalty,
+      defensePenalty: defensePenalty,
+      blocksAction: blocksAction,
+      tickMessage: tickMessage,
+      expireMessage: expireMessage,
+    );
+  }
+
+  StatusEffectState tick() {
+    return copyWith(remainingRounds: remainingRounds - 1);
   }
 }
 
@@ -645,6 +770,21 @@ Map<String, SkillProgress> _skillProgressFromJson(Map<String, Object?> json) {
             .cast<String>())
       skillId: const SkillProgress(level: 1, experience: 0),
   };
+}
+
+List<StatusEffectState> _playerStatusEffectsFromJson(
+  Map<String, Object?> json,
+) {
+  final savedEffects = json['playerStatusEffects'] as List<Object?>?;
+  final legacyCombat = json['combat'] as Map<String, Object?>?;
+  final effects =
+      savedEffects ??
+      legacyCombat?['playerStatusEffects'] as List<Object?>? ??
+      const [];
+  return [
+    for (final effect in effects)
+      StatusEffectState.fromJson(effect as Map<String, Object?>),
+  ];
 }
 
 QuestStatus _questStatusFromName(Object? name) {

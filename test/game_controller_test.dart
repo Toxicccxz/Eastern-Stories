@@ -1045,6 +1045,7 @@ void main() {
       repository: repository,
       initialState: initialState.copyWith(
         currentRoomId: 'oldpine_deep_passage',
+        player: initialState.player.copyWith(hp: 400, maxHp: 400),
         visitedRoomIds: {
           ...initialState.visitedRoomIds,
           'oldpine_deep_passage',

@@ -1,97 +1,153 @@
 [
-  {
-    "id": "stormdance",
-    "name": "飘风舞步",
-    "description": "晚月庄以舞入武的身法，步影如风，旋身错落，可启用为轻功与行动身法。",
-    "kind": "special",
-    "usages": ["dodge", "move"],
-    "requiredSkillLevels": {"basic_dodge": 5},
-    "practiceHpCost": 20,
-    "practiceInnerPowerCost": 3,
-    "damageReduction": 4,
-    "attackMessages": [
-      "你脚下舞步一错，身影如风掠过{enemy}身侧。",
-      "你旋身避开来势，衣袂带起一阵细细风声。"
-    ],
-    "moves": [
-      {
-        "id": "wind_shadow_turn",
-        "name": "风影回旋",
-        "effectType": "defend",
-        "innerPowerCost": 5,
-        "defenseBonus": 8,
-        "minimumSkillLevel": 5,
-        "combatMessage": "你使出“风影回旋”，步影一散，借旋身之势卸开对手攻势。"
-      },
-      {
-        "id": "falling_moon_step",
-        "name": "落月移形",
-        "effectType": "damage",
-        "innerPowerCost": 6,
-        "damageBonus": 5,
-        "minimumSkillLevel": 8,
-        "combatMessage": "你一式“落月移形”，身形忽隐忽现，趁{enemy}眼前一乱贴身反击。"
-      }
-    ],
-    "maxLevel": 50,
-    "practiceExperience": 20
-  },
-  {
-    "id": "tenderzhi",
-    "name": "柔云指",
-    "description": "晚月庄柔劲指法，出手轻灵，看似无力，却能顺势点入对手破绽。",
-    "kind": "special",
-    "usages": ["unarmed", "parry"],
-    "requiredSkillLevels": {"basic_unarmed": 5, "parry": 3},
-    "practiceHpCost": 20,
-    "practiceInnerPowerCost": 2,
-    "damageReduction": 1,
-    "attackMessages": [
-      "你指尖轻轻一弹，使出柔云指点向{enemy}腕脉。",
-      "你掌势虚引，忽然并指如兰，点向{enemy}胸前空门。"
-    ],
-    "moves": [
-      {
-        "id": "cloud_tip",
-        "name": "云端一点",
-        "effectType": "damage",
-        "innerPowerCost": 5,
-        "damageBonus": 7,
-        "minimumSkillLevel": 6,
-        "combatMessage": "你使出“云端一点”，指风柔而不散，直取{enemy}要害。"
-      }
-    ],
-    "maxLevel": 50,
-    "practiceExperience": 20
-  },
-  {
-    "id": "snowwhip",
-    "name": "寒雪鞭法",
-    "description": "晚月庄秘藏鞭法，鞭影如雪线横空，适合配合长鞭施展。",
-    "kind": "special",
-    "usages": ["whip", "parry"],
-    "requiredEquipmentSlot": "weapon",
-    "requiredSkillLevels": {"parry": 5},
-    "practiceHpCost": 20,
-    "practiceInnerPowerCost": 4,
-    "damageReduction": 1,
-    "attackMessages": [
-      "你手中长鞭一抖，鞭影如雪线般卷向{enemy}。",
-      "你腕势轻翻，长鞭绕出半弧，扫向{enemy}下盘。"
-    ],
-    "moves": [
-      {
-        "id": "snow_coil",
-        "name": "雪线缠枝",
-        "effectType": "damage",
-        "innerPowerCost": 7,
-        "damageBonus": 9,
-        "minimumSkillLevel": 8,
-        "requiredEquipmentSlot": "weapon",
-        "combatMessage": "你使出“雪线缠枝”，长鞭层层卷出，封住{enemy}退路。"
-      }
-    ],
-    "maxLevel": 50,
-    "practiceExperience": 20
-  }
+    {
+        "id":  "stormdance",
+        "name":  "飘风舞步",
+        "description":  "晚月庄以舞入武的身法，步影如风，旋身错落，可启用为轻功与行动身法。",
+        "kind":  "special",
+        "usages":  [
+                       "dodge",
+                       "move"
+                   ],
+        "requiredSkillLevels":  {
+                                    "basic_dodge":  5
+                                },
+        "practiceHpCost":  20,
+        "practiceInnerPowerCost":  3,
+        "damageReduction":  4,
+        "attackMessages":  [
+                               "你脚下舞步一错，身影如风掠过{enemy}身侧。",
+                               "你旋身避开来势，衣袂带起一阵细细风声。"
+                           ],
+        "moves":  [
+                      {
+                          "id":  "wind_shadow_turn",
+                          "name":  "风影回旋",
+                          "effectType":  "defend",
+                          "innerPowerCost":  5,
+                          "defenseBonus":  8,
+                          "minimumSkillLevel":  5,
+                          "combatMessage":  "你使出“风影回旋”，步影一散，借旋身之势卸开对手攻势。"
+                      },
+                      {
+                          "id":  "falling_moon_step",
+                          "name":  "落月移形",
+                          "effectType":  "damage",
+                          "innerPowerCost":  6,
+                          "damageBonus":  5,
+                          "minimumSkillLevel":  8,
+                          "combatMessage":  "你一式“落月移形”，身形忽隐忽现，趁{enemy}眼前一乱贴身反击。"
+                      }
+                  ],
+        "maxLevel":  50,
+        "practiceExperience":  20
+    },
+    {
+        "id":  "tenderzhi",
+        "name":  "柔云指",
+        "description":  "晚月庄柔劲指法，出手轻灵，看似无力，却能顺势点入对手破绽。",
+        "kind":  "special",
+        "usages":  [
+                       "unarmed",
+                       "parry"
+                   ],
+        "requiredSkillLevels":  {
+                                    "basic_unarmed":  5,
+                                    "parry":  3
+                                },
+        "practiceHpCost":  20,
+        "practiceInnerPowerCost":  2,
+        "damageReduction":  1,
+        "attackMessages":  [
+                               "你指尖轻轻一弹，使出柔云指点向{enemy}腕脉。",
+                               "你掌势虚引，忽然并指如兰，点向{enemy}胸前空门。"
+                           ],
+        "moves":  [
+                      {
+                          "id":  "cloud_tip",
+                          "name":  "云端一点",
+                          "effectType":  "damage",
+                          "innerPowerCost":  5,
+                          "damageBonus":  7,
+                          "minimumSkillLevel":  6,
+                          "combatMessage":  "你使出“云端一点”，指风柔而不散，直取{enemy}要害。"
+                      }
+                  ],
+        "maxLevel":  50,
+        "practiceExperience":  20
+    },
+    {
+        "id":  "iceforce",
+        "name":  "寒冰真气",
+        "description":  "晚月庄阴柔一路的内功心法，原版中蓝止萍将它启用为内功，运劲时寒意透骨。",
+        "kind":  "special",
+        "usages":  [
+                       "force"
+                   ],
+        "requiredFamilyId":  "latemoon_dancer",
+        "requiredSkillLevels":  {
+                                    "basic_force":  5
+                                },
+        "practiceHpCost":  20,
+        "practiceInnerPowerCost":  6,
+        "damageReduction":  3,
+        "canPractice":  false,
+        "moves":  [
+                      {
+                          "id":  "chillgaze",
+                          "name":  "寒冰睨",
+                          "effectType":  "damage",
+                          "innerPowerCost":  10,
+                          "damageBonus":  8,
+                          "minimumSkillLevel":  8,
+                          "combatMessage":  "你运起寒冰真气，使出“寒冰睨”，冰冷如刀的目光逼向{enemy}。",
+                          "statusEffectId":  "iceshock"
+                      },
+                      {
+                          "id":  "frost_guard",
+                          "name":  "凝霜护体",
+                          "effectType":  "defend",
+                          "innerPowerCost":  8,
+                          "defenseBonus":  10,
+                          "minimumSkillLevel":  6,
+                          "combatMessage":  "你吐纳之间寒意渐盛，使出“凝霜护体”，将来势卸在身外。"
+                      }
+                  ],
+        "maxLevel":  50,
+        "practiceExperience":  20
+    },
+    {
+        "id":  "snowwhip",
+        "name":  "寒雪鞭法",
+        "description":  "晚月庄秘藏鞭法，鞭影如雪线横空，适合配合长鞭施展。",
+        "kind":  "special",
+        "usages":  [
+                       "whip",
+                       "parry"
+                   ],
+        "requiredEquipmentSlot":  "weapon",
+        "requiredSkillLevels":  {
+                                    "parry":  5
+                                },
+        "practiceHpCost":  20,
+        "practiceInnerPowerCost":  4,
+        "damageReduction":  1,
+        "attackMessages":  [
+                               "你手中长鞭一抖，鞭影如雪线般卷向{enemy}。",
+                               "你腕势轻翻，长鞭绕出半弧，扫向{enemy}下盘。"
+                           ],
+        "moves":  [
+                      {
+                          "id":  "snow_coil",
+                          "name":  "雪线缠枝",
+                          "effectType":  "damage",
+                          "innerPowerCost":  7,
+                          "damageBonus":  9,
+                          "minimumSkillLevel":  8,
+                          "requiredEquipmentSlot":  "weapon",
+                          "combatMessage":  "你使出“雪线缠枝”，长鞭层层卷出，封住{enemy}退路。"
+                      }
+                  ],
+        "maxLevel":  50,
+        "practiceExperience":  20
+    }
 ]

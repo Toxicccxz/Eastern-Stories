@@ -1,0 +1,53 @@
+[
+  {
+    "id": "iceshock",
+    "name": "寒震",
+    "duration": 3,
+    "damagePerRound": 3,
+    "spiritDamagePerRound": 3,
+    "innerPowerDamagePerRound": 3,
+    "attackPenalty": 2,
+    "applicationMessage": "{target}被寒冰真气侵入经脉，忍不住打了个寒噤。",
+    "tickMessage": "{target}体内寒意翻涌，损失{damage}点气血、{spiritDamage}点精神与{innerPowerDamage}点内力。",
+    "expireMessage": "{target}体内寒意渐渐散去。"
+  },
+  {
+    "id": "rose_poison",
+    "name": "玫瑰花毒",
+    "duration": 4,
+    "damagePerRound": 4,
+    "spiritDamagePerRound": 2,
+    "defensePenalty": 1,
+    "applicationMessage": "你觉得脸上似乎沾上了什么，伸手一摸却什么也没有。",
+    "tickMessage": "{target}脸上花毒隐隐作痛，损失{damage}点气血与{spiritDamage}点精神。",
+    "expireMessage": "{target}脸上的异样感觉慢慢退去。"
+  },
+  {
+    "id": "snake_poison",
+    "name": "蛇毒",
+    "duration": 4,
+    "damagePerRound": 4,
+    "spiritDamagePerRound": 3,
+    "applicationMessage": "{target}伤口泛起青黑之色，蛇毒已侵入体内。",
+    "tickMessage": "{target}中的蛇毒发作了，损失{damage}点气血与{spiritDamage}点精神。",
+    "expireMessage": "{target}体内的蛇毒终于渐渐消退。"
+  },
+  {
+    "id": "slumber_drug",
+    "name": "蒙汗药",
+    "duration": 2,
+    "blocksAction": true,
+    "applicationMessage": "{target}脑中昏昏沉沉，身子也有些站不稳了。",
+    "tickMessage": "{target}受蒙汗药力影响，眼皮沉重。",
+    "expireMessage": "{target}渐渐从昏沉中清醒过来。"
+  },
+  {
+    "id": "bandaged",
+    "name": "包扎",
+    "duration": 4,
+    "hpRecoveryPerRound": 3,
+    "applicationMessage": "{target}将伤口仔细包扎妥当。",
+    "tickMessage": "{target}的伤口得到照料，恢复{healing}点气血。",
+    "expireMessage": "{target}伤口上的绷带已经失去效用。"
+  }
+]
