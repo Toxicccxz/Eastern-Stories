@@ -27,20 +27,17 @@ class InventorySystem {
   GameState pickUp(GameState state, String itemId) {
     final room = _repository.room(state.currentRoomId);
     if (!_repository
-            .visibleItemsInRoom(state, room.id)
-            .any((item) => item.id == itemId) ||
-        state.inventoryItemIds.contains(itemId)) {
+        .visibleItemsInRoom(state, room.id)
+        .any((item) => item.id == itemId)) {
       return _withLog(state, '这里没有这个东西。');
     }
 
     final item = _repository.item(itemId);
+    final roomItems = [...room.visibleItemIds(state)];
+    roomItems.remove(itemId);
     return state.copyWith(
-      roomItemOverrides: {
-        ...state.roomItemOverrides,
-        room.id:
-            room.visibleItemIds(state).where((id) => id != itemId).toList(),
-      },
-      inventoryItemIds: [...state.inventoryItemIds, itemId],
+      roomItemOverrides: {...state.roomItemOverrides, room.id: roomItems},
+      inventory: state.inventory.add(itemId),
       log: state.logWith('你捡起了${item.name}。'),
     );
   }
@@ -50,7 +47,7 @@ class InventorySystem {
   }
 
   GameState useItem(GameState state, String itemId) {
-    if (!state.inventoryItemIds.contains(itemId)) {
+    if (!state.inventory.contains(itemId)) {
       return _withLog(state, '你还没有这个东西。');
     }
 
@@ -66,7 +63,7 @@ class InventorySystem {
       return _withLog(state, '你现在不需要使用${item.name}。');
     }
 
-    final inventory = [...state.inventoryItemIds]..remove(itemId);
+    final inventory = state.inventory.remove(itemId);
     final stats = _equipmentSystem.statsFor(state);
     var nextState = state.copyWith(
       player: state.player.copyWith(
@@ -76,7 +73,7 @@ class InventorySystem {
           stats.maxInnerPower,
         ),
       ),
-      inventoryItemIds: inventory,
+      inventory: inventory,
       log: state.logWith('你用了${item.name}，精神稍振。'),
     );
     final appliedEffectId = item.appliesStatusEffectId;
@@ -94,19 +91,19 @@ class InventorySystem {
   }
 
   GameState dropItem(GameState state, String itemId) {
-    if (!state.inventoryItemIds.contains(itemId)) {
+    if (!state.inventory.contains(itemId)) {
       return _withLog(state, '你还没有这个东西。');
     }
 
     final room = _repository.room(state.currentRoomId);
     final item = _repository.item(itemId);
-    final inventory = [...state.inventoryItemIds]..remove(itemId);
-    final unequippedState = _equipmentSystem.removeItemFromEquipment(
-      state,
-      itemId,
-    );
+    final inventory = state.inventory.remove(itemId);
+    final unequippedState =
+        inventory.contains(itemId)
+            ? state
+            : _equipmentSystem.removeItemFromEquipment(state, itemId);
     return unequippedState.copyWith(
-      inventoryItemIds: inventory,
+      inventory: inventory,
       roomItemOverrides: {
         ...unequippedState.roomItemOverrides,
         room.id: [...room.visibleItemIds(unequippedState), itemId],

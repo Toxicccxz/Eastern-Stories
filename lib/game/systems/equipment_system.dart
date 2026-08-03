@@ -33,7 +33,7 @@ class EquipmentSystem {
   }
 
   GameState equipItem(GameState state, String itemId) {
-    if (!state.inventoryItemIds.contains(itemId)) {
+    if (!state.inventory.contains(itemId)) {
       return _withLog(state, '你还没有这个东西。');
     }
 

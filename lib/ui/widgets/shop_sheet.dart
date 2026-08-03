@@ -116,10 +116,10 @@ class _SellList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final quantities = <String, int>{};
-    for (final itemId in controller.state.inventoryItemIds) {
-      final item = controller.repository.item(itemId);
+    for (final entry in controller.state.inventory.entries) {
+      final item = controller.repository.item(entry.key);
       if (item.sellPrice > 0) {
-        quantities[itemId] = (quantities[itemId] ?? 0) + 1;
+        quantities[entry.key] = entry.value;
       }
     }
     if (quantities.isEmpty) {

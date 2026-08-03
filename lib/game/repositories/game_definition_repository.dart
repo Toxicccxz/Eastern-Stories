@@ -14,6 +14,7 @@ import '../models/skill_progress.dart';
 import '../models/family_definition.dart';
 import '../models/innate_attributes.dart';
 import '../models/equipment_slot.dart';
+import '../models/inventory_state.dart';
 
 class GameDefinitionRepository {
   const GameDefinitionRepository({
@@ -142,7 +143,7 @@ class GameDefinitionRepository {
     );
     return initialState.copyWith(
       player: initialState.player.copyWith(potential: 99, silver: 0),
-      inventoryItemIds: const ['plain_cloth'],
+      inventory: InventoryState.fromItemIds(const ['plain_cloth']),
       equippedItemIds: const {EquipmentSlot.body: 'plain_cloth'},
       skillProgress: const <String, SkillProgress>{},
       log: const ['你在雪亭镇饮风客栈中醒来，东方故事就此开始。'],

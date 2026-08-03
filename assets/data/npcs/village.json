@@ -88,7 +88,11 @@
     "id": "fisher",
     "name": "渔夫",
     "description": "一个精壮汉子，头戴斗笠，望向湖面时眼神格外锐利。",
-    "greeting": "不知这水怪又吃了几个人。"
+    "greeting": "不知这水怪又吃了几个人。",
+    "ambient": {
+      "intervalTurns": 6,
+      "messages": ["渔夫嘀咕着：不知这水怪又吃了几个人。"]
+    }
   },
   {
     "id": "meloner",

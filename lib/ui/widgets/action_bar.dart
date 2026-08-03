@@ -61,38 +61,63 @@ class ActionBar extends StatelessWidget {
   void _showInventory(BuildContext context, GameController controller) {
     showModalBottomSheet<void>(
       context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
       builder: (context) {
-        final itemIds = controller.state.inventoryItemIds;
-        final equippedItemIds = controller.state.equippedItemIds;
-        final skillProgress = controller.state.skillProgress;
+        return AnimatedBuilder(
+          animation: controller,
+          builder: (context, _) {
+            final inventoryEntries =
+                controller.state.inventory.entries.toList();
+            final equippedItemIds = controller.state.equippedItemIds;
+            final skillProgress = controller.state.skillProgress;
 
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('背包', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 12),
-              if (itemIds.isEmpty)
-                const Text('背包里还没有东西。')
-              else
-                for (final itemId in itemIds)
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(controller.repository.item(itemId).name),
-                    subtitle: Text(
-                      controller.repository.item(itemId).description,
-                    ),
-                    trailing: _InventoryAction(
-                      itemId: itemId,
-                      controller: controller,
-                      equippedItemIds: equippedItemIds,
-                      skillProgress: skillProgress,
-                    ),
+            return SafeArea(
+              top: false,
+              child: SizedBox(
+                height: MediaQuery.sizeOf(context).height * 0.68,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('背包', style: Theme.of(context).textTheme.titleLarge),
+                      const SizedBox(height: 12),
+                      Expanded(
+                        child:
+                            inventoryEntries.isEmpty
+                                ? const Center(child: Text('背包里还没有东西。'))
+                                : ListView.builder(
+                                  itemCount: inventoryEntries.length,
+                                  itemBuilder: (context, index) {
+                                    final entry = inventoryEntries[index];
+                                    final item = controller.repository.item(
+                                      entry.key,
+                                    );
+                                    return ListTile(
+                                      contentPadding: EdgeInsets.zero,
+                                      title: Text(
+                                        entry.value > 1
+                                            ? '${item.name} ×${entry.value}'
+                                            : item.name,
+                                      ),
+                                      subtitle: Text(item.description),
+                                      trailing: _InventoryAction(
+                                        itemId: entry.key,
+                                        controller: controller,
+                                        equippedItemIds: equippedItemIds,
+                                        skillProgress: skillProgress,
+                                      ),
+                                    );
+                                  },
+                                ),
+                      ),
+                    ],
                   ),
-            ],
-          ),
+                ),
+              ),
+            );
+          },
         );
       },
     );

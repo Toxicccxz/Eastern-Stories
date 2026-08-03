@@ -109,14 +109,11 @@ class GameController extends ChangeNotifier {
   void dispatch(GameAction action) {
     final previousState = _state;
     _state = switch (action) {
-      MoveAction(:final direction) => _worldSystem.advanceAfterTravel(
-        _state,
-        _movementSystem.move(_state, direction),
-      ),
+      MoveAction(:final direction) => _movementSystem.move(_state, direction),
       LookAction() => _movementSystem.look(_state),
-      PerformRoomAction(:final actionId) => _worldSystem.advanceAfterTravel(
+      PerformRoomAction(:final actionId) => _movementSystem.performRoomAction(
         _state,
-        _movementSystem.performRoomAction(_state, actionId),
+        actionId,
       ),
       TalkAction(:final npcId) => _questSystem.talk(_state, npcId),
       SelectDialogueAction(:final npcId, :final optionId) => _questSystem
@@ -191,11 +188,61 @@ class GameController extends ChangeNotifier {
       RecoverWithInnerPowerAction() => _innerPowerSystem.recover(_state),
       HealWithInnerPowerAction() => _innerPowerSystem.heal(_state),
     };
+    final enteredRoom = switch (action) {
+      MoveAction() || PerformRoomAction() =>
+        previousState.currentRoomId != _state.currentRoomId,
+      _ => false,
+    };
+    if (enteredRoom) {
+      final entryResult = _worldSystem.resolveRoomEntry(_state);
+      _state = entryResult.state;
+      if (entryResult.hostileNpcId case final hostileNpcId?) {
+        _state = _combatSystem.startCombat(_state, hostileNpcId);
+      }
+    }
+    final worldActionType = _worldActionType(action, previousState, _state);
+    if (worldActionType != null) {
+      _state = _worldSystem.advance(previousState, _state, worldActionType);
+    }
     _state = _familyTaskSystem.advance(previousState, _state);
     if (action case TalkAction(:final npcId)) {
       _state = _familyTaskSystem.recordNpcTalk(_state, npcId);
     }
     notifyListeners();
+  }
+
+  WorldActionType? _worldActionType(
+    GameAction action,
+    GameState previous,
+    GameState next,
+  ) {
+    return switch (action) {
+      MoveAction() || PerformRoomAction()
+          when previous.currentRoomId != next.currentRoomId =>
+        WorldActionType.travel,
+      AttackAction() || UseCombatMoveAction() || FleeCombatAction()
+          when _advancedCombatTurn(previous, next) =>
+        WorldActionType.combat,
+      StudyItemAction() || LearnFromNpcAction() || PracticeSkillAction()
+          when previous.skillProgress != next.skillProgress =>
+        WorldActionType.activity,
+      MeditateAction() ||
+      RecoverWithInnerPowerAction() ||
+      HealWithInnerPowerAction() when previous.player != next.player =>
+        WorldActionType.activity,
+      _ => null,
+    };
+  }
+
+  bool _advancedCombatTurn(GameState previous, GameState next) {
+    final previousCombat = previous.combat;
+    if (previousCombat == null) {
+      return false;
+    }
+    return next.combat == null ||
+        next.combat?.round != previousCombat.round ||
+        next.player != previous.player ||
+        next.playerStatusEffects != previous.playerStatusEffects;
   }
 
   List<QuestView> questViews() {

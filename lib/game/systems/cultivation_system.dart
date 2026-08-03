@@ -152,7 +152,7 @@ class CultivationSystem {
     if (state.combat != null) {
       return _withLog(state, '你无法在战斗中专心研读。');
     }
-    if (!state.inventoryItemIds.contains(itemId)) {
+    if (!state.inventory.contains(itemId)) {
       return _withLog(state, '你还没有这个东西。');
     }
     final item = _repository.item(itemId);

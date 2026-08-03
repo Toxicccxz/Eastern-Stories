@@ -38,7 +38,7 @@ class QuestSystem {
         continue;
       }
       if (option.acceptsAnyItem) {
-        for (final itemId in state.inventoryItemIds.toSet()) {
+        for (final itemId in state.inventory.itemIds) {
           final item = _repository.item(itemId);
           options.add(
             option.copyWith(
@@ -49,7 +49,7 @@ class QuestSystem {
         }
         continue;
       }
-      if (state.inventoryItemIds.contains(option.itemId)) {
+      if (state.inventory.contains(option.itemId)) {
         options.add(option);
       }
     }
@@ -153,13 +153,13 @@ class QuestSystem {
       return _withLog(state, '${npc.name}不肯收下这个东西。');
     }
 
-    final inventory = [...state.inventoryItemIds];
+    var inventory = state.inventory;
     if (option.consumesItem) {
-      inventory.remove(itemId);
+      inventory = inventory.remove(itemId);
     }
-    inventory.addAll(option.givesItemIds);
+    inventory = inventory.addAll(option.givesItemIds);
     var nextState = state.copyWith(
-      inventoryItemIds: inventory,
+      inventory: inventory,
       questFlags:
           option.setsQuestFlag == null
               ? state.questFlags
@@ -211,7 +211,7 @@ class QuestSystem {
       player: state.player.copyWith(
         silver: state.player.silver + quest.rewardSilver,
       ),
-      inventoryItemIds: [...state.inventoryItemIds, ...quest.rewardItemIds],
+      inventory: state.inventory.addAll(quest.rewardItemIds),
       questStatuses: {...state.questStatuses, questId: QuestStatus.completed},
       apprenticeship: _rewardApprenticeship(state, quest),
       log: state.logWith(
@@ -233,7 +233,7 @@ class QuestSystem {
 
     final earnsContribution = _earnsFamilyContribution(state, quest);
     final nextState = state.copyWith(
-      inventoryItemIds: [...state.inventoryItemIds, ...quest.rewardItemIds],
+      inventory: state.inventory.addAll(quest.rewardItemIds),
       questStatuses: {...state.questStatuses, questId: QuestStatus.completed},
       apprenticeship: _rewardApprenticeship(state, quest),
       log:

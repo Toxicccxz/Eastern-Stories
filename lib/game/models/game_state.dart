@@ -3,6 +3,7 @@ import 'equipment_slot.dart';
 import 'skill_progress.dart';
 import 'skill_definition.dart';
 import 'innate_attributes.dart';
+import 'inventory_state.dart';
 
 class GameState {
   const GameState({
@@ -10,7 +11,7 @@ class GameState {
     required this.worldTurn,
     required this.player,
     required this.visitedRoomIds,
-    required this.inventoryItemIds,
+    required this.inventory,
     required this.equippedItemIds,
     required this.skillProgress,
     required this.enabledSkillIds,
@@ -57,7 +58,7 @@ class GameState {
         silver: 20,
       ),
       visitedRoomIds: {startingRoomId},
-      inventoryItemIds: const [],
+      inventory: InventoryState.empty(),
       equippedItemIds: const {},
       skillProgress: const {},
       enabledSkillIds: const {},
@@ -80,8 +81,10 @@ class GameState {
       player: PlayerState.fromJson(json['player'] as Map<String, Object?>),
       visitedRoomIds:
           (json['visitedRoomIds'] as List<Object?>).cast<String>().toSet(),
-      inventoryItemIds:
-          (json['inventoryItemIds'] as List<Object?>).cast<String>(),
+      inventory: InventoryState.fromJson(
+        json['inventory'],
+        legacyItemIds: json['inventoryItemIds'],
+      ),
       equippedItemIds: _equipmentFromJson(json),
       skillProgress: _skillProgressFromJson(json),
       enabledSkillIds:
@@ -129,7 +132,7 @@ class GameState {
   final int worldTurn;
   final PlayerState player;
   final Set<String> visitedRoomIds;
-  final List<String> inventoryItemIds;
+  final InventoryState inventory;
   final Map<EquipmentSlot, String> equippedItemIds;
   final Map<String, SkillProgress> skillProgress;
   final Map<SkillUsage, String> enabledSkillIds;
@@ -149,7 +152,7 @@ class GameState {
       'worldTurn': worldTurn,
       'player': player.toJson(),
       'visitedRoomIds': visitedRoomIds.toList(),
-      'inventoryItemIds': inventoryItemIds,
+      'inventory': inventory.toJson(),
       'equippedItemIds': equippedItemIds.map(
         (slot, itemId) => MapEntry(slot.name, itemId),
       ),
@@ -186,6 +189,7 @@ class GameState {
     int? worldTurn,
     PlayerState? player,
     Set<String>? visitedRoomIds,
+    InventoryState? inventory,
     List<String>? inventoryItemIds,
     Map<EquipmentSlot, String>? equippedItemIds,
     Object? equippedWeaponId = _unchanged,
@@ -226,7 +230,11 @@ class GameState {
       worldTurn: worldTurn ?? this.worldTurn,
       player: player ?? this.player,
       visitedRoomIds: visitedRoomIds ?? this.visitedRoomIds,
-      inventoryItemIds: inventoryItemIds ?? this.inventoryItemIds,
+      inventory:
+          inventory ??
+          (inventoryItemIds == null
+              ? this.inventory
+              : InventoryState.fromItemIds(inventoryItemIds)),
       equippedItemIds: nextEquipment,
       skillProgress: nextSkillProgress,
       enabledSkillIds: enabledSkillIds ?? this.enabledSkillIds,
@@ -252,6 +260,8 @@ class GameState {
   String? get equippedWeaponId => equippedItemIds[EquipmentSlot.weapon];
 
   Set<String> get learnedSkillIds => skillProgress.keys.toSet();
+
+  List<String> get inventoryItemIds => inventory.toExpandedItemIds();
 }
 
 class ShopRuntimeState {
@@ -402,6 +412,7 @@ class NpcRuntimeState {
     this.hasDroppedLoot = false,
     this.isFollowing = false,
     this.isRemoved = false,
+    this.patrolStep = 0,
   });
 
   factory NpcRuntimeState.fromJson(Map<String, Object?> json) {
@@ -413,6 +424,7 @@ class NpcRuntimeState {
       hasDroppedLoot: json['hasDroppedLoot'] as bool? ?? false,
       isFollowing: json['isFollowing'] as bool? ?? false,
       isRemoved: json['isRemoved'] as bool? ?? false,
+      patrolStep: json['patrolStep'] as int? ?? 0,
     );
   }
 
@@ -423,6 +435,7 @@ class NpcRuntimeState {
   final bool hasDroppedLoot;
   final bool isFollowing;
   final bool isRemoved;
+  final int patrolStep;
 
   Map<String, Object?> toJson() {
     return {
@@ -433,6 +446,7 @@ class NpcRuntimeState {
       'hasDroppedLoot': hasDroppedLoot,
       'isFollowing': isFollowing,
       'isRemoved': isRemoved,
+      'patrolStep': patrolStep,
     };
   }
 
@@ -444,6 +458,7 @@ class NpcRuntimeState {
     bool? hasDroppedLoot,
     bool? isFollowing,
     bool? isRemoved,
+    int? patrolStep,
   }) {
     return NpcRuntimeState(
       roomId: roomId ?? this.roomId,
@@ -456,6 +471,7 @@ class NpcRuntimeState {
       hasDroppedLoot: hasDroppedLoot ?? this.hasDroppedLoot,
       isFollowing: isFollowing ?? this.isFollowing,
       isRemoved: isRemoved ?? this.isRemoved,
+      patrolStep: patrolStep ?? this.patrolStep,
     );
   }
 }

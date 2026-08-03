@@ -392,11 +392,9 @@ class CombatSystem {
             ? const <String>[]
             : [
               for (final itemId in combat.dropItemIds)
-                if (!currentItemIds.contains(itemId) &&
-                    !state.inventoryItemIds.contains(itemId))
-                  itemId,
+                if (!currentItemIds.contains(itemId)) itemId,
             ];
-    final respawnAfterMoves = combat.respawnAfterMoves;
+    final respawnAfterTurns = combat.respawnAfterTurns;
 
     var nextState = state.copyWith(
       combat: null,
@@ -406,9 +404,9 @@ class CombatSystem {
           currentHp: 0,
           isDefeated: true,
           respawnAtTurn:
-              respawnAfterMoves == null
+              respawnAfterTurns == null
                   ? null
-                  : state.worldTurn + respawnAfterMoves,
+                  : state.worldTurn + respawnAfterTurns,
           hasDroppedLoot: npcState.hasDroppedLoot || droppedItemIds.isNotEmpty,
         ),
       },

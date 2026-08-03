@@ -274,8 +274,8 @@ class GameDataValidator {
         _validateOptionalInt(combat[field], '$context.combat.$field');
       }
       _validateOptionalPositiveInt(
-        combat['respawnAfterMoves'],
-        '$context.combat.respawnAfterMoves',
+        combat['respawnAfterTurns'] ?? combat['respawnAfterMoves'],
+        '$context.combat.respawnAfterTurns',
       );
       final specialMove = _optionalObject(
         combat['specialMove'],
@@ -300,6 +300,76 @@ class GameDataValidator {
         combat['dropItemIds'],
         '$context.combat.dropItemIds',
       );
+      final patrol = _optionalObject(npc.data['patrol'], '$context.patrol');
+      if (patrol.isNotEmpty) {
+        final roomIds = _stringList(
+          patrol['roomIds'],
+          '$context.patrol.roomIds',
+        );
+        _validateOptionalPositiveInt(
+          patrol['intervalTurns'],
+          '$context.patrol.intervalTurns',
+        );
+        if (roomIds.length < 2) {
+          errors.add('$context.patrol.roomIds must contain at least 2 rooms.');
+        }
+        _requireReferences('rooms', roomIds, '$context.patrol.roomIds');
+        for (var index = 0; index < roomIds.length; index++) {
+          final fromRoomId = roomIds[index];
+          final toRoomId = roomIds[(index + 1) % roomIds.length];
+          if (_definitions['rooms']!.containsKey(fromRoomId) &&
+              _definitions['rooms']!.containsKey(toRoomId) &&
+              !_hasExit(fromRoomId, toRoomId)) {
+            errors.add(
+              '$context patrol step "$fromRoomId" -> "$toRoomId" '
+              'does not follow a room exit.',
+            );
+          }
+        }
+      }
+      final ambient = _optionalObject(npc.data['ambient'], '$context.ambient');
+      if (ambient.isNotEmpty) {
+        _validateOptionalPositiveInt(
+          ambient['intervalTurns'],
+          '$context.ambient.intervalTurns',
+        );
+        final messages = _stringList(
+          ambient['messages'],
+          '$context.ambient.messages',
+        );
+        if (messages.isEmpty || messages.any((message) => message.isEmpty)) {
+          errors.add('$context.ambient.messages must contain non-empty text.');
+        }
+      }
+      for (final reaction in _objects(
+        npc.data['entryReactions'],
+        '$context.entryReactions',
+      )) {
+        final reactionContext = '$context entry reaction';
+        _validateCondition(
+          reaction['conditions'],
+          '$reactionContext.conditions',
+        );
+        final messages = _stringList(
+          reaction['messages'],
+          '$reactionContext.messages',
+        );
+        if (messages.isEmpty || messages.any((message) => message.isEmpty)) {
+          errors.add('$reactionContext.messages must contain non-empty text.');
+        }
+        if (reaction['setsFlag'] case final value?
+            when value is! String || value.isEmpty) {
+          errors.add('$reactionContext.setsFlag must be non-empty text.');
+        }
+        if (reaction['startsCombat'] case final value? when value is! bool) {
+          errors.add('$reactionContext.startsCombat must be a boolean.');
+        }
+        if (reaction['startsCombat'] == true && combat.isEmpty) {
+          errors.add(
+            '$reactionContext cannot start combat without combat data.',
+          );
+        }
+      }
       final shop = _optionalObject(npc.data['shop'], '$context.shop');
       for (final product in _objects(
         shop['products'],
@@ -772,6 +842,22 @@ class GameDataValidator {
 
   Iterable<_Definition> _all(String category) =>
       _definitions[category]?.values ?? const [];
+
+  bool _hasExit(String fromRoomId, String toRoomId) {
+    final room = _definitions['rooms']![fromRoomId];
+    if (room == null) return false;
+    final exits = _optionalObject(
+      room.data['exits'],
+      'room "$fromRoomId" exits',
+    );
+    return exits.values.any((exit) {
+      final target =
+          exit is String
+              ? exit
+              : _object(exit, 'room "$fromRoomId" exit')['roomId'];
+      return target == toRoomId;
+    });
+  }
 
   void _validateEnum(
     Object? value,

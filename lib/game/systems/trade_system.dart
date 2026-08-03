@@ -37,7 +37,7 @@ class TradeSystem {
       player: state.player.copyWith(
         silver: state.player.silver - item.buyPrice,
       ),
-      inventoryItemIds: [...state.inventoryItemIds, itemId],
+      inventory: state.inventory.add(itemId),
       shopStates: {
         ...state.shopStates,
         npcId: shopState.copyWith(
@@ -55,7 +55,7 @@ class TradeSystem {
     if (!_isMerchantPresent(state, npcId)) {
       return _withLog(state, '这里没有这位商人。');
     }
-    if (!state.inventoryItemIds.contains(itemId)) {
+    if (!state.inventory.contains(itemId)) {
       return _withLog(state, '你还没有这个东西。');
     }
 
@@ -64,7 +64,7 @@ class TradeSystem {
       return _withLog(state, '${item.name}不能出售。');
     }
 
-    final inventory = [...state.inventoryItemIds]..remove(itemId);
+    final inventory = state.inventory.remove(itemId);
     final shopState = state.shopStates[npcId];
     final stock = shopState?.stockByItemId[itemId];
     final nextShopState =
@@ -74,15 +74,15 @@ class TradeSystem {
               stockByItemId: {...shopState.stockByItemId, itemId: stock + 1},
             );
 
-    final unequippedState = _equipmentSystem.removeItemFromEquipment(
-      state,
-      itemId,
-    );
+    final unequippedState =
+        inventory.contains(itemId)
+            ? state
+            : _equipmentSystem.removeItemFromEquipment(state, itemId);
     return unequippedState.copyWith(
       player: unequippedState.player.copyWith(
         silver: unequippedState.player.silver + item.sellPrice,
       ),
-      inventoryItemIds: inventory,
+      inventory: inventory,
       shopStates:
           nextShopState == null
               ? unequippedState.shopStates

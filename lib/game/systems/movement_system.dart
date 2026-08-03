@@ -8,6 +8,9 @@ class MovementSystem {
   final GameDefinitionRepository _repository;
 
   GameState move(GameState state, Direction direction) {
+    if (state.combat != null) {
+      return _withLog(state, '你正在战斗，必须先击败对手或设法脱身。');
+    }
     final room = _repository.room(state.currentRoomId);
     final nextRoomId = room.availableExits(state)[direction];
     if (nextRoomId == null) {
@@ -28,6 +31,9 @@ class MovementSystem {
   }
 
   GameState performRoomAction(GameState state, String actionId) {
+    if (state.combat != null) {
+      return _withLog(state, '你正在战斗，无法分心做别的事情。');
+    }
     final room = _repository.room(state.currentRoomId);
     final action =
         room
@@ -57,7 +63,7 @@ class MovementSystem {
           action.setsQuestFlag == null
               ? state.questFlags
               : {...state.questFlags, action.setsQuestFlag!},
-      inventoryItemIds: [...state.inventoryItemIds, ...action.givesItemIds],
+      inventory: state.inventory.addAll(action.givesItemIds),
       log: state.logWith(action.log),
     );
   }

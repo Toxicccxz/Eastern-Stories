@@ -1815,6 +1815,21 @@ void main() {
     expect(controller.state.log.last, contains('卖完'));
   });
 
+  test('buying duplicate items stacks them and selling removes one', () {
+    final controller = _controllerAtLiuHome(repository);
+
+    controller.dispatch(const GameAction.move(Direction.east));
+    controller.dispatch(const GameAction.move(Direction.north));
+    controller.dispatch(const GameAction.buyItem('meloner', 'water_melon'));
+    controller.dispatch(const GameAction.buyItem('meloner', 'water_melon'));
+
+    expect(controller.state.inventory.countOf('water_melon'), 2);
+
+    controller.dispatch(const GameAction.sellItem('meloner', 'water_melon'));
+
+    expect(controller.state.inventory.countOf('water_melon'), 1);
+  });
+
   test('player can equip a weapon and defeat the ice dragon', () {
     final controller = _controllerAtLiuHome(repository);
 

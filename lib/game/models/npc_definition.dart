@@ -23,6 +23,9 @@ class NpcDefinition {
     this.apprenticeTitle = '弟子',
     this.apprenticeshipConditions,
     this.apprenticeshipFailureMessage,
+    this.patrol,
+    this.ambient,
+    this.entryReactions = const [],
   });
 
   factory NpcDefinition.fromJson(Map<String, Object?> json) {
@@ -72,6 +75,23 @@ class NpcDefinition {
       ),
       apprenticeshipFailureMessage:
           json['apprenticeshipFailureMessage'] as String?,
+      patrol:
+          json['patrol'] == null
+              ? null
+              : NpcPatrolDefinition.fromJson(
+                json['patrol'] as Map<String, Object?>,
+              ),
+      ambient:
+          json['ambient'] == null
+              ? null
+              : NpcAmbientDefinition.fromJson(
+                json['ambient'] as Map<String, Object?>,
+              ),
+      entryReactions: [
+        for (final reaction
+            in json['entryReactions'] as List<Object?>? ?? const [])
+          NpcEntryReactionDefinition.fromJson(reaction as Map<String, Object?>),
+      ],
     );
   }
 
@@ -93,6 +113,9 @@ class NpcDefinition {
   final String apprenticeTitle;
   final WorldCondition? apprenticeshipConditions;
   final String? apprenticeshipFailureMessage;
+  final NpcPatrolDefinition? patrol;
+  final NpcAmbientDefinition? ambient;
+  final List<NpcEntryReactionDefinition> entryReactions;
 
   String greetingFor(GameState state) {
     for (final variant in greetingVariants) {
@@ -102,6 +125,63 @@ class NpcDefinition {
     }
     return greeting;
   }
+}
+
+class NpcPatrolDefinition {
+  const NpcPatrolDefinition({
+    required this.roomIds,
+    required this.intervalTurns,
+  });
+
+  factory NpcPatrolDefinition.fromJson(Map<String, Object?> json) {
+    return NpcPatrolDefinition(
+      roomIds: (json['roomIds'] as List<Object?>).cast<String>(),
+      intervalTurns: json['intervalTurns'] as int? ?? 1,
+    );
+  }
+
+  final List<String> roomIds;
+  final int intervalTurns;
+}
+
+class NpcAmbientDefinition {
+  const NpcAmbientDefinition({
+    required this.messages,
+    required this.intervalTurns,
+  });
+
+  factory NpcAmbientDefinition.fromJson(Map<String, Object?> json) {
+    return NpcAmbientDefinition(
+      messages: (json['messages'] as List<Object?>).cast<String>(),
+      intervalTurns: json['intervalTurns'] as int? ?? 1,
+    );
+  }
+
+  final List<String> messages;
+  final int intervalTurns;
+}
+
+class NpcEntryReactionDefinition {
+  const NpcEntryReactionDefinition({
+    required this.messages,
+    this.conditions,
+    this.setsFlag,
+    this.startsCombat = false,
+  });
+
+  factory NpcEntryReactionDefinition.fromJson(Map<String, Object?> json) {
+    return NpcEntryReactionDefinition(
+      messages: (json['messages'] as List<Object?>).cast<String>(),
+      conditions: worldConditionFromJson(json['conditions']),
+      setsFlag: json['setsFlag'] as String?,
+      startsCombat: json['startsCombat'] as bool? ?? false,
+    );
+  }
+
+  final List<String> messages;
+  final WorldCondition? conditions;
+  final String? setsFlag;
+  final bool startsCombat;
 }
 
 class TeachingSkillDefinition {
@@ -264,7 +344,7 @@ class CombatDefinition {
     this.rewardSilver = 0,
     this.rewardExperience = 0,
     this.dropItemIds = const [],
-    this.respawnAfterMoves,
+    this.respawnAfterTurns,
     this.specialMove,
   });
 
@@ -277,7 +357,8 @@ class CombatDefinition {
       rewardExperience: json['rewardExperience'] as int? ?? 0,
       dropItemIds:
           (json['dropItemIds'] as List<Object?>? ?? const []).cast<String>(),
-      respawnAfterMoves: json['respawnAfterMoves'] as int?,
+      respawnAfterTurns:
+          (json['respawnAfterTurns'] ?? json['respawnAfterMoves']) as int?,
       specialMove:
           json['specialMove'] == null
               ? null
@@ -293,7 +374,7 @@ class CombatDefinition {
   final int rewardSilver;
   final int rewardExperience;
   final List<String> dropItemIds;
-  final int? respawnAfterMoves;
+  final int? respawnAfterTurns;
   final EnemyMoveDefinition? specialMove;
 }
 

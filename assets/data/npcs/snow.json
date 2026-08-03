@@ -270,6 +270,15 @@
     "name": "店小二",
     "description": "店小二笑眯眯地忙着，不时拿起挂在脖子上的抹布擦脸。",
     "greeting": "店小二招呼道：这位客官，请进来喝杯茶，歇歇腿吧。",
+    "entryReactions": [
+      {
+        "messages": [
+          "店小二笑眯眯地说道：这位客官，进来喝杯茶，歇歇腿吧。",
+          "店小二用脖子上的毛巾抹了抹手，说道：这位客官，请进请进。",
+          "店小二说道：这位客官，进来喝几盅小店的红酒吧，这几天才从窖子里开封的哟。"
+        ]
+      }
+    ],
     "shop": {
       "products": [
         {"itemId": "snow_dagger", "initialStock": -1},
@@ -351,7 +360,19 @@
     "id": "snow_woodcutter",
     "name": "樵夫",
     "description": "一个身穿普通樵夫衣服的粗壮汉子，肩背宽阔，像是刚从山里砍柴回来。",
-    "greeting": "樵夫叹道：野羊山那些牛鼻子不知施了什么法，前天害我差点迷路。"
+    "greeting": "樵夫叹道：野羊山那些牛鼻子不知施了什么法，前天害我差点迷路。",
+    "ambient": {
+      "intervalTurns": 5,
+      "messages": [
+        "樵夫说道：野羊山那群臭道士真是该千刀万剐……",
+        "樵夫说道：不知道那些牛鼻子施了什么妖法，前天回家差点迷了路。",
+        "樵夫叹道：唉……日子越来越不好过喽。"
+      ]
+    },
+    "patrol": {
+      "intervalTurns": 4,
+      "roomIds": ["snow_herbshop", "snow_main_street3", "snow_main_street4", "snow_crossroad", "snow_main_street4", "snow_main_street3"]
+    }
   },
   {
     "id": "snow_post_officer_du",
@@ -383,6 +404,18 @@
     "name": "收破烂的",
     "description": "这个人不但沿街收破烂，自己也穿得破烂不堪。",
     "greeting": "收破烂的拖长声音吆喝：收破烂哪……",
+    "ambient": {
+      "intervalTurns": 4,
+      "messages": [
+        "收破烂的吆喝道：收——破——烂——哪——",
+        "收破烂的嘴里嘟哝着，不知道说些什么。",
+        "收破烂的伸手捉住身上的虱子，一脚踩得扁扁的。"
+      ]
+    },
+    "patrol": {
+      "intervalTurns": 3,
+      "roomIds": ["snow_main_street2", "snow_main_street3", "snow_main_street4", "snow_crossroad", "snow_main_street4", "snow_main_street3"]
+    },
     "giveItemOptions": [
       {
         "itemId": "*",
@@ -408,6 +441,16 @@
     "name": "疯狗",
     "description": "一只浑身脏兮兮的野狗，一双眼睛正恶狠狠地瞪着你。",
     "greeting": "疯狗伏低身子，喉咙里发出低沉的吠声。",
+    "entryReactions": [
+      {
+        "messages": ["疯狗恶狠狠地盯住你，狂吠着扑了过来！"],
+        "startsCombat": true
+      }
+    ],
+    "patrol": {
+      "intervalTurns": 2,
+      "roomIds": ["snow_stone_road", "snow_official_road", "snow_west_street", "snow_south_street", "snow_square", "snow_south_street", "snow_west_street", "snow_official_road"]
+    },
     "combat": {
       "maxHp": 22,
       "attack": 6,
@@ -572,6 +615,10 @@
     "name": "佩刀旅客",
     "description": "一位来到雪亭镇的外地旅客，腰间别着飞刀，站在广场边留心观察往来人群。",
     "greeting": "佩刀旅客说道：广场人杂，走江湖要多留三分心。",
+    "patrol": {
+      "intervalTurns": 3,
+      "roomIds": ["snow_square", "snow_main_street", "snow_main_street2", "snow_main_street3", "snow_main_street2", "snow_main_street"]
+    },
     "combat": {
       "maxHp": 28,
       "attack": 5,
@@ -590,6 +637,10 @@
     "name": "佩刀旅客",
     "description": "一位来到雪亭镇的外地旅客，腰间别着飞刀，站在广场边留心观察往来人群。",
     "greeting": "佩刀旅客说道：广场人杂，走江湖要多留三分心。",
+    "patrol": {
+      "intervalTurns": 4,
+      "roomIds": ["snow_square", "snow_main_street", "snow_main_street2", "snow_main_street3", "snow_main_street2", "snow_main_street"]
+    },
     "combat": {
       "maxHp": 28,
       "attack": 5,
@@ -608,6 +659,10 @@
     "name": "佩刀旅客",
     "description": "一位来到雪亭镇的外地旅客，腰间别着飞刀，站在广场边留心观察往来人群。",
     "greeting": "佩刀旅客说道：广场人杂，走江湖要多留三分心。",
+    "patrol": {
+      "intervalTurns": 5,
+      "roomIds": ["snow_square", "snow_main_street", "snow_main_street2", "snow_main_street3", "snow_main_street2", "snow_main_street"]
+    },
     "combat": {
       "maxHp": 28,
       "attack": 5,

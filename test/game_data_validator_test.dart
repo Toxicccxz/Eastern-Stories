@@ -43,6 +43,15 @@ void main() {
           'mapY': 0,
           'exits': {'in': 'start'},
         },
+        {
+          'id': 'other',
+          'name': 'Other',
+          'areaId': 'test',
+          'description': 'Other room',
+          'mapX': 1,
+          'mapY': 0,
+          'exits': <String, Object?>{},
+        },
       ],
       npcs: [
         {
@@ -50,6 +59,14 @@ void main() {
           'name': 'Bad NPC',
           'description': 'Bad NPC',
           'greeting': 'Hello',
+          'patrol': {
+            'intervalTurns': 0,
+            'roomIds': ['start', 'other'],
+          },
+          'ambient': {'intervalTurns': 0, 'messages': <String>[]},
+          'entryReactions': [
+            {'messages': <String>[], 'setsFlag': '', 'startsCombat': 'yes'},
+          ],
           'combat': {
             'maxHp': 0,
             'attack': 'high',
@@ -97,6 +114,13 @@ void main() {
         contains('combat.attack must be an integer'),
         contains('combat.specialMove.interval must be a positive integer'),
         contains('combat.specialMove.damageBonus must be an integer'),
+        contains('patrol.intervalTurns must be a positive integer'),
+        contains('does not follow a room exit'),
+        contains('ambient.intervalTurns must be a positive integer'),
+        contains('ambient.messages must contain non-empty text'),
+        contains('entry reaction.messages must contain non-empty text'),
+        contains('entry reaction.setsFlag must be non-empty text'),
+        contains('entry reaction.startsCombat must be a boolean'),
         contains('equipmentSlot must be a valid equipment slot'),
         contains('weaponSkillUsage must be a valid skill usage'),
         contains('attackPower must be an integer'),
