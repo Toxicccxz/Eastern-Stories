@@ -57,6 +57,34 @@ void main() {
     );
   });
 
+  test('world condition can require an unaffiliated experienced player', () {
+    final state = GameState.initial(startingRoomId: 'gate');
+    const condition = WorldCondition(
+      requiresNoFamily: true,
+      minimumCombatExperience: 100000,
+    );
+
+    expect(condition.isSatisfiedBy(state), isFalse);
+    final experiencedState = state.copyWith(
+      player: state.player.copyWith(combatExperience: 100000),
+    );
+    expect(condition.isSatisfiedBy(experiencedState), isTrue);
+    expect(
+      condition.isSatisfiedBy(
+        experiencedState.copyWith(
+          apprenticeship: const ApprenticeshipState(
+            familyId: 'other',
+            masterNpcId: 'master',
+            generation: 2,
+            title: '弟子',
+            contribution: 0,
+          ),
+        ),
+      ),
+      isFalse,
+    );
+  });
+
   test('room filters conditional exits and actions', () {
     final room = RoomDefinition.fromJson({
       'id': 'gate',

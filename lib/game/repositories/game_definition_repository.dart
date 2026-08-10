@@ -208,7 +208,11 @@ class GameDefinitionRepository {
               !entry.value.isRemoved,
         )
         .map((entry) => npc(entry.key))
-        .where((npc) => npc.conditions?.isSatisfiedBy(state) ?? true);
+        .where(
+          (npc) =>
+              (!npc.isGhost || state.hasAstralVision) &&
+              (npc.conditions?.isSatisfiedBy(state) ?? true),
+        );
   }
 
   Iterable<ItemDefinition> visibleItemsInRoom(GameState state, String roomId) {
@@ -294,6 +298,9 @@ class GameDefinitionRepository {
           npcId: NpcRuntimeState(
             roomId: room.id,
             currentHp: _npcs[npcId]?.combat?.maxHp ?? 0,
+            currentEnergy: _npcs[npcId]?.combat?.maxEnergy ?? 0,
+            currentSpirit: _npcs[npcId]?.combat?.maxSpirit ?? 0,
+            currentMana: _npcs[npcId]?.combat?.maxMana ?? 0,
             isDefeated: false,
             stateValues: _npcs[npcId]?.initialStateValues ?? const {},
           ),

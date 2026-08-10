@@ -21,8 +21,12 @@ class PlayerConditionSystem {
     GameState state,
     StatusEffectDefinition definition, {
     String? source,
+    int? durationOverride,
   }) {
-    final status = _fromDefinition(definition);
+    final status = _fromDefinition(
+      definition,
+      durationOverride: durationOverride,
+    );
     final message =
         definition.applicationMessage
             ?.replaceAll('{target}', '你')
@@ -144,11 +148,14 @@ class PlayerConditionSystem {
         .replaceAll('{healing}', effect.hpRecoveryPerRound.toString());
   }
 
-  StatusEffectState _fromDefinition(StatusEffectDefinition effect) {
+  StatusEffectState _fromDefinition(
+    StatusEffectDefinition effect, {
+    int? durationOverride,
+  }) {
     return StatusEffectState(
       id: effect.id,
       name: effect.name,
-      remainingRounds: effect.duration,
+      remainingRounds: durationOverride ?? effect.duration,
       damagePerRound: effect.damagePerRound,
       spiritDamagePerRound: effect.spiritDamagePerRound,
       innerPowerDamagePerRound: effect.innerPowerDamagePerRound,
@@ -156,6 +163,7 @@ class PlayerConditionSystem {
       attackPenalty: effect.attackPenalty,
       defensePenalty: effect.defensePenalty,
       blocksAction: effect.blocksAction,
+      grantsAstralVision: effect.grantsAstralVision,
       tickMessage: effect.tickMessage,
       expireMessage: effect.expireMessage,
     );

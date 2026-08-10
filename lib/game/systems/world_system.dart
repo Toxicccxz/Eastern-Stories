@@ -1,4 +1,5 @@
 import '../models/game_state.dart';
+import '../models/skill_definition.dart';
 import '../repositories/game_definition_repository.dart';
 import 'player_condition_system.dart';
 
@@ -108,6 +109,22 @@ class WorldSystem {
             0,
             advancedState.player.maxSpirit,
           ),
+          energy: (advancedState.player.energy + 2).clamp(
+            0,
+            advancedState.player.maxEnergy,
+          ),
+          atman:
+              advancedState.player.atman < advancedState.player.maxAtman
+                  ? (advancedState.player.atman + _atmanRecovery(advancedState))
+                      .clamp(0, advancedState.player.maxAtman)
+                  : advancedState.player.atman,
+          mana:
+              advancedState.player.mana < advancedState.player.maxMana
+                  ? (advancedState.player.mana + 2).clamp(
+                    0,
+                    advancedState.player.maxMana,
+                  )
+                  : advancedState.player.mana,
         ),
       );
     }
@@ -128,6 +145,18 @@ class WorldSystem {
           0,
           tickedState.player.maxInnerPower,
         ),
+        mana: (tickedState.player.maxMana ~/ 2).clamp(
+          0,
+          tickedState.player.maxMana,
+        ),
+        energy: (tickedState.player.maxEnergy ~/ 2).clamp(
+          0,
+          tickedState.player.maxEnergy,
+        ),
+        atman: (tickedState.player.maxAtman ~/ 2).clamp(
+          0,
+          tickedState.player.maxAtman,
+        ),
       ),
       playerStatusEffects: const [],
       combat: null,
@@ -137,6 +166,14 @@ class WorldSystem {
             : '你在行功时伤势发作昏倒，醒来时已经回到饮风客栈。',
       ),
     );
+  }
+
+  int _atmanRecovery(GameState state) {
+    final skillId = _repository.basicSkillFor(SkillUsage.magic)?.id;
+    if (skillId == null) {
+      return 0;
+    }
+    return (state.skillProgress[skillId]?.level ?? 0) ~/ 2;
   }
 
   Iterable<String> _ambientMessages(GameState state, int worldTurn) sync* {
@@ -175,9 +212,12 @@ class WorldSystem {
     if (state.isDefeated &&
         respawnAtTurn != null &&
         respawnAtTurn <= worldTurn) {
-      final maxHp = _repository.npc(npcId).combat?.maxHp ?? 0;
+      final combat = _repository.npc(npcId).combat;
       nextState = state.copyWith(
-        currentHp: maxHp,
+        currentHp: combat?.maxHp ?? 0,
+        currentEnergy: combat?.maxEnergy ?? 0,
+        currentSpirit: combat?.maxSpirit ?? 0,
+        currentMana: combat?.maxMana ?? 0,
         isDefeated: false,
         respawnAtTurn: null,
       );

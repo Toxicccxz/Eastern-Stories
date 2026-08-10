@@ -197,6 +197,22 @@ class _InnerPowerSheet extends StatelessWidget {
                     OutlinedButton.icon(
                       onPressed:
                           () => controller.dispatch(
+                            const GameAction.meditateForMana(),
+                          ),
+                      icon: const Icon(Icons.auto_awesome_outlined),
+                      label: const Text('冥思法力'),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed:
+                          () => controller.dispatch(
+                            const GameAction.cultivateAtman(),
+                          ),
+                      icon: const Icon(Icons.brightness_7_outlined),
+                      label: const Text('修炼灵力'),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed:
+                          () => controller.dispatch(
                             const GameAction.recoverWithInnerPower(),
                           ),
                       icon: const Icon(Icons.air),
@@ -272,6 +288,7 @@ class _SkillTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final progress = controller.state.skillProgress[skill.id]!;
     final isMaxLevel = progress.level >= skill.maxLevel;
+    final worldMoves = skill.moves.where((move) => move.usableOutsideCombat);
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(
@@ -324,6 +341,32 @@ class _SkillTile extends StatelessWidget {
             Text(
               '招式：${skill.moves.map((move) => move.name).join('、')}',
               style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+          if (worldMoves.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              children: [
+                for (final move in worldMoves)
+                  OutlinedButton.icon(
+                    onPressed:
+                        controller.state.combat == null &&
+                                controller.state.player.mana >= move.manaCost &&
+                                controller.state.player.spirit >=
+                                    move.spiritCost &&
+                                progress.level >= move.minimumSkillLevel
+                            ? () => controller.dispatch(
+                              GameAction.useSkillMove(skill.id, move.id),
+                            )
+                            : null,
+                    icon: const Icon(Icons.visibility_outlined, size: 18),
+                    label: Text(
+                      '${move.name}  法力${move.manaCost} · 精神${move.spiritCost}',
+                    ),
+                  ),
+              ],
             ),
           ],
         ],
@@ -390,6 +433,13 @@ class _InventoryAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final item = controller.repository.item(itemId);
+    final availableCombination =
+        item.combinations
+            .where(
+              (combination) =>
+                  controller.state.inventory.contains(combination.targetItemId),
+            )
+            .firstOrNull;
     Widget? primaryAction;
     if (item.canEquip) {
       final isEquipped = equippedItemIds[item.equipmentSlot] == itemId;
@@ -435,6 +485,16 @@ class _InventoryAction extends StatelessWidget {
         },
         child: const Text('使用'),
       );
+    } else if (availableCombination != null) {
+      primaryAction = FilledButton.tonal(
+        onPressed: () {
+          controller.dispatch(
+            GameAction.combineItems(itemId, availableCombination.targetItemId),
+          );
+          Navigator.of(context).pop();
+        },
+        child: Text(availableCombination.label),
+      );
     }
 
     return Row(
@@ -462,6 +522,13 @@ class _InventoryAction extends StatelessWidget {
 }
 
 enum _InventoryMenuAction { drop }
+
+extension _FirstOrNull<T> on Iterable<T> {
+  T? get firstOrNull {
+    final iterator = this.iterator;
+    return iterator.moveNext() ? iterator.current : null;
+  }
+}
 
 class _ActionButton extends StatelessWidget {
   const _ActionButton({

@@ -26,6 +26,7 @@ class CombatPanel extends StatelessWidget {
       return const SizedBox.shrink();
     }
     final activeMoves = controller.activeCombatMoves();
+    final npcState = state.npcStates[npc.id];
 
     return Panel(
       child: Column(
@@ -73,8 +74,65 @@ class CombatPanel extends StatelessWidget {
                   color: const Color(0xFF3E6E8F),
                 ),
               ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: StatusMeter(
+                  label: '法力',
+                  value: state.player.mana,
+                  maxValue: state.player.maxMana,
+                  color: const Color(0xFF665C8E),
+                ),
+              ),
             ],
           ),
+          if (combat.ally case final ally?) ...[
+            const SizedBox(height: 10),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondaryContainer,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 8,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.shield_outlined, size: 18),
+                        const SizedBox(width: 8),
+                        Expanded(child: Text('护法：${ally.name}')),
+                        Text(
+                          ally.lastsForCombat
+                              ? '本场战斗'
+                              : '${ally.remainingRounds} 回合',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(3),
+                            child: LinearProgressIndicator(
+                              value: ally.hp / ally.maxHp,
+                              minHeight: 6,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text('${ally.hp}/${ally.maxHp}'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 10),
           StatusMeter(
             label: '敌方气血',
@@ -82,6 +140,41 @@ class CombatPanel extends StatelessWidget {
             maxValue: combatDefinition.maxHp,
             color: const Color(0xFF7B5FA4),
           ),
+          if (npcState != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: StatusMeter(
+                    label: '敌方精力',
+                    value: npcState.currentEnergy,
+                    maxValue: combatDefinition.maxEnergy,
+                    color: const Color(0xFF3F7D65),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: StatusMeter(
+                    label: '敌方精神',
+                    value: npcState.currentSpirit,
+                    maxValue: combatDefinition.maxSpirit,
+                    color: const Color(0xFF8A6D3B),
+                  ),
+                ),
+                if (combatDefinition.maxMana > 0) ...[
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: StatusMeter(
+                      label: '敌方法力',
+                      value: npcState.currentMana,
+                      maxValue: combatDefinition.maxMana,
+                      color: const Color(0xFF665C8E),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
           _StatusEffectRow(label: '敌方状态', effects: combat.enemyStatusEffects),
           if (combatDefinition.specialMove case final specialMove?) ...[
             const SizedBox(height: 8),
@@ -346,13 +439,24 @@ class _MoveButton extends StatelessWidget {
     final hasEquipment =
         requiredSlot == null || state.equippedItemIds.containsKey(requiredSlot);
     final hasInnerPower = state.player.innerPower >= innerPowerCost;
+    final hasMana = state.player.mana >= move.manaCost;
+    final hasSpirit = state.player.spirit >= move.spiritCost;
     final hasRequiredLevel = skillLevel >= move.minimumSkillLevel;
-    final enabled = hasEquipment && hasInnerPower && hasRequiredLevel;
+    final enabled =
+        hasEquipment &&
+        hasInnerPower &&
+        hasMana &&
+        hasSpirit &&
+        hasRequiredLevel;
     final reason =
         !hasEquipment
             ? '需要装备兵器'
             : !hasInnerPower
             ? '内力不足'
+            : !hasMana
+            ? '法力不足'
+            : !hasSpirit
+            ? '精神不足'
             : !hasRequiredLevel
             ? '需要 Lv.${move.minimumSkillLevel}'
             : null;
@@ -366,7 +470,7 @@ class _MoveButton extends StatelessWidget {
           icon: Icon(_icon, size: 18),
           label: Text(
             '${move.name} Lv.$skillLevel'
-            '${_costLabel(innerPowerCost)}',
+            '${_costLabel(innerPowerCost, move.manaCost, move.spiritCost)}',
           ),
         ),
         if (reason != null)
@@ -388,10 +492,19 @@ class _MoveButton extends StatelessWidget {
       SkillEffectType.damage => Icons.auto_fix_high,
       SkillEffectType.defend => Icons.shield_outlined,
       SkillEffectType.heal => Icons.favorite_outline,
+      SkillEffectType.summon => Icons.person_add_alt_1,
+      SkillEffectType.escape => Icons.blur_on,
+      SkillEffectType.resourceDamage => Icons.bolt_outlined,
+      SkillEffectType.selfStatus => Icons.visibility_outlined,
     };
   }
 
-  String _costLabel(int innerPowerCost) {
-    return innerPowerCost == 0 ? '' : '  $innerPowerCost内力';
+  String _costLabel(int innerPowerCost, int manaCost, int spiritCost) {
+    final costs = [
+      if (innerPowerCost > 0) '$innerPowerCost内力',
+      if (manaCost > 0) '$manaCost法力',
+      if (spiritCost > 0) '$spiritCost精神',
+    ];
+    return costs.isEmpty ? '' : '  ${costs.join(' / ')}';
   }
 }

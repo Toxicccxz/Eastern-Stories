@@ -1,0 +1,466 @@
+[
+  {
+    "id": "green_path6",
+    "name": "石板路",
+    "areaId": "green",
+    "description": "这是一条平整的石板路，上面隐约可见两道很深的车辙，显然常被用来运送石料。往西是下山前往雪亭镇的路，东边可以望见村中的建筑。",
+    "mapX": 0,
+    "mapY": 0,
+    "outdoorAreaId": "green",
+    "exits": {"west": "snow_crossroad", "east": "green_path5"}
+  },
+  {
+    "id": "green_path5",
+    "name": "石板路",
+    "areaId": "green",
+    "description": "平整的石板路上留着运石车的深深轮印。北边一条碎石路通往村内，东边工作站旁堆满石料，石板路则继续向西下山。",
+    "mapX": 1,
+    "mapY": 0,
+    "outdoorAreaId": "green",
+    "exits": {"west": "green_path6", "north": "green_path4", "east": "green_station0"}
+  },
+  {
+    "id": "green_path4",
+    "name": "小路",
+    "areaId": "green",
+    "description": "你走在一条不算宽的碎石路上。往北是一个交叉路口，东边有栋破旧的木造建筑，快散架的招牌上依稀可辨沈记商行几个字。",
+    "mapX": 1,
+    "mapY": -1,
+    "outdoorAreaId": "green",
+    "exits": {"south": "green_path5", "north": "green_path3", "east": "green_shop"}
+  },
+  {
+    "id": "green_shop",
+    "name": "沈记商行",
+    "areaId": "green",
+    "description": "这里是青石村唯一的商店。屋内相当拥挤，到处堆着日常用品、工具、香烛甚至棺材，真可算得上一间杂货店。",
+    "mapX": 2,
+    "mapY": -1,
+    "exits": {"west": "green_path4"},
+    "npcIds": ["green_shen_wannian", "green_shop_woman"]
+  },
+  {
+    "id": "green_path3",
+    "name": "三叉路口",
+    "areaId": "green",
+    "description": "你来到一处交叉路口，主要道路向南北延伸，东边是一条更窄的黄土巷，西边则有一栋简陋民宅。",
+    "mapX": 1,
+    "mapY": -2,
+    "outdoorAreaId": "green",
+    "exits": {"north": "green_path2", "south": "green_path4", "west": "green_house0", "east": "green_path8"}
+  },
+  {
+    "id": "green_house0",
+    "name": "民宅",
+    "areaId": "green",
+    "description": "阴暗窄小的屋内散着柴火和各式工具，石炉上有一锅东西冒着香气，另一角放着简陋木床和几张椅子。",
+    "mapX": 0,
+    "mapY": -2,
+    "exits": {"east": "green_path3"},
+    "npcIds": ["green_house_woman", "green_house_woman_2"]
+  },
+  {
+    "id": "green_path2",
+    "name": "三叉路口",
+    "areaId": "green",
+    "description": "小路到了这里往北便算出了村子，西边是一间小土地庙，往南则回到村中的交叉路口。",
+    "mapX": 1,
+    "mapY": -3,
+    "outdoorAreaId": "green",
+    "exits": {"south": "green_path3", "north": "green_path1", "west": "green_temple"},
+    "npcIds": ["green_child", "green_child_2"]
+  },
+  {
+    "id": "green_temple",
+    "name": "土地庙",
+    "areaId": "green",
+    "description": "小小的土地庙内十分阴暗，湿气混着焚烧冥纸的味道。供桌上零星放着水果，一尊木刻土地公像孤独地立在前方。",
+    "mapX": 0,
+    "mapY": -3,
+    "exits": {"east": "green_path2"}
+  },
+  {
+    "id": "green_path1",
+    "name": "荒凉小路",
+    "areaId": "green",
+    "description": "一条杂草丛生的荒凉小路，似乎很久没人来过。往南很远还能看见村口，北面的道路越来越不明显。",
+    "mapX": 1,
+    "mapY": -4,
+    "outdoorAreaId": "green",
+    "exits": {"north": "green_path0", "south": "green_path2"}
+  },
+  {
+    "id": "green_path0",
+    "name": "小路尽头",
+    "areaId": "green",
+    "description": "小路在这里逐渐隐没于杂草和小树之间，北方山壁下可以看见一处废弃洞穴，阵阵寒气正从洞口透出。",
+    "mapX": 1,
+    "mapY": -5,
+    "outdoorAreaId": "green",
+    "exits": {"south": "green_path1", "north": "green_cave0"}
+  },
+  {
+    "id": "green_path8",
+    "name": "小巷子",
+    "areaId": "green",
+    "description": "这是一条铺着碎石和黄土的小巷，北边是工匠的家，往东可见小广场，向西则回到交叉路口。",
+    "mapX": 2,
+    "mapY": -2,
+    "outdoorAreaId": "green",
+    "exits": {"west": "green_path3", "north": "green_craftsman_home", "east": "green_square"},
+    "npcIds": ["green_alley_child", "green_alley_child_2"]
+  },
+  {
+    "id": "green_craftsman_home",
+    "name": "工匠的家",
+    "areaId": "green",
+    "description": "矮小屋内整齐堆着石板，墙上挂满雕刻和切割工具，角落里摆着石桌、石椅和墓碑等成品与半成品。",
+    "mapX": 2,
+    "mapY": -3,
+    "exits": {"south": "green_path8"},
+    "npcIds": ["green_craftsman"]
+  },
+  {
+    "id": "green_square",
+    "name": "小广场",
+    "areaId": "green",
+    "description": "广场地面铺着切割整齐的大石块，中央一棵大榕树亭亭如盖。周围散落几间屋子，正南边木屋的布置尤其不同。",
+    "mapX": 3,
+    "mapY": -2,
+    "outdoorAreaId": "green",
+    "exits": {"west": "green_path8", "south": "green_elder_home", "north": "green_old_couple_home", "east": "green_quarry_yard"}
+  },
+  {
+    "id": "green_elder_home",
+    "name": "村长的家",
+    "areaId": "green",
+    "description": "屋中央的石炉燃着旺火，墙上挂着字画，书架上排着陈旧书籍。炉旁那张精美石椅显然属于村中重要人物。",
+    "mapX": 3,
+    "mapY": -1,
+    "exits": {"north": "green_square"},
+    "npcIds": ["green_elder"]
+  },
+  {
+    "id": "green_old_couple_home",
+    "name": "民宅",
+    "areaId": "green",
+    "description": "这间简陋民宅屋顶还有几个破洞，墙角堆着柴火，墙壁上留有烟熏痕迹，除此之外几乎空空荡荡。",
+    "mapX": 3,
+    "mapY": -3,
+    "exits": {"south": "green_square"},
+    "npcIds": ["green_old_man", "green_old_woman"]
+  },
+  {
+    "id": "green_quarry_yard",
+    "name": "采石场空地",
+    "areaId": "green",
+    "description": "黄土空地四周堆满切割整齐的石块和碎石，东面的高耸石壁已被多年采挖得看不出原貌，南边是工作站。",
+    "mapX": 4,
+    "mapY": -2,
+    "outdoorAreaId": "green",
+    "exits": {"west": "green_square", "south": "green_station1", "north": "green_abandoned_house"},
+    "npcIds": ["green_craftsman_child"]
+  },
+  {
+    "id": "green_abandoned_house",
+    "name": "废弃民宅",
+    "areaId": "green",
+    "description": "昏暗屋内除了一张石床外一无所有，屋角结着一个形状怪异的大蜘蛛网，似乎有什么东西藏在阴影里。",
+    "mapX": 4,
+    "mapY": -3,
+    "exits": {"south": "green_quarry_yard"},
+    "npcIds": ["green_spider"]
+  },
+  {
+    "id": "green_station1",
+    "name": "采石场工作站",
+    "areaId": "green",
+    "description": "几间矮房沿山壁建造，马房旁堆着小山般的干草，运输石料的车子停在空地。南面斜坡通向村前工作站。",
+    "mapX": 4,
+    "mapY": -1,
+    "outdoorAreaId": "green",
+    "exits": {"north": "green_quarry_yard", "southwest": "green_station0"},
+    "npcIds": ["green_quarry_worker", "green_quarry_worker_2"]
+  },
+  {
+    "id": "green_station0",
+    "name": "村前工作站",
+    "areaId": "green",
+    "description": "小木屋立在工作站东边，路旁有一口井，空地上停着几辆载满石料的车。向西的石板路一路延伸下山。",
+    "mapX": 3,
+    "mapY": 0,
+    "outdoorAreaId": "green",
+    "exits": {"northeast": "green_station1", "west": "green_path5"},
+    "npcIds": ["green_quarry_worker_3", "green_quarry_worker_4", "green_quarry_worker_5"]
+  },
+  {
+    "id": "green_cave0",
+    "name": "洞口",
+    "areaId": "green",
+    "description": "这里是山洞入口，往南是一条杂草丛生的碎石路。北面厚重木门被手臂粗的铁链拴着，仍有一股寒气从门缝中透出。",
+    "mapX": 1,
+    "mapY": -6,
+    "exits": {"south": "green_path0", "north": "green_cave1"},
+    "npcIds": ["green_cave_child", "green_cave_child_2"]
+  },
+  {
+    "id": "green_cave1",
+    "name": "黑暗山洞",
+    "areaId": "green",
+    "description": "山洞低矮得几乎站不直身子，脚下不时踩到石块和莫名杂物，洞内奇寒彻骨，北方隐隐透出亮光。",
+    "mapX": 1,
+    "mapY": -7,
+    "exits": {"south": "green_cave0", "north": "green_cave2"}
+  },
+  {
+    "id": "green_cave2",
+    "name": "黑暗山洞",
+    "areaId": "green",
+    "description": "低矮山洞依旧寒冷而黑暗，南边回到木门方向，北面出口外似乎是一条贴着悬崖的荒山路。",
+    "mapX": 1,
+    "mapY": -8,
+    "exits": {"south": "green_cave1", "north": "green_mpath0"}
+  },
+  {
+    "id": "green_mpath0",
+    "name": "荒芜山路",
+    "areaId": "green",
+    "description": "山路东侧是陡峭石壁，西面则是深不见底的悬崖，谷底隐约传来潺潺水声。南边黑洞洞的山洞正是来路。",
+    "mapX": 1,
+    "mapY": -9,
+    "outdoorAreaId": "green",
+    "exits": {"south": "green_cave2", "north": "green_mpath1"}
+  },
+  {
+    "id": "green_mpath1",
+    "name": "荒芜山路",
+    "areaId": "green",
+    "description": "很少有人踏足的山路夹在峭壁与悬崖之间，零星小树从石缝中伸出，脚下碎石不断滚向深谷。",
+    "mapX": 1,
+    "mapY": -10,
+    "outdoorAreaId": "green",
+    "exits": {"south": "green_mpath0", "north": "green_mpath2"}
+  },
+  {
+    "id": "green_mpath2",
+    "name": "山路尽头",
+    "areaId": "green",
+    "description": "荒芜山路在北方石壁前到了尽头，远处悬崖下仍传来流水声，前面似乎另有隐秘去处。",
+    "mapX": 1,
+    "mapY": -11,
+    "outdoorAreaId": "green",
+    "exits": {"south": "green_mpath1", "north": "green_array_entrance"}
+  },
+  {
+    "id": "green_array_entrance",
+    "name": "山路尽头",
+    "areaId": "green",
+    "description": "三面石壁围住山路，北边是一扇苔迹斑斑的大石门，东面洞口隐约传出风雷之声，洞口上方刻着一幅八卦古阵图。",
+    "mapX": 1,
+    "mapY": -12,
+    "outdoorAreaId": "green",
+    "exits": {
+      "south": "green_mpath2",
+      "north": "green_outer_stone_room",
+      "east": {
+        "roomId": "green_eight0",
+        "conditions": {"minimumCombatExperience": 100000}
+      }
+    },
+    "actions": [
+      {
+        "id": "inspect_green_array_painting",
+        "label": "查看阵图",
+        "description": "辨认洞口上方的古老图案。",
+        "resultRoomId": "green_array_entrance",
+        "log": "石壁上刻着一幅八卦阵图，下面有一行模糊小字：八卦古阵。洞中风雷之力极强，功力不足者难以抵受。"
+      }
+    ]
+  },
+  {
+    "id": "green_outer_stone_room",
+    "name": "石室",
+    "areaId": "green",
+    "description": "石室中透着难以言明的神秘力量，墙上挂着一把木剑，北面门楣刻着两行字：非我弟子，莫入此门。",
+    "mapX": 1,
+    "mapY": -13,
+    "exits": {
+      "south": "green_array_entrance",
+      "enter": {
+        "roomId": "green_cave_hall",
+        "conditions": {"requiredFamilyId": "juechen"}
+      }
+    },
+    "actions": [
+      {
+        "id": "request_juechen_entry",
+        "label": "叩问石门",
+        "description": "在刻着门规的石门外恭敬叩问。",
+        "resultRoomId": "green_cave_hall",
+        "log": "你在门外恭敬叩问，石门上的禁制微微一亮，随后缓缓让开一条通路。",
+        "conditions": {
+          "requiresNoFamily": true,
+          "minimumAttributes": {"spirituality": 24},
+          "minimumCombatExperience": 100000
+        }
+      }
+    ]
+  },
+  {
+    "id": "green_eight0",
+    "name": "坤位迷阵",
+    "areaId": "green",
+    "description": "无垠绿野被神秘薄雾笼罩，远处景色逐渐模糊，路牌上写着一个坤字。",
+    "mapX": 2,
+    "mapY": -12,
+    "outdoorAreaId": "green",
+    "exits": {"south": "green_array_entrance", "north": "green_closed", "west": "green_eight0", "east": "green_eight1"},
+    "actions": [{"id": "read_green_sign0", "label": "查看路牌", "description": "查看坤位路牌。", "resultRoomId": "green_eight0", "log": "坤为地：遇青龙而生，遇玄武而死，遇白虎而困，遇朱雀而涉。"}]
+  },
+  {
+    "id": "green_eight1",
+    "name": "艮位迷阵",
+    "areaId": "green",
+    "description": "群山环绕，薄雾遮住来路，路牌上写着一个艮字。",
+    "mapX": 3,
+    "mapY": -12,
+    "outdoorAreaId": "green",
+    "exits": {"south": "green_eight1", "north": "green_eight2", "west": "green_closed", "east": "green_eight0"},
+    "actions": [{"id": "read_green_sign1", "label": "查看路牌", "description": "查看艮位路牌。", "resultRoomId": "green_eight1", "log": "艮为山：遇青龙而涉，遇玄武而生，遇白虎而死，遇朱雀而困。"}]
+  },
+  {
+    "id": "green_eight2",
+    "name": "坎位迷阵",
+    "areaId": "green",
+    "description": "四面皆水，脚下只剩一点陆地，雾中路牌上写着一个坎字。",
+    "mapX": 4,
+    "mapY": -12,
+    "outdoorAreaId": "green",
+    "exits": {"south": "green_eight2", "north": "green_eight1", "west": "green_eight3", "east": "green_closed"},
+    "actions": [{"id": "read_green_sign2", "label": "查看路牌", "description": "查看坎位路牌。", "resultRoomId": "green_eight2", "log": "坎为水：遇青龙而死，遇玄武而涉，遇白虎而生，遇朱雀而困。"}]
+  },
+  {
+    "id": "green_eight3",
+    "name": "巽位迷阵",
+    "areaId": "green",
+    "description": "寒风阵阵，如入北极风洞，吹不散的薄雾中立着巽位路牌。",
+    "mapX": 4,
+    "mapY": -13,
+    "outdoorAreaId": "green",
+    "exits": {"south": "green_eight3", "north": "green_closed", "west": "green_eight2", "east": "green_eight4"},
+    "actions": [{"id": "read_green_sign3", "label": "查看路牌", "description": "查看巽位路牌。", "resultRoomId": "green_eight3", "log": "巽为风：遇青龙而生，遇玄武而死，遇白虎而涉，遇朱雀而困。"}]
+  },
+  {
+    "id": "green_eight4",
+    "name": "震位迷阵",
+    "areaId": "green",
+    "description": "铅云低沉，闪电与巨雷在群山间回响，震位路牌在雾中若隐若现。",
+    "mapX": 4,
+    "mapY": -14,
+    "outdoorAreaId": "green",
+    "exits": {"south": "green_closed", "north": "green_eight5", "west": "green_eight4", "east": "green_eight3"},
+    "actions": [{"id": "read_green_sign4", "label": "查看路牌", "description": "查看震位路牌。", "resultRoomId": "green_eight4", "log": "震为雷：遇青龙而涉，遇玄武而生，遇白虎而困，遇朱雀而死。"}]
+  },
+  {
+    "id": "green_eight5",
+    "name": "离位迷阵",
+    "areaId": "green",
+    "description": "火光冲天、炽热难当，薄雾却不曾散去，路牌上的离字像在火中跳动。",
+    "mapX": 4,
+    "mapY": -15,
+    "outdoorAreaId": "green",
+    "exits": {"south": "green_eight5", "north": "green_eight4", "west": "green_eight6", "east": "green_closed"},
+    "actions": [{"id": "read_green_sign5", "label": "查看路牌", "description": "查看离位路牌。", "resultRoomId": "green_eight5", "log": "离为火：遇青龙而死，遇玄武而涉，遇白虎而生，遇朱雀而困。"}]
+  },
+  {
+    "id": "green_eight6",
+    "name": "兑位迷阵",
+    "areaId": "green",
+    "description": "你仿佛身处大湖中央，脚下只有四尺见方的陆地，兑位路牌立在迷雾边缘。",
+    "mapX": 3,
+    "mapY": -15,
+    "outdoorAreaId": "green",
+    "exits": {"south": "green_eight5", "north": "green_eight7", "west": "green_closed", "east": "green_eight6"},
+    "actions": [{"id": "read_green_sign6", "label": "查看路牌", "description": "查看兑位路牌。", "resultRoomId": "green_eight6", "log": "兑为泽：遇青龙而困，遇玄武而生，遇白虎而死，遇朱雀而涉。"}]
+  },
+  {
+    "id": "green_eight7",
+    "name": "乾位迷阵",
+    "areaId": "green",
+    "description": "长天一碧、沃野千里，正令人心旷神怡时薄雾再起，乾位路牌出现在身后。",
+    "mapX": 3,
+    "mapY": -14,
+    "outdoorAreaId": "green",
+    "exits": {"north": "green_eight7", "west": "green_eight6", "east": "green_closed"},
+    "actions": [
+      {"id": "read_green_sign7", "label": "查看路牌", "description": "查看乾位路牌。", "resultRoomId": "green_eight7", "log": "乾为天：遇青龙而死，遇玄武而困，遇白虎而涉，遇朱雀而生。"},
+      {"id": "leave_green_array", "label": "走出迷阵", "description": "沿乾位生门离开八卦阵。", "resultRoomId": "green_stone_room", "log": "你辨明乾位生门，穿过渐散的薄雾，来到一间隐秘石室。", "setsQuestFlag": "green_eight_solved"}
+    ]
+  },
+  {
+    "id": "green_closed",
+    "name": "绝地",
+    "areaId": "green",
+    "description": "这里四周没有出口，正焦急时你发现远处有一块大石微微晃动，似乎可以奋力推开。",
+    "mapX": 5,
+    "mapY": -13,
+    "outdoorAreaId": "green",
+    "exits": {},
+    "actions": [
+      {
+        "id": "push_green_stone",
+        "label": "推开大石",
+        "description": "用尽全力推开活动的大石。",
+        "resultRoomId": "green_array_entrance",
+        "log": "你用尽全力推动巨石，石后露出一个小洞。你钻出洞口后，巨石又缓缓滚回原位。",
+        "conditions": {"minimumAttributes": {"strength": 25}},
+        "hpCost": 60,
+        "spiritCost": 20,
+        "failureLog": "你的膂力或体力不足，巨石只是纹丝不动。"
+      }
+    ]
+  },
+  {
+    "id": "green_cave_hall",
+    "name": "石室大厅",
+    "areaId": "green",
+    "description": "这里是传说中绝尘子一脉的修行之所。北面佛像顶部嵌着夜明珠，室内设施古朴，却一尘不染。",
+    "mapX": 1,
+    "mapY": -14,
+    "allowsCultivation": true,
+    "exits": {"south": "green_outer_stone_room", "east": "green_stone_room"},
+    "npcIds": ["green_master_juechen"]
+  },
+  {
+    "id": "green_stone_room",
+    "name": "石室",
+    "areaId": "green",
+    "description": "石室西边大厅透来微光，南边放着两个蒲团，像是用来打坐。蒲团后方还藏着一道通往溪水边的密门。",
+    "mapX": 2,
+    "mapY": -14,
+    "allowsCultivation": true,
+    "exits": {"west": "green_cave_hall", "south": "green_water"}
+  },
+  {
+    "id": "green_water",
+    "name": "溪水边",
+    "areaId": "green",
+    "description": "清澈溪水缓缓向南流去，西面灌木中隐约有条小路。水中偶尔闪过一道亮光，却看不清究竟是什么。",
+    "mapX": 2,
+    "mapY": -15,
+    "outdoorAreaId": "green",
+    "exits": {"west": "green_outer_stone_room", "north": "green_stone_room"},
+    "actions": [
+      {
+        "id": "search_green_water",
+        "label": "下水寻找",
+        "description": "跳入溪水，寻找方才闪过的亮光。",
+        "resultRoomId": "green_water",
+        "log": "你在冰冷溪水中仔细摸索，竟从水底找出一把淡青色的追风剑！",
+        "conditions": {"requiredFlags": ["green_eight_solved"], "forbiddenFlags": ["green_windsword_found"]},
+        "setsQuestFlag": "green_windsword_found",
+        "givesItemIds": ["green_windsword"]
+      }
+    ]
+  }
+]

@@ -28,6 +28,7 @@ class SkillMappingSystem {
       state,
       skill,
       requireFamily: false,
+      includeAdvancementRequirements: false,
     );
     if (unmetRequirement != null) {
       return _withLog(state, unmetRequirement);
@@ -54,6 +55,7 @@ class SkillMappingSystem {
     GameState state,
     SkillDefinition skill, {
     bool requireFamily = true,
+    bool includeAdvancementRequirements = true,
   }) {
     final requiredFamilyId = skill.requiredFamilyId;
     if (requireFamily &&
@@ -71,22 +73,57 @@ class SkillMappingSystem {
       return '你的内力修为不足，无法运用${skill.name}。';
     }
     for (final requirement in skill.requiredSkillLevels.entries) {
-      final level = state.skillProgress[requirement.key]?.level ?? 0;
+      final level = skillLevel(state, requirement.key);
       if (level < requirement.value) {
         final requiredSkill = _repository.skill(requirement.key);
         return '${requiredSkill.name}需要达到 Lv.${requirement.value}。';
       }
     }
+    if (includeAdvancementRequirements) {
+      final currentLevel = state.skillProgress[skill.id]?.level ?? 0;
+      for (final requiredSkillId in skill.requiredHigherSkillIds) {
+        if (skillLevel(state, requiredSkillId) <= currentLevel) {
+          final requiredSkill = _repository.skill(requiredSkillId);
+          return '你的${requiredSkill.name}修为不够，无法领悟更高深的${skill.name}。';
+        }
+      }
+      final combinedRequirement = skill.combinedAttributeRequirement;
+      if (combinedRequirement != null) {
+        var attributeValue = state.player.attributes.valueFor(
+          combinedRequirement.attribute,
+        );
+        var maxInnerPower = state.player.maxInnerPower;
+        for (final itemId in state.equippedItemIds.values) {
+          final item = _repository.item(itemId);
+          attributeValue +=
+              item.attributeBonuses[combinedRequirement.attribute] ?? 0;
+          maxInnerPower += item.maxInnerPowerBonus;
+        }
+        final total =
+            attributeValue +
+            maxInnerPower ~/ combinedRequirement.maxInnerPowerDivisor;
+        if (total < combinedRequirement.minimum) {
+          return '你的${combinedRequirement.attribute.label}还不够，也许该练一练内力来增强力量。';
+        }
+      }
+    }
     return null;
+  }
+
+  int skillLevel(GameState state, String skillId) {
+    var level = state.skillProgress[skillId]?.level ?? 0;
+    for (final itemId in state.equippedItemIds.values) {
+      level += _repository.item(itemId).skillBonuses[skillId] ?? 0;
+    }
+    return level.clamp(0, 1 << 30);
   }
 
   int effectiveLevel(GameState state, SkillUsage usage) {
     final basicSkill = _repository.basicSkillFor(usage);
     final basicLevel =
-        basicSkill == null ? 0 : state.skillProgress[basicSkill.id]?.level ?? 0;
+        basicSkill == null ? 0 : skillLevel(state, basicSkill.id);
     final specialId = state.enabledSkillIds[usage];
-    final specialLevel =
-        specialId == null ? 0 : state.skillProgress[specialId]?.level ?? 0;
+    final specialLevel = specialId == null ? 0 : skillLevel(state, specialId);
     return basicLevel ~/ 2 + specialLevel;
   }
 

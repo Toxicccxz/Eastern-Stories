@@ -1,4 +1,5 @@
 import 'equipment_slot.dart';
+import 'innate_attributes.dart';
 
 enum SkillKind { basic, special }
 
@@ -24,7 +25,21 @@ enum SkillUsage {
   final String label;
 }
 
-enum SkillEffectType { damage, defend, heal }
+enum SkillEffectType {
+  damage,
+  defend,
+  heal,
+  summon,
+  escape,
+  resourceDamage,
+  selfStatus,
+}
+
+enum CombatResource { hp, energy, spirit, mana }
+
+enum FailureRollSource { skillLevel, maxMana }
+
+enum OpposedRollType { spellPowerVsCombatExperience }
 
 class SkillDefinition {
   const SkillDefinition({
@@ -39,7 +54,10 @@ class SkillDefinition {
     this.practiceExperience = 20,
     this.minimumMaxInnerPower = 0,
     this.requiredSkillLevels = const {},
+    this.requiredHigherSkillIds = const [],
+    this.combinedAttributeRequirement,
     this.requiredEquipmentSlot,
+    this.practiceRequiredWeaponUsage,
     this.attackMessages = const [],
     this.practiceHpCost = 0,
     this.practiceInnerPowerCost = 0,
@@ -68,11 +86,26 @@ class SkillDefinition {
       requiredSkillLevels:
           (json['requiredSkillLevels'] as Map<String, Object?>? ?? const {})
               .map((skillId, level) => MapEntry(skillId, level as int)),
+      requiredHigherSkillIds:
+          (json['requiredHigherSkillIds'] as List<Object?>? ?? const [])
+              .cast<String>(),
+      combinedAttributeRequirement:
+          json['combinedAttributeRequirement'] == null
+              ? null
+              : CombinedAttributeRequirement.fromJson(
+                json['combinedAttributeRequirement'] as Map<String, Object?>,
+              ),
       requiredEquipmentSlot:
           json['requiredEquipmentSlot'] == null
               ? null
               : EquipmentSlot.values.byName(
                 json['requiredEquipmentSlot'] as String,
+              ),
+      practiceRequiredWeaponUsage:
+          json['practiceRequiredWeaponUsage'] == null
+              ? null
+              : SkillUsage.values.byName(
+                json['practiceRequiredWeaponUsage'] as String,
               ),
       attackMessages:
           (json['attackMessages'] as List<Object?>? ?? const []).cast<String>(),
@@ -94,7 +127,10 @@ class SkillDefinition {
   final int practiceExperience;
   final int minimumMaxInnerPower;
   final Map<String, int> requiredSkillLevels;
+  final List<String> requiredHigherSkillIds;
+  final CombinedAttributeRequirement? combinedAttributeRequirement;
   final EquipmentSlot? requiredEquipmentSlot;
+  final SkillUsage? practiceRequiredWeaponUsage;
   final List<String> attackMessages;
   final int practiceHpCost;
   final int practiceInnerPowerCost;
@@ -110,6 +146,28 @@ class SkillDefinition {
   }
 }
 
+class CombinedAttributeRequirement {
+  const CombinedAttributeRequirement({
+    required this.attribute,
+    required this.minimum,
+    required this.maxInnerPowerDivisor,
+  });
+
+  factory CombinedAttributeRequirement.fromJson(Map<String, Object?> json) {
+    return CombinedAttributeRequirement(
+      attribute: InnateAttribute.values.firstWhere(
+        (attribute) => attribute.jsonKey == json['attribute'],
+      ),
+      minimum: json['minimum'] as int,
+      maxInnerPowerDivisor: json['maxInnerPowerDivisor'] as int,
+    );
+  }
+
+  final InnateAttribute attribute;
+  final int minimum;
+  final int maxInnerPowerDivisor;
+}
+
 class CombatMoveOption {
   const CombatMoveOption({required this.skill, required this.move});
 
@@ -123,6 +181,8 @@ class CombatMoveDefinition {
     required this.name,
     required this.effectType,
     this.innerPowerCost = 0,
+    this.manaCost = 0,
+    this.spiritCost = 0,
     this.damageBonus = 0,
     this.defenseBonus = 0,
     this.healAmount = 0,
@@ -131,6 +191,20 @@ class CombatMoveDefinition {
     this.combatMessage,
     this.statusEffectId,
     this.statusEffect,
+    this.summon,
+    this.summons = const [],
+    this.escapeRoomId,
+    this.castingSkillId,
+    this.failureRollSource = FailureRollSource.skillLevel,
+    this.failureRollBelow = 0,
+    this.failureMessage,
+    this.opposedRoll,
+    this.targetResource = CombatResource.hp,
+    this.resourceDamageDivisor = 20,
+    this.restoresPlayerResource,
+    this.usableOutsideCombat = false,
+    this.durationSkillId,
+    this.activeFailureMessage,
   });
 
   factory CombatMoveDefinition.fromJson(Map<String, Object?> json) {
@@ -141,6 +215,8 @@ class CombatMoveDefinition {
         json['effectType'] as String? ?? SkillEffectType.damage.name,
       ),
       innerPowerCost: json['innerPowerCost'] as int? ?? 0,
+      manaCost: json['manaCost'] as int? ?? 0,
+      spiritCost: json['spiritCost'] as int? ?? 0,
       damageBonus: json['damageBonus'] as int? ?? 0,
       defenseBonus: json['defenseBonus'] as int? ?? 0,
       healAmount: json['healAmount'] as int? ?? 0,
@@ -159,6 +235,43 @@ class CombatMoveDefinition {
               : StatusEffectDefinition.fromJson(
                 json['statusEffect'] as Map<String, Object?>,
               ),
+      summon:
+          json['summon'] == null
+              ? null
+              : CombatSummonDefinition.fromJson(
+                json['summon'] as Map<String, Object?>,
+              ),
+      summons: [
+        for (final summon in json['summons'] as List<Object?>? ?? const [])
+          CombatSummonDefinition.fromJson(summon as Map<String, Object?>),
+      ],
+      escapeRoomId: json['escapeRoomId'] as String?,
+      castingSkillId: json['castingSkillId'] as String?,
+      failureRollSource: FailureRollSource.values.byName(
+        json['failureRollSource'] as String? ??
+            FailureRollSource.skillLevel.name,
+      ),
+      failureRollBelow: json['failureRollBelow'] as int? ?? 0,
+      failureMessage: json['failureMessage'] as String?,
+      opposedRoll:
+          json['opposedRoll'] == null
+              ? null
+              : CombatOpposedRollDefinition.fromJson(
+                json['opposedRoll'] as Map<String, Object?>,
+              ),
+      targetResource: CombatResource.values.byName(
+        json['targetResource'] as String? ?? CombatResource.hp.name,
+      ),
+      resourceDamageDivisor: json['resourceDamageDivisor'] as int? ?? 20,
+      restoresPlayerResource:
+          json['restoresPlayerResource'] == null
+              ? null
+              : CombatResource.values.byName(
+                json['restoresPlayerResource'] as String,
+              ),
+      usableOutsideCombat: json['usableOutsideCombat'] as bool? ?? false,
+      durationSkillId: json['durationSkillId'] as String?,
+      activeFailureMessage: json['activeFailureMessage'] as String?,
     );
   }
 
@@ -166,6 +279,8 @@ class CombatMoveDefinition {
   final String name;
   final SkillEffectType effectType;
   final int innerPowerCost;
+  final int manaCost;
+  final int spiritCost;
   final int damageBonus;
   final int defenseBonus;
   final int healAmount;
@@ -174,6 +289,22 @@ class CombatMoveDefinition {
   final String? combatMessage;
   final String? statusEffectId;
   final StatusEffectDefinition? statusEffect;
+  final CombatSummonDefinition? summon;
+  final List<CombatSummonDefinition> summons;
+  final String? escapeRoomId;
+  final String? castingSkillId;
+  final FailureRollSource failureRollSource;
+  final int failureRollBelow;
+  final String? failureMessage;
+  final CombatOpposedRollDefinition? opposedRoll;
+  final CombatResource targetResource;
+  final int resourceDamageDivisor;
+  final CombatResource? restoresPlayerResource;
+  final bool usableOutsideCombat;
+  final String? durationSkillId;
+  final String? activeFailureMessage;
+
+  bool get hasFailureRoll => failureRollBelow > 0;
 
   int damageBonusAtLevel(int level) => damageBonus + level;
 
@@ -189,6 +320,71 @@ class CombatMoveDefinition {
   }
 }
 
+class CombatOpposedRollDefinition {
+  const CombatOpposedRollDefinition({
+    required this.type,
+    required this.skillId,
+    required this.failureMessage,
+  });
+
+  factory CombatOpposedRollDefinition.fromJson(Map<String, Object?> json) {
+    return CombatOpposedRollDefinition(
+      type: OpposedRollType.values.byName(json['type'] as String),
+      skillId: json['skillId'] as String,
+      failureMessage: json['failureMessage'] as String,
+    );
+  }
+
+  final OpposedRollType type;
+  final String skillId;
+  final String failureMessage;
+}
+
+class CombatSummonDefinition {
+  const CombatSummonDefinition({
+    required this.name,
+    required this.attack,
+    required this.maxHp,
+    required this.defense,
+    required this.summonMessage,
+    required this.attackMessage,
+    required this.defeatMessage,
+    required this.leaveMessage,
+    this.durationRounds = 0,
+    this.selectionWeight = 1,
+    this.nameVariants = const [],
+  });
+
+  factory CombatSummonDefinition.fromJson(Map<String, Object?> json) {
+    return CombatSummonDefinition(
+      name: json['name'] as String,
+      attack: json['attack'] as int,
+      maxHp: json['maxHp'] as int,
+      defense: json['defense'] as int,
+      summonMessage: json['summonMessage'] as String,
+      attackMessage: json['attackMessage'] as String,
+      defeatMessage: json['defeatMessage'] as String,
+      leaveMessage: json['leaveMessage'] as String,
+      durationRounds: json['durationRounds'] as int? ?? 0,
+      selectionWeight: json['selectionWeight'] as int? ?? 1,
+      nameVariants:
+          (json['nameVariants'] as List<Object?>? ?? const []).cast<String>(),
+    );
+  }
+
+  final String name;
+  final int attack;
+  final int maxHp;
+  final int defense;
+  final String summonMessage;
+  final String attackMessage;
+  final String defeatMessage;
+  final String leaveMessage;
+  final int durationRounds;
+  final int selectionWeight;
+  final List<String> nameVariants;
+}
+
 class StatusEffectDefinition {
   const StatusEffectDefinition({
     required this.id,
@@ -201,6 +397,7 @@ class StatusEffectDefinition {
     this.attackPenalty = 0,
     this.defensePenalty = 0,
     this.blocksAction = false,
+    this.grantsAstralVision = false,
     this.applicationMessage,
     this.tickMessage,
     this.expireMessage,
@@ -218,6 +415,7 @@ class StatusEffectDefinition {
       attackPenalty: json['attackPenalty'] as int? ?? 0,
       defensePenalty: json['defensePenalty'] as int? ?? 0,
       blocksAction: json['blocksAction'] as bool? ?? false,
+      grantsAstralVision: json['grantsAstralVision'] as bool? ?? false,
       applicationMessage: json['applicationMessage'] as String?,
       tickMessage: json['tickMessage'] as String?,
       expireMessage: json['expireMessage'] as String?,
@@ -234,6 +432,7 @@ class StatusEffectDefinition {
   final int attackPenalty;
   final int defensePenalty;
   final bool blocksAction;
+  final bool grantsAstralVision;
   final String? applicationMessage;
   final String? tickMessage;
   final String? expireMessage;

@@ -60,6 +60,17 @@ void main() {
         combat: const CombatState(
           npcId: 'latemoon_guard',
           enemyHp: 30,
+          ally: SummonedAllyState(
+            name: '天甲神兵',
+            attack: 20,
+            hp: 812,
+            maxHp: 1000,
+            defense: 14,
+            attackMessage: '神兵挥剑。',
+            defeatMessage: '神兵消散。',
+            leaveMessage: '神兵归天。',
+            remainingRounds: 0,
+          ),
           playerStatusEffects: [
             StatusEffectState(
               id: 'rose_poison',
@@ -92,5 +103,10 @@ void main() {
     expect(find.text('玫瑰花毒 2'), findsNWidgets(2));
     expect(find.byIcon(Icons.ac_unit), findsOneWidget);
     expect(find.byIcon(Icons.local_florist), findsOneWidget);
+    expect(find.textContaining('法力 '), findsNWidgets(2));
+    expect(find.text('护法：天甲神兵'), findsOneWidget);
+    expect(find.text('本场战斗'), findsOneWidget);
+    expect(find.text('812/1000'), findsOneWidget);
+    expect(find.byIcon(Icons.shield_outlined), findsOneWidget);
   });
 }

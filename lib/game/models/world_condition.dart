@@ -14,6 +14,8 @@ class WorldCondition {
     this.requiredFamilyRankIds = const {},
     this.requiredFamilyTaskId,
     this.requiredGender,
+    this.minimumCombatExperience = 0,
+    this.requiresNoFamily = false,
   });
 
   factory WorldCondition.fromJson(Map<String, Object?> json) {
@@ -45,6 +47,8 @@ class WorldCondition {
           json['requiredGender'] == null
               ? null
               : PlayerGender.values.byName(json['requiredGender'] as String),
+      minimumCombatExperience: json['minimumCombatExperience'] as int? ?? 0,
+      requiresNoFamily: json['requiresNoFamily'] as bool? ?? false,
     );
   }
 
@@ -58,6 +62,8 @@ class WorldCondition {
   final Set<String> requiredFamilyRankIds;
   final String? requiredFamilyTaskId;
   final PlayerGender? requiredGender;
+  final int minimumCombatExperience;
+  final bool requiresNoFamily;
 
   bool isSatisfiedBy(GameState state) {
     if (!requiredFlags.every(state.questFlags.contains) ||
@@ -95,6 +101,12 @@ class WorldCondition {
     if (requiredGender != null && state.player.gender != requiredGender) {
       return false;
     }
+    if (state.player.combatExperience < minimumCombatExperience) {
+      return false;
+    }
+    if (requiresNoFamily && state.apprenticeship != null) {
+      return false;
+    }
     return minimumAttributes.entries.every(
       (entry) => state.player.attributes.valueFor(entry.key) >= entry.value,
     );
@@ -115,6 +127,20 @@ class WorldCondition {
       return null;
     }
     return '你的性别不合要求，需要为${gender.label}。';
+  }
+
+  String? familyFailureReason(GameState state) {
+    if (requiresNoFamily && state.apprenticeship != null) {
+      return '你已有师承，不能再拜入此门。';
+    }
+    return null;
+  }
+
+  String? combatExperienceFailureReason(GameState state) {
+    if (state.player.combatExperience < minimumCombatExperience) {
+      return '你的江湖历练不足，需要实战经验达到 $minimumCombatExperience。';
+    }
+    return null;
   }
 }
 

@@ -67,11 +67,27 @@ class CharacterSheet extends StatelessWidget {
                       value: stats.maxInnerPower,
                       bonus: stats.maxInnerPowerBonus,
                     ),
+                    _Stat(label: '当前法力', value: state.player.mana, bonus: 0),
+                    _Stat(label: '法力上限', value: state.player.maxMana, bonus: 0),
+                    _Stat(label: '当前精力', value: state.player.energy, bonus: 0),
+                    _Stat(
+                      label: '精力上限',
+                      value: state.player.maxEnergy,
+                      bonus: 0,
+                    ),
+                    _Stat(label: '当前灵力', value: state.player.atman, bonus: 0),
+                    _Stat(
+                      label: '灵力上限',
+                      value: state.player.maxAtman,
+                      bonus: 0,
+                    ),
                     for (final attribute in InnateAttribute.values)
                       _Stat(
                         label: attribute.label,
-                        value: state.player.attributes.valueFor(attribute),
-                        bonus: 0,
+                        value:
+                            state.player.attributes.valueFor(attribute) +
+                            stats.attributeBonusFor(attribute),
+                        bonus: stats.attributeBonusFor(attribute),
                       ),
                     _Stat(label: '潜能', value: state.player.potential, bonus: 0),
                     _Stat(

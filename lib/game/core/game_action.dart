@@ -49,6 +49,11 @@ sealed class GameAction {
 
   const factory GameAction.useItem(String itemId) = UseItemAction;
 
+  const factory GameAction.combineItems(
+    String sourceItemId,
+    String targetItemId,
+  ) = CombineItemsAction;
+
   const factory GameAction.dropItem(String itemId) = DropItemAction;
 
   const factory GameAction.buyItem(String npcId, String itemId) = BuyItemAction;
@@ -68,9 +73,16 @@ sealed class GameAction {
   const factory GameAction.useCombatMove(String skillId, String moveId) =
       UseCombatMoveAction;
 
+  const factory GameAction.useSkillMove(String skillId, String moveId) =
+      UseSkillMoveAction;
+
   const factory GameAction.fleeCombat() = FleeCombatAction;
 
   const factory GameAction.meditate() = MeditateAction;
+
+  const factory GameAction.meditateForMana() = MeditateForManaAction;
+
+  const factory GameAction.cultivateAtman() = CultivateAtmanAction;
 
   const factory GameAction.recoverWithInnerPower() =
       RecoverWithInnerPowerAction;
@@ -186,6 +198,13 @@ class UseItemAction extends GameAction {
   final String itemId;
 }
 
+class CombineItemsAction extends GameAction {
+  const CombineItemsAction(this.sourceItemId, this.targetItemId);
+
+  final String sourceItemId;
+  final String targetItemId;
+}
+
 class DropItemAction extends GameAction {
   const DropItemAction(this.itemId);
 
@@ -236,12 +255,27 @@ class UseCombatMoveAction extends GameAction {
   final String moveId;
 }
 
+class UseSkillMoveAction extends GameAction {
+  const UseSkillMoveAction(this.skillId, this.moveId);
+
+  final String skillId;
+  final String moveId;
+}
+
 class FleeCombatAction extends GameAction {
   const FleeCombatAction();
 }
 
 class MeditateAction extends GameAction {
   const MeditateAction();
+}
+
+class MeditateForManaAction extends GameAction {
+  const MeditateForManaAction();
+}
+
+class CultivateAtmanAction extends GameAction {
+  const CultivateAtmanAction();
 }
 
 class RecoverWithInnerPowerAction extends GameAction {

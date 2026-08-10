@@ -426,5 +426,18 @@
     "description": "一个蹲在斋院角落里的乞丐，衣衫褴褛，却眼神灵动。",
     "greeting": "乞丐看了看蒸饺，又看了看你。",
     "combat": {"maxHp": 28, "attack": 4, "defense": 3, "rewardExperience": 8}
+  },
+  {
+    "id": "choyin_wandering_ghost",
+    "name": "孤魂野鬼",
+    "description": "一个无处归依的游魂，身影在北门石牌楼旁若隐若现。",
+    "greeting": "孤魂野鬼茫然徘徊，似乎并未察觉阳世来客。",
+    "isGhost": true,
+    "combat": {
+      "maxHp": 24,
+      "attack": 4,
+      "defense": 2,
+      "rewardExperience": 8
+    }
   }
 ]

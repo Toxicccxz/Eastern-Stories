@@ -207,7 +207,7 @@
     "mapX": 3,
     "mapY": -3,
     "outdoorAreaId": "snow",
-    "exits": {"south": "snow_main_street4"}
+    "exits": {"south": "snow_main_street4", "east": "green_path6"}
   },
   {
     "id": "snow_bank",

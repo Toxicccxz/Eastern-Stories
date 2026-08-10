@@ -29,6 +29,7 @@ class NpcDefinition {
     this.initialStateValues = const {},
     this.followEndMessage,
     this.followEndStateValues = const {},
+    this.isGhost = false,
   });
 
   factory NpcDefinition.fromJson(Map<String, Object?> json) {
@@ -98,6 +99,7 @@ class NpcDefinition {
       initialStateValues: _intMap(json['initialStateValues']),
       followEndMessage: json['followEndMessage'] as String?,
       followEndStateValues: _intMap(json['followEndStateValues']),
+      isGhost: json['isGhost'] as bool? ?? false,
     );
   }
 
@@ -125,6 +127,7 @@ class NpcDefinition {
   final Map<String, int> initialStateValues;
   final String? followEndMessage;
   final Map<String, int> followEndStateValues;
+  final bool isGhost;
 
   String greetingFor(GameState state) {
     for (final variant in greetingVariants) {
@@ -377,6 +380,10 @@ class CombatDefinition {
     required this.maxHp,
     required this.attack,
     required this.defense,
+    required this.maxEnergy,
+    required this.maxSpirit,
+    required this.maxMana,
+    this.combatExperience = 0,
     this.rewardSilver = 0,
     this.rewardExperience = 0,
     this.dropItemIds = const [],
@@ -385,10 +392,15 @@ class CombatDefinition {
   });
 
   factory CombatDefinition.fromJson(Map<String, Object?> json) {
+    final maxHp = json['maxHp'] as int;
     return CombatDefinition(
-      maxHp: json['maxHp'] as int,
+      maxHp: maxHp,
       attack: json['attack'] as int,
       defense: json['defense'] as int,
+      maxEnergy: json['maxEnergy'] as int? ?? maxHp,
+      maxSpirit: json['maxSpirit'] as int? ?? maxHp,
+      maxMana: json['maxMana'] as int? ?? 0,
+      combatExperience: json['combatExperience'] as int? ?? 0,
       rewardSilver: json['rewardSilver'] as int? ?? 0,
       rewardExperience: json['rewardExperience'] as int? ?? 0,
       dropItemIds:
@@ -407,6 +419,10 @@ class CombatDefinition {
   final int maxHp;
   final int attack;
   final int defense;
+  final int maxEnergy;
+  final int maxSpirit;
+  final int maxMana;
+  final int combatExperience;
   final int rewardSilver;
   final int rewardExperience;
   final List<String> dropItemIds;
@@ -468,6 +484,7 @@ class DialogueOption {
     this.silverCost = 0,
     this.insufficientSilverResponse,
     this.followingDurationTurns,
+    this.givesItemIds = const [],
   });
 
   factory DialogueOption.fromJson(Map<String, Object?> json) {
@@ -493,6 +510,8 @@ class DialogueOption {
       silverCost: json['silverCost'] as int? ?? 0,
       insufficientSilverResponse: json['insufficientSilverResponse'] as String?,
       followingDurationTurns: json['followingDurationTurns'] as int?,
+      givesItemIds:
+          (json['givesItemIds'] as List<Object?>? ?? const []).cast<String>(),
     );
   }
 
@@ -514,6 +533,7 @@ class DialogueOption {
   final int silverCost;
   final String? insufficientSilverResponse;
   final int? followingDurationTurns;
+  final List<String> givesItemIds;
 }
 
 Map<String, int> _intMap(Object? value) {

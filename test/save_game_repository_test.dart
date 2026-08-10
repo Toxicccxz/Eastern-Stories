@@ -31,6 +31,12 @@ void main() {
       enabledSkillIds: const {SkillUsage.parry: 'deisword'},
       player: GameState.initial(startingRoomId: 'liu_home').player.copyWith(
         spirit: 37,
+        energy: 77,
+        maxEnergy: 120,
+        atman: 22,
+        maxAtman: 50,
+        mana: 123,
+        maxMana: 321,
         potential: 14,
         intelligence: 16,
         combatExperience: 240,
@@ -47,6 +53,9 @@ void main() {
         'white_ice_dragon': const NpcRuntimeState(
           roomId: 'ice_cave',
           currentHp: 12,
+          currentEnergy: 9,
+          currentSpirit: 7,
+          currentMana: 5,
           isDefeated: false,
           respawnAtTurn: 15,
           hasDroppedLoot: true,
@@ -66,6 +75,17 @@ void main() {
         npcId: 'white_ice_dragon',
         enemyHp: 12,
         round: 4,
+        ally: SummonedAllyState(
+          name: '天甲神兵',
+          attack: 20,
+          hp: 812,
+          maxHp: 1000,
+          defense: 14,
+          attackMessage: '神兵挥剑。',
+          defeatMessage: '神兵消散。',
+          leaveMessage: '神兵归天。',
+          remainingRounds: 0,
+        ),
       ),
     );
 
@@ -86,6 +106,12 @@ void main() {
     expect(loaded?.skillProgress['parry']?.experience, 45);
     expect(loaded?.enabledSkillIds, {SkillUsage.parry: 'deisword'});
     expect(loaded?.player.spirit, 37);
+    expect(loaded?.player.energy, 77);
+    expect(loaded?.player.maxEnergy, 120);
+    expect(loaded?.player.atman, 22);
+    expect(loaded?.player.maxAtman, 50);
+    expect(loaded?.player.mana, 123);
+    expect(loaded?.player.maxMana, 321);
     expect(loaded?.player.potential, 14);
     expect(loaded?.player.intelligence, 16);
     expect(loaded?.player.combatExperience, 240);
@@ -96,6 +122,9 @@ void main() {
     expect(loaded?.apprenticeship?.contribution, 7);
     expect(loaded?.npcStates['white_ice_dragon']?.roomId, 'ice_cave');
     expect(loaded?.npcStates['white_ice_dragon']?.currentHp, 12);
+    expect(loaded?.npcStates['white_ice_dragon']?.currentEnergy, 9);
+    expect(loaded?.npcStates['white_ice_dragon']?.currentSpirit, 7);
+    expect(loaded?.npcStates['white_ice_dragon']?.currentMana, 5);
     expect(loaded?.npcStates['white_ice_dragon']?.isDefeated, isFalse);
     expect(loaded?.npcStates['white_ice_dragon']?.respawnAtTurn, 15);
     expect(loaded?.npcStates['white_ice_dragon']?.hasDroppedLoot, isTrue);
@@ -113,6 +142,12 @@ void main() {
     expect(loaded?.combat?.npcId, 'white_ice_dragon');
     expect(loaded?.combat?.enemyHp, 12);
     expect(loaded?.combat?.round, 4);
+    expect(loaded?.combat?.ally?.name, '天甲神兵');
+    expect(loaded?.combat?.ally?.attack, 20);
+    expect(loaded?.combat?.ally?.hp, 812);
+    expect(loaded?.combat?.ally?.maxHp, 1000);
+    expect(loaded?.combat?.ally?.defense, 14);
+    expect(loaded?.combat?.ally?.remainingRounds, 0);
 
     await repository.delete();
 

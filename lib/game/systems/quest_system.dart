@@ -84,6 +84,7 @@ class QuestSystem {
       player: state.player.copyWith(
         silver: state.player.silver - option.silverCost,
       ),
+      inventory: state.inventory.addAll(option.givesItemIds),
       log: state.logWith('${npc.name}说道：“${option.response}”'),
     );
     final startsQuestId = option.startsQuestId;

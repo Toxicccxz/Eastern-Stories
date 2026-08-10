@@ -14,9 +14,9 @@ void main() {
       await validator.validate('assets/data/demo_world.json');
 
       expect(validator.errors, isEmpty);
-      expect(validator.countFor('areas'), 14);
-      expect(validator.countFor('rooms'), 353);
-      expect(validator.countFor('quests'), 4);
+      expect(validator.countFor('areas'), 15);
+      expect(validator.countFor('rooms'), 392);
+      expect(validator.countFor('quests'), 5);
     },
     timeout: const Timeout(Duration(seconds: 10)),
   );
@@ -59,6 +59,7 @@ void main() {
           'name': 'Bad NPC',
           'description': 'Bad NPC',
           'greeting': 'Hello',
+          'isGhost': 'sometimes',
           'initialStateValues': {'mood': 'angry'},
           'followEndStateValues': {'employed': 'no'},
           'followEndMessage': '',
@@ -96,6 +97,7 @@ void main() {
           'combat': {
             'maxHp': 0,
             'attack': 'high',
+            'combatExperience': -1,
             'specialMove': {'interval': 0, 'damageBonus': 'many'},
           },
         },
@@ -108,6 +110,17 @@ void main() {
           'equipmentSlot': 'hands',
           'weaponSkillUsage': 'axe',
           'attackPower': 'strong',
+          'attributeBonuses': {'mystery': 'high'},
+          'skillBonuses': {'missing_skill': 'many'},
+          'combinations': [
+            {
+              'targetItemId': 'bad_item',
+              'label': '',
+              'response': '',
+              'resultItemIds': ['bad_item'],
+              'consumesSource': 'yes',
+            },
+          ],
         },
       ],
       skills: [
@@ -117,12 +130,62 @@ void main() {
           'description': 'Bad skill',
           'kind': 'kungfu',
           'usages': ['axe'],
+          'requiredHigherSkillIds': ['missing_skill'],
+          'practiceRequiredWeaponUsage': 'axe',
+          'combinedAttributeRequirement': {
+            'attribute': 'mystery',
+            'minimum': 'high',
+            'maxInnerPowerDivisor': 0,
+          },
           'moves': [
             {
               'id': 'bad_move',
               'effectType': 'burst',
               'requiredEquipmentSlot': 'hands',
               'damageBonus': 'lots',
+              'targetResource': 'willpower',
+              'restoresPlayerResource': 'stamina',
+              'resourceDamageDivisor': 0,
+              'usableOutsideCombat': 'yes',
+              'durationSkillId': 'missing_skill',
+              'activeFailureMessage': '',
+              'opposedRoll': {
+                'type': 'luckVsDestiny',
+                'skillId': 'missing_skill',
+                'failureMessage': '',
+              },
+              'summons': [
+                {
+                  'name': '',
+                  'nameVariants': [''],
+                  'selectionWeight': 0,
+                  'attack': 0,
+                  'maxHp': 0,
+                  'defense': -1,
+                  'summonMessage': '',
+                  'attackMessage': '',
+                  'defeatMessage': '',
+                  'leaveMessage': '',
+                },
+              ],
+            },
+            {
+              'id': 'bad_summon',
+              'effectType': 'summon',
+              'castingSkillId': 'missing_skill',
+              'failureRollSource': 'chance',
+              'failureRollBelow': 0,
+              'failureMessage': '',
+              'summon': {
+                'name': '',
+                'attack': 0,
+                'maxHp': -1,
+                'defense': -1,
+                'summonMessage': '',
+                'attackMessage': '',
+                'defeatMessage': '',
+                'leaveMessage': '',
+              },
             },
           ],
         },
@@ -137,7 +200,9 @@ void main() {
       containsAll([
         contains('must be a valid direction'),
         contains('combat.maxHp must be a positive integer'),
+        contains('isGhost must be a boolean'),
         contains('combat.attack must be an integer'),
+        contains('combat.combatExperience must be a non-negative integer'),
         contains('combat.specialMove.interval must be a positive integer'),
         contains('combat.specialMove.damageBonus must be an integer'),
         contains('patrol.intervalTurns must be a positive integer'),
@@ -160,11 +225,40 @@ void main() {
         contains('equipmentSlot must be a valid equipment slot'),
         contains('weaponSkillUsage must be a valid skill usage'),
         contains('attackPower must be an integer'),
+        contains('attributeBonuses references unknown innate attribute'),
+        contains('attributeBonuses.mystery must be an integer'),
+        contains('skillBonuses references unknown skills id'),
+        contains('combination.label must be non-empty text'),
+        contains('combination.response must be non-empty text'),
+        contains('combination.consumesSource must be a boolean'),
         contains('kind must be a valid skill kind'),
         contains('usages must be a valid skill usage'),
+        contains('requiredHigherSkillIds references unknown skills id'),
+        contains('practiceRequiredWeaponUsage must be a valid skill usage'),
+        contains('combinedAttributeRequirement.attribute must be a valid'),
+        contains('combinedAttributeRequirement.minimum must be'),
+        contains('maxInnerPowerDivisor must be a positive integer'),
         contains('effectType must be a valid skill effect type'),
         contains('requiredEquipmentSlot must be a valid equipment slot'),
         contains('damageBonus must be an integer'),
+        contains('targetResource must be a valid combat resource'),
+        contains('restoresPlayerResource must be a valid combat resource'),
+        contains('resourceDamageDivisor must be a positive integer'),
+        contains('usableOutsideCombat must be a boolean'),
+        contains('durationSkillId references unknown skills id'),
+        contains('activeFailureMessage must be non-empty text'),
+        contains('opposedRoll.type must be a valid opposed roll type'),
+        contains('opposedRoll.skillId references unknown skills id'),
+        contains('opposedRoll.failureMessage must be non-empty text'),
+        contains('summons[0].selectionWeight must be a positive integer'),
+        contains('summons[0].nameVariants must contain non-empty text'),
+        contains('summon.maxHp must be a positive integer'),
+        contains('summon.defense must be a non-negative integer'),
+        contains('summon.defeatMessage must be non-empty text'),
+        contains('castingSkillId references unknown skills id'),
+        contains('failureRollSource must be a valid failure roll source'),
+        contains('failureRollBelow must be a positive integer'),
+        contains('failureMessage must be non-empty text'),
       ]),
     );
   });

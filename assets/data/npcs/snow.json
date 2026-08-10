@@ -409,7 +409,34 @@
       {
         "itemId": "snow_wineskin",
         "label": "给他酒袋",
-        "response": "醉汉接过酒袋灌了一口，咧嘴笑道：多谢啦……江湖路远，有酒便不冷。"
+        "response": "醉汉接过酒袋灌了一口，咧嘴笑道：多谢啦……",
+        "conditions": {"forbiddenFlags": ["green_elder_info"]}
+      },
+      {
+        "itemId": "snow_wineskin",
+        "label": "给他酒袋并询问玉佩",
+        "response": "醉汉压低声音说道：你是想问玉佩的事吧？我卖给沈老板了，那东西不吉祥……",
+        "conditions": {
+          "requiredFlags": ["green_elder_info"],
+          "forbiddenFlags": ["green_drunk_jade_clue"]
+        },
+        "setsQuestFlag": "green_drunk_jade_clue"
+      },
+      {
+        "itemId": "snow_wineskin",
+        "label": "再给他一袋酒",
+        "response": "醉汉凑近你耳边说道：听说沈记商行有在卖蒙汗药……",
+        "conditions": {
+          "requiredFlags": ["green_drunk_jade_clue"],
+          "forbiddenFlags": ["green_drunk_drug_clue"]
+        },
+        "setsQuestFlag": "green_drunk_drug_clue"
+      },
+      {
+        "itemId": "snow_wineskin",
+        "label": "给他酒袋",
+        "response": "醉汉笑道：多谢，不过我还有酒……",
+        "conditions": {"requiredFlags": ["green_drunk_drug_clue"]}
       }
     ]
   },

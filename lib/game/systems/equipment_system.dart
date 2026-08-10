@@ -1,5 +1,6 @@
 import '../models/equipment_slot.dart';
 import '../models/game_state.dart';
+import '../models/innate_attributes.dart';
 import '../repositories/game_definition_repository.dart';
 
 class EquipmentSystem {
@@ -12,23 +13,39 @@ class EquipmentSystem {
     var defenseBonus = 0;
     var maxHpBonus = 0;
     var maxInnerPowerBonus = 0;
+    final attributeBonuses = <InnateAttribute, int>{};
     for (final itemId in state.equippedItemIds.values) {
       final item = _repository.item(itemId);
       attackBonus += item.attackPower;
       defenseBonus += item.defensePower;
       maxHpBonus += item.maxHpBonus;
       maxInnerPowerBonus += item.maxInnerPowerBonus;
+      for (final bonus in item.attributeBonuses.entries) {
+        attributeBonuses.update(
+          bonus.key,
+          (value) => value + bonus.value,
+          ifAbsent: () => bonus.value,
+        );
+      }
     }
 
+    final strength =
+        state.player.attributes.strength +
+        (attributeBonuses[InnateAttribute.strength] ?? 0);
+    final composure =
+        state.player.attributes.composure +
+        (attributeBonuses[InnateAttribute.composure] ?? 0);
+
     return CharacterStats(
-      attack: 2 + state.player.attributes.strength ~/ 3 + attackBonus,
-      defense: state.player.attributes.composure ~/ 10 + defenseBonus,
+      attack: 2 + strength ~/ 3 + attackBonus,
+      defense: composure ~/ 10 + defenseBonus,
       maxHp: state.player.maxHp + maxHpBonus,
       maxInnerPower: state.player.maxInnerPower + maxInnerPowerBonus,
       attackBonus: attackBonus,
       defenseBonus: defenseBonus,
       maxHpBonus: maxHpBonus,
       maxInnerPowerBonus: maxInnerPowerBonus,
+      attributeBonuses: attributeBonuses,
     );
   }
 
@@ -105,6 +122,7 @@ class CharacterStats {
     required this.defenseBonus,
     required this.maxHpBonus,
     required this.maxInnerPowerBonus,
+    required this.attributeBonuses,
   });
 
   final int attack;
@@ -115,4 +133,9 @@ class CharacterStats {
   final int defenseBonus;
   final int maxHpBonus;
   final int maxInnerPowerBonus;
+  final Map<InnateAttribute, int> attributeBonuses;
+
+  int attributeBonusFor(InnateAttribute attribute) {
+    return attributeBonuses[attribute] ?? 0;
+  }
 }

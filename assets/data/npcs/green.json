@@ -1,0 +1,294 @@
+[
+  {
+    "id": "green_elder",
+    "name": "村长",
+    "description": "青石村的老村长已经九十五岁，坐在炉边的石椅上，神情时而清醒，时而像在回忆很久以前的事情。",
+    "greeting": "村长叹道：国之将亡……唉，都是造孽啊。",
+    "ambient": {
+      "intervalTurns": 6,
+      "messages": ["村长喃喃说道：国之将亡……", "村长望着炉火，长长地叹了口气。"]
+    },
+    "dialogueOptions": [
+      {
+        "id": "ask_green_jade",
+        "label": "询问玉佩",
+        "response": "村长说道：那玉佩是从古墓盗出来的，来路不明。我送给一个年轻人后，他性情大变，如今听说只以酒度日。你若要找他，我也不知道他的下落……造孽啊。",
+        "startsQuestId": "green_jade_mystery",
+        "setsQuestFlag": "green_elder_info",
+        "conditions": {"forbiddenFlags": ["green_elder_info"]}
+      },
+      {
+        "id": "recall_green_jade",
+        "label": "再问那个年轻人",
+        "response": "村长摇头说道：只听说他后来终日饮酒。若在附近遇见醉汉，也许可以问问。",
+        "conditions": {"requiredFlags": ["green_elder_info"]}
+      }
+    ]
+  },
+  {
+    "id": "green_shen_wannian",
+    "name": "沈万年",
+    "description": "沈记商行掌柜沈万年约莫四十五岁，一双眼睛总在客人与货架之间来回打量。",
+    "greeting": "沈万年上下打量了你一眼，说道：我可不卖东西给陌生人。",
+    "greetingVariants": [
+      {
+        "text": "沈万年皱眉说道：玉佩已经给你了，可不要太贪心。",
+        "conditions": {"requiredFlags": ["green_had_jade"]}
+      }
+    ],
+    "dialogueOptions": [
+      {
+        "id": "ask_shen_for_jade",
+        "label": "索要玉佩",
+        "response": "沈万年迟疑片刻，从柜后取出一枚玉佩递给你：就是这个。拿去之后，可别再来问我要。",
+        "conditions": {
+          "requiredFlags": ["green_drunk_jade_clue"],
+          "forbiddenFlags": ["green_had_jade"]
+        },
+        "givesItemIds": ["green_jade"],
+        "setsQuestFlag": "green_had_jade",
+        "completesQuestId": "green_jade_mystery"
+      },
+      {
+        "id": "ask_shen_for_drug",
+        "label": "询问蒙汗药",
+        "response": "沈万年压低声音说道：一份只要十两银子，保证有效。",
+        "conditions": {"requiredFlags": ["green_drunk_drug_clue"]},
+        "setsQuestFlag": "green_can_buy_drug"
+      },
+      {
+        "id": "buy_slumber_drug",
+        "label": "购买蒙汗药",
+        "response": "沈万年左右看了看，鬼鬼祟祟地塞给你一包蒙汗药。",
+        "conditions": {"requiredFlags": ["green_can_buy_drug"]},
+        "silverCost": 10,
+        "insufficientSilverResponse": "想骗我啊？十两银子，一个子儿也不能少。",
+        "givesItemIds": ["green_slumber_drug"]
+      }
+    ]
+  },
+  {
+    "id": "green_shop_woman",
+    "name": "妇人",
+    "description": "一名村中妇人正在拥挤的货架之间翻找日用品。",
+    "greeting": "妇人说道：沈记什么都有，就是掌柜不大肯卖给外乡人。"
+  },
+  {
+    "id": "green_house_woman",
+    "name": "妇人",
+    "description": "一名妇人守着石炉上的锅，手边还放着一把切菜用的刀。",
+    "greeting": "妇人警惕地问道：你到我们家来做什么？",
+    "combat": {"maxHp": 18, "attack": 4, "defense": 2, "rewardExperience": 4}
+  },
+  {
+    "id": "green_house_woman_2",
+    "name": "妇人",
+    "description": "另一名妇人不时朝门外张望，似乎在担心跑去废洞附近玩耍的孩子。",
+    "greeting": "妇人抱怨道：明知道山洞那边闹鬼，那些小鬼还总往那里跑。",
+    "ambient": {
+      "intervalTurns": 5,
+      "messages": ["妇人说道：我说啊，管管你们家那小鬼。", "妇人打开锅盖闻了闻，又朝门外看了一眼。"]
+    }
+  },
+  {
+    "id": "green_old_man",
+    "name": "老公公",
+    "description": "一位满头白发的老公公守着破旧民宅，腰间还别着一把短匕首。",
+    "greeting": "老公公眯起眼睛看了看你，没有放松戒备。",
+    "combat": {"maxHp": 24, "attack": 5, "defense": 2, "rewardExperience": 6}
+  },
+  {
+    "id": "green_old_woman",
+    "name": "老婆婆",
+    "description": "老婆婆虽然年迈，动作却还很利落，始终站在老伴身旁。",
+    "greeting": "老婆婆说道：我们老两口在这里住了一辈子，不劳外人操心。",
+    "combat": {"maxHp": 20, "attack": 4, "defense": 2, "rewardExperience": 5}
+  },
+  {
+    "id": "green_craftsman",
+    "name": "工匠",
+    "description": "一名强壮工匠正在整理石雕工具，粗糙的双手沾满白色石粉。",
+    "greeting": "工匠说道：青石村靠石头吃饭，这些家伙什可不能有半点马虎。",
+    "combat": {"maxHp": 28, "attack": 6, "defense": 3, "rewardExperience": 8}
+  },
+  {
+    "id": "green_craftsman_child",
+    "name": "工匠的小孩",
+    "description": "一个七岁左右的男孩在石料堆边玩耍，对来往的运石车毫不畏惧。",
+    "greeting": "小孩说道：我爹雕的石狮子可威风了！"
+  },
+  {
+    "id": "green_child",
+    "name": "小孩",
+    "description": "一个村中孩子在岔路附近跑来跑去，鞋上沾满泥土。",
+    "greeting": "小孩说道：北边那个山洞会发出怪声，你敢去吗？"
+  },
+  {
+    "id": "green_child_2",
+    "name": "小孩",
+    "description": "另一个孩子跟在同伴后面，时不时回头看看土地庙。",
+    "greeting": "小孩小声说道：大人都说废洞里闹鬼。"
+  },
+  {
+    "id": "green_alley_child",
+    "name": "小孩",
+    "description": "一个女孩在小巷里追逐玩耍，笑声传得很远。",
+    "greeting": "小孩笑道：广场那棵榕树下面最凉快。"
+  },
+  {
+    "id": "green_alley_child_2",
+    "name": "小孩",
+    "description": "一个孩子蹲在巷边，用碎石在地上画着奇怪图案。",
+    "greeting": "小孩说道：这是我从北边洞口看到的图。"
+  },
+  {
+    "id": "green_quarry_worker",
+    "name": "采石工",
+    "description": "一名采石工扛着绳索，身上和头发里都是石屑。",
+    "greeting": "采石工说道：山壁松动，站远些才安全。",
+    "combat": {"maxHp": 26, "attack": 6, "defense": 3, "rewardExperience": 7}
+  },
+  {
+    "id": "green_quarry_worker_2",
+    "name": "采石工",
+    "description": "一名采石工正在检查运石车上的绳结。",
+    "greeting": "采石工说道：这些石料明早就要运下山。",
+    "combat": {"maxHp": 26, "attack": 6, "defense": 3, "rewardExperience": 7}
+  },
+  {
+    "id": "green_quarry_worker_3",
+    "name": "采石工",
+    "description": "一名采石工守在村前工作站的井边。",
+    "greeting": "采石工说道：井水清凉，干活累了正好解渴。",
+    "combat": {"maxHp": 26, "attack": 6, "defense": 3, "rewardExperience": 7}
+  },
+  {
+    "id": "green_quarry_worker_4",
+    "name": "采石工",
+    "description": "一名采石工正把散落的小块石料搬上车。",
+    "greeting": "采石工擦汗说道：这一车石头可沉得很。",
+    "combat": {"maxHp": 26, "attack": 6, "defense": 3, "rewardExperience": 7}
+  },
+  {
+    "id": "green_quarry_worker_5",
+    "name": "采石工",
+    "description": "一名采石工提着铁锤检查石板是否有裂纹。",
+    "greeting": "采石工说道：有暗裂的石板，运到山下也是白费功夫。",
+    "combat": {"maxHp": 26, "attack": 6, "defense": 3, "rewardExperience": 7}
+  },
+  {
+    "id": "green_spider",
+    "name": "大蜘蛛",
+    "description": "一只硕大的蜘蛛伏在屋角阴影里，长脚上覆盖着令人不适的细毛。",
+    "greeting": "大蜘蛛从网上缓缓爬下，挡住了你的去路。",
+    "combat": {
+      "maxHp": 20,
+      "attack": 5,
+      "defense": 2,
+      "rewardExperience": 10,
+      "respawnAfterTurns": 5,
+      "specialMove": {
+        "name": "缠丝",
+        "interval": 3,
+        "damageBonus": 1,
+        "message": "大蜘蛛喷出一缕黏丝，逼得你手忙脚乱。"
+      }
+    }
+  },
+  {
+    "id": "green_cave_child",
+    "name": "小孩",
+    "description": "一个胆大的孩子趴在木门缝边，想看清废洞里面究竟藏着什么。",
+    "greeting": "小孩说道：村长说这道门绝对不能打开，可里面到底有什么呢？",
+    "ambient": {
+      "intervalTurns": 5,
+      "messages": ["小孩好奇地往门缝里看去。", "小孩说道：不知道里面是什么……"]
+    }
+  },
+  {
+    "id": "green_cave_child_2",
+    "name": "小孩",
+    "description": "另一个孩子站得稍远一些，既害怕又舍不得离开。",
+    "greeting": "小孩小声说道：里面好冷，我们还是回去吧。"
+  },
+  {
+    "id": "green_master_juechen",
+    "name": "绝尘子",
+    "description": "绝尘子本为释家中人，后得奇人指点而悟道家真谛，佛道双修皆入化境，访遍名山大川后自号绝尘、开创此派。",
+    "greeting": "绝尘子缓缓睁眼说道：贫道向以遁世为乐，你既来到此处，便说说所求何事。",
+    "intelligence": 30,
+    "familyId": "juechen",
+    "familyGeneration": 1,
+    "canAcceptApprentices": true,
+    "apprenticeTitle": "弟子",
+    "apprenticeshipConditions": {
+      "requiresNoFamily": true,
+      "minimumAttributes": {"spirituality": 24},
+      "minimumCombatExperience": 100000
+    },
+    "combat": {
+      "maxHp": 300,
+      "attack": 30,
+      "defense": 24,
+      "rewardExperience": 500,
+      "dropItemIds": ["green_jingang_staff", "green_purple_gold_hat"],
+      "specialMove": {
+        "name": "五行遁术",
+        "interval": 3,
+        "damageBonus": 0,
+        "message": "绝尘子口中默诵咒诀，周身五行之气流转，将你的攻势层层化开。"
+      }
+    },
+    "teachingSkills": [
+      {"skillId": "literate", "maxLevel": 50, "access": "direct"},
+      {"skillId": "basic_unarmed", "maxLevel": 50, "access": "direct"},
+      {"skillId": "basic_force", "maxLevel": 50, "access": "direct"},
+      {"skillId": "parry", "maxLevel": 50, "access": "direct"},
+      {"skillId": "basic_dodge", "maxLevel": 50, "access": "direct"},
+      {"skillId": "magic", "maxLevel": 50, "access": "direct"},
+      {"skillId": "spells", "maxLevel": 50, "access": "direct"},
+      {"skillId": "basic_staff", "maxLevel": 50, "access": "direct"},
+      {
+        "skillId": "juechen_force",
+        "maxLevel": 60,
+        "access": "direct",
+        "requiredSkillLevels": {"basic_force": 1}
+      },
+      {
+        "skillId": "tao_mystery",
+        "maxLevel": 60,
+        "access": "direct",
+        "requiredSkillLevels": {"magic": 1, "literate": 1}
+      },
+      {
+        "skillId": "magic_array",
+        "maxLevel": 60,
+        "access": "direct",
+        "requiredSkillLevels": {"spells": 1, "tao_mystery": 1}
+      },
+      {
+        "skillId": "jingang_staff",
+        "maxLevel": 60,
+        "access": "direct",
+        "requiredSkillLevels": {"basic_staff": 1}
+      }
+    ],
+    "dialogueOptions": [
+      {
+        "id": "ask_juechen_family",
+        "label": "询问绝尘派",
+        "response": "绝尘子说道：绝尘派是我所创。入我派者须有慧根，也须先经江湖历练；入门之后，当先修根基，再谈阵法杖术。"
+      },
+      {
+        "id": "ask_juechen_array",
+        "label": "请教八卦古阵",
+        "response": "绝尘子说道：八卦递转，生死相倚。能记住方位只是入门，能在迷雾中守住本心才算真正破阵。"
+      },
+      {
+        "id": "ask_windsword",
+        "label": "询问水中剑光",
+        "response": "绝尘子说道：追风剑只待真正走出古阵之人。你若已有所得，便去溪水中寻它。"
+      }
+    ]
+  }
+]

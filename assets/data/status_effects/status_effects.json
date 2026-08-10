@@ -49,5 +49,13 @@
     "applicationMessage": "{target}将伤口仔细包扎妥当。",
     "tickMessage": "{target}的伤口得到照料，恢复{healing}点气血。",
     "expireMessage": "{target}伤口上的绷带已经失去效用。"
+  },
+  {
+    "id": "astral_vision",
+    "name": "阴阳眼",
+    "duration": 1,
+    "grantsAstralVision": true,
+    "applicationMessage": "你微一凝神，闭着眼睛念了几句咒语，施展出阴阳眼。",
+    "expireMessage": "你的阴阳眼法术失效了。"
   }
 ]

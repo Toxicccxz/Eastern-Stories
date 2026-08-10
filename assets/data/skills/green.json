@@ -1,0 +1,144 @@
+[
+  {
+    "id": "basic_staff",
+    "name": "基本杖法",
+    "description": "持杖运力、点扫挑劈的基础，是修习特殊杖法的根基。",
+    "kind": "basic",
+    "usages": ["staff"],
+    "maxLevel": 50,
+    "practiceExperience": 20
+  },
+  {
+    "id": "juechen_force",
+    "name": "绝尘心法",
+    "description": "绝尘派的本门内功，原版中只能通过师长传授或实际运用来精进。",
+    "kind": "special",
+    "usages": ["force"],
+    "requiredFamilyId": "juechen",
+    "requiredSkillLevels": {"basic_force": 1},
+    "canPractice": false,
+    "damageReduction": 3,
+    "maxLevel": 60,
+    "practiceExperience": 20
+  },
+  {
+    "id": "tao_mystery",
+    "name": "小天魔道",
+    "description": "绝尘派参悟法术变化的根本学识，原版中只能通过师长传授或实战体会精进。",
+    "kind": "special",
+    "usages": ["magic", "knowledge"],
+    "requiredFamilyId": "juechen",
+    "requiredSkillLevels": {"magic": 1, "literate": 1},
+    "canPractice": false,
+    "maxLevel": 60,
+    "practiceExperience": 18
+  },
+  {
+    "id": "magic_array",
+    "name": "奇门遁甲",
+    "description": "借五行生克与八卦方位施展的绝尘派咒术，修为以小天魔道为根基。",
+    "kind": "special",
+    "usages": ["spells", "array"],
+    "requiredFamilyId": "juechen",
+    "requiredSkillLevels": {"spells": 1, "tao_mystery": 1},
+    "requiredHigherSkillIds": ["tao_mystery"],
+    "canPractice": false,
+    "moves": [
+      {
+        "id": "dun",
+        "name": "五行禁制",
+        "effectType": "defend",
+        "manaCost": 200,
+          "spiritCost": 80,
+          "castingSkillId": "spells",
+          "failureRollBelow": 40,
+          "failureMessage": "你勉强聚起五行之气，却没能困住敌人。",
+          "defenseBonus": 4,
+        "minimumSkillLevel": 10,
+        "combatMessage": "你口中默诵咒诀，忽然大喝一声“疾”，五行之气向敌人合围而去。",
+        "statusEffect": {
+          "id": "juechen_bind",
+          "name": "五行禁制",
+          "duration": 2,
+          "blocksAction": true,
+          "applicationMessage": "五行之气将{target}困在中央。",
+          "tickMessage": "{target}被五行之气困住，动弹不得。",
+          "expireMessage": "困住{target}的五行之气渐渐消散。"
+        }
+      },
+      {
+        "id": "dun_escape",
+        "name": "五行遁走",
+        "effectType": "escape",
+        "manaCost": 80,
+          "spiritCost": 30,
+          "castingSkillId": "spells",
+          "failureRollBelow": 30,
+          "failureMessage": "你念完咒文，遁光却一闪而灭。",
+          "minimumSkillLevel": 10,
+        "escapeRoomId": "snow_temple",
+        "combatMessage": "你默诵咒诀，身形化作一道金光消失；再睁眼时，已落在雪亭镇城隍庙中。"
+      },
+      {
+        "id": "saveme",
+        "name": "召唤天将",
+        "effectType": "summon",
+        "manaCost": 100,
+          "spiritCost": 60,
+          "castingSkillId": "spells",
+          "failureRollBelow": 60,
+          "failureMessage": "你念完咒语，但是没有任何事情发生。",
+          "minimumSkillLevel": 60,
+        "summon": {
+            "name": "天甲神兵",
+            "attack": 20,
+            "maxHp": 1000,
+            "defense": 14,
+            "summonMessage": "你喃喃念动咒语，一道金光由天而降，金光中走出一位身穿金色战袍的天甲神兵。",
+            "attackMessage": "天甲神兵挥动金剑斩向{enemy}，造成{damage}点伤害。",
+            "defeatMessage": "天甲神兵受创过重，身上的金光骤然散去。",
+            "leaveMessage": "天甲神兵说道：末将护法已毕。话音落下，他化作一道金光冲上天际。"
+        }
+      }
+    ],
+    "maxLevel": 60,
+    "practiceExperience": 20
+  },
+  {
+    "id": "jingang_staff",
+    "name": "金刚杖法",
+    "description": "绝尘派刚猛杖法，招式取天光、晴雨、浮云与游龙之意。",
+    "kind": "special",
+    "usages": ["staff", "parry"],
+    "requiredFamilyId": "juechen",
+    "requiredSkillLevels": {"basic_staff": 1},
+    "combinedAttributeRequirement": {
+      "attribute": "strength",
+      "minimum": 50,
+      "maxInnerPowerDivisor": 10
+    },
+    "practiceRequiredWeaponUsage": "staff",
+    "practiceHpCost": 60,
+    "damageReduction": 2,
+    "attackMessages": [
+      "你使一招“天光乍现”，手中长杖横扫{enemy}下盘。",
+      "你挥起长杖，一招“雨后初晴”攻向{enemy}。",
+      "你横过手中长杖，使出“浮云写意”击向{enemy}。",
+      "你使出“游龙穿云”，杖端一挺撞向{enemy}。"
+    ],
+    "moves": [
+      {
+        "id": "dragon_through_cloud",
+        "name": "游龙穿云",
+        "effectType": "damage",
+        "innerPowerCost": 8,
+        "damageBonus": 10,
+        "minimumSkillLevel": 8,
+        "requiredEquipmentSlot": "weapon",
+        "combatMessage": "你使出“游龙穿云”，长杖挟着破风声直撞{enemy}。"
+      }
+    ],
+    "maxLevel": 60,
+    "practiceExperience": 20
+  }
+]

@@ -21,12 +21,14 @@ import '../systems/apprenticeship_system.dart';
 import '../systems/inner_power_system.dart';
 import '../systems/family_task_system.dart';
 import '../systems/player_condition_system.dart';
+import '../systems/spell_system.dart';
 import 'game_action.dart';
 
 class GameController extends ChangeNotifier {
   GameController({
     required GameDefinitionRepository repository,
     GameState? initialState,
+    RandomIntGenerator? randomIntGenerator,
   }) : _repository = repository,
        _state =
            initialState == null
@@ -53,6 +55,11 @@ class GameController extends ChangeNotifier {
       _skillMappingSystem,
       skillProgressionSystem,
     );
+    _spellSystem = SpellSystem(
+      repository,
+      _equipmentSystem,
+      _playerConditionSystem,
+    );
     _apprenticeshipSystem = ApprenticeshipSystem(repository);
     final progressionSystem = ProgressionSystem(repository, _equipmentSystem);
     _familyTaskSystem = FamilyTaskSystem(repository, progressionSystem);
@@ -71,6 +78,7 @@ class GameController extends ChangeNotifier {
       skillProgressionSystem,
       _skillMappingSystem,
       _playerConditionSystem,
+      randomIntGenerator: randomIntGenerator,
     );
     _worldSystem = WorldSystem(repository, _playerConditionSystem);
     _tradeSystem = TradeSystem(repository, _equipmentSystem);
@@ -88,6 +96,7 @@ class GameController extends ChangeNotifier {
   late final CultivationSystem _cultivationSystem;
   late final ApprenticeshipSystem _apprenticeshipSystem;
   late final InnerPowerSystem _innerPowerSystem;
+  late final SpellSystem _spellSystem;
   late final FamilyTaskSystem _familyTaskSystem;
   late final PlayerConditionSystem _playerConditionSystem;
   GameState _state;
@@ -156,6 +165,8 @@ class GameController extends ChangeNotifier {
       RequestFamilyPromotionAction(:final npcId) => _familyTaskSystem
           .requestPromotion(_state, npcId),
       UseItemAction(:final itemId) => _inventorySystem.useItem(_state, itemId),
+      CombineItemsAction(:final sourceItemId, :final targetItemId) =>
+        _inventorySystem.combineItems(_state, sourceItemId, targetItemId),
       DropItemAction(:final itemId) => _inventorySystem.dropItem(
         _state,
         itemId,
@@ -183,8 +194,12 @@ class GameController extends ChangeNotifier {
       ),
       UseCombatMoveAction(:final skillId, :final moveId) => _combatSystem
           .useMove(_state, skillId, moveId),
+      UseSkillMoveAction(:final skillId, :final moveId) => _spellSystem
+          .useWorldMove(_state, skillId, moveId),
       FleeCombatAction() => _combatSystem.fleeCombat(_state),
       MeditateAction() => _innerPowerSystem.meditate(_state),
+      MeditateForManaAction() => _spellSystem.meditate(_state),
+      CultivateAtmanAction() => _spellSystem.cultivateAtman(_state),
       RecoverWithInnerPowerAction() => _innerPowerSystem.recover(_state),
       HealWithInnerPowerAction() => _innerPowerSystem.heal(_state),
     };
@@ -227,6 +242,8 @@ class GameController extends ChangeNotifier {
           when previous.skillProgress != next.skillProgress =>
         WorldActionType.activity,
       MeditateAction() ||
+      MeditateForManaAction() ||
+      CultivateAtmanAction() ||
       RecoverWithInnerPowerAction() ||
       HealWithInnerPowerAction() when previous.player != next.player =>
         WorldActionType.activity,

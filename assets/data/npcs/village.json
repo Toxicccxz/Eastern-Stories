@@ -114,6 +114,7 @@
       "maxHp": 36,
       "attack": 7,
       "defense": 4,
+      "combatExperience": 1000000,
       "rewardExperience": 70
     }
   }

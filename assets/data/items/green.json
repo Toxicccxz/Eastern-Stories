@@ -1,0 +1,59 @@
+[
+  {
+    "id": "green_jade",
+    "name": "玉佩",
+    "description": "一枚来历不明的古玉佩，上面刻着关于行气蓄伸、顺逆生死的古老文字。",
+    "studySkillId": "basic_force",
+    "studyMaxSkillLevel": 40,
+    "studyExperience": 30,
+    "studyRequiredCombatExperience": 100,
+    "studySpiritCost": 20,
+    "studyDifficulty": 25,
+    "sellPrice": 10
+  },
+  {
+    "id": "green_slumber_drug",
+    "name": "蒙汗药",
+    "description": "一包寻常绿林盗贼作案所用的蒙汗药，据说可以倒在酒水中使用。",
+    "combinations": [
+      {
+        "targetItemId": "snow_wineskin",
+        "label": "倒入酒袋",
+        "response": "你避开旁人耳目，把蒙汗药小心倒进酒袋并摇匀。",
+        "resultItemIds": ["green_drugged_wineskin"]
+      }
+    ],
+    "sellPrice": 2
+  },
+  {
+    "id": "green_drugged_wineskin",
+    "name": "掺药酒袋",
+    "description": "一只装着雪亭红酒的皮酒袋，酒中已经悄悄混入了蒙汗药。"
+  },
+  {
+    "id": "green_jingang_staff",
+    "name": "金刚杖",
+    "description": "一条沉重的紫铜杖，杖的两端似乎封着密文。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "staff",
+    "attackPower": 78,
+    "skillBonuses": {"spells": 10, "basic_dodge": -5}
+  },
+  {
+    "id": "green_purple_gold_hat",
+    "name": "紫金冠",
+    "description": "一顶以奇异云纹织成的紫金道冠，戴上后更容易凝神体悟咒诀。",
+    "equipmentSlot": "head",
+    "attributeBonuses": {"intelligence": 3},
+    "skillBonuses": {"spells": 5}
+  },
+  {
+    "id": "green_windsword",
+    "name": "追风剑",
+    "description": "一把淡青色长剑，剑锋锐利异常，挥动时隐约带起风雷之声。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "sword",
+    "attackPower": 70,
+    "sellPrice": 1000
+  }
+]

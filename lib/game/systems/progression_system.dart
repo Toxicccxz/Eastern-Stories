@@ -42,6 +42,9 @@ class ProgressionSystem {
     final healedPlayer = nextPlayer.copyWith(
       hp: stats.maxHp,
       innerPower: stats.maxInnerPower,
+      energy: nextPlayer.maxEnergy,
+      atman: nextPlayer.maxAtman,
+      mana: nextPlayer.maxMana,
     );
     final log = [
       ...state.logWith(

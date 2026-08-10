@@ -563,6 +563,514 @@ void main() {
     expect(controller.state.npcStates['pang_yi']?.valueFor('employed'), 1);
   });
 
+  test('Snow Pavilion mountain pass connects to Green Stone Village', () {
+    final baseState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: baseState.copyWith(
+        currentRoomId: 'snow_crossroad',
+        visitedRoomIds: {...baseState.visitedRoomIds, 'snow_crossroad'},
+      ),
+    );
+
+    controller.dispatch(const GameAction.move(Direction.east));
+
+    expect(controller.state.currentRoomId, 'green_path6');
+    expect(repository.room(controller.state.currentRoomId).areaId, 'green');
+    expect(
+      repository.room('green_path6').exits[Direction.west],
+      'snow_crossroad',
+    );
+  });
+
+  test('original jade clues connect elder, drunk, and Shen Wannian', () {
+    final baseState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: baseState.copyWith(
+        currentRoomId: 'green_elder_home',
+        visitedRoomIds: {...baseState.visitedRoomIds, 'green_elder_home'},
+        inventoryItemIds: ['snow_wineskin', 'snow_wineskin'],
+        player: baseState.player.copyWith(silver: 10),
+      ),
+    );
+
+    controller.dispatch(
+      const GameAction.selectDialogue('green_elder', 'ask_green_jade'),
+    );
+    expect(
+      controller.state.questStatuses['green_jade_mystery'],
+      QuestStatus.active,
+    );
+    expect(controller.state.questFlags, contains('green_elder_info'));
+
+    controller.replaceState(
+      controller.state.copyWith(
+        currentRoomId: 'snow_main_street2',
+        visitedRoomIds: {
+          ...controller.state.visitedRoomIds,
+          'snow_main_street2',
+        },
+      ),
+    );
+    controller.dispatch(
+      const GameAction.giveItem('snow_drunk', 'snow_wineskin'),
+    );
+    expect(controller.state.questFlags, contains('green_drunk_jade_clue'));
+    expect(controller.state.inventory.countOf('snow_wineskin'), 1);
+    controller.dispatch(
+      const GameAction.giveItem('snow_drunk', 'snow_wineskin'),
+    );
+    expect(controller.state.questFlags, contains('green_drunk_drug_clue'));
+    expect(controller.state.inventory.countOf('snow_wineskin'), 0);
+
+    controller.replaceState(
+      controller.state.copyWith(
+        currentRoomId: 'green_shop',
+        visitedRoomIds: {...controller.state.visitedRoomIds, 'green_shop'},
+      ),
+    );
+    controller.dispatch(
+      const GameAction.selectDialogue(
+        'green_shen_wannian',
+        'ask_shen_for_jade',
+      ),
+    );
+    expect(controller.state.inventory.contains('green_jade'), isTrue);
+    expect(controller.state.questFlags, contains('green_had_jade'));
+    expect(
+      controller.state.questStatuses['green_jade_mystery'],
+      QuestStatus.completed,
+    );
+
+    controller.dispatch(
+      const GameAction.selectDialogue(
+        'green_shen_wannian',
+        'ask_shen_for_drug',
+      ),
+    );
+    controller.dispatch(
+      const GameAction.selectDialogue('green_shen_wannian', 'buy_slumber_drug'),
+    );
+    expect(controller.state.player.silver, 0);
+    expect(controller.state.inventory.contains('green_slumber_drug'), isTrue);
+  });
+
+  test('slumber drug can be poured into the original wineskin', () {
+    final baseState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: baseState.copyWith(
+        inventoryItemIds: ['green_slumber_drug', 'snow_wineskin'],
+      ),
+    );
+
+    controller.dispatch(
+      const GameAction.combineItems('green_slumber_drug', 'snow_wineskin'),
+    );
+
+    expect(controller.state.inventory.contains('green_slumber_drug'), isFalse);
+    expect(controller.state.inventory.contains('snow_wineskin'), isFalse);
+    expect(
+      controller.state.inventory.contains('green_drugged_wineskin'),
+      isTrue,
+    );
+    expect(controller.state.log.last, contains('蒙汗药'));
+  });
+
+  test('Eight Trigram array keeps the original combat experience gate', () {
+    final baseState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: baseState.copyWith(
+        currentRoomId: 'green_array_entrance',
+        visitedRoomIds: {...baseState.visitedRoomIds, 'green_array_entrance'},
+        player: baseState.player.copyWith(combatExperience: 99999),
+      ),
+    );
+
+    expect(
+      repository.room('green_array_entrance').availableExits(controller.state),
+      isNot(contains(Direction.east)),
+    );
+    controller.replaceState(
+      controller.state.copyWith(
+        player: controller.state.player.copyWith(combatExperience: 100000),
+      ),
+    );
+    controller.dispatch(const GameAction.move(Direction.east));
+    expect(controller.state.currentRoomId, 'green_eight0');
+  });
+
+  test('solving the array unlocks the original Windsword search', () {
+    final baseState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: baseState.copyWith(
+        currentRoomId: 'green_eight7',
+        visitedRoomIds: {...baseState.visitedRoomIds, 'green_eight7'},
+      ),
+    );
+
+    controller.dispatch(
+      const GameAction.performRoomAction('leave_green_array'),
+    );
+    expect(controller.state.currentRoomId, 'green_stone_room');
+    expect(controller.state.questFlags, contains('green_eight_solved'));
+    controller.dispatch(const GameAction.move(Direction.south));
+    controller.dispatch(
+      const GameAction.performRoomAction('search_green_water'),
+    );
+
+    expect(controller.state.inventory.contains('green_windsword'), isTrue);
+    expect(controller.state.questFlags, contains('green_windsword_found'));
+    expect(
+      repository
+          .room('green_water')
+          .availableActions(controller.state)
+          .map((action) => action.id),
+      isNot(contains('search_green_water')),
+    );
+  });
+
+  test('strong player can push out of the array dead end', () {
+    final baseState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: baseState.copyWith(
+        currentRoomId: 'green_closed',
+        visitedRoomIds: {...baseState.visitedRoomIds, 'green_closed'},
+        player: baseState.player.copyWith(
+          attributes: baseState.player.attributes.copyWith(strength: 25),
+        ),
+      ),
+    );
+
+    controller.dispatch(const GameAction.performRoomAction('push_green_stone'));
+
+    expect(controller.state.currentRoomId, 'green_array_entrance');
+    expect(controller.state.player.hp, baseState.player.hp - 60);
+    expect(controller.state.player.spirit, baseState.player.spirit - 18);
+  });
+
+  test('Juechenzi accepts a qualified unaffiliated player', () {
+    final baseState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: baseState.copyWith(
+        currentRoomId: 'green_outer_stone_room',
+        visitedRoomIds: {...baseState.visitedRoomIds, 'green_outer_stone_room'},
+        player: baseState.player.copyWith(
+          combatExperience: 100000,
+          attributes: baseState.player.attributes.copyWith(spirituality: 24),
+        ),
+      ),
+    );
+
+    expect(
+      repository
+          .room('green_outer_stone_room')
+          .availableExits(controller.state),
+      isNot(contains(Direction.enter)),
+    );
+    controller.dispatch(
+      const GameAction.performRoomAction('request_juechen_entry'),
+    );
+    expect(controller.state.currentRoomId, 'green_cave_hall');
+    controller.dispatch(const GameAction.apprenticeTo('green_master_juechen'));
+
+    expect(controller.state.apprenticeship?.familyId, 'juechen');
+    expect(
+      controller.state.apprenticeship?.masterNpcId,
+      'green_master_juechen',
+    );
+    expect(controller.state.apprenticeship?.generation, 2);
+    expect(controller.state.apprenticeship?.title, '弟子');
+
+    controller.dispatch(const GameAction.move(Direction.south));
+    controller.dispatch(const GameAction.move(Direction.enter));
+    expect(controller.state.currentRoomId, 'green_cave_hall');
+  });
+
+  test('Juechenzi teaches the original Juechen martial path', () {
+    final baseState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: baseState.copyWith(
+        currentRoomId: 'green_cave_hall',
+        visitedRoomIds: {...baseState.visitedRoomIds, 'green_cave_hall'},
+        player: baseState.player.copyWith(
+          combatExperience: 100000,
+          potential: 20,
+          spirit: 300,
+          maxSpirit: 300,
+          maxInnerPower: 250,
+          innerPower: 250,
+          attributes: baseState.player.attributes.copyWith(
+            strength: 25,
+            spirituality: 24,
+          ),
+        ),
+      ),
+    );
+
+    controller.dispatch(
+      const GameAction.learnFromNpc('green_master_juechen', 'juechen_force'),
+    );
+    expect(controller.state.learnedSkillIds, isNot(contains('juechen_force')));
+    expect(controller.state.log.last, contains('自己的弟子'));
+
+    controller.dispatch(const GameAction.apprenticeTo('green_master_juechen'));
+    for (final skillId in const [
+      'literate',
+      'basic_force',
+      'magic',
+      'spells',
+      'basic_staff',
+      'juechen_force',
+      'tao_mystery',
+      'magic_array',
+      'jingang_staff',
+    ]) {
+      controller.dispatch(
+        GameAction.learnFromNpc('green_master_juechen', skillId),
+      );
+    }
+
+    expect(
+      controller.state.learnedSkillIds,
+      containsAll([
+        'juechen_force',
+        'tao_mystery',
+        'magic_array',
+        'jingang_staff',
+      ]),
+    );
+    controller.dispatch(
+      const GameAction.enableSkill('juechen_force', SkillUsage.force),
+    );
+    controller.dispatch(
+      const GameAction.enableSkill('magic_array', SkillUsage.spells),
+    );
+    expect(controller.state.enabledSkillIds[SkillUsage.force], 'juechen_force');
+    expect(controller.state.enabledSkillIds[SkillUsage.spells], 'magic_array');
+  });
+
+  test('Juechen skills enforce their original relative requirements', () {
+    final baseState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: baseState.copyWith(
+        currentRoomId: 'green_cave_hall',
+        apprenticeship: const ApprenticeshipState(
+          familyId: 'juechen',
+          masterNpcId: 'green_master_juechen',
+          generation: 2,
+          title: '弟子',
+          contribution: 0,
+          rankId: 'disciple',
+        ),
+        skillProgress: const {
+          'spells': SkillProgress(level: 5, experience: 0),
+          'tao_mystery': SkillProgress(level: 1, experience: 0),
+          'magic_array': SkillProgress(level: 1, experience: 0),
+        },
+        player: baseState.player.copyWith(
+          potential: 10,
+          spirit: 200,
+          maxSpirit: 200,
+          combatExperience: 100000,
+        ),
+      ),
+    );
+
+    controller.dispatch(
+      const GameAction.learnFromNpc('green_master_juechen', 'magic_array'),
+    );
+    expect(controller.state.log.last, contains('小天魔道修为不够'));
+
+    controller.replaceState(
+      controller.state.copyWith(
+        skillProgress: {
+          ...controller.state.skillProgress,
+          'tao_mystery': const SkillProgress(level: 2, experience: 0),
+        },
+      ),
+    );
+    controller.dispatch(
+      const GameAction.learnFromNpc('green_master_juechen', 'magic_array'),
+    );
+    expect(controller.state.log.last, contains('似乎有所领悟'));
+  });
+
+  test('Juechen binding spell consumes mana and stops enemy actions', () {
+    final controller = _juechenCombatController(repository, skillLevel: 10);
+    final hpBefore = controller.state.player.hp;
+
+    controller.dispatch(const GameAction.startCombat('green_spider'));
+    controller.dispatch(const GameAction.useCombatMove('magic_array', 'dun'));
+
+    expect(controller.state.player.mana, 300);
+    expect(controller.state.player.spirit, 420);
+    expect(controller.state.player.hp, hpBefore);
+    expect(controller.state.combat?.round, 1);
+    expect(
+      controller.state.combat?.enemyStatusEffects.single.id,
+      'juechen_bind',
+    );
+  });
+
+  test('failed Juechen spell still consumes resources and combat turn', () {
+    final controller = _juechenCombatController(
+      repository,
+      skillLevel: 10,
+      randomIntGenerator: (_) => 0,
+    );
+
+    controller.dispatch(const GameAction.startCombat('green_spider'));
+    controller.dispatch(const GameAction.useCombatMove('magic_array', 'dun'));
+
+    expect(controller.state.player.mana, 300);
+    expect(controller.state.player.spirit, 420);
+    expect(controller.state.combat?.round, 1);
+    expect(controller.state.combat?.enemyStatusEffects, isEmpty);
+    expect(controller.state.log, contains(contains('没能困住敌人')));
+  });
+
+  test('Juechen escape spell leaves combat at Snow Pavilion temple', () {
+    final controller = _juechenCombatController(repository, skillLevel: 10);
+
+    controller.dispatch(const GameAction.startCombat('green_spider'));
+    controller.dispatch(
+      const GameAction.useCombatMove('magic_array', 'dun_escape'),
+    );
+
+    expect(controller.state.combat, isNull);
+    expect(controller.state.currentRoomId, 'snow_temple');
+    expect(controller.state.player.mana, 420);
+    expect(controller.state.player.spirit, 470);
+    expect(controller.state.visitedRoomIds, contains('snow_temple'));
+  });
+
+  test('Juechen summon fights until the current combat ends', () {
+    final controller = _juechenCombatController(repository, skillLevel: 60);
+
+    controller.dispatch(const GameAction.startCombat('green_spider'));
+    controller.dispatch(
+      const GameAction.useCombatMove('magic_array', 'saveme'),
+    );
+
+    expect(controller.state.player.mana, 400);
+    expect(controller.state.player.spirit, 440);
+    expect(controller.state.combat?.ally?.name, '天甲神兵');
+    expect(controller.state.combat?.ally?.hp, 1000);
+    expect(controller.state.combat?.enemyHp, 1);
+    expect(controller.state.log, contains(contains('天甲神兵')));
+
+    controller.dispatch(const GameAction.attack());
+
+    expect(controller.state.combat, isNull);
+    expect(controller.state.npcStates['green_spider']?.isDefeated, isTrue);
+    expect(controller.state.log, contains(contains('护法已毕')));
+  });
+
+  test('summoned ally takes enemy attacks and can be defeated', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'ice_cave',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'ice_cave'},
+        player: initialState.player.copyWith(hp: 300, maxHp: 300),
+      ),
+    );
+    controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
+    controller.replaceState(
+      controller.state.copyWith(
+        combat: controller.state.combat?.copyWith(
+          ally: const SummonedAllyState(
+            name: '试炼神兵',
+            attack: 1,
+            hp: 2,
+            maxHp: 2,
+            defense: 0,
+            attackMessage: '试炼神兵攻向{enemy}，造成{damage}点伤害。',
+            defeatMessage: '试炼神兵受创消散。',
+            leaveMessage: '试炼神兵离开。',
+          ),
+        ),
+      ),
+    );
+    final playerHp = controller.state.player.hp;
+
+    controller.dispatch(const GameAction.attack());
+
+    expect(controller.state.player.hp, playerHp);
+    expect(controller.state.combat?.ally, isNull);
+    expect(controller.state.log, contains(contains('试炼神兵受创消散')));
+  });
+
+  test('Jingang staff requires combined strength and a staff to practice', () {
+    final baseState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: baseState.copyWith(
+        currentRoomId: 'green_cave_hall',
+        apprenticeship: const ApprenticeshipState(
+          familyId: 'juechen',
+          masterNpcId: 'green_master_juechen',
+          generation: 2,
+          title: '弟子',
+          contribution: 0,
+          rankId: 'disciple',
+        ),
+        inventoryItemIds: const ['green_jingang_staff'],
+        skillProgress: const {
+          'basic_staff': SkillProgress(level: 10, experience: 0),
+        },
+        player: baseState.player.copyWith(
+          attributes: baseState.player.attributes.copyWith(strength: 20),
+          maxInnerPower: 290,
+          innerPower: 290,
+          hp: 200,
+          maxHp: 200,
+          potential: 10,
+          spirit: 200,
+          maxSpirit: 200,
+          combatExperience: 100000,
+        ),
+      ),
+    );
+
+    controller.dispatch(
+      const GameAction.learnFromNpc('green_master_juechen', 'jingang_staff'),
+    );
+    expect(controller.state.learnedSkillIds, isNot(contains('jingang_staff')));
+    expect(controller.state.log.last, contains('膂力还不够'));
+
+    controller.replaceState(
+      controller.state.copyWith(
+        player: controller.state.player.copyWith(
+          maxInnerPower: 300,
+          innerPower: 300,
+        ),
+      ),
+    );
+    controller.dispatch(
+      const GameAction.learnFromNpc('green_master_juechen', 'jingang_staff'),
+    );
+    expect(controller.state.learnedSkillIds, contains('jingang_staff'));
+    controller.dispatch(
+      const GameAction.enableSkill('jingang_staff', SkillUsage.staff),
+    );
+    controller.dispatch(const GameAction.practiceSkill(SkillUsage.staff));
+    expect(controller.state.log.last, contains('必须先装备'));
+
+    controller.dispatch(const GameAction.equipItem('green_jingang_staff'));
+    controller.dispatch(const GameAction.practiceSkill(SkillUsage.staff));
+    expect(controller.state.player.hp, 140);
+  });
+
   test('defeating a Snow Pavilion dog leaves a bone to pick up', () {
     final initialState = repository.createInitialState().copyWith(
       currentRoomId: 'snow_stone_road',
@@ -2044,6 +2552,317 @@ void main() {
     expect(remainingHp, 32);
     expect(controller.state.combat?.enemyHp, remainingHp);
   });
+
+  test('netherbolt uses original mana, spirit, and max mana roll', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      randomIntGenerator: (upperBound) => upperBound - 1,
+      initialState: initialState.copyWith(
+        currentRoomId: 'ice_cave',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'ice_cave'},
+        skillProgress: const {
+          'necromancy': SkillProgress(level: 1, experience: 0),
+          'spells': SkillProgress(level: 10, experience: 0),
+        },
+        enabledSkillIds: const {SkillUsage.spells: 'necromancy'},
+        player: initialState.player.copyWith(
+          mana: 200,
+          maxMana: 200,
+          spirit: 100,
+          maxSpirit: 100,
+        ),
+      ),
+    );
+
+    controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
+    controller.dispatch(
+      const GameAction.useCombatMove('necromancy', 'netherbolt'),
+    );
+
+    expect(controller.state.player.mana, 175);
+    expect(controller.state.player.spirit, 90);
+    expect(controller.state.player.innerPower, initialState.player.innerPower);
+    expect(controller.state.combat?.enemyHp, lessThan(36));
+  });
+
+  test('failed netherbolt consumes resources without damaging enemy', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      randomIntGenerator: (_) => 0,
+      initialState: initialState.copyWith(
+        currentRoomId: 'ice_cave',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'ice_cave'},
+        skillProgress: const {
+          'necromancy': SkillProgress(level: 1, experience: 0),
+          'spells': SkillProgress(level: 10, experience: 0),
+        },
+        enabledSkillIds: const {SkillUsage.spells: 'necromancy'},
+        player: initialState.player.copyWith(
+          mana: 200,
+          maxMana: 200,
+          spirit: 100,
+          maxSpirit: 100,
+        ),
+      ),
+    );
+
+    controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
+    controller.dispatch(
+      const GameAction.useCombatMove('necromancy', 'netherbolt'),
+    );
+
+    expect(controller.state.player.mana, 175);
+    expect(controller.state.player.spirit, 90);
+    expect(controller.state.combat?.enemyHp, 36);
+    expect(controller.state.log, contains(contains('消散无踪')));
+  });
+
+  test('necromancy damages and drains persisted enemy resources', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      randomIntGenerator: (upperBound) => upperBound - 1,
+      initialState: initialState.copyWith(
+        currentRoomId: 'ice_cave',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'ice_cave'},
+        skillProgress: const {
+          'necromancy': SkillProgress(level: 1, experience: 0),
+          'spells': SkillProgress(level: 10, experience: 0),
+        },
+        enabledSkillIds: const {SkillUsage.spells: 'necromancy'},
+        player: initialState.player.copyWith(
+          hp: 200,
+          maxHp: 200,
+          energy: 50,
+          maxEnergy: 100,
+          mana: 200,
+          maxMana: 200,
+          spirit: 100,
+          maxSpirit: 100,
+        ),
+      ),
+    );
+
+    controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
+    controller.dispatch(
+      const GameAction.useCombatMove('necromancy', 'feeblebolt'),
+    );
+    expect(controller.state.npcStates['white_ice_dragon']?.currentSpirit, 26);
+
+    controller.dispatch(
+      const GameAction.useCombatMove('necromancy', 'drainerbolt'),
+    );
+
+    expect(controller.state.npcStates['white_ice_dragon']?.currentEnergy, 26);
+    expect(controller.state.player.energy, 60);
+    expect(controller.state.player.mana, 150);
+    expect(controller.state.player.spirit, 70);
+    expect(controller.state.log, contains(contains('吸取了10点精力')));
+  });
+
+  test('necromancy bolts use original spell versus combat experience roll', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      randomIntGenerator:
+          (upperBound) => upperBound == 200 ? upperBound - 1 : 0,
+      initialState: initialState.copyWith(
+        currentRoomId: 'ice_cave',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'ice_cave'},
+        skillProgress: const {
+          'necromancy': SkillProgress(level: 1, experience: 0),
+          'spells': SkillProgress(level: 10, experience: 0),
+        },
+        enabledSkillIds: const {SkillUsage.spells: 'necromancy'},
+        player: initialState.player.copyWith(
+          hp: 200,
+          maxHp: 200,
+          mana: 200,
+          maxMana: 200,
+          spirit: 100,
+          maxSpirit: 100,
+        ),
+      ),
+    );
+
+    controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
+    controller.dispatch(
+      const GameAction.useCombatMove('necromancy', 'netherbolt'),
+    );
+
+    expect(controller.state.player.mana, 175);
+    expect(controller.state.player.spirit, 90);
+    expect(controller.state.combat?.enemyHp, 36);
+    expect(controller.state.log, contains(contains('被白鳞冰龙躲开')));
+  });
+
+  test('invocation keeps the original one-in-three heavenly summon', () {
+    final rolls = [499, 0, 0];
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      randomIntGenerator: (_) => rolls.removeAt(0),
+      initialState: initialState.copyWith(
+        currentRoomId: 'ice_cave',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'ice_cave'},
+        skillProgress: const {
+          'necromancy': SkillProgress(level: 1, experience: 0),
+        },
+        enabledSkillIds: const {SkillUsage.spells: 'necromancy'},
+        player: initialState.player.copyWith(
+          hp: 200,
+          maxHp: 200,
+          mana: 500,
+          maxMana: 500,
+          spirit: 500,
+          maxSpirit: 500,
+        ),
+      ),
+    );
+
+    controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
+    controller.dispatch(
+      const GameAction.useCombatMove('necromancy', 'invocation'),
+    );
+
+    expect(controller.state.player.mana, 400);
+    expect(controller.state.player.spirit, 440);
+    expect(controller.state.combat?.ally?.name, '天甲神兵');
+    expect(controller.state.combat?.ally?.lastsForCombat, isTrue);
+    expect(controller.state.log, contains(contains('金光由天而降')));
+  });
+
+  test('invocation usually summons an original earthly-branch hell guard', () {
+    final rolls = [499, 1, 0];
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      randomIntGenerator: (_) => rolls.removeAt(0),
+      initialState: initialState.copyWith(
+        currentRoomId: 'ice_cave',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'ice_cave'},
+        skillProgress: const {
+          'necromancy': SkillProgress(level: 1, experience: 0),
+        },
+        enabledSkillIds: const {SkillUsage.spells: 'necromancy'},
+        player: initialState.player.copyWith(
+          hp: 200,
+          maxHp: 200,
+          mana: 500,
+          maxMana: 500,
+          spirit: 500,
+          maxSpirit: 500,
+        ),
+      ),
+    );
+
+    controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
+    controller.dispatch(
+      const GameAction.useCombatMove('necromancy', 'invocation'),
+    );
+
+    expect(controller.state.combat?.ally?.name, '子阴鬼卒');
+    expect(controller.state.combat?.ally?.attack, 24);
+    expect(controller.state.log, contains(contains('蓝光从地底升起')));
+  });
+
+  test('failed invocation consumes its original resources', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      randomIntGenerator: (_) => 199,
+      initialState: initialState.copyWith(
+        currentRoomId: 'ice_cave',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'ice_cave'},
+        skillProgress: const {
+          'necromancy': SkillProgress(level: 1, experience: 0),
+        },
+        enabledSkillIds: const {SkillUsage.spells: 'necromancy'},
+        player: initialState.player.copyWith(
+          hp: 200,
+          maxHp: 200,
+          mana: 500,
+          maxMana: 500,
+          spirit: 500,
+          maxSpirit: 500,
+        ),
+      ),
+    );
+
+    controller.dispatch(const GameAction.startCombat('white_ice_dragon'));
+    controller.dispatch(
+      const GameAction.useCombatMove('necromancy', 'invocation'),
+    );
+
+    expect(controller.state.player.mana, 400);
+    expect(controller.state.player.spirit, 440);
+    expect(controller.state.combat?.ally, isNull);
+    expect(controller.state.log, contains(contains('什么也没有发生')));
+  });
+
+  test('astral vision reveals an original ghost for the spells level', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'choyin_n_gate',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'choyin_n_gate'},
+        skillProgress: const {
+          'necromancy': SkillProgress(level: 1, experience: 0),
+          'spells': SkillProgress(level: 3, experience: 0),
+        },
+        enabledSkillIds: const {SkillUsage.spells: 'necromancy'},
+        player: initialState.player.copyWith(
+          mana: 100,
+          maxMana: 100,
+          spirit: 50,
+          maxSpirit: 50,
+        ),
+      ),
+    );
+
+    expect(
+      repository.visibleNpcsInRoom(controller.state, 'choyin_n_gate'),
+      isEmpty,
+    );
+
+    controller.dispatch(
+      const GameAction.useSkillMove('necromancy', 'astral_vision'),
+    );
+
+    expect(controller.state.player.mana, 70);
+    expect(controller.state.player.spirit, 45);
+    expect(controller.state.hasAstralVision, isTrue);
+    expect(controller.state.playerStatusEffects.single.remainingRounds, 3);
+    expect(
+      repository.visibleNpcsInRoom(controller.state, 'choyin_n_gate').single.id,
+      'choyin_wandering_ghost',
+    );
+    expect(
+      GameState.fromJson(controller.state.toJson()).hasAstralVision,
+      isTrue,
+    );
+
+    controller.dispatch(
+      const GameAction.useSkillMove('necromancy', 'astral_vision'),
+    );
+    expect(controller.state.player.mana, 70);
+    expect(controller.state.log, contains(contains('已经施展过阴阳眼')));
+
+    controller.dispatch(const GameAction.move(Direction.west));
+    controller.dispatch(const GameAction.move(Direction.east));
+    expect(controller.state.hasAstralVision, isTrue);
+    controller.dispatch(const GameAction.move(Direction.west));
+    expect(controller.state.hasAstralVision, isFalse);
+    expect(controller.state.log, contains(contains('阴阳眼法术失效')));
+    controller.dispatch(const GameAction.move(Direction.east));
+    expect(
+      repository.visibleNpcsInRoom(controller.state, 'choyin_n_gate'),
+      isEmpty,
+    );
+  });
 }
 
 void _completeRescueQuest(GameController controller) {
@@ -2138,6 +2957,35 @@ void _defeatNpc(GameController controller, String npcId) {
     controller.dispatch(const GameAction.attack());
   }
   expect(controller.state.npcStates[npcId]?.isDefeated, isTrue);
+}
+
+GameController _juechenCombatController(
+  GameDefinitionRepository repository, {
+  required int skillLevel,
+  int Function(int upperBound)? randomIntGenerator,
+}) {
+  final initialState = repository.createInitialState();
+  return GameController(
+    repository: repository,
+    randomIntGenerator: randomIntGenerator ?? (upperBound) => upperBound - 1,
+    initialState: initialState.copyWith(
+      currentRoomId: 'green_abandoned_house',
+      visitedRoomIds: {...initialState.visitedRoomIds, 'green_abandoned_house'},
+      skillProgress: {
+        'magic_array': SkillProgress(level: skillLevel, experience: 0),
+        'spells': const SkillProgress(level: 120, experience: 0),
+      },
+      enabledSkillIds: const {SkillUsage.spells: 'magic_array'},
+      player: initialState.player.copyWith(
+        hp: 300,
+        maxHp: 300,
+        mana: 500,
+        maxMana: 500,
+        spirit: 500,
+        maxSpirit: 500,
+      ),
+    ),
+  );
 }
 
 void _moveToGeneralTent(GameController controller) {

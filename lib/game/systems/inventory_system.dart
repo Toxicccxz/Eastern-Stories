@@ -90,6 +90,39 @@ class InventorySystem {
     return nextState;
   }
 
+  GameState combineItems(
+    GameState state,
+    String sourceItemId,
+    String targetItemId,
+  ) {
+    if (state.combat != null) {
+      return _withLog(state, '你正在战斗，无法摆弄这些东西。');
+    }
+    final source = _repository.item(sourceItemId);
+    final combination =
+        source.combinations
+            .where((item) => item.targetItemId == targetItemId)
+            .firstOrNull;
+    final requiredSourceCount = sourceItemId == targetItemId ? 2 : 1;
+    if (combination == null ||
+        state.inventory.countOf(sourceItemId) < requiredSourceCount ||
+        !state.inventory.contains(targetItemId)) {
+      return _withLog(state, '你现在无法把这两样东西用在一起。');
+    }
+
+    var inventory = state.inventory;
+    if (combination.consumesSource) {
+      inventory = inventory.remove(sourceItemId);
+    }
+    if (combination.consumesTarget) {
+      inventory = inventory.remove(targetItemId);
+    }
+    return state.copyWith(
+      inventory: inventory.addAll(combination.resultItemIds),
+      log: state.logWith(combination.response),
+    );
+  }
+
   GameState dropItem(GameState state, String itemId) {
     if (!state.inventory.contains(itemId)) {
       return _withLog(state, '你还没有这个东西。');
@@ -114,5 +147,12 @@ class InventorySystem {
 
   GameState _withLog(GameState state, String message) {
     return state.copyWith(log: state.logWith(message));
+  }
+}
+
+extension _FirstOrNull<T> on Iterable<T> {
+  T? get firstOrNull {
+    final iterator = this.iterator;
+    return iterator.moveNext() ? iterator.current : null;
   }
 }

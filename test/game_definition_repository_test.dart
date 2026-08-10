@@ -12,13 +12,13 @@ void main() {
     final rooms = repository.rooms.toList();
 
     expect(repository.startingRoomId, 'snow_inn');
-    expect(repository.areas, hasLength(14));
-    expect(rooms, hasLength(353));
-    expect(repository.items, hasLength(137));
-    expect(repository.quests, hasLength(4));
-    expect(repository.skills, hasLength(22));
-    expect(repository.families, hasLength(3));
-    expect(repository.statusEffects, hasLength(5));
+    expect(repository.areas, hasLength(15));
+    expect(rooms, hasLength(392));
+    expect(repository.items, hasLength(143));
+    expect(repository.quests, hasLength(5));
+    expect(repository.skills, hasLength(27));
+    expect(repository.families, hasLength(4));
+    expect(repository.statusEffects, hasLength(6));
 
     expect(repository.statusEffectOrNull('iceshock')?.name, '寒震');
     expect(repository.statusEffectOrNull('rose_poison')?.duration, 4);
@@ -229,7 +229,7 @@ void main() {
       final familyId = npc.familyId;
       if (familyId != null) {
         expect(() => repository.family(familyId), returnsNormally);
-        expect(npc.familyGeneration, greaterThan(0));
+        expect(npc.familyGeneration, greaterThanOrEqualTo(0));
       }
       if (npc.canAcceptApprentices) {
         expect(familyId, isNotNull);
@@ -241,6 +241,13 @@ void main() {
       final itemCondition = item.conditions;
       if (itemCondition != null) {
         _expectValidCondition(repository, itemCondition);
+      }
+      for (final skillId in item.skillBonuses.keys) {
+        expect(
+          () => repository.skill(skillId),
+          returnsNormally,
+          reason: '${item.id} modifies unknown skill $skillId',
+        );
       }
       final skillId = item.studySkillId;
       if (skillId != null) {
@@ -311,6 +318,15 @@ void main() {
           reason: '${skill.id} requires unknown skill ${requirement.key}',
         );
         expect(requirement.value, greaterThan(0));
+      }
+      for (final requiredSkillId in skill.requiredHigherSkillIds) {
+        expect(() => repository.skill(requiredSkillId), returnsNormally);
+        expect(requiredSkillId, isNot(skill.id));
+      }
+      final combinedRequirement = skill.combinedAttributeRequirement;
+      if (combinedRequirement != null) {
+        expect(combinedRequirement.minimum, greaterThanOrEqualTo(0));
+        expect(combinedRequirement.maxInnerPowerDivisor, greaterThan(0));
       }
       for (final move in skill.moves) {
         expect(move.id, isNotEmpty);

@@ -46,6 +46,17 @@ class ApprenticeshipSystem {
       if (genderReason != null && failureMessage == null) {
         return _withLog(state, '${master.name}摇了摇头：$genderReason');
       }
+      final familyReason = master.apprenticeshipConditions?.familyFailureReason(
+        state,
+      );
+      if (familyReason != null) {
+        return _withLog(state, '${master.name}摇了摇头：$familyReason');
+      }
+      final experienceReason = master.apprenticeshipConditions
+          ?.combatExperienceFailureReason(state);
+      if (experienceReason != null) {
+        return _withLog(state, '${master.name}摇了摇头：$experienceReason');
+      }
       if (failureMessage != null) {
         return _withLog(state, '${master.name}说道：“$failureMessage”');
       }

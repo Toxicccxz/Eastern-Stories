@@ -13,6 +13,16 @@ const _categories = <String>[
 ];
 
 const _playerGenders = {'male', 'female'};
+const _innateAttributes = {
+  'strength',
+  'courage',
+  'intelligence',
+  'spirituality',
+  'composure',
+  'personality',
+  'constitution',
+  'karma',
+};
 const _directions = {
   'north',
   'south',
@@ -54,7 +64,18 @@ const _skillUsages = {
   'whip',
   'knowledge',
 };
-const _skillEffectTypes = {'damage', 'defend', 'heal'};
+const _skillEffectTypes = {
+  'damage',
+  'defend',
+  'heal',
+  'summon',
+  'escape',
+  'resourceDamage',
+  'selfStatus',
+};
+const _failureRollSources = {'skillLevel', 'maxMana'};
+const _opposedRollTypes = {'spellPowerVsCombatExperience'};
+const _combatResources = {'hp', 'energy', 'spirit', 'mana'};
 const _questStatuses = {'notStarted', 'active', 'completed'};
 const _teachingAccess = {'public', 'family', 'direct'};
 
@@ -276,7 +297,24 @@ class GameDataValidator {
       );
 
       final combat = _optionalObject(npc.data['combat'], '$context.combat');
+      _validateOptionalBool(npc.data['isGhost'], '$context.isGhost');
       _validateOptionalPositiveInt(combat['maxHp'], '$context.combat.maxHp');
+      _validateOptionalPositiveInt(
+        combat['maxEnergy'],
+        '$context.combat.maxEnergy',
+      );
+      _validateOptionalPositiveInt(
+        combat['maxSpirit'],
+        '$context.combat.maxSpirit',
+      );
+      _validateOptionalNonNegativeInt(
+        combat['maxMana'],
+        '$context.combat.maxMana',
+      );
+      _validateOptionalNonNegativeInt(
+        combat['combatExperience'],
+        '$context.combat.combatExperience',
+      );
       for (final field in [
         'attack',
         'defense',
@@ -425,6 +463,11 @@ class GameDataValidator {
           );
         }
         _validateNpcStateFields(option, optionContext);
+        _requireReferences(
+          'items',
+          option['givesItemIds'],
+          '$optionContext.givesItemIds',
+        );
         _validateOptionalNonNegativeInt(
           option['silverCost'],
           '$optionContext.silverCost',
@@ -585,6 +628,57 @@ class GameDataValidator {
       ]) {
         _validateOptionalInt(item.data[field], '$context.$field');
       }
+      final attributeBonuses = _optionalObject(
+        item.data['attributeBonuses'],
+        '$context.attributeBonuses',
+      );
+      for (final entry in attributeBonuses.entries) {
+        if (!_innateAttributes.contains(entry.key)) {
+          errors.add(
+            '$context.attributeBonuses references unknown innate attribute '
+            '"${entry.key}".',
+          );
+        }
+        _validateOptionalInt(
+          entry.value,
+          '$context.attributeBonuses.${entry.key}',
+        );
+      }
+      final skillBonuses = _optionalObject(
+        item.data['skillBonuses'],
+        '$context.skillBonuses',
+      );
+      for (final entry in skillBonuses.entries) {
+        _requireReference('skills', entry.key, '$context.skillBonuses');
+        _validateOptionalInt(entry.value, '$context.skillBonuses.${entry.key}');
+      }
+      for (final combination in _objects(
+        item.data['combinations'],
+        '$context.combinations',
+      )) {
+        final combinationContext = '$context combination';
+        _requireReference(
+          'items',
+          combination['targetItemId'],
+          '$combinationContext.targetItemId',
+        );
+        _requireReferences(
+          'items',
+          combination['resultItemIds'],
+          '$combinationContext.resultItemIds',
+        );
+        for (final field in ['label', 'response']) {
+          if (combination[field] is! String ||
+              (combination[field] as String).isEmpty) {
+            errors.add('$combinationContext.$field must be non-empty text.');
+          }
+        }
+        for (final field in ['consumesSource', 'consumesTarget']) {
+          if (combination[field] case final value? when value is! bool) {
+            errors.add('$combinationContext.$field must be a boolean.');
+          }
+        }
+      }
       _validateCondition(item.data['conditions'], '$context.conditions');
     }
   }
@@ -668,6 +762,42 @@ class GameDataValidator {
         skill.data['requiredSkillLevels'],
         '$context.requiredSkillLevels',
       );
+      _requireReferences(
+        'skills',
+        skill.data['requiredHigherSkillIds'],
+        '$context.requiredHigherSkillIds',
+      );
+      final combinedRequirement = skill.data['combinedAttributeRequirement'];
+      if (combinedRequirement != null) {
+        final requirement = _object(
+          combinedRequirement,
+          '$context.combinedAttributeRequirement',
+        );
+        _validateEnum(
+          requirement['attribute'],
+          _innateAttributes,
+          '$context.combinedAttributeRequirement.attribute',
+          'innate attribute',
+        );
+        _validateOptionalNonNegativeInt(
+          requirement['minimum'],
+          '$context.combinedAttributeRequirement.minimum',
+        );
+        final divisor = requirement['maxInnerPowerDivisor'];
+        if (divisor is! int || divisor <= 0) {
+          errors.add(
+            '$context.combinedAttributeRequirement.maxInnerPowerDivisor '
+            'must be a positive integer.',
+          );
+        }
+      }
+      _validateEnum(
+        skill.data['practiceRequiredWeaponUsage'],
+        _skillUsages,
+        '$context.practiceRequiredWeaponUsage',
+        'skill usage',
+        optional: true,
+      );
       _requireReference(
         'families',
         skill.data['requiredFamilyId'],
@@ -691,14 +821,120 @@ class GameDataValidator {
           'equipment slot',
           optional: true,
         );
+        _validateEnum(
+          move['targetResource'],
+          _combatResources,
+          '$moveContext.targetResource',
+          'combat resource',
+          optional: true,
+        );
+        _validateEnum(
+          move['restoresPlayerResource'],
+          _combatResources,
+          '$moveContext.restoresPlayerResource',
+          'combat resource',
+          optional: true,
+        );
+        _validateOptionalPositiveInt(
+          move['resourceDamageDivisor'],
+          '$moveContext.resourceDamageDivisor',
+        );
+        _validateOptionalBool(
+          move['usableOutsideCombat'],
+          '$moveContext.usableOutsideCombat',
+        );
+        _requireReference(
+          'skills',
+          move['durationSkillId'],
+          '$moveContext.durationSkillId',
+          optional: true,
+        );
+        final activeFailureMessage = move['activeFailureMessage'];
+        if (activeFailureMessage != null &&
+            (activeFailureMessage is! String || activeFailureMessage.isEmpty)) {
+          errors.add(
+            '$moveContext.activeFailureMessage must be non-empty text.',
+          );
+        }
         for (final field in [
           'innerPowerCost',
+          'manaCost',
+          'spiritCost',
           'damageBonus',
           'defenseBonus',
           'healAmount',
           'minimumSkillLevel',
         ]) {
           _validateOptionalInt(move[field], '$moveContext.$field');
+        }
+        _requireReference(
+          'rooms',
+          move['escapeRoomId'],
+          '$moveContext.escapeRoomId',
+          optional: true,
+        );
+        final hasFailureRoll =
+            move['castingSkillId'] != null ||
+            move['failureRollBelow'] != null ||
+            move['failureMessage'] != null;
+        if (hasFailureRoll) {
+          _validateEnum(
+            move['failureRollSource'],
+            _failureRollSources,
+            '$moveContext.failureRollSource',
+            'failure roll source',
+            optional: true,
+          );
+          final failureRollSource = move['failureRollSource'] ?? 'skillLevel';
+          _requireReference(
+            'skills',
+            move['castingSkillId'],
+            '$moveContext.castingSkillId',
+            optional: failureRollSource == 'maxMana',
+          );
+          final failureRollBelow = move['failureRollBelow'];
+          if (failureRollBelow is! int || failureRollBelow <= 0) {
+            errors.add(
+              '$moveContext.failureRollBelow must be a positive integer.',
+            );
+          }
+          final failureMessage = move['failureMessage'];
+          if (failureMessage is! String || failureMessage.isEmpty) {
+            errors.add('$moveContext.failureMessage must be non-empty text.');
+          }
+        }
+        final opposedRollValue = move['opposedRoll'];
+        if (opposedRollValue != null) {
+          final opposedRoll = _object(
+            opposedRollValue,
+            '$moveContext.opposedRoll',
+          );
+          _validateEnum(
+            opposedRoll['type'],
+            _opposedRollTypes,
+            '$moveContext.opposedRoll.type',
+            'opposed roll type',
+          );
+          _requireReference(
+            'skills',
+            opposedRoll['skillId'],
+            '$moveContext.opposedRoll.skillId',
+          );
+          final failureMessage = opposedRoll['failureMessage'];
+          if (failureMessage is! String || failureMessage.isEmpty) {
+            errors.add(
+              '$moveContext.opposedRoll.failureMessage must be non-empty text.',
+            );
+          }
+        }
+        final summonValue = move['summon'];
+        if (summonValue != null) {
+          final summon = _object(summonValue, '$moveContext.summon');
+          _validateSummon(summon, '$moveContext.summon');
+        }
+        final summons = _objects(move['summons'], '$moveContext.summons');
+        for (var index = 0; index < summons.length; index++) {
+          _validateSummon(summons[index], '$moveContext.summons[$index]');
         }
         _requireReference(
           'statusEffects',
@@ -710,9 +946,52 @@ class GameDataValidator {
     }
   }
 
+  void _validateSummon(Map<String, Object?> summon, String context) {
+    for (final field in [
+      'name',
+      'summonMessage',
+      'attackMessage',
+      'defeatMessage',
+      'leaveMessage',
+    ]) {
+      if (summon[field] is! String || (summon[field] as String).isEmpty) {
+        errors.add('$context.$field must be non-empty text.');
+      }
+    }
+    for (final field in ['attack', 'maxHp', 'selectionWeight']) {
+      final value = summon[field];
+      if (field == 'selectionWeight' && value == null) {
+        continue;
+      }
+      if (value is! int || value <= 0) {
+        errors.add('$context.$field must be a positive integer.');
+      }
+    }
+    final defense = summon['defense'];
+    if (defense is! int || defense < 0) {
+      errors.add('$context.defense must be a non-negative integer.');
+    }
+    _validateOptionalNonNegativeInt(
+      summon['durationRounds'],
+      '$context.durationRounds',
+    );
+    final nameVariants = summon['nameVariants'];
+    if (nameVariants != null) {
+      if (nameVariants is! List<Object?> ||
+          nameVariants.isEmpty ||
+          nameVariants.any((name) => name is! String || name.isEmpty)) {
+        errors.add('$context.nameVariants must contain non-empty text.');
+      }
+    }
+  }
+
   void _validateStatusEffects() {
     for (final effect in _all('statusEffects')) {
       final context = 'status effect "${effect.id}" (${effect.source})';
+      _validateOptionalBool(
+        effect.data['grantsAstralVision'],
+        '$context.grantsAstralVision',
+      );
       final name = effect.data['name'];
       if (name is! String || name.trim().isEmpty) {
         errors.add('$context.name must be a non-empty string.');
@@ -854,6 +1133,13 @@ class GameDataValidator {
         '$context references unknown player gender "$requiredGender".',
       );
     }
+    _validateOptionalNonNegativeInt(
+      condition['minimumCombatExperience'],
+      '$context.minimumCombatExperience',
+    );
+    if (condition['requiresNoFamily'] case final value? when value is! bool) {
+      errors.add('$context.requiresNoFamily must be a boolean.');
+    }
   }
 
   void _requireReferences(String category, Object? value, String context) {
@@ -922,6 +1208,12 @@ class GameDataValidator {
   void _validateOptionalInt(Object? value, String context) {
     if (value != null && value is! int) {
       errors.add('$context must be an integer.');
+    }
+  }
+
+  void _validateOptionalBool(Object? value, String context) {
+    if (value != null && value is! bool) {
+      errors.add('$context must be a boolean.');
     }
   }
 

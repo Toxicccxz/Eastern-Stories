@@ -1,0 +1,22 @@
+[
+  {
+    "id": "green_jade_mystery",
+    "title": "不祥的玉佩",
+    "description": "青石村村长提到一枚来自古墓的玉佩。得到它的年轻人性情大变，后来只以酒度日。",
+    "steps": [
+      {
+        "description": "到雪亭镇寻找终日饮酒的年轻人。",
+        "requiredFlag": "green_drunk_jade_clue",
+        "targetNpcId": "snow_drunk",
+        "targetRoomId": "snow_main_street2"
+      },
+      {
+        "description": "根据醉汉的线索到沈记商行索要玉佩。",
+        "requiredFlag": "green_had_jade",
+        "targetNpcId": "green_shen_wannian",
+        "targetRoomId": "green_shop"
+      }
+    ],
+    "requiredFlags": ["green_had_jade"]
+  }
+]

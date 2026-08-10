@@ -1,5 +1,7 @@
 import '../models/game_state.dart';
+import '../models/equipment_slot.dart';
 import '../models/family_definition.dart';
+import '../models/innate_attributes.dart';
 import '../models/npc_definition.dart';
 import '../models/skill_progress.dart';
 import '../models/skill_definition.dart';
@@ -116,6 +118,17 @@ class CultivationSystem {
         basicSkill == null ? null : state.skillProgress[basicSkill.id];
     if (progress == null || basicProgress == null) {
       return _withLog(state, '你对这方面的基本功仍是一窍不通。');
+    }
+    final requiredWeaponUsage = skill.practiceRequiredWeaponUsage;
+    if (requiredWeaponUsage != null) {
+      final weaponId = state.equippedItemIds[EquipmentSlot.weapon];
+      final weapon = weaponId == null ? null : _repository.item(weaponId);
+      if (weapon?.weaponSkillUsage != requiredWeaponUsage) {
+        return _withLog(
+          state,
+          '你必须先装备一件${requiredWeaponUsage.label}武器，才能练习${skill.name}。',
+        );
+      }
     }
     if (progress.level >= basicProgress.level) {
       return _withLog(state, '${skill.name}已无法超越${basicSkill!.name}，应先巩固基本功。');
@@ -277,8 +290,18 @@ class CultivationSystem {
   }
 
   int _learningSpiritCost(GameState state, NpcDefinition teacher) {
-    return (150 ~/ teacher.intelligence + 150 ~/ state.player.intelligence)
-        .clamp(1, state.player.maxSpirit);
+    var intelligence = state.player.intelligence;
+    for (final itemId in state.equippedItemIds.values) {
+      intelligence +=
+          _repository.item(itemId).attributeBonuses[InnateAttribute
+              .intelligence] ??
+          0;
+    }
+    intelligence = intelligence.clamp(1, 1 << 30);
+    return (150 ~/ teacher.intelligence + 150 ~/ intelligence).clamp(
+      1,
+      state.player.maxSpirit,
+    );
   }
 
   int _studySpiritCost(GameState state, int baseCost, int difficulty) {

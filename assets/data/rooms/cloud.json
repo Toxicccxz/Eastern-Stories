@@ -33,11 +33,12 @@
     "id": "choyin_n_gate",
     "name": "乔阴县北门",
     "areaId": "choyin",
-    "description": "这里是乔阴县北门外的道路，西边回到日山山脚。城门内的街市尚未探明，只能先从这里折返。",
+    "description": "这里是乔阴县城的北门，高大石牌楼上刻着“北门”两个大字。黄土路向西穿过松林通往日山，石狮旁一带显得冷清而宁静。",
     "mapX": -6,
     "mapY": 9,
     "outdoorAreaId": "choyin",
-    "exits": {"west": "sunhill_road1"}
+    "exits": {"west": "sunhill_road1"},
+    "npcIds": ["choyin_wandering_ghost"]
   },
   {
     "id": "sunhill_dukou",

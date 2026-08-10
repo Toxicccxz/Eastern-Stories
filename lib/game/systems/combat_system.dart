@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../models/game_state.dart';
 import '../models/npc_definition.dart';
 import '../models/skill_definition.dart';
@@ -8,15 +10,25 @@ import 'progression_system.dart';
 import 'skill_progression_system.dart';
 import 'skill_mapping_system.dart';
 
+List<T> _takeLast<T>(List<T> items, int count) {
+  if (items.length <= count) {
+    return items;
+  }
+  return items.sublist(items.length - count);
+}
+
+typedef RandomIntGenerator = int Function(int upperBound);
+
 class CombatSystem {
-  const CombatSystem(
+  CombatSystem(
     this._repository,
     this._progressionSystem,
     this._equipmentSystem,
     this._skillProgressionSystem,
     this._skillMappingSystem,
-    this._playerConditionSystem,
-  );
+    this._playerConditionSystem, {
+    RandomIntGenerator? randomIntGenerator,
+  }) : _randomIntGenerator = randomIntGenerator ?? Random().nextInt;
 
   final GameDefinitionRepository _repository;
   final ProgressionSystem _progressionSystem;
@@ -24,6 +36,7 @@ class CombatSystem {
   final SkillProgressionSystem _skillProgressionSystem;
   final SkillMappingSystem _skillMappingSystem;
   final PlayerConditionSystem _playerConditionSystem;
+  final RandomIntGenerator _randomIntGenerator;
 
   GameState startCombat(GameState state, String npcId) {
     if (state.combat != null) {
@@ -103,12 +116,57 @@ class CombatSystem {
     if (state.player.innerPower < innerPowerCost) {
       return _withLog(state, '内力不足，无法施展${move.name}。');
     }
+    if (state.player.mana < move.manaCost) {
+      return _withLog(state, '法力不足，无法施展${move.name}。');
+    }
+    if (state.player.spirit < move.spiritCost) {
+      return _withLog(state, '精神无法集中，无法施展${move.name}。');
+    }
+    final moveEffect = _resolveStatusEffect(
+      move.statusEffectId,
+      move.statusEffect,
+    );
+    if (move.effectType == SkillEffectType.selfStatus &&
+        moveEffect != null &&
+        state.playerStatusEffects.any((effect) => effect.id == moveEffect.id)) {
+      return _withLog(
+        state,
+        move.activeFailureMessage ?? '${moveEffect.name}仍在生效。',
+      );
+    }
 
     final preparedState = state.copyWith(
       player: state.player.copyWith(
         innerPower: state.player.innerPower - innerPowerCost,
+        mana: state.player.mana - move.manaCost,
+        spirit: state.player.spirit - move.spiritCost,
       ),
     );
+    if (_castFails(state, move)) {
+      final result = _performEnemyTurn(
+        _withLog(preparedState, move.failureMessage ?? '你未能顺利施展${move.name}。'),
+      );
+      return _skillProgressionSystem.gainExperience(
+        result,
+        skillId: skillId,
+        experience: skill.practiceExperience,
+      );
+    }
+    final opposedRoll = move.opposedRoll;
+    if (opposedRoll != null && _opposedRollFails(preparedState, move)) {
+      final enemyName = _repository.npc(preparedState.combat!.npcId).name;
+      final result = _performEnemyTurn(
+        _withLog(
+          preparedState,
+          opposedRoll.failureMessage.replaceAll('{enemy}', enemyName),
+        ),
+      );
+      return _skillProgressionSystem.gainExperience(
+        result,
+        skillId: skillId,
+        experience: skill.practiceExperience,
+      );
+    }
     final result = switch (move.effectType) {
       SkillEffectType.damage => _performPlayerAttack(
         preparedState,
@@ -126,12 +184,79 @@ class CombatSystem {
         move,
         skillLevel,
       ),
+      SkillEffectType.summon => _performSummon(preparedState, move),
+      SkillEffectType.escape => _performEscapeSkill(preparedState, move),
+      SkillEffectType.resourceDamage => _performResourceDamage(
+        preparedState,
+        move,
+        skillLevel,
+      ),
+      SkillEffectType.selfStatus => _performSelfStatus(preparedState, move),
     };
     return _skillProgressionSystem.gainExperience(
       result,
       skillId: skillId,
       experience: skill.practiceExperience,
     );
+  }
+
+  GameState _performSelfStatus(GameState state, CombatMoveDefinition move) {
+    final effect = _resolveStatusEffect(move.statusEffectId, move.statusEffect);
+    if (effect == null) {
+      return _performEnemyTurn(_withLog(state, '${move.name}没有产生任何效果。'));
+    }
+    final durationSkillId = move.durationSkillId;
+    final duration =
+        durationSkillId == null
+            ? effect.duration
+            : (state.skillProgress[durationSkillId]?.level ?? 0).clamp(1, 9999);
+    return _performEnemyTurn(
+      _playerConditionSystem.applyDefinition(
+        state,
+        effect,
+        durationOverride: duration,
+      ),
+    );
+  }
+
+  bool _castFails(GameState state, CombatMoveDefinition move) {
+    if (!move.hasFailureRoll) {
+      return false;
+    }
+    final upperBound = switch (move.failureRollSource) {
+      FailureRollSource.skillLevel =>
+        state.skillProgress[move.castingSkillId]?.level ?? 0,
+      FailureRollSource.maxMana => state.player.maxMana,
+    };
+    if (upperBound <= 0) {
+      return true;
+    }
+    return _randomIntGenerator(upperBound) < move.failureRollBelow;
+  }
+
+  bool _opposedRollFails(GameState state, CombatMoveDefinition move) {
+    final opposedRoll = move.opposedRoll;
+    final activeCombat = state.combat;
+    if (opposedRoll == null || activeCombat == null) {
+      return false;
+    }
+    final combat = _repository.npc(activeCombat.npcId).combat;
+    if (combat == null) {
+      return true;
+    }
+    final skillLevel = state.skillProgress[opposedRoll.skillId]?.level ?? 0;
+    final attackPower = switch (opposedRoll.type) {
+      OpposedRollType.spellPowerVsCombatExperience =>
+        (skillLevel * skillLevel * skillLevel ~/ 4) *
+            state.player.spirit ~/
+            100,
+    };
+    final defensePower = combat.combatExperience;
+    final upperBound = attackPower + defensePower;
+    if (upperBound <= 0) {
+      return true;
+    }
+    return _randomIntGenerator(upperBound) <= defensePower;
   }
 
   GameState _performPlayerAttack(
@@ -195,8 +320,14 @@ class CombatSystem {
     int skillLevel,
   ) {
     final message = move.combatMessage ?? '你凝神守住门户，准备化解来势。';
-    return _performEnemyTurn(
+    final npcName = _repository.npc(state.combat!.npcId).name;
+    final prepared = _applyStatusEffectToEnemy(
       _withLog(state, message),
+      _resolveStatusEffect(move.statusEffectId, move.statusEffect),
+      npcName,
+    );
+    return _performEnemyTurn(
+      prepared,
       defenseBonus: move.defenseBonusAtLevel(skillLevel),
     );
   }
@@ -218,6 +349,199 @@ class CombatSystem {
     );
   }
 
+  GameState _performResourceDamage(
+    GameState state,
+    CombatMoveDefinition move,
+    int skillLevel,
+  ) {
+    final combat = state.combat;
+    if (combat == null) {
+      return state;
+    }
+    final npc = _repository.npc(combat.npcId);
+    final npcState = state.npcStates[npc.id];
+    final definition = npc.combat;
+    if (npcState == null || definition == null) {
+      return state;
+    }
+    final damage = (state.player.maxMana ~/ move.resourceDamageDivisor +
+            skillLevel ~/ 2)
+        .clamp(1, 999);
+    final current = _npcResourceValue(npcState, move.targetResource);
+    final nextValue = (current - damage).clamp(0, current);
+    final dealtDamage = current - nextValue;
+    final nextNpcState = _copyNpcResource(
+      npcState,
+      move.targetResource,
+      nextValue,
+    );
+    final nextPlayer =
+        move.restoresPlayerResource == null
+            ? state.player
+            : _restorePlayerResource(
+              state.player,
+              move.restoresPlayerResource!,
+              dealtDamage,
+            );
+    final message = (move.combatMessage ??
+            '你以法术削弱了${npc.name}的${_resourceLabel(move.targetResource)}。')
+        .replaceAll('{enemy}', npc.name)
+        .replaceAll('{damage}', dealtDamage.toString());
+    final nextState = state.copyWith(
+      player: nextPlayer,
+      npcStates: {...state.npcStates, npc.id: nextNpcState},
+      log: state.logWith(message),
+    );
+    if (move.targetResource == CombatResource.hp && nextValue == 0) {
+      return _defeatNpc(nextState, npc.id, nextNpcState, definition);
+    }
+    return _performEnemyTurn(nextState);
+  }
+
+  int _npcResourceValue(NpcRuntimeState state, CombatResource resource) {
+    return switch (resource) {
+      CombatResource.hp => state.currentHp,
+      CombatResource.energy => state.currentEnergy,
+      CombatResource.spirit => state.currentSpirit,
+      CombatResource.mana => state.currentMana,
+    };
+  }
+
+  NpcRuntimeState _copyNpcResource(
+    NpcRuntimeState state,
+    CombatResource resource,
+    int value,
+  ) {
+    return switch (resource) {
+      CombatResource.hp => state.copyWith(currentHp: value),
+      CombatResource.energy => state.copyWith(currentEnergy: value),
+      CombatResource.spirit => state.copyWith(currentSpirit: value),
+      CombatResource.mana => state.copyWith(currentMana: value),
+    };
+  }
+
+  PlayerState _restorePlayerResource(
+    PlayerState player,
+    CombatResource resource,
+    int amount,
+  ) {
+    return switch (resource) {
+      CombatResource.hp => player.copyWith(
+        hp: (player.hp + amount).clamp(0, player.maxHp),
+      ),
+      CombatResource.energy => player.copyWith(
+        energy: (player.energy + amount).clamp(0, player.maxEnergy),
+      ),
+      CombatResource.spirit => player.copyWith(
+        spirit: (player.spirit + amount).clamp(0, player.maxSpirit),
+      ),
+      CombatResource.mana => player.copyWith(
+        mana: (player.mana + amount).clamp(0, player.maxMana),
+      ),
+    };
+  }
+
+  String _resourceLabel(CombatResource resource) {
+    return switch (resource) {
+      CombatResource.hp => '气血',
+      CombatResource.energy => '精力',
+      CombatResource.spirit => '精神',
+      CombatResource.mana => '法力',
+    };
+  }
+
+  GameState _performSummon(GameState state, CombatMoveDefinition move) {
+    final combat = state.combat;
+    final summons = [
+      if (move.summon case final summon?) summon,
+      ...move.summons,
+    ];
+    if (combat == null || summons.isEmpty) {
+      return _withLog(state, '召唤没有产生任何回应。');
+    }
+    final summon = _selectSummon(summons);
+    final allyName =
+        summon.nameVariants.isEmpty
+            ? summon.name
+            : summon.nameVariants[_randomIntGenerator(
+              summon.nameVariants.length,
+            )];
+    String resolveAllyName(String message) {
+      return message.replaceAll('{ally}', allyName);
+    }
+
+    final previousAlly = combat.ally;
+    final log = _takeLast([
+      ...state.log,
+      if (previousAlly != null) previousAlly.leaveMessage,
+      resolveAllyName(summon.summonMessage),
+    ], 20);
+    return _performEnemyTurn(
+      state.copyWith(
+        combat: combat.copyWith(
+          ally: SummonedAllyState(
+            name: allyName,
+            attack: summon.attack,
+            hp: summon.maxHp,
+            maxHp: summon.maxHp,
+            defense: summon.defense,
+            attackMessage: resolveAllyName(summon.attackMessage),
+            defeatMessage: resolveAllyName(summon.defeatMessage),
+            leaveMessage: resolveAllyName(summon.leaveMessage),
+            remainingRounds: summon.durationRounds,
+          ),
+        ),
+        log: log,
+      ),
+    );
+  }
+
+  CombatSummonDefinition _selectSummon(List<CombatSummonDefinition> summons) {
+    if (summons.length == 1) {
+      return summons.single;
+    }
+    final totalWeight = summons.fold(
+      0,
+      (total, summon) => total + summon.selectionWeight,
+    );
+    var roll = _randomIntGenerator(totalWeight);
+    for (final summon in summons) {
+      if (roll < summon.selectionWeight) {
+        return summon;
+      }
+      roll -= summon.selectionWeight;
+    }
+    return summons.last;
+  }
+
+  GameState _performEscapeSkill(GameState state, CombatMoveDefinition move) {
+    final combat = state.combat;
+    final roomId = move.escapeRoomId;
+    if (combat == null || roomId == null) {
+      return _withLog(state, '遁术未能找到落脚之处。');
+    }
+    final npcState = state.npcStates[combat.npcId];
+    final destination = _repository.room(roomId);
+    final log = _takeLast([
+      ...state.log,
+      move.combatMessage ?? '你借遁术脱离了战斗。',
+      if (combat.ally case final ally?) ally.leaveMessage,
+    ], 20);
+    return state.copyWith(
+      currentRoomId: destination.id,
+      visitedRoomIds: {...state.visitedRoomIds, destination.id},
+      npcStates:
+          npcState == null
+              ? state.npcStates
+              : {
+                ...state.npcStates,
+                combat.npcId: npcState.copyWith(currentHp: combat.enemyHp),
+              },
+      combat: null,
+      log: log,
+    );
+  }
+
   GameState _performEnemyTurn(
     GameState state, {
     int? enemyHp,
@@ -236,6 +560,15 @@ class CombatSystem {
     state = state.copyWith(
       combat: activeCombat.copyWith(enemyHp: enemyHp ?? activeCombat.enemyHp),
     );
+    state = _performAllyTurn(state, npc, npcState, combat);
+    activeCombat = state.combat;
+    if (activeCombat == null) {
+      return state;
+    }
+    final blockingEffect =
+        activeCombat.enemyStatusEffects
+            .where((effect) => effect.blocksAction)
+            .firstOrNull;
     state = _tickEnemyStatusEffects(state, npc, npcState, combat);
     activeCombat = state.combat;
     if (activeCombat == null) {
@@ -243,16 +576,59 @@ class CombatSystem {
     }
 
     final nextRound = activeCombat.round + 1;
+    if (blockingEffect != null) {
+      return state.copyWith(
+        npcStates: {
+          ...state.npcStates,
+          npc.id: npcState.copyWith(currentHp: activeCombat.enemyHp),
+        },
+        combat: activeCombat.copyWith(round: nextRound),
+        log: state.logWith('${npc.name}受${blockingEffect.name}所困，未能及时出手。'),
+      );
+    }
     final specialMove = combat.specialMove;
     final usesSpecialMove =
         specialMove != null &&
         specialMove.interval > 0 &&
         nextRound % specialMove.interval == 0;
     final attackBonus = usesSpecialMove ? specialMove.damageBonus : 0;
-    final stats = _equipmentSystem.statsFor(state);
     final enemyAttackPenalty = _statusAttackPenalty(
       activeCombat.enemyStatusEffects,
     );
+    final ally = activeCombat.ally;
+    if (ally != null) {
+      final enemyDamage = (combat.attack +
+              attackBonus -
+              enemyAttackPenalty -
+              ally.defense)
+          .clamp(0, 999);
+      final nextAllyHp = (ally.hp - enemyDamage).clamp(0, ally.maxHp);
+      final allyDefeated = nextAllyHp == 0;
+      final attackMessage =
+          usesSpecialMove
+              ? '【${specialMove.name}】${specialMove.message} '
+                  '${ally.name}受到$enemyDamage点伤害。'
+              : enemyDamage == 0
+              ? '${ally.name}替你挡下了${npc.name}的攻势。'
+              : '${npc.name}攻向${ally.name}，造成$enemyDamage点伤害。';
+      return state.copyWith(
+        npcStates: {
+          ...state.npcStates,
+          npc.id: npcState.copyWith(currentHp: activeCombat.enemyHp),
+        },
+        combat: activeCombat.copyWith(
+          round: nextRound,
+          ally: allyDefeated ? null : ally.copyWith(hp: nextAllyHp),
+        ),
+        log: _takeLast([
+          ...state.log,
+          attackMessage,
+          if (allyDefeated) ally.defeatMessage,
+        ], 20),
+      );
+    }
+
+    final stats = _equipmentSystem.statsFor(state);
     final playerDefensePenalty = _statusDefensePenalty(
       state.playerStatusEffects,
     );
@@ -298,6 +674,41 @@ class CombatSystem {
     return _recoverFromDefeat(nextState, npc.name);
   }
 
+  GameState _performAllyTurn(
+    GameState state,
+    NpcDefinition npc,
+    NpcRuntimeState npcState,
+    CombatDefinition combatDefinition,
+  ) {
+    final combat = state.combat;
+    final ally = combat?.ally;
+    if (combat == null || ally == null) {
+      return state;
+    }
+    final damage = (ally.attack - combatDefinition.defense ~/ 2).clamp(1, 999);
+    final nextEnemyHp = combat.enemyHp - damage;
+    final tickedAlly = ally.tick();
+    final allyExpires = !ally.lastsForCombat && tickedAlly.remainingRounds <= 0;
+    final log = _takeLast([
+      ...state.log,
+      ally.attackMessage
+          .replaceAll('{enemy}', npc.name)
+          .replaceAll('{damage}', damage.toString()),
+      if (allyExpires) ally.leaveMessage,
+    ], 20);
+    final nextState = state.copyWith(
+      combat: combat.copyWith(
+        enemyHp: nextEnemyHp,
+        ally: allyExpires ? null : tickedAlly,
+      ),
+      log: log,
+    );
+    if (nextEnemyHp <= 0) {
+      return _defeatNpc(nextState, npc.id, npcState, combatDefinition);
+    }
+    return nextState;
+  }
+
   GameState _recoverFromDefeat(GameState state, String enemyName) {
     final stats = _equipmentSystem.statsFor(state);
     final startingRoomId = _repository.startingRoomId;
@@ -307,17 +718,25 @@ class CombatSystem {
         npcStates[entry.key] = entry.value.copyWith(roomId: startingRoomId);
       }
     }
+    final ally = state.combat?.ally;
     return state.copyWith(
       currentRoomId: startingRoomId,
       visitedRoomIds: {...state.visitedRoomIds, startingRoomId},
       player: state.player.copyWith(
         hp: (stats.maxHp ~/ 2).clamp(1, stats.maxHp),
         innerPower: (stats.maxInnerPower ~/ 2).clamp(0, stats.maxInnerPower),
+        energy: (state.player.maxEnergy ~/ 2).clamp(0, state.player.maxEnergy),
+        atman: (state.player.maxAtman ~/ 2).clamp(0, state.player.maxAtman),
+        mana: (state.player.maxMana ~/ 2).clamp(0, state.player.maxMana),
       ),
       npcStates: npcStates,
       playerStatusEffects: const [],
       combat: null,
-      log: state.logWith('你不敌$enemyName，昏迷后被人送回饮风客栈。'),
+      log: _takeLast([
+        ...state.log,
+        if (ally != null) ally.leaveMessage,
+        '你不敌$enemyName，昏迷后被人送回饮风客栈。',
+      ], 20),
     );
   }
 
@@ -372,9 +791,14 @@ class CombatSystem {
         );
       }
     }
+    final ally = state.combat?.ally;
     return state.copyWith(
       combat: null,
-      log: state.logWith('你避开${npc.name}，暂时退到一旁。'),
+      log: _takeLast([
+        ...state.log,
+        '你避开${npc.name}，暂时退到一旁。',
+        if (ally != null) ally.leaveMessage,
+      ], 20),
     );
   }
 
@@ -396,6 +820,7 @@ class CombatSystem {
             ];
     final respawnAfterTurns = combat.respawnAfterTurns;
 
+    final ally = state.combat?.ally;
     var nextState = state.copyWith(
       combat: null,
       npcStates: {
@@ -421,6 +846,9 @@ class CombatSystem {
       experience: combat.rewardExperience,
       logPrefix: '你击退了${npc.name}',
     );
+    if (ally != null) {
+      nextState = nextState.copyWith(log: nextState.logWith(ally.leaveMessage));
+    }
 
     if (droppedItemIds.isEmpty) {
       return nextState;

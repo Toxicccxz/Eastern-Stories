@@ -36,6 +36,9 @@ class GameState {
   }) {
     final maxHp = 50 + attributes.constitution * 2;
     final maxSpirit = 30 + attributes.spirituality * 2;
+    const maxEnergy = 100;
+    final maxMana =
+        50 + attributes.spirituality * 5 + attributes.intelligence * 5;
     return GameState(
       currentRoomId: startingRoomId,
       worldTurn: 0,
@@ -52,6 +55,12 @@ class GameState {
         maxInnerPower: 30,
         spirit: maxSpirit,
         maxSpirit: maxSpirit,
+        energy: maxEnergy,
+        maxEnergy: maxEnergy,
+        atman: 0,
+        maxAtman: 0,
+        mana: maxMana,
+        maxMana: maxMana,
         potential: 20,
         combatExperience: 0,
         betrayalCount: 0,
@@ -145,6 +154,9 @@ class GameState {
   final List<StatusEffectState> playerStatusEffects;
   final CombatState? combat;
   final List<String> log;
+
+  bool get hasAstralVision =>
+      playerStatusEffects.any((effect) => effect.grantsAstralVision);
 
   Map<String, Object?> toJson() {
     return {
@@ -408,6 +420,9 @@ class NpcRuntimeState {
     required this.roomId,
     required this.currentHp,
     required this.isDefeated,
+    this.currentEnergy = 0,
+    this.currentSpirit = 0,
+    this.currentMana = 0,
     this.respawnAtTurn,
     this.hasDroppedLoot = false,
     this.isFollowing = false,
@@ -423,6 +438,9 @@ class NpcRuntimeState {
       roomId: json['roomId'] as String,
       currentHp: json['currentHp'] as int,
       isDefeated: json['isDefeated'] as bool,
+      currentEnergy: json['currentEnergy'] as int? ?? 0,
+      currentSpirit: json['currentSpirit'] as int? ?? 0,
+      currentMana: json['currentMana'] as int? ?? 0,
       respawnAtTurn: json['respawnAtTurn'] as int?,
       hasDroppedLoot: json['hasDroppedLoot'] as bool? ?? false,
       isFollowing: json['isFollowing'] as bool? ?? false,
@@ -438,6 +456,9 @@ class NpcRuntimeState {
   final String roomId;
   final int currentHp;
   final bool isDefeated;
+  final int currentEnergy;
+  final int currentSpirit;
+  final int currentMana;
   final int? respawnAtTurn;
   final bool hasDroppedLoot;
   final bool isFollowing;
@@ -474,6 +495,9 @@ class NpcRuntimeState {
       'roomId': roomId,
       'currentHp': currentHp,
       'isDefeated': isDefeated,
+      'currentEnergy': currentEnergy,
+      'currentSpirit': currentSpirit,
+      'currentMana': currentMana,
       'respawnAtTurn': respawnAtTurn,
       'hasDroppedLoot': hasDroppedLoot,
       'isFollowing': isFollowing,
@@ -489,6 +513,9 @@ class NpcRuntimeState {
     String? roomId,
     int? currentHp,
     bool? isDefeated,
+    int? currentEnergy,
+    int? currentSpirit,
+    int? currentMana,
     Object? respawnAtTurn = _unchanged,
     bool? hasDroppedLoot,
     bool? isFollowing,
@@ -502,6 +529,9 @@ class NpcRuntimeState {
       roomId: roomId ?? this.roomId,
       currentHp: currentHp ?? this.currentHp,
       isDefeated: isDefeated ?? this.isDefeated,
+      currentEnergy: currentEnergy ?? this.currentEnergy,
+      currentSpirit: currentSpirit ?? this.currentSpirit,
+      currentMana: currentMana ?? this.currentMana,
       respawnAtTurn:
           respawnAtTurn == _unchanged
               ? this.respawnAtTurn
@@ -537,6 +567,12 @@ class PlayerState {
     required this.maxInnerPower,
     required this.spirit,
     required this.maxSpirit,
+    required this.energy,
+    required this.maxEnergy,
+    required this.atman,
+    required this.maxAtman,
+    required this.mana,
+    required this.maxMana,
     required this.potential,
     required this.combatExperience,
     required this.betrayalCount,
@@ -555,6 +591,12 @@ class PlayerState {
   final int maxInnerPower;
   final int spirit;
   final int maxSpirit;
+  final int energy;
+  final int maxEnergy;
+  final int atman;
+  final int maxAtman;
+  final int mana;
+  final int maxMana;
   final int potential;
   int get intelligence => attributes.intelligence;
   final int combatExperience;
@@ -584,6 +626,12 @@ class PlayerState {
       maxInnerPower: json['maxInnerPower'] as int,
       spirit: json['spirit'] as int? ?? 60,
       maxSpirit: json['maxSpirit'] as int? ?? 60,
+      energy: json['energy'] as int? ?? 100,
+      maxEnergy: json['maxEnergy'] as int? ?? 100,
+      atman: json['atman'] as int? ?? 0,
+      maxAtman: json['maxAtman'] as int? ?? 0,
+      mana: json['mana'] as int? ?? json['maxMana'] as int? ?? 200,
+      maxMana: json['maxMana'] as int? ?? 200,
       potential: json['potential'] as int? ?? 20,
       combatExperience: json['combatExperience'] as int? ?? 0,
       betrayalCount: json['betrayalCount'] as int? ?? 0,
@@ -605,6 +653,12 @@ class PlayerState {
       'maxInnerPower': maxInnerPower,
       'spirit': spirit,
       'maxSpirit': maxSpirit,
+      'energy': energy,
+      'maxEnergy': maxEnergy,
+      'atman': atman,
+      'maxAtman': maxAtman,
+      'mana': mana,
+      'maxMana': maxMana,
       'potential': potential,
       'combatExperience': combatExperience,
       'betrayalCount': betrayalCount,
@@ -625,6 +679,12 @@ class PlayerState {
     int? maxInnerPower,
     int? spirit,
     int? maxSpirit,
+    int? energy,
+    int? maxEnergy,
+    int? atman,
+    int? maxAtman,
+    int? mana,
+    int? maxMana,
     int? potential,
     int? intelligence,
     int? combatExperience,
@@ -646,6 +706,12 @@ class PlayerState {
       maxInnerPower: maxInnerPower ?? this.maxInnerPower,
       spirit: spirit ?? this.spirit,
       maxSpirit: maxSpirit ?? this.maxSpirit,
+      energy: energy ?? this.energy,
+      maxEnergy: maxEnergy ?? this.maxEnergy,
+      atman: atman ?? this.atman,
+      maxAtman: maxAtman ?? this.maxAtman,
+      mana: mana ?? this.mana,
+      maxMana: maxMana ?? this.maxMana,
       potential: potential ?? this.potential,
       combatExperience: combatExperience ?? this.combatExperience,
       betrayalCount: betrayalCount ?? this.betrayalCount,
@@ -661,6 +727,7 @@ class CombatState {
     this.round = 0,
     this.playerStatusEffects = const [],
     this.enemyStatusEffects = const [],
+    this.ally,
   });
 
   factory CombatState.fromJson(Map<String, Object?> json) {
@@ -678,6 +745,12 @@ class CombatState {
             in json['enemyStatusEffects'] as List<Object?>? ?? const [])
           StatusEffectState.fromJson(effect as Map<String, Object?>),
       ],
+      ally:
+          json['ally'] == null
+              ? null
+              : SummonedAllyState.fromJson(
+                json['ally'] as Map<String, Object?>,
+              ),
     );
   }
 
@@ -686,6 +759,7 @@ class CombatState {
   final int round;
   final List<StatusEffectState> playerStatusEffects;
   final List<StatusEffectState> enemyStatusEffects;
+  final SummonedAllyState? ally;
 
   Map<String, Object?> toJson() {
     return {
@@ -698,6 +772,7 @@ class CombatState {
       'enemyStatusEffects': [
         for (final effect in enemyStatusEffects) effect.toJson(),
       ],
+      'ally': ally?.toJson(),
     };
   }
 
@@ -706,6 +781,7 @@ class CombatState {
     int? round,
     List<StatusEffectState>? playerStatusEffects,
     List<StatusEffectState>? enemyStatusEffects,
+    Object? ally = _unchanged,
   }) {
     return CombatState(
       npcId: npcId,
@@ -713,6 +789,92 @@ class CombatState {
       round: round ?? this.round,
       playerStatusEffects: playerStatusEffects ?? this.playerStatusEffects,
       enemyStatusEffects: enemyStatusEffects ?? this.enemyStatusEffects,
+      ally: ally == _unchanged ? this.ally : ally as SummonedAllyState?,
+    );
+  }
+}
+
+class SummonedAllyState {
+  const SummonedAllyState({
+    required this.name,
+    required this.attack,
+    required this.hp,
+    required this.maxHp,
+    required this.defense,
+    required this.attackMessage,
+    required this.defeatMessage,
+    required this.leaveMessage,
+    this.remainingRounds = 0,
+  });
+
+  factory SummonedAllyState.fromJson(Map<String, Object?> json) {
+    return SummonedAllyState(
+      name: json['name'] as String,
+      attack: json['attack'] as int,
+      hp: json['hp'] as int? ?? json['maxHp'] as int? ?? 1,
+      maxHp: json['maxHp'] as int? ?? 1,
+      defense: json['defense'] as int? ?? 0,
+      attackMessage: json['attackMessage'] as String,
+      defeatMessage: json['defeatMessage'] as String? ?? '${json['name']}消散了。',
+      leaveMessage: json['leaveMessage'] as String,
+      remainingRounds: json['remainingRounds'] as int? ?? 0,
+    );
+  }
+
+  final String name;
+  final int attack;
+  final int hp;
+  final int maxHp;
+  final int defense;
+  final String attackMessage;
+  final String defeatMessage;
+  final String leaveMessage;
+  final int remainingRounds;
+
+  bool get lastsForCombat => remainingRounds == 0;
+
+  Map<String, Object?> toJson() {
+    return {
+      'name': name,
+      'attack': attack,
+      'hp': hp,
+      'maxHp': maxHp,
+      'defense': defense,
+      'attackMessage': attackMessage,
+      'defeatMessage': defeatMessage,
+      'leaveMessage': leaveMessage,
+      'remainingRounds': remainingRounds,
+    };
+  }
+
+  SummonedAllyState tick() {
+    if (lastsForCombat) {
+      return this;
+    }
+    return SummonedAllyState(
+      name: name,
+      attack: attack,
+      hp: hp,
+      maxHp: maxHp,
+      defense: defense,
+      attackMessage: attackMessage,
+      defeatMessage: defeatMessage,
+      leaveMessage: leaveMessage,
+      remainingRounds: remainingRounds - 1,
+    );
+  }
+
+  SummonedAllyState copyWith({int? hp, int? remainingRounds}) {
+    return SummonedAllyState(
+      name: name,
+      attack: attack,
+      hp: hp ?? this.hp,
+      maxHp: maxHp,
+      defense: defense,
+      attackMessage: attackMessage,
+      defeatMessage: defeatMessage,
+      leaveMessage: leaveMessage,
+      remainingRounds: remainingRounds ?? this.remainingRounds,
     );
   }
 }
@@ -729,6 +891,7 @@ class StatusEffectState {
     this.attackPenalty = 0,
     this.defensePenalty = 0,
     this.blocksAction = false,
+    this.grantsAstralVision = false,
     this.tickMessage,
     this.expireMessage,
   });
@@ -745,6 +908,7 @@ class StatusEffectState {
       attackPenalty: json['attackPenalty'] as int? ?? 0,
       defensePenalty: json['defensePenalty'] as int? ?? 0,
       blocksAction: json['blocksAction'] as bool? ?? false,
+      grantsAstralVision: json['grantsAstralVision'] as bool? ?? false,
       tickMessage: json['tickMessage'] as String?,
       expireMessage: json['expireMessage'] as String?,
     );
@@ -760,6 +924,7 @@ class StatusEffectState {
   final int attackPenalty;
   final int defensePenalty;
   final bool blocksAction;
+  final bool grantsAstralVision;
   final String? tickMessage;
   final String? expireMessage;
 
@@ -775,6 +940,7 @@ class StatusEffectState {
       'attackPenalty': attackPenalty,
       'defensePenalty': defensePenalty,
       'blocksAction': blocksAction,
+      'grantsAstralVision': grantsAstralVision,
       'tickMessage': tickMessage,
       'expireMessage': expireMessage,
     };
@@ -792,6 +958,7 @@ class StatusEffectState {
       attackPenalty: attackPenalty,
       defensePenalty: defensePenalty,
       blocksAction: blocksAction,
+      grantsAstralVision: grantsAstralVision,
       tickMessage: tickMessage,
       expireMessage: expireMessage,
     );

@@ -86,13 +86,42 @@ class PlayerStatusBar extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: StatusMeter(
-                  label: '经验',
-                  value: player.experience,
-                  maxValue: player.nextLevelExperience,
-                  color: const Color(0xFF6F7F3F),
+                  label: '法力',
+                  value: player.mana,
+                  maxValue: player.maxMana,
+                  color: const Color(0xFF665C8E),
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: StatusMeter(
+                  label: '精力',
+                  value: player.energy,
+                  maxValue: player.maxEnergy,
+                  color: const Color(0xFF3F7D65),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: StatusMeter(
+                  label: '灵力',
+                  value: player.atman,
+                  maxValue: player.maxAtman,
+                  color: const Color(0xFF8A4E72),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          StatusMeter(
+            label: '经验',
+            value: player.experience,
+            maxValue: player.nextLevelExperience,
+            color: const Color(0xFF6F7F3F),
           ),
           if (state.playerStatusEffects.isNotEmpty) ...[
             const SizedBox(height: 8),

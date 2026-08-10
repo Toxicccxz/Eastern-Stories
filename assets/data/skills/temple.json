@@ -61,10 +61,131 @@
         "id": "netherbolt",
         "name": "幽冥雷",
         "effectType": "damage",
-        "innerPowerCost": 8,
+        "manaCost": 25,
+        "spiritCost": 10,
+        "failureRollSource": "maxMana",
+        "failureRollBelow": 50,
+        "failureMessage": "你聚起的青光在掌中闪烁数次，最终消散无踪。",
+        "opposedRoll": {
+          "type": "spellPowerVsCombatExperience",
+          "skillId": "spells",
+          "failureMessage": "但是被{enemy}躲开了。"
+        },
         "damageBonus": 9,
-        "minimumSkillLevel": 5,
+        "minimumSkillLevel": 1,
         "combatMessage": "你催动通灵术，一道幽冥雷火直击{enemy}。"
+      },
+      {
+        "id": "feeblebolt",
+        "name": "虚弱术",
+        "effectType": "resourceDamage",
+        "manaCost": 25,
+        "spiritCost": 10,
+        "failureRollSource": "maxMana",
+        "failureRollBelow": 50,
+        "failureMessage": "你掌中的白光闪了几下，没能凝聚成形。",
+        "opposedRoll": {
+          "type": "spellPowerVsCombatExperience",
+          "skillId": "spells",
+          "failureMessage": "但是被{enemy}躲开了。"
+        },
+        "targetResource": "spirit",
+        "resourceDamageDivisor": 20,
+        "minimumSkillLevel": 1,
+        "combatMessage": "你念动咒文，一团白光透过{enemy}的身体，削去{damage}点精神。"
+      },
+      {
+        "id": "drainerbolt",
+        "name": "吸取术",
+        "effectType": "resourceDamage",
+        "manaCost": 25,
+        "spiritCost": 20,
+        "failureRollSource": "maxMana",
+        "failureRollBelow": 50,
+        "failureMessage": "你掌中的紫光倏然散去，吸取术没有生效。",
+        "opposedRoll": {
+          "type": "spellPowerVsCombatExperience",
+          "skillId": "spells",
+          "failureMessage": "但是被{enemy}躲开了。"
+        },
+        "targetResource": "energy",
+        "resourceDamageDivisor": 20,
+        "restoresPlayerResource": "energy",
+        "minimumSkillLevel": 1,
+        "combatMessage": "你挥出一团紫光贯穿{enemy}，吸取了{damage}点精力。"
+      },
+      {
+        "id": "invocation",
+        "name": "天兵召唤",
+        "effectType": "summon",
+        "manaCost": 100,
+        "spiritCost": 60,
+        "failureRollSource": "maxMana",
+        "failureRollBelow": 200,
+        "failureMessage": "你喃喃念完咒语，但是什么也没有发生。",
+        "minimumSkillLevel": 1,
+        "summons": [
+          {
+            "name": "天界神兵",
+            "nameVariants": [
+              "天甲神兵",
+              "天乙神兵",
+              "天丙神兵",
+              "天丁神兵",
+              "天戊神兵",
+              "天己神兵",
+              "天庚神兵",
+              "天辛神兵",
+              "天壬神兵",
+              "天癸神兵"
+            ],
+            "selectionWeight": 1,
+            "attack": 20,
+            "maxHp": 1000,
+            "defense": 14,
+            "summonMessage": "一道金光由天而降，金光中走出一位身穿金色战袍的将官。{ally}说道：末将奉法主召唤，特来护法！",
+            "attackMessage": "{ally}挥动金剑斩向{enemy}，造成{damage}点伤害。",
+            "defeatMessage": "{ally}受创过重，身上的金光骤然散去。",
+            "leaveMessage": "{ally}说道：末将护法已毕。话音落下，他化作一道金光冲上天际。"
+          },
+          {
+            "name": "阴司鬼卒",
+            "nameVariants": [
+              "子阴鬼卒",
+              "丑阴鬼卒",
+              "寅阴鬼卒",
+              "卯阴鬼卒",
+              "辰阴鬼卒",
+              "巳阴鬼卒",
+              "午阴鬼卒",
+              "未阴鬼卒",
+              "申阴鬼卒",
+              "酉阴鬼卒",
+              "戌阴鬼卒",
+              "亥阴鬼卒"
+            ],
+            "selectionWeight": 2,
+            "attack": 24,
+            "maxHp": 1000,
+            "defense": 12,
+            "summonMessage": "一道蓝光从地底升起，蓝光中出现一个手执钢叉、面目狰狞的鬼卒。{ally}说道：末将奉法主召唤，特来护法！",
+            "attackMessage": "{ally}挺起钢叉刺向{enemy}，造成{damage}点伤害。",
+            "defeatMessage": "{ally}受创过重，身形化作一团幽暗蓝光。",
+            "leaveMessage": "{ally}说道：末将护法已毕。随后化作蓝光沉入地下。"
+          }
+        ]
+      },
+      {
+        "id": "astral_vision",
+        "name": "阴阳眼",
+        "effectType": "selfStatus",
+        "manaCost": 30,
+        "spiritCost": 5,
+        "minimumSkillLevel": 1,
+        "statusEffectId": "astral_vision",
+        "usableOutsideCombat": true,
+        "durationSkillId": "spells",
+        "activeFailureMessage": "你已经施展过阴阳眼的法术了。"
       }
     ],
     "maxLevel": 60,
