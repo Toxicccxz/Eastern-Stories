@@ -1,6 +1,7 @@
 import 'package:eastern_stories/game/repositories/game_definition_repository.dart';
 import 'package:eastern_stories/game/models/family_definition.dart';
 import 'package:eastern_stories/game/models/innate_attributes.dart';
+import 'package:eastern_stories/game/models/npc_definition.dart';
 import 'package:eastern_stories/game/models/world_condition.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -28,6 +29,25 @@ void main() {
     );
     expect(repository.statusEffectOrNull('slumber_drug')?.blocksAction, isTrue);
     expect(repository.statusEffectOrNull('bandaged')?.hpRecoveryPerRound, 3);
+    expect(
+      repository.npc('oldpine_commander').lifecycle,
+      NpcLifecycle.areaReset,
+    );
+    expect(
+      repository.npc('dragonhill_gangster').lifecycle,
+      NpcLifecycle.areaReset,
+    );
+    expect(repository.npc('green_elder').lifecycle, NpcLifecycle.persistent);
+    expect(repository.npc('green_spider').lifecycle, NpcLifecycle.timedRespawn);
+    expect(
+      repository.initialAreaResetNpcStatesInArea('oldpine'),
+      contains('oldpine_commander'),
+    );
+    final greenAreaResetNpcs = repository.initialAreaResetNpcStatesInArea(
+      'green',
+    );
+    expect(greenAreaResetNpcs, isNot(contains('green_elder')));
+    expect(greenAreaResetNpcs, isNot(contains('green_spider')));
     expect(repository.statusEffectOrNull('missing_effect'), isNull);
 
     for (final area in repository.areas) {

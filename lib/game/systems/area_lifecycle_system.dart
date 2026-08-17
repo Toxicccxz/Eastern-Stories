@@ -36,7 +36,9 @@ class AreaLifecycleSystem {
   GameState _resetArea(GameState state, String areaId) {
     final rooms = _repository.roomsInArea(areaId).toList(growable: false);
     final roomIds = rooms.map((room) => room.id).toSet();
-    final initialNpcStates = _repository.initialNpcStatesInArea(areaId);
+    final initialNpcStates = _repository.initialAreaResetNpcStatesInArea(
+      areaId,
+    );
     final npcStates = {...state.npcStates};
     final removedDynamicNpcIds = <String>{};
 

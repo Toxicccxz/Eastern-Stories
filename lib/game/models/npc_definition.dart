@@ -34,6 +34,7 @@ class NpcDefinition {
     this.inventoryItemIds = const [],
     this.inventoryItemCounts = const {},
     this.equippedItemIds = const {},
+    this.lifecycle = NpcLifecycle.persistent,
   });
 
   factory NpcDefinition.fromJson(Map<String, Object?> json) {
@@ -122,6 +123,12 @@ class NpcDefinition {
             (slot, itemId) =>
                 MapEntry(EquipmentSlot.values.byName(slot), itemId as String),
           ),
+      lifecycle:
+          json['lifecycle'] == null
+              ? combat?.respawnAfterTurns == null
+                  ? NpcLifecycle.persistent
+                  : NpcLifecycle.timedRespawn
+              : NpcLifecycle.values.byName(json['lifecycle'] as String),
     );
   }
 
@@ -153,6 +160,7 @@ class NpcDefinition {
   final List<String> inventoryItemIds;
   final Map<String, int> inventoryItemCounts;
   final Map<EquipmentSlot, String> equippedItemIds;
+  final NpcLifecycle lifecycle;
 
   NpcDefinition withInstanceId(String instanceId) {
     if (instanceId == id) {
@@ -187,6 +195,7 @@ class NpcDefinition {
       inventoryItemIds: inventoryItemIds,
       inventoryItemCounts: inventoryItemCounts,
       equippedItemIds: equippedItemIds,
+      lifecycle: lifecycle,
     );
   }
 
@@ -199,6 +208,8 @@ class NpcDefinition {
     return greeting;
   }
 }
+
+enum NpcLifecycle { areaReset, persistent, timedRespawn }
 
 class NpcPatrolDefinition {
   const NpcPatrolDefinition({

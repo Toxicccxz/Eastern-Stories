@@ -63,7 +63,8 @@
   {
     "id": "dragonhill",
     "name": "卧龙岗",
-    "description": "雪亭镇与绮云镇之间的山岗小路，黄土路崎岖，原版中常有强盗拦路。"
+    "description": "雪亭镇与绮云镇之间的山岗小路，黄土路崎岖，原版中常有强盗拦路。",
+    "resetAfterTurns": 20
   },
   {
     "id": "latemoon",

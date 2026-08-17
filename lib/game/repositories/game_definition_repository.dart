@@ -371,6 +371,14 @@ class GameDefinitionRepository {
     };
   }
 
+  Map<String, NpcRuntimeState> initialAreaResetNpcStatesInArea(String areaId) {
+    return {
+      for (final entry in initialNpcStatesInArea(areaId).entries)
+        if (npc(entry.key).lifecycle == NpcLifecycle.areaReset)
+          entry.key: entry.value,
+    };
+  }
+
   Map<String, ShopRuntimeState> initialShopStatesInArea(String areaId) {
     final npcIds = initialNpcStatesInArea(areaId).keys.toSet();
     return {

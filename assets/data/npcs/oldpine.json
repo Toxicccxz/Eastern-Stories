@@ -1,6 +1,7 @@
 [
   {
     "id": "oldpine_bandit_scout",
+    "lifecycle": "areaReset",
     "name": "土匪探哨",
     "description": "年轻探哨满脸匪气，一副百无聊赖的模样，腰间短剑却始终没有离手。",
     "greeting": "土匪探哨斜眼喝道：这条路不是给闲人走的！",
@@ -24,6 +25,7 @@
   },
   {
     "id": "oldpine_maniac",
+    "lifecycle": "areaReset",
     "name": "疯老头子",
     "description": "疯老头正对着来人龇牙咧嘴，破旧长袍上沾满泥污，眼神里却偶尔闪过骇人的精光。",
     "greeting": "疯老头子含糊笑道：桥下有人，树上也有人，谁都别想走！",
@@ -47,6 +49,7 @@
   },
   {
     "id": "oldpine_spy",
+    "lifecycle": "areaReset",
     "name": "黑衣人",
     "description": "黑衣人藏在古松枝叶间，举止鬼祟，袖中露出几柄寒光闪闪的飞刀。",
     "greeting": "黑衣人冷冷说道：既然看见了我，就别想装作什么都不知道。",
@@ -81,6 +84,7 @@
   },
   {
     "id": "oldpine_venom_snake",
+    "lifecycle": "areaReset",
     "name": "金银花蛇",
     "description": "毒蛇盘在大青石上昂首吐信，金银相间的花纹在幽暗洞穴里格外醒目。",
     "greeting": "金银花蛇弓起身体，发出细长的嘶鸣。",
@@ -100,6 +104,7 @@
   },
   {
     "id": "oldpine_giant_serpent",
+    "lifecycle": "areaReset",
     "name": "黑冠巨蟒",
     "description": "乌黑油亮的巨蟒盘踞潭边，头顶生着巨大肉瘤，粗壮躯干几乎堵住整个水潭。",
     "greeting": "黑冠巨蟒昂起头颅，沉重蛇身压得碎石咯咯作响。",
@@ -119,6 +124,7 @@
   },
   {
     "id": "oldpine_tall_bandit",
+    "lifecycle": "areaReset",
     "name": "高瘦土匪",
     "description": "土匪长得高高瘦瘦，脸色苍白，一副无精打采的模样，手中长剑却磨得很亮。",
     "greeting": "高瘦土匪提剑说道：迷进林子算你倒霉。",
@@ -136,6 +142,7 @@
   },
   {
     "id": "oldpine_fat_bandit",
+    "lifecycle": "areaReset",
     "name": "矮胖土匪",
     "description": "矮胖土匪圆滚滚的眼珠在满脸肥肉中转来转去，始终盯着来人的钱袋。",
     "greeting": "矮胖土匪骂道：把身上的钱通通留下来！",
@@ -166,6 +173,7 @@
   },
   {
     "id": "oldpine_bandit_chief",
+    "lifecycle": "areaReset",
     "name": "土匪老大",
     "description": "这家伙眼神凶恶，一双精光四射的眼珠正盯着来人的脖子，身手显然远胜寻常土匪。",
     "greeting": "土匪老大阴恻恻地说道：乖乖地躺下吧！",
@@ -193,6 +201,7 @@
   },
   {
     "id": "oldpine_wolf_dog",
+    "lifecycle": "areaReset",
     "name": "独眼狼狗",
     "description": "凶猛狼狗只剩一只眼睛，正恶狠狠地盯着每一个靠近山寨的人。",
     "greeting": "独眼狼狗压低身体，龇出尖牙发出低吼。",
@@ -200,6 +209,7 @@
   },
   {
     "id": "oldpine_keep_gate_guard",
+    "lifecycle": "areaReset",
     "name": "土匪喽罗",
     "description": "守门喽罗满脸横肉，持短剑挡在枯松枝掩盖的寨门前。",
     "greeting": "守门喽罗喝道：什么人敢闯老松寨！",
@@ -217,6 +227,7 @@
   },
   {
     "id": "oldpine_keep_yard_guard",
+    "lifecycle": "areaReset",
     "name": "土匪喽罗",
     "description": "院内喽罗从沙包石堆后跳出，手中短剑直指闯入者。",
     "greeting": "土匪喽罗大喊：把门关上，一个也别放走！",
@@ -240,6 +251,7 @@
   },
   {
     "id": "oldpine_bandit_leader",
+    "lifecycle": "areaReset",
     "name": "土匪首领",
     "description": "土匪首领眼神凶恶，精光四射的眼珠死死盯着来人的脖子，手中厚背刀带着暗红锈迹。",
     "greeting": "土匪首领阴恻恻地说道：这种三脚猫功夫也敢上老松寨撒野？",
@@ -261,6 +273,7 @@
   },
   {
     "id": "oldpine_commander",
+    "lifecycle": "areaReset",
     "name": "常老大",
     "description": "老松寨寨主常老大号称“泼风刀王”，身披毛皮，手持长柄大刀，气势远胜寻常土匪。",
     "greeting": "常老大提起大刀冷笑道：能闯到这里，倒有几分本事。",

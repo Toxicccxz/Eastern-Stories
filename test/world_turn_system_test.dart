@@ -219,6 +219,44 @@ void main() {
     expect(controller.state.areaResetAtTurns, isNot(contains('oldpine')));
   });
 
+  test('dragonhill explicitly resets its renewable bandits', () {
+    final initial = repository.createInitialState();
+    final firstBandit = initial.npcStates['dragonhill_gangster']!;
+    final secondBandit = initial.npcStates['dragonhill_gangster_2']!;
+    final controller = GameController(
+      repository: repository,
+      initialState: initial.copyWith(
+        currentRoomId: 'snow_stone_road',
+        worldTurn: 20,
+        visitedRoomIds: {...initial.visitedRoomIds, 'snow_stone_road'},
+        areaResetAtTurns: const {'dragonhill': 21},
+        npcStates: {
+          ...initial.npcStates,
+          'dragonhill_gangster': firstBandit.copyWith(
+            currentHp: 0,
+            isDefeated: true,
+          ),
+          'dragonhill_gangster_2': secondBandit.copyWith(
+            currentHp: 0,
+            isDefeated: true,
+          ),
+        },
+      ),
+    );
+
+    controller.dispatch(const GameAction.move(Direction.east));
+
+    expect(
+      controller.state.npcStates['dragonhill_gangster']?.isDefeated,
+      isFalse,
+    );
+    expect(
+      controller.state.npcStates['dragonhill_gangster_2']?.isDefeated,
+      isFalse,
+    );
+    expect(controller.state.areaResetAtTurns, isNot(contains('dragonhill')));
+  });
+
   test('original roaming npc follows its persisted patrol route', () {
     final initial = repository.createInitialState();
     final controller = GameController(

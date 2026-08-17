@@ -86,6 +86,7 @@ const _opposedRollTypes = {'spellPowerVsCombatExperience'};
 const _combatResources = {'hp', 'energy', 'spirit', 'mana'};
 const _questStatuses = {'notStarted', 'active', 'completed'};
 const _teachingAccess = {'public', 'family', 'direct'};
+const _npcLifecycles = {'areaReset', 'persistent', 'timedRespawn'};
 
 Future<void> main(List<String> arguments) async {
   final manifestPath = arguments.firstOrNull ?? 'assets/data/demo_world.json';
@@ -384,6 +385,28 @@ class GameDataValidator {
       );
 
       final combat = _optionalObject(npc.data['combat'], '$context.combat');
+      _validateEnum(
+        npc.data['lifecycle'],
+        _npcLifecycles,
+        '$context.lifecycle',
+        'NPC lifecycle',
+        optional: true,
+      );
+      if (npc.data['lifecycle'] == 'areaReset') {
+        for (final room in _all('rooms').where((room) {
+          final npcIds = room.data['npcIds'];
+          return npcIds is List<Object?> && npcIds.contains(npc.id);
+        })) {
+          final areaId = room.data['areaId'];
+          final area = _definitions['areas']?[areaId];
+          if (area?.data['resetAfterTurns'] == null) {
+            errors.add(
+              '$context uses areaReset in area "$areaId", '
+              'but that area has no resetAfterTurns.',
+            );
+          }
+        }
+      }
       _validateOptionalBool(npc.data['isGhost'], '$context.isGhost');
       _validateOptionalPositiveInt(combat['maxHp'], '$context.combat.maxHp');
       _validateOptionalPositiveInt(
@@ -418,6 +441,21 @@ class GameDataValidator {
         combat['respawnAfterTurns'] ?? combat['respawnAfterMoves'],
         '$context.combat.respawnAfterTurns',
       );
+      if (npc.data['lifecycle'] == 'timedRespawn' &&
+          combat['respawnAfterTurns'] == null &&
+          combat['respawnAfterMoves'] == null) {
+        errors.add(
+          '$context uses timedRespawn without combat.respawnAfterTurns.',
+        );
+      }
+      if (npc.data['lifecycle'] != null &&
+          npc.data['lifecycle'] != 'timedRespawn' &&
+          (combat['respawnAfterTurns'] != null ||
+              combat['respawnAfterMoves'] != null)) {
+        errors.add(
+          '$context has a timed respawn but lifecycle is not timedRespawn.',
+        );
+      }
       final specialMove = _optionalObject(
         combat['specialMove'],
         '$context.combat.specialMove',
