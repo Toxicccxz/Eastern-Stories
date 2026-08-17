@@ -37,6 +37,17 @@ void main() {
       repository.npc('dragonhill_gangster').lifecycle,
       NpcLifecycle.areaReset,
     );
+    expect(
+      repository.npc('dragonhill_gangster').attitude,
+      NpcAttitude.aggressive,
+    );
+    expect(repository.npc('oldpine_commander').defeatReputationChange, 1);
+    expect(repository.npc('oldpine_wolf_dog').defeatReputationChange, 0);
+    expect(
+      repository.npc('green_master_juechen').attitude,
+      NpcAttitude.peaceful,
+    );
+    expect(repository.npc('green_master_juechen').defeatMoralityChange, -4);
     expect(repository.npc('green_elder').lifecycle, NpcLifecycle.persistent);
     expect(repository.npc('green_spider').lifecycle, NpcLifecycle.timedRespawn);
     expect(

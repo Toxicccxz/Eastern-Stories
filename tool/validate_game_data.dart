@@ -87,6 +87,14 @@ const _combatResources = {'hp', 'energy', 'spirit', 'mana'};
 const _questStatuses = {'notStarted', 'active', 'completed'};
 const _teachingAccess = {'public', 'family', 'direct'};
 const _npcLifecycles = {'areaReset', 'persistent', 'timedRespawn'};
+const _npcAttitudes = {
+  'neutral',
+  'aggressive',
+  'friendly',
+  'heroism',
+  'killer',
+  'peaceful',
+};
 
 Future<void> main(List<String> arguments) async {
   final manifestPath = arguments.firstOrNull ?? 'assets/data/demo_world.json';
@@ -391,6 +399,21 @@ class GameDataValidator {
         '$context.lifecycle',
         'NPC lifecycle',
         optional: true,
+      );
+      _validateEnum(
+        npc.data['attitude'],
+        _npcAttitudes,
+        '$context.attitude',
+        'NPC attitude',
+        optional: true,
+      );
+      _validateOptionalInt(
+        npc.data['defeatMoralityChange'],
+        '$context.defeatMoralityChange',
+      );
+      _validateOptionalInt(
+        npc.data['defeatReputationChange'],
+        '$context.defeatReputationChange',
       );
       if (npc.data['lifecycle'] == 'areaReset') {
         for (final room in _all('rooms').where((room) {

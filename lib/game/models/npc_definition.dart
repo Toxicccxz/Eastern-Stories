@@ -35,7 +35,11 @@ class NpcDefinition {
     this.inventoryItemCounts = const {},
     this.equippedItemIds = const {},
     this.lifecycle = NpcLifecycle.persistent,
-  });
+    this.attitude = NpcAttitude.neutral,
+    int? defeatMoralityChange,
+    int? defeatReputationChange,
+  }) : _defeatMoralityChange = defeatMoralityChange,
+       _defeatReputationChange = defeatReputationChange;
 
   factory NpcDefinition.fromJson(Map<String, Object?> json) {
     final combat =
@@ -129,6 +133,11 @@ class NpcDefinition {
                   ? NpcLifecycle.persistent
                   : NpcLifecycle.timedRespawn
               : NpcLifecycle.values.byName(json['lifecycle'] as String),
+      attitude: NpcAttitude.values.byName(
+        json['attitude'] as String? ?? NpcAttitude.neutral.name,
+      ),
+      defeatMoralityChange: json['defeatMoralityChange'] as int?,
+      defeatReputationChange: json['defeatReputationChange'] as int?,
     );
   }
 
@@ -161,6 +170,14 @@ class NpcDefinition {
   final Map<String, int> inventoryItemCounts;
   final Map<EquipmentSlot, String> equippedItemIds;
   final NpcLifecycle lifecycle;
+  final NpcAttitude attitude;
+  final int? _defeatMoralityChange;
+  final int? _defeatReputationChange;
+
+  int get defeatMoralityChange =>
+      _defeatMoralityChange ?? attitude.defaultDefeatMoralityChange;
+  int get defeatReputationChange =>
+      _defeatReputationChange ?? attitude.defaultDefeatReputationChange;
 
   NpcDefinition withInstanceId(String instanceId) {
     if (instanceId == id) {
@@ -196,6 +213,9 @@ class NpcDefinition {
       inventoryItemCounts: inventoryItemCounts,
       equippedItemIds: equippedItemIds,
       lifecycle: lifecycle,
+      attitude: attitude,
+      defeatMoralityChange: _defeatMoralityChange,
+      defeatReputationChange: _defeatReputationChange,
     );
   }
 
@@ -210,6 +230,35 @@ class NpcDefinition {
 }
 
 enum NpcLifecycle { areaReset, persistent, timedRespawn }
+
+enum NpcAttitude {
+  neutral,
+  aggressive,
+  friendly,
+  heroism,
+  killer,
+  peaceful;
+
+  bool get isHostile => this == aggressive || this == killer;
+
+  int get defaultDefeatMoralityChange => switch (this) {
+    neutral => 0,
+    aggressive => 0,
+    killer => 1,
+    peaceful => -4,
+    friendly => -8,
+    heroism => -10,
+  };
+
+  int get defaultDefeatReputationChange => switch (this) {
+    neutral => 0,
+    aggressive => 1,
+    killer => 3,
+    peaceful => -4,
+    friendly => -8,
+    heroism => -10,
+  };
+}
 
 class NpcPatrolDefinition {
   const NpcPatrolDefinition({

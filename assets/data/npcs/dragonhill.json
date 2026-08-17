@@ -2,6 +2,7 @@
   {
     "id": "dragonhill_gangster",
     "lifecycle": "areaReset",
+    "attitude": "aggressive",
     "name": "卧龙岗强盗",
     "description": "这强盗满脸伤疤，虎背熊腰，一副凶狠霸道的样子。",
     "greeting": "强盗喝道：此山是我开，此树乃我栽。要想从此过，留下买路财！",
@@ -29,6 +30,7 @@
   {
     "id": "dragonhill_gangster_2",
     "lifecycle": "areaReset",
+    "attitude": "aggressive",
     "name": "卧龙岗强盗",
     "description": "这强盗满脸伤疤，虎背熊腰，一副凶狠霸道的样子。",
     "greeting": "强盗上下打量着你，似乎在盘算你身上有多少银钱。",

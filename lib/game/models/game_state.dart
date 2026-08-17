@@ -70,6 +70,8 @@ class GameState {
         potential: 20,
         combatExperience: 0,
         betrayalCount: 0,
+        morality: 0,
+        reputation: 0,
         silver: 20,
       ),
       visitedRoomIds: {startingRoomId},
@@ -671,6 +673,8 @@ class PlayerState {
     required this.potential,
     required this.combatExperience,
     required this.betrayalCount,
+    this.morality = 0,
+    this.reputation = 0,
     required this.silver,
   });
 
@@ -696,6 +700,8 @@ class PlayerState {
   int get intelligence => attributes.intelligence;
   final int combatExperience;
   final int betrayalCount;
+  final int morality;
+  final int reputation;
   final int silver;
 
   factory PlayerState.fromJson(Map<String, Object?> json) {
@@ -730,6 +736,8 @@ class PlayerState {
       potential: json['potential'] as int? ?? 20,
       combatExperience: json['combatExperience'] as int? ?? 0,
       betrayalCount: json['betrayalCount'] as int? ?? 0,
+      morality: json['morality'] as int? ?? 0,
+      reputation: json['reputation'] as int? ?? 0,
       silver: json['silver'] as int,
     );
   }
@@ -757,6 +765,8 @@ class PlayerState {
       'potential': potential,
       'combatExperience': combatExperience,
       'betrayalCount': betrayalCount,
+      'morality': morality,
+      'reputation': reputation,
       'silver': silver,
     };
   }
@@ -784,6 +794,8 @@ class PlayerState {
     int? intelligence,
     int? combatExperience,
     int? betrayalCount,
+    int? morality,
+    int? reputation,
     int? silver,
   }) {
     return PlayerState(
@@ -810,6 +822,8 @@ class PlayerState {
       potential: potential ?? this.potential,
       combatExperience: combatExperience ?? this.combatExperience,
       betrayalCount: betrayalCount ?? this.betrayalCount,
+      morality: morality ?? this.morality,
+      reputation: reputation ?? this.reputation,
       silver: silver ?? this.silver,
     );
   }

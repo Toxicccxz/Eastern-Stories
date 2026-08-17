@@ -42,6 +42,8 @@ void main() {
         intelligence: 16,
         combatExperience: 240,
         betrayalCount: 2,
+        morality: -7,
+        reputation: 18,
       ),
       apprenticeship: const ApprenticeshipState(
         familyId: 'fengshan_sword',
@@ -121,6 +123,8 @@ void main() {
     expect(loaded?.player.intelligence, 16);
     expect(loaded?.player.combatExperience, 240);
     expect(loaded?.player.betrayalCount, 2);
+    expect(loaded?.player.morality, -7);
+    expect(loaded?.player.reputation, 18);
     expect(loaded?.apprenticeship?.familyId, 'fengshan_sword');
     expect(loaded?.apprenticeship?.masterNpcId, 'liu_chunfeng');
     expect(loaded?.apprenticeship?.generation, 2);

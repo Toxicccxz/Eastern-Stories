@@ -1970,6 +1970,9 @@ void main() {
       initialState: initialState.copyWith(
         currentRoomId: 'oldpine_clearing',
         visitedRoomIds: {...initialState.visitedRoomIds, 'oldpine_clearing'},
+        player: initialState.player.copyWith(
+          attributes: initialState.player.attributes.copyWith(courage: 1000),
+        ),
       ),
     );
 
@@ -1999,6 +2002,8 @@ void main() {
           .map((npc) => npc.id),
       contains('oldpine_venom_snake'),
     );
+    expect(controller.state.combat?.npcId, 'oldpine_venom_snake');
+    controller.dispatch(const GameAction.fleeCombat());
 
     controller.dispatch(const GameAction.move(Direction.south));
     controller.dispatch(const GameAction.move(Direction.south));
@@ -2012,6 +2017,8 @@ void main() {
           .map((npc) => npc.id),
       contains('oldpine_giant_serpent'),
     );
+    expect(controller.state.combat?.npcId, 'oldpine_giant_serpent');
+    controller.dispatch(const GameAction.fleeCombat());
 
     controller.dispatch(const GameAction.move(Direction.north));
     controller.dispatch(
@@ -3355,6 +3362,50 @@ void main() {
           .map((item) => item.id),
       contains('snow_bone'),
     );
+  });
+
+  test('aggressive NPC starts combat when the player enters its room', () {
+    final initialState = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'dragonhill_south_foot',
+        visitedRoomIds: {
+          ...initialState.visitedRoomIds,
+          'dragonhill_south_foot',
+        },
+      ),
+    );
+
+    controller.dispatch(const GameAction.move(Direction.northup));
+
+    expect(controller.state.currentRoomId, 'dragonhill_hummock');
+    expect(
+      controller.state.combat?.npcId,
+      anyOf('dragonhill_gangster', 'dragonhill_gangster_2'),
+    );
+  });
+
+  test('defeating an aggressive bandit increases reputation', () {
+    final initialState = repository.createInitialState();
+    final scoutState = initialState.npcStates['oldpine_bandit_scout']!;
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: scoutState.roomId,
+        visitedRoomIds: {...initialState.visitedRoomIds, scoutState.roomId},
+        player: initialState.player.copyWith(hp: 1000, maxHp: 1000),
+        npcStates: {
+          ...initialState.npcStates,
+          'oldpine_bandit_scout': scoutState.copyWith(currentHp: 1),
+        },
+      ),
+    );
+
+    _defeatNpc(controller, 'oldpine_bandit_scout');
+
+    expect(controller.state.player.morality, 0);
+    expect(controller.state.player.reputation, 1);
   });
 }
 

@@ -95,6 +95,12 @@ class CharacterSheet extends StatelessWidget {
                       value: state.player.combatExperience,
                       bonus: 0,
                     ),
+                    _Stat(label: '善恶', value: state.player.morality, bonus: 0),
+                    _Stat(
+                      label: '声望',
+                      value: state.player.reputation,
+                      bonus: 0,
+                    ),
                   ],
                 ),
                 const Divider(height: 28),

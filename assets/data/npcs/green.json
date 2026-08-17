@@ -1,6 +1,7 @@
 [
   {
     "id": "green_elder",
+    "attitude": "friendly",
     "name": "村长",
     "description": "青石村的老村长已经九十五岁，坐在炉边的石椅上，神情时而清醒，时而像在回忆很久以前的事情。",
     "greeting": "村长叹道：国之将亡……唉，都是造孽啊。",
@@ -27,6 +28,7 @@
   },
   {
     "id": "green_shen_wannian",
+    "attitude": "friendly",
     "name": "沈万年",
     "description": "沈记商行掌柜沈万年约莫四十五岁，一双眼睛总在客人与货架之间来回打量。",
     "greeting": "沈万年上下打量了你一眼，说道：我可不卖东西给陌生人。",
@@ -213,6 +215,7 @@
   },
   {
     "id": "green_master_juechen",
+    "attitude": "peaceful",
     "name": "绝尘子",
     "description": "绝尘子本为释家中人，后得奇人指点而悟道家真谛，佛道双修皆入化境，访遍名山大川后自号绝尘、开创此派。",
     "greeting": "绝尘子缓缓睁眼说道：贫道向以遁世为乐，你既来到此处，便说说所求何事。",

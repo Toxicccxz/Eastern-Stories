@@ -63,6 +63,11 @@ class WorldSystem {
         }
         break;
       }
+      if (hostileNpcId == null &&
+          npc.combat != null &&
+          npc.attitude.isHostile) {
+        hostileNpcId = npc.id;
+      }
       if (hostileNpcId != null) {
         break;
       }

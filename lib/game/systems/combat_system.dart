@@ -1000,6 +1000,18 @@ class CombatSystem {
       experience: combat.rewardExperience,
       logPrefix: '你击退了${npc.name}',
     );
+    if (npc.defeatMoralityChange != 0 || npc.defeatReputationChange != 0) {
+      nextState = nextState.copyWith(
+        player: nextState.player.copyWith(
+          morality: nextState.player.morality + npc.defeatMoralityChange,
+          reputation: nextState.player.reputation + npc.defeatReputationChange,
+        ),
+        log: nextState.logWith(
+          '善恶${_signed(npc.defeatMoralityChange)}，'
+          '声望${_signed(npc.defeatReputationChange)}。',
+        ),
+      );
+    }
     if (corpseItemCounts.isNotEmpty) {
       final dropNames = corpseItemCounts.entries
           .map(
@@ -1018,6 +1030,8 @@ class CombatSystem {
     }
     return nextState;
   }
+
+  String _signed(int value) => value >= 0 ? '+$value' : '$value';
 
   GameState _continueQueuedCombat(
     GameState state,

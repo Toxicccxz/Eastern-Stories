@@ -394,12 +394,43 @@ class LocationInfoPanel extends StatelessWidget {
                 if (npc.combat != null) ...[
                   const SizedBox(height: 8),
                   FilledButton.icon(
-                    onPressed: () {
+                    onPressed: () async {
+                      if (!npc.attitude.isHostile) {
+                        final confirmed = await showDialog<bool>(
+                          context: sheetContext,
+                          builder:
+                              (dialogContext) => AlertDialog(
+                                title: Text('攻击${npc.name}？'),
+                                content: const Text(
+                                  '对方没有主动敌意。主动攻击可能影响你的善恶与声望。',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.of(
+                                          dialogContext,
+                                        ).pop(false),
+                                    child: const Text('取消'),
+                                  ),
+                                  FilledButton(
+                                    onPressed:
+                                        () => Navigator.of(
+                                          dialogContext,
+                                        ).pop(true),
+                                    child: const Text('攻击'),
+                                  ),
+                                ],
+                              ),
+                        );
+                        if (confirmed != true || !sheetContext.mounted) {
+                          return;
+                        }
+                      }
                       controller.dispatch(GameAction.startCombat(npc.id));
                       Navigator.of(sheetContext).pop();
                     },
                     icon: const Icon(Icons.local_fire_department),
-                    label: const Text('迎战'),
+                    label: Text(npc.attitude.isHostile ? '迎战' : '攻击'),
                   ),
                 ],
                 if (npc.shop != null) ...[
