@@ -10,5 +10,103 @@
     "studySpiritCost": 14,
     "studyDifficulty": 18,
     "sellPrice": 12
+  },
+  {
+    "id": "oldpine_short_sword",
+    "name": "短剑",
+    "description": "一把粗制滥造的铁短剑，剑柄缠了好几圈布，以免脱手。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "sword",
+    "attackPower": 15,
+    "sellPrice": 30
+  },
+  {
+    "id": "oldpine_long_sword",
+    "name": "长剑",
+    "description": "一把粗制滥造的铁长剑，剑柄缠布，拿在手中十分沉重。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "sword",
+    "attackPower": 25,
+    "sellPrice": 70
+  },
+  {
+    "id": "oldpine_throwing_knife",
+    "name": "飞刀",
+    "description": "一种十分轻而锐利的匕首，适合当作暗器投掷。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "throwing",
+    "attackPower": 20,
+    "sellPrice": 8
+  },
+  {
+    "id": "oldpine_night_clothes",
+    "name": "夜行衣",
+    "description": "一件夜行人用来掩藏行踪的黑色紧身衣。",
+    "equipmentSlot": "body",
+    "defensePower": 1,
+    "sellPrice": 80
+  },
+  {
+    "id": "oldpine_bagua_robe",
+    "name": "太阴八卦袍",
+    "description": "一件颜色阴沉的八卦袍，袍角绣着晦暗符纹。",
+    "equipmentSlot": "body",
+    "defensePower": 2,
+    "sellPrice": 1000
+  },
+  {
+    "id": "oldpine_leather",
+    "name": "皮衣",
+    "description": "一件厚重的皮衣，能挡住一些寻常刀剑。",
+    "equipmentSlot": "body",
+    "defensePower": 5,
+    "sellPrice": 20
+  },
+  {
+    "id": "oldpine_blade",
+    "name": "单刀",
+    "description": "一柄寻常铁制单刀，约有六七斤重。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "blade",
+    "attackPower": 25,
+    "sellPrice": 50
+  },
+  {
+    "id": "oldpine_glaive",
+    "name": "鬼头刀",
+    "description": "一把沉重的鬼头刀，刀柄上的恶鬼正咧嘴大笑。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "blade",
+    "attackPower": 45,
+    "sellPrice": 150
+  },
+  {
+    "id": "oldpine_wolfskin_cloak",
+    "name": "狼皮披风",
+    "description": "一件厚实的狼皮披风，披在身上显得格外凶悍。",
+    "equipmentSlot": "outerwear",
+    "defensePower": 8,
+    "sellPrice": 120
+  },
+  {
+    "id": "oldpine_bamboo_pipe",
+    "name": "竹管",
+    "description": "一根两寸多长、戳着三个小孔的竹管，似乎可以用来吹奏。",
+    "roomUse": {
+      "roomId": "oldpine_keep_yard",
+      "label": "吹响竹管",
+      "response": "你拿起竹管呜嘟嘟地吹了起来。只听一阵轮盘绞动声，堵住寨门的巨石慢慢移开了。",
+      "unblocksExits": [
+        {"roomId": "oldpine_keep_yard", "direction": "west"},
+        {"roomId": "oldpine_keep_entrance", "direction": "east"}
+      ]
+    }
+  },
+  {
+    "id": "oldpine_corpse_dust",
+    "name": "化尸粉",
+    "description": "一包用来毁尸灭迹的化尸粉，只需一点便能化去一具尸体。",
+    "dissolvesCorpse": true,
+    "sellPrice": 100
   }
 ]

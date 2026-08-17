@@ -7,9 +7,12 @@ import '../models/quest_definition.dart';
 import '../models/skill_definition.dart';
 import '../repositories/game_definition_repository.dart';
 import '../systems/combat_system.dart';
+import '../systems/corpse_system.dart';
 import '../systems/equipment_system.dart';
 import '../systems/inventory_system.dart';
 import '../systems/movement_system.dart';
+import '../systems/npc_equipment_system.dart';
+import '../systems/npc_inventory_system.dart';
 import '../systems/progression_system.dart';
 import '../systems/quest_system.dart';
 import '../systems/skill_progression_system.dart';
@@ -35,6 +38,8 @@ class GameController extends ChangeNotifier {
                ? repository.createInitialState()
                : repository.hydrateState(initialState) {
     _equipmentSystem = EquipmentSystem(repository);
+    _npcEquipmentSystem = NpcEquipmentSystem(repository);
+    _npcInventorySystem = NpcInventorySystem(repository, _equipmentSystem);
     _playerConditionSystem = PlayerConditionSystem(
       repository,
       _equipmentSystem,
@@ -78,8 +83,10 @@ class GameController extends ChangeNotifier {
       skillProgressionSystem,
       _skillMappingSystem,
       _playerConditionSystem,
+      _npcEquipmentSystem,
       randomIntGenerator: randomIntGenerator,
     );
+    _corpseSystem = CorpseSystem(repository);
     _worldSystem = WorldSystem(repository, _playerConditionSystem);
     _tradeSystem = TradeSystem(repository, _equipmentSystem);
   }
@@ -87,9 +94,12 @@ class GameController extends ChangeNotifier {
   final GameDefinitionRepository _repository;
   late final MovementSystem _movementSystem;
   late final EquipmentSystem _equipmentSystem;
+  late final NpcEquipmentSystem _npcEquipmentSystem;
+  late final NpcInventorySystem _npcInventorySystem;
   late final InventorySystem _inventorySystem;
   late final QuestSystem _questSystem;
   late final CombatSystem _combatSystem;
+  late final CorpseSystem _corpseSystem;
   late final WorldSystem _worldSystem;
   late final TradeSystem _tradeSystem;
   late final SkillMappingSystem _skillMappingSystem;
@@ -132,6 +142,8 @@ class GameController extends ChangeNotifier {
         npcId,
         itemId,
       ),
+      GiveInventoryItemAction(:final npcId, :final itemId) =>
+        _npcInventorySystem.giveItem(_state, npcId, itemId),
       PickUpAction(:final itemId) => _inventorySystem.pickUp(_state, itemId),
       EquipItemAction(:final itemId) => _equipmentSystem.equipItem(
         _state,
@@ -196,6 +208,12 @@ class GameController extends ChangeNotifier {
           .useMove(_state, skillId, moveId),
       UseSkillMoveAction(:final skillId, :final moveId) => _spellSystem
           .useWorldMove(_state, skillId, moveId),
+      AnimateCorpseAction(:final skillId, :final moveId, :final corpseId) =>
+        _spellSystem.animateCorpse(_state, skillId, moveId, corpseId),
+      TakeCorpseItemAction(:final corpseId, :final itemId) => _corpseSystem
+          .takeItem(_state, corpseId, itemId),
+      DissolveCorpseAction(:final corpseId, :final itemId) => _corpseSystem
+          .dissolve(_state, corpseId, itemId),
       FleeCombatAction() => _combatSystem.fleeCombat(_state),
       MeditateAction() => _innerPowerSystem.meditate(_state),
       MeditateForManaAction() => _spellSystem.meditate(_state),
@@ -209,7 +227,10 @@ class GameController extends ChangeNotifier {
       _ => false,
     };
     if (enteredRoom) {
-      final entryResult = _worldSystem.resolveRoomEntry(_state);
+      final entryResult = _worldSystem.resolveRoomEntry(
+        _state,
+        previousRoomId: previousState.currentRoomId,
+      );
       _state = entryResult.state;
       if (entryResult.hostileNpcId case final hostileNpcId?) {
         _state = _combatSystem.startCombat(_state, hostileNpcId);
@@ -275,11 +296,11 @@ class GameController extends ChangeNotifier {
   }
 
   List<TeachingSkillDefinition> teachingSkillsFor(String npcId) {
-    return _repository.npc(npcId).teachingSkills;
+    return _repository.npcInstance(_state, npcId).teachingSkills;
   }
 
   String? teachingFailureReasonFor(String npcId, String skillId) {
-    final teacher = _repository.npc(npcId);
+    final teacher = _repository.npcInstance(_state, npcId);
     for (final teaching in teacher.teachingSkills) {
       if (teaching.skillId == skillId) {
         return _cultivationSystem.teachingFailureReason(
@@ -301,12 +322,31 @@ class GameController extends ChangeNotifier {
       for (final skill in learnedSkills())
         if (skill.isBasic || _state.enabledSkillIds.containsValue(skill.id))
           for (final move in skill.moves)
-            CombatMoveOption(skill: skill, move: move),
+            if (move.effectType != SkillEffectType.animateCorpse)
+              CombatMoveOption(skill: skill, move: move),
     ];
+  }
+
+  CombatMoveOption? activeCorpseMove() {
+    for (final skill in learnedSkills()) {
+      if (!skill.isBasic && !_state.enabledSkillIds.containsValue(skill.id)) {
+        continue;
+      }
+      for (final move in skill.moves) {
+        if (move.effectType == SkillEffectType.animateCorpse) {
+          return CombatMoveOption(skill: skill, move: move);
+        }
+      }
+    }
+    return null;
   }
 
   CharacterStats characterStats() {
     return _equipmentSystem.statsFor(_state);
+  }
+
+  NpcCombatStats npcCombatStats(String npcId) {
+    return _npcEquipmentSystem.statsFor(_state, npcId);
   }
 
   int innerPowerCultivationLimit() {

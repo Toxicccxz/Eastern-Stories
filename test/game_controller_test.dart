@@ -1,12 +1,15 @@
 import 'package:eastern_stories/game/core/game_action.dart';
 import 'package:eastern_stories/game/core/game_controller.dart';
 import 'package:eastern_stories/game/models/direction.dart';
+import 'package:eastern_stories/game/models/corpse_state.dart';
+import 'package:eastern_stories/game/models/equipment_slot.dart';
 import 'package:eastern_stories/game/models/game_state.dart';
 import 'package:eastern_stories/game/models/innate_attributes.dart';
 import 'package:eastern_stories/game/models/quest_definition.dart';
 import 'package:eastern_stories/game/models/skill_definition.dart';
 import 'package:eastern_stories/game/models/skill_progress.dart';
 import 'package:eastern_stories/game/repositories/game_definition_repository.dart';
+import 'package:eastern_stories/game/systems/npc_instance_system.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -249,10 +252,15 @@ void main() {
   });
 
   test('Lin Ji carries the original Taoist master equipment', () {
-    final dropItemIds = repository.npc('temple_taolord').combat?.dropItemIds;
+    final initialState = repository.createInitialState();
+    final state = initialState.npcStates['temple_taolord']!;
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState,
+    );
 
     expect(
-      dropItemIds,
+      state.itemCounts.keys,
       containsAll([
         'temple_wangzhou_sword',
         'temple_taolord_robe',
@@ -260,6 +268,78 @@ void main() {
         'temple_cloudy_shoes',
       ]),
     );
+    expect(
+      state.equippedItemIds[EquipmentSlot.weapon],
+      'temple_wangzhou_sword',
+    );
+    expect(state.equippedItemIds[EquipmentSlot.body], 'temple_taolord_robe');
+    expect(state.equippedItemIds[EquipmentSlot.head], 'temple_trimystic_hat');
+    expect(state.equippedItemIds[EquipmentSlot.feet], 'temple_cloudy_shoes');
+    expect(controller.npcCombatStats('temple_taolord').attack, 66);
+    expect(controller.npcCombatStats('temple_taolord').defense, 23);
+
+    controller.replaceState(
+      controller.state.copyWith(
+        npcStates: {
+          ...controller.state.npcStates,
+          'temple_taolord': state.copyWith(equippedItemIds: const {}),
+        },
+      ),
+    );
+    expect(controller.npcCombatStats('temple_taolord').attack, 22);
+    expect(controller.npcCombatStats('temple_taolord').defense, 18);
+    expect(
+      controller.npcCombatStats('temple_taoist_guard').attack,
+      repository.npc('temple_taoist_guard').combat?.attack,
+    );
+  });
+
+  test('Maoshan NPCs carry and wear their original equipment', () {
+    final controller = GameController(repository: repository);
+    final trainer = controller.state.npcStates['temple_trainer']!;
+    final protector = controller.state.npcStates['temple_tfighter']!;
+    final xuanZhen = controller.state.npcStates['temple_little_taoist1']!;
+    final oldTaoist = controller.state.npcStates['temple_old_taoist']!;
+    final libraryGuard = controller.state.npcStates['temple_guard_taoist']!;
+
+    expect(
+      trainer.itemCounts.keys,
+      containsAll([
+        'temple_longsword',
+        'temple_magic_book',
+        'temple_spells_book',
+      ]),
+    );
+    expect(trainer.equippedItemIds[EquipmentSlot.weapon], 'temple_longsword');
+    expect(trainer.itemCounts, isNot(contains('temple_whisk')));
+    expect(controller.npcCombatStats('temple_trainer').attack, 35);
+
+    expect(protector.itemCounts.keys, orderedEquals(['temple_longsword']));
+    expect(protector.equippedItemIds[EquipmentSlot.weapon], 'temple_longsword');
+    expect(controller.npcCombatStats('temple_tfighter').attack, 38);
+
+    expect(
+      xuanZhen.equippedItemIds,
+      containsPair(EquipmentSlot.weapon, 'temple_bamboo_broom'),
+    );
+    expect(controller.npcCombatStats('temple_little_taoist1').attack, 6);
+    expect(controller.npcCombatStats('temple_little_taoist1').defense, 4);
+
+    expect(
+      oldTaoist.equippedItemIds,
+      containsPair(EquipmentSlot.weapon, 'temple_whisk'),
+    );
+    expect(controller.npcCombatStats('temple_old_taoist').attack, 15);
+
+    expect(
+      libraryGuard.equippedItemIds,
+      containsPair(EquipmentSlot.body, 'temple_bagua_robe'),
+    );
+    expect(
+      libraryGuard.equippedItemIds,
+      containsPair(EquipmentSlot.head, 'temple_jade_hat'),
+    );
+    expect(controller.npcCombatStats('temple_guard_taoist').defense, 11);
   });
 
   test(
@@ -1083,21 +1163,41 @@ void main() {
       ),
     );
 
-    _defeatNpc(controller, 'snow_crazy_dog');
+    controller.dispatch(
+      const GameAction.giveInventoryItem('snow_crazy_dog', 'plain_cloth'),
+    );
+    expect(controller.state.inventoryItemIds, isNot(contains('plain_cloth')));
+    expect(controller.state.equippedItemIds[EquipmentSlot.body], isNull);
     expect(
-      controller.repository
-          .visibleItemsInRoom(controller.state, 'snow_stone_road')
-          .map((item) => item.id),
-      contains('snow_bone'),
+      controller.state.npcStates['snow_crazy_dog']?.itemCounts,
+      containsPair('plain_cloth', 1),
     );
 
-    controller.dispatch(const GameAction.pickUp('snow_bone'));
+    _defeatNpc(controller, 'snow_crazy_dog');
+    final corpse = controller.state.corpses.values.firstWhere(
+      (corpse) => corpse.victimName == '疯狗',
+    );
+    expect(
+      controller.state.corpses.values.map((corpse) => corpse.victimName),
+      contains('疯狗'),
+    );
+    expect(corpse.itemCounts, containsPair('snow_bone', 1));
+    expect(corpse.itemCounts, containsPair('plain_cloth', 1));
+    expect(controller.state.npcStates['snow_crazy_dog']?.itemCounts, isEmpty);
+    expect(
+      controller.state.npcStates['snow_crazy_dog']?.equippedItemIds,
+      isEmpty,
+    );
+
+    controller.dispatch(GameAction.takeCorpseItem(corpse.id, 'snow_bone'));
     expect(controller.state.inventoryItemIds, contains('snow_bone'));
     expect(
-      controller.repository
-          .visibleItemsInRoom(controller.state, 'snow_stone_road')
-          .map((item) => item.id),
+      controller.state.corpses[corpse.id]?.itemCounts,
       isNot(contains('snow_bone')),
+    );
+    expect(
+      controller.state.corpses[corpse.id]?.itemCounts,
+      containsPair('plain_cloth', 1),
     );
   });
 
@@ -1633,6 +1733,236 @@ void main() {
     );
   });
 
+  test('old pine bandits carry their original equipment and quantities', () {
+    final controller = GameController(repository: repository);
+    final spy = controller.state.npcStates['oldpine_spy']!;
+    final fatBandit = controller.state.npcStates['oldpine_fat_bandit']!;
+    final commander = controller.state.npcStates['oldpine_commander']!;
+
+    expect(spy.itemCounts['oldpine_throwing_knife'], 30);
+    expect(spy.itemCounts['oldpine_corpse_dust'], 30);
+    expect(
+      spy.equippedItemIds,
+      containsPair(EquipmentSlot.weapon, 'oldpine_throwing_knife'),
+    );
+    expect(
+      spy.equippedItemIds,
+      containsPair(EquipmentSlot.body, 'oldpine_night_clothes'),
+    );
+    expect(controller.npcCombatStats('oldpine_spy').attack, 27);
+    expect(controller.npcCombatStats('oldpine_spy').defense, 4);
+
+    expect(
+      fatBandit.equippedItemIds,
+      containsPair(EquipmentSlot.weapon, 'oldpine_short_sword'),
+    );
+    expect(
+      fatBandit.equippedItemIds,
+      containsPair(EquipmentSlot.body, 'oldpine_leather'),
+    );
+    expect(controller.npcCombatStats('oldpine_fat_bandit').attack, 21);
+    expect(controller.npcCombatStats('oldpine_fat_bandit').defense, 7);
+
+    expect(
+      commander.equippedItemIds,
+      containsPair(EquipmentSlot.weapon, 'oldpine_glaive'),
+    );
+    expect(
+      commander.equippedItemIds,
+      containsPair(EquipmentSlot.body, 'oldpine_leather'),
+    );
+    expect(
+      commander.equippedItemIds,
+      containsPair(EquipmentSlot.outerwear, 'oldpine_wolfskin_cloak'),
+    );
+    expect(commander.itemCounts['oldpine_bamboo_pipe'], 1);
+    expect(controller.npcCombatStats('oldpine_commander').attack, 57);
+    expect(controller.npcCombatStats('oldpine_commander').defense, 21);
+  });
+
+  test('dynamic NPC instances share a definition but keep separate state', () {
+    final initialState = repository.createInitialState();
+    final instanceSystem = NpcInstanceSystem(repository);
+    final spawnedState = instanceSystem.spawn(
+      initialState,
+      definitionId: 'oldpine_keep_yard_guard',
+      roomId: 'oldpine_keep_yard',
+      count: 5,
+      instancePrefix: 'oldpine_reinforcement',
+    );
+    final instanceIds =
+        repository
+            .visibleNpcsInRoom(spawnedState, 'oldpine_keep_yard')
+            .where((npc) => npc.id.startsWith('oldpine_reinforcement_'))
+            .map((npc) => npc.id)
+            .toList();
+
+    expect(instanceIds, hasLength(5));
+    expect(instanceIds.toSet(), hasLength(5));
+    expect(
+      instanceIds.map((id) => repository.npcInstance(spawnedState, id).name),
+      everyElement('土匪喽罗'),
+    );
+    expect(
+      spawnedState.npcStates[instanceIds.first]?.definitionId,
+      'oldpine_keep_yard_guard',
+    );
+
+    final targetId = instanceIds.first;
+    final targetState = spawnedState.npcStates[targetId]!;
+    final controller = GameController(
+      repository: repository,
+      initialState: spawnedState.copyWith(
+        currentRoomId: 'oldpine_keep_yard',
+        visitedRoomIds: {...spawnedState.visitedRoomIds, 'oldpine_keep_yard'},
+        player: spawnedState.player.copyWith(hp: 1000, maxHp: 1000),
+        inventoryItemIds: const ['temple_wangzhou_sword'],
+        npcStates: {
+          ...spawnedState.npcStates,
+          targetId: targetState.copyWith(currentHp: 1),
+        },
+      ),
+    );
+    controller.dispatch(const GameAction.equipItem('temple_wangzhou_sword'));
+    _defeatNpc(controller, targetId);
+
+    expect(controller.state.npcStates[targetId]?.isDefeated, isTrue);
+    for (final otherId in instanceIds.skip(1)) {
+      expect(controller.state.npcStates[otherId]?.isDefeated, isFalse);
+    }
+    final restored = GameState.fromJson(controller.state.toJson());
+    expect(
+      restored.npcStates[targetId]?.definitionId,
+      'oldpine_keep_yard_guard',
+    );
+    expect(
+      repository.visibleNpcsInRoom(restored, 'oldpine_keep_yard'),
+      hasLength(6),
+    );
+  });
+
+  test('original fat bandit calls the chief into combat once', () {
+    final initialState = repository.createInitialState();
+    final fatBandit = initialState.npcStates['oldpine_fat_bandit']!;
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'oldpine_pine1',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'oldpine_pine1'},
+        player: initialState.player.copyWith(hp: 5000, maxHp: 5000),
+        npcStates: {
+          ...initialState.npcStates,
+          'oldpine_fat_bandit': fatBandit.copyWith(currentHp: 200),
+        },
+      ),
+    );
+
+    controller.dispatch(const GameAction.startCombat('oldpine_fat_bandit'));
+    for (var round = 0; round < 3; round++) {
+      controller.dispatch(const GameAction.attack());
+    }
+
+    final chiefIds =
+        controller.state.npcStates.entries
+            .where(
+              (entry) =>
+                  entry.value.definitionId == 'oldpine_bandit_chief' &&
+                  entry.value.roomId == 'oldpine_pine1',
+            )
+            .map((entry) => entry.key)
+            .toList();
+    expect(chiefIds, hasLength(1));
+    expect(controller.state.combat?.queuedNpcIds, chiefIds);
+    expect(
+      controller.state.npcStates['oldpine_fat_bandit']?.valueFor(
+        'combat_event_call_for_chief',
+      ),
+      1,
+    );
+    expect(controller.state.log.join('\n'), contains('兄弟撑不住啦'));
+
+    final restored = GameState.fromJson(controller.state.toJson());
+    expect(restored.combat?.queuedNpcIds, chiefIds);
+    expect(
+      restored.npcStates[chiefIds.single]?.definitionId,
+      'oldpine_bandit_chief',
+    );
+
+    final finishingController = GameController(
+      repository: repository,
+      initialState: restored.copyWith(
+        combat: restored.combat?.copyWith(enemyHp: 1),
+        npcStates: {
+          ...restored.npcStates,
+          'oldpine_fat_bandit': restored.npcStates['oldpine_fat_bandit']!
+              .copyWith(currentHp: 1),
+        },
+      ),
+    );
+    finishingController.dispatch(const GameAction.attack());
+
+    expect(
+      finishingController.state.npcStates['oldpine_fat_bandit']?.isDefeated,
+      isTrue,
+    );
+    expect(finishingController.state.combat?.npcId, chiefIds.single);
+    expect(finishingController.state.log.last, contains('接下了这场战斗'));
+  });
+
+  test('old pine spy corpse keeps the original stacked possessions', () {
+    final initialState = repository.createInitialState();
+    final spyState = initialState.npcStates['oldpine_spy']!;
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'oldpine_tree1',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'oldpine_tree1'},
+        player: initialState.player.copyWith(hp: 1000, maxHp: 1000),
+        npcStates: {
+          ...initialState.npcStates,
+          'oldpine_spy': spyState.copyWith(currentHp: 1),
+        },
+      ),
+    );
+
+    _defeatNpc(controller, 'oldpine_spy');
+
+    final corpse = controller.state.corpses.values.firstWhere(
+      (corpse) => corpse.victimName == '黑衣人',
+    );
+    expect(corpse.itemCounts['oldpine_throwing_knife'], 30);
+    expect(corpse.itemCounts['oldpine_corpse_dust'], 30);
+    expect(corpse.itemCounts['oldpine_night_clothes'], 1);
+  });
+
+  test('old pine spy consumes each throwing knife when attacking', () {
+    final initialState = repository.createInitialState();
+    final spyState = initialState.npcStates['oldpine_spy']!;
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'oldpine_tree1',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'oldpine_tree1'},
+        player: initialState.player.copyWith(hp: 5000, maxHp: 5000),
+        npcStates: {
+          ...initialState.npcStates,
+          'oldpine_spy': spyState.copyWith(currentHp: 1000),
+        },
+      ),
+    );
+
+    controller.dispatch(const GameAction.startCombat('oldpine_spy'));
+    for (var attack = 0; attack < 30; attack++) {
+      controller.dispatch(const GameAction.attack());
+    }
+
+    final spy = controller.state.npcStates['oldpine_spy']!;
+    expect(spy.itemCounts, isNot(contains('oldpine_throwing_knife')));
+    expect(spy.equippedItemIds, isNot(contains(EquipmentSlot.weapon)));
+    expect(controller.npcCombatStats('oldpine_spy').attack, 7);
+    expect(controller.state.log, contains(contains('飞刀已经用尽')));
+  });
+
   test('old pine forest actions form a complete ravine route', () {
     final initialState = repository.createInitialState();
     final controller = GameController(
@@ -1699,7 +2029,7 @@ void main() {
       repository: repository,
       initialState: initialState.copyWith(
         currentRoomId: 'oldpine_deep_passage',
-        player: initialState.player.copyWith(hp: 400, maxHp: 400),
+        player: initialState.player.copyWith(hp: 2000, maxHp: 2000),
         visitedRoomIds: {
           ...initialState.visitedRoomIds,
           'oldpine_deep_passage',
@@ -1759,10 +2089,10 @@ void main() {
         currentRoomId: 'oldpine_east_path3',
         visitedRoomIds: {...initialState.visitedRoomIds, 'oldpine_east_path3'},
         player: initialState.player.copyWith(hp: 400, maxHp: 400),
-        inventoryItemIds: ['hengbing_sword'],
+        inventoryItemIds: ['temple_wangzhou_sword'],
       ),
     );
-    controller.dispatch(const GameAction.equipItem('hengbing_sword'));
+    controller.dispatch(const GameAction.equipItem('temple_wangzhou_sword'));
 
     controller.dispatch(
       const GameAction.performRoomAction('enter_oldpine_maze'),
@@ -1794,8 +2124,38 @@ void main() {
     );
     controller.dispatch(const GameAction.move(Direction.east));
     expect(controller.state.currentRoomId, 'oldpine_keep_hall');
+    expect(
+      repository.room('oldpine_keep_yard').availableExits(controller.state),
+      isNot(contains(Direction.west)),
+    );
+    final reinforcementIds =
+        repository
+            .visibleNpcsInRoom(controller.state, 'oldpine_keep_yard')
+            .where((npc) => npc.id.startsWith('oldpine_keep_reinforcement_'))
+            .map((npc) => npc.id)
+            .toList();
+    expect(reinforcementIds, hasLength(5));
+
     _defeatNpc(controller, 'oldpine_commander');
     expect(controller.state.npcStates['oldpine_commander']?.isDefeated, isTrue);
+    _takeCorpseLoot(controller, 'oldpine_bamboo_pipe');
+    controller.dispatch(const GameAction.move(Direction.west));
+    for (final reinforcementId in reinforcementIds) {
+      _defeatNpc(controller, reinforcementId);
+    }
+    expect(controller.state.currentRoomId, 'oldpine_keep_yard');
+    expect(
+      repository.room('oldpine_keep_yard').availableExits(controller.state),
+      isNot(contains(Direction.west)),
+    );
+
+    controller.dispatch(const GameAction.useItem('oldpine_bamboo_pipe'));
+    expect(controller.state.inventoryItemIds, contains('oldpine_bamboo_pipe'));
+    expect(
+      repository.room('oldpine_keep_yard').availableExits(controller.state),
+      contains(Direction.west),
+    );
+    expect(controller.state.log.last, contains('巨石慢慢移开'));
   });
 
   test('dropping an item moves it into the current room', () {
@@ -2370,10 +2730,10 @@ void main() {
     );
     _defeatNpc(controller, 'temple_taoist_guard');
 
+    _takeCorpseLoot(controller, 'temple_bagua_robe');
+    _takeCorpseLoot(controller, 'temple_jade_hat');
     expect(
-      repository
-          .visibleItemsInRoom(controller.state, 'temple_road2')
-          .map((item) => item.id),
+      controller.state.inventoryItemIds,
       containsAll(['temple_bagua_robe', 'temple_jade_hat']),
     );
   });
@@ -2863,6 +3223,139 @@ void main() {
       isEmpty,
     );
   });
+
+  test('animate turns a corpse into a persistent original-style zombie', () {
+    final initialState = repository.createInitialState();
+    const corpse = CorpseState(
+      id: 'test_corpse',
+      npcId: 'snow_farmer',
+      victimName: '农夫',
+      roomId: 'snow_stone_road',
+      rottensAtTurn: 12,
+      skeletonizesAtTurn: 24,
+      decaysAtTurn: 30,
+    );
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        currentRoomId: 'snow_stone_road',
+        visitedRoomIds: {...initialState.visitedRoomIds, 'snow_stone_road'},
+        corpses: const {'test_corpse': corpse},
+        skillProgress: const {
+          'necromancy': SkillProgress(level: 1, experience: 0),
+          'spells': SkillProgress(level: 10, experience: 0),
+        },
+        enabledSkillIds: const {SkillUsage.spells: 'necromancy'},
+        player: initialState.player.copyWith(
+          hp: 300,
+          maxHp: 300,
+          mana: 100,
+          maxMana: 100,
+          spirit: 100,
+          maxSpirit: 100,
+        ),
+      ),
+    );
+
+    controller.dispatch(
+      const GameAction.animateCorpse('necromancy', 'animate', 'test_corpse'),
+    );
+
+    expect(controller.state.corpses, isEmpty);
+    expect(controller.state.player.mana, 50);
+    expect(controller.state.player.spirit, 70);
+    expect(controller.state.undeadCompanion?.name, '农夫的僵尸');
+    expect(controller.state.undeadCompanion?.remainingTurns, 60);
+    expect(
+      GameState.fromJson(controller.state.toJson()).undeadCompanion?.name,
+      '农夫的僵尸',
+    );
+
+    controller.dispatch(const GameAction.startCombat('snow_crazy_dog'));
+    expect(controller.state.combat?.ally?.name, '农夫的僵尸');
+    expect(controller.state.combat?.ally?.persistent, isTrue);
+  });
+
+  test(
+    'corpse dust consumes one portion and dissolves corpse with its loot',
+    () {
+      final initialState = repository.createInitialState();
+      const corpse = CorpseState(
+        id: 'dust_target',
+        npcId: 'snow_farmer',
+        victimName: '农夫',
+        roomId: 'snow_stone_road',
+        rottensAtTurn: 12,
+        skeletonizesAtTurn: 24,
+        decaysAtTurn: 30,
+        itemCounts: {'snow_bone': 1},
+      );
+      final controller = GameController(
+        repository: repository,
+        initialState: initialState.copyWith(
+          currentRoomId: 'snow_stone_road',
+          visitedRoomIds: {...initialState.visitedRoomIds, 'snow_stone_road'},
+          inventoryItemIds: const [
+            'oldpine_corpse_dust',
+            'oldpine_corpse_dust',
+          ],
+          corpses: const {'dust_target': corpse},
+        ),
+      );
+
+      controller.dispatch(
+        const GameAction.dissolveCorpse('dust_target', 'oldpine_corpse_dust'),
+      );
+
+      expect(controller.state.corpses, isEmpty);
+      expect(controller.state.inventory.countOf('oldpine_corpse_dust'), 1);
+      expect(
+        repository.room('snow_stone_road').visibleItemIds(controller.state),
+        isNot(contains('snow_bone')),
+      );
+      expect(controller.state.log.last, contains('只剩下一滩黄水'));
+    },
+  );
+
+  test('corpse follows original decay phases and drops remaining contents', () {
+    final initialState = repository.createInitialState();
+    const corpse = CorpseState(
+      id: 'decaying_corpse',
+      npcId: 'snow_farmer',
+      victimName: '农夫',
+      roomId: 'snow_inn',
+      rottensAtTurn: 1,
+      skeletonizesAtTurn: 2,
+      decaysAtTurn: 3,
+      itemCounts: {'snow_bone': 1},
+    );
+    final controller = GameController(
+      repository: repository,
+      initialState: initialState.copyWith(
+        corpses: const {'decaying_corpse': corpse},
+      ),
+    );
+
+    controller.dispatch(const GameAction.move(Direction.east));
+    expect(
+      controller.state.corpses[corpse.id]?.phaseAt(controller.state.worldTurn),
+      CorpseDecayPhase.rotting,
+    );
+    controller.dispatch(const GameAction.move(Direction.west));
+    expect(
+      controller.state.corpses[corpse.id]?.phaseAt(controller.state.worldTurn),
+      CorpseDecayPhase.skeleton,
+    );
+    controller.dispatch(const GameAction.move(Direction.east));
+
+    expect(controller.state.corpses, isNot(contains(corpse.id)));
+    expect(
+      repository
+          .visibleItemsInRoom(controller.state, 'snow_inn')
+          .map((item) => item.id),
+      contains('snow_bone'),
+    );
+  });
 }
 
 void _completeRescueQuest(GameController controller) {
@@ -2901,7 +3394,7 @@ void _moveToDungeon(GameController controller) {
   for (var turn = 0; turn < 3; turn += 1) {
     controller.dispatch(const GameAction.attack());
   }
-  controller.dispatch(const GameAction.pickUp('rough_short_sword'));
+  _takeCorpseLoot(controller, 'rough_short_sword');
   controller.dispatch(const GameAction.equipItem('rough_short_sword'));
   controller.dispatch(const GameAction.move(Direction.up));
   controller.dispatch(const GameAction.startCombat('black_pine_guard'));
@@ -2957,6 +3450,15 @@ void _defeatNpc(GameController controller, String npcId) {
     controller.dispatch(const GameAction.attack());
   }
   expect(controller.state.npcStates[npcId]?.isDefeated, isTrue);
+}
+
+void _takeCorpseLoot(GameController controller, String itemId) {
+  final corpse = controller.state.corpses.values.firstWhere(
+    (corpse) =>
+        corpse.roomId == controller.state.currentRoomId &&
+        (corpse.itemCounts[itemId] ?? 0) > 0,
+  );
+  controller.dispatch(GameAction.takeCorpseItem(corpse.id, itemId));
 }
 
 GameController _juechenCombatController(

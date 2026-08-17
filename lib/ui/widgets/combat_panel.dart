@@ -20,7 +20,7 @@ class CombatPanel extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final npc = controller.repository.npc(combat.npcId);
+    final npc = controller.repository.npcInstance(state, combat.npcId);
     final combatDefinition = npc.combat;
     if (combatDefinition == null) {
       return const SizedBox.shrink();
@@ -496,6 +496,7 @@ class _MoveButton extends StatelessWidget {
       SkillEffectType.escape => Icons.blur_on,
       SkillEffectType.resourceDamage => Icons.bolt_outlined,
       SkillEffectType.selfStatus => Icons.visibility_outlined,
+      SkillEffectType.animateCorpse => Icons.person_off_outlined,
     };
   }
 

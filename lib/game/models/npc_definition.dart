@@ -1,4 +1,5 @@
 import 'game_state.dart';
+import 'equipment_slot.dart';
 import 'quest_definition.dart';
 import 'skill_definition.dart';
 import 'world_condition.dart';
@@ -30,9 +31,25 @@ class NpcDefinition {
     this.followEndMessage,
     this.followEndStateValues = const {},
     this.isGhost = false,
+    this.inventoryItemIds = const [],
+    this.inventoryItemCounts = const {},
+    this.equippedItemIds = const {},
   });
 
   factory NpcDefinition.fromJson(Map<String, Object?> json) {
+    final combat =
+        json['combat'] == null
+            ? null
+            : CombatDefinition.fromJson(json['combat'] as Map<String, Object?>);
+    final fallbackInventoryItemIds =
+        (json['inventoryItemIds'] as List<Object?>?)?.cast<String>() ??
+        combat?.dropItemIds ??
+        const <String>[];
+    final inventoryItemCounts = _intMap(json['inventoryItemCounts']);
+    final inventoryItemIds =
+        inventoryItemCounts.isEmpty
+            ? fallbackInventoryItemIds
+            : inventoryItemCounts.keys.toList(growable: false);
     return NpcDefinition(
       id: json['id'] as String,
       name: json['name'] as String,
@@ -53,12 +70,7 @@ class NpcDefinition {
             in json['greetingVariants'] as List<Object?>? ?? const [])
           GreetingVariant.fromJson(variant as Map<String, Object?>),
       ],
-      combat:
-          json['combat'] == null
-              ? null
-              : CombatDefinition.fromJson(
-                json['combat'] as Map<String, Object?>,
-              ),
+      combat: combat,
       conditions: worldConditionFromJson(json['conditions']),
       shop:
           json['shop'] == null
@@ -100,6 +112,16 @@ class NpcDefinition {
       followEndMessage: json['followEndMessage'] as String?,
       followEndStateValues: _intMap(json['followEndStateValues']),
       isGhost: json['isGhost'] as bool? ?? false,
+      inventoryItemIds: inventoryItemIds,
+      inventoryItemCounts:
+          inventoryItemCounts.isEmpty
+              ? _itemCounts(fallbackInventoryItemIds)
+              : inventoryItemCounts,
+      equippedItemIds:
+          (json['equippedItemIds'] as Map<String, Object?>? ?? const {}).map(
+            (slot, itemId) =>
+                MapEntry(EquipmentSlot.values.byName(slot), itemId as String),
+          ),
     );
   }
 
@@ -128,6 +150,45 @@ class NpcDefinition {
   final String? followEndMessage;
   final Map<String, int> followEndStateValues;
   final bool isGhost;
+  final List<String> inventoryItemIds;
+  final Map<String, int> inventoryItemCounts;
+  final Map<EquipmentSlot, String> equippedItemIds;
+
+  NpcDefinition withInstanceId(String instanceId) {
+    if (instanceId == id) {
+      return this;
+    }
+    return NpcDefinition(
+      id: instanceId,
+      name: name,
+      description: description,
+      greeting: greeting,
+      dialogueOptions: dialogueOptions,
+      giveItemOptions: giveItemOptions,
+      greetingVariants: greetingVariants,
+      combat: combat,
+      conditions: conditions,
+      shop: shop,
+      intelligence: intelligence,
+      teachingSkills: teachingSkills,
+      familyId: familyId,
+      familyGeneration: familyGeneration,
+      canAcceptApprentices: canAcceptApprentices,
+      apprenticeTitle: apprenticeTitle,
+      apprenticeshipConditions: apprenticeshipConditions,
+      apprenticeshipFailureMessage: apprenticeshipFailureMessage,
+      patrol: patrol,
+      ambient: ambient,
+      entryReactions: entryReactions,
+      initialStateValues: initialStateValues,
+      followEndMessage: followEndMessage,
+      followEndStateValues: followEndStateValues,
+      isGhost: isGhost,
+      inventoryItemIds: inventoryItemIds,
+      inventoryItemCounts: inventoryItemCounts,
+      equippedItemIds: equippedItemIds,
+    );
+  }
 
   String greetingFor(GameState state) {
     for (final variant in greetingVariants) {
@@ -389,6 +450,8 @@ class CombatDefinition {
     this.dropItemIds = const [],
     this.respawnAfterTurns,
     this.specialMove,
+    this.roundEvents = const [],
+    this.usesEquipmentStats = false,
   });
 
   factory CombatDefinition.fromJson(Map<String, Object?> json) {
@@ -413,6 +476,11 @@ class CombatDefinition {
               : EnemyMoveDefinition.fromJson(
                 json['specialMove'] as Map<String, Object?>,
               ),
+      roundEvents: [
+        for (final value in json['roundEvents'] as List<Object?>? ?? const [])
+          CombatRoundEventDefinition.fromJson(value as Map<String, Object?>),
+      ],
+      usesEquipmentStats: json['usesEquipmentStats'] as bool? ?? false,
     );
   }
 
@@ -428,6 +496,39 @@ class CombatDefinition {
   final List<String> dropItemIds;
   final int? respawnAfterTurns;
   final EnemyMoveDefinition? specialMove;
+  final List<CombatRoundEventDefinition> roundEvents;
+  final bool usesEquipmentStats;
+}
+
+class CombatRoundEventDefinition {
+  const CombatRoundEventDefinition({
+    required this.id,
+    required this.round,
+    required this.message,
+    required this.spawnNpcId,
+    required this.instancePrefix,
+    this.queuesForCombat = false,
+  });
+
+  factory CombatRoundEventDefinition.fromJson(Map<String, Object?> json) {
+    return CombatRoundEventDefinition(
+      id: json['id'] as String,
+      round: json['round'] as int,
+      message: json['message'] as String,
+      spawnNpcId: json['spawnNpcId'] as String,
+      instancePrefix: json['instancePrefix'] as String,
+      queuesForCombat: json['queuesForCombat'] as bool? ?? false,
+    );
+  }
+
+  final String id;
+  final int round;
+  final String message;
+  final String spawnNpcId;
+  final String instancePrefix;
+  final bool queuesForCombat;
+
+  String get stateKey => 'combat_event_$id';
 }
 
 class EnemyMoveDefinition {
@@ -540,4 +641,12 @@ Map<String, int> _intMap(Object? value) {
   return (value as Map<String, Object?>? ?? const {}).map(
     (key, value) => MapEntry(key, value as int),
   );
+}
+
+Map<String, int> _itemCounts(Iterable<String> itemIds) {
+  final counts = <String, int>{};
+  for (final itemId in itemIds) {
+    counts[itemId] = (counts[itemId] ?? 0) + 1;
+  }
+  return counts;
 }

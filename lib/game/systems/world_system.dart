@@ -2,19 +2,25 @@ import '../models/game_state.dart';
 import '../models/skill_definition.dart';
 import '../repositories/game_definition_repository.dart';
 import 'player_condition_system.dart';
+import 'npc_instance_system.dart';
+import 'area_lifecycle_system.dart';
 
 class WorldSystem {
-  const WorldSystem(this._repository, this._playerConditionSystem);
+  WorldSystem(this._repository, this._playerConditionSystem)
+    : _npcInstanceSystem = NpcInstanceSystem(_repository),
+      _areaLifecycleSystem = AreaLifecycleSystem(_repository);
 
   final GameDefinitionRepository _repository;
   final PlayerConditionSystem _playerConditionSystem;
+  final NpcInstanceSystem _npcInstanceSystem;
+  final AreaLifecycleSystem _areaLifecycleSystem;
 
-  RoomEntryResult resolveRoomEntry(GameState state) {
+  RoomEntryResult resolveRoomEntry(GameState state, {String? previousRoomId}) {
     if (state.combat != null) {
       return RoomEntryResult(state);
     }
 
-    var nextState = state;
+    var nextState = _applyRoomEntryEvent(state, previousRoomId);
     String? hostileNpcId;
     for (final npc in _repository.visibleNpcsInRoom(
       nextState,
@@ -64,12 +70,46 @@ class WorldSystem {
     return RoomEntryResult(nextState, hostileNpcId: hostileNpcId);
   }
 
+  GameState _applyRoomEntryEvent(GameState state, String? previousRoomId) {
+    final event = _repository.room(state.currentRoomId).entryEvent;
+    if (event == null ||
+        state.questFlags.contains(event.onceFlag) ||
+        (event.previousRoomId != null &&
+            event.previousRoomId != previousRoomId)) {
+      return state;
+    }
+
+    final blockedRoomExits = {
+      for (final entry in state.blockedRoomExits.entries)
+        entry.key: {...entry.value},
+    };
+    for (final exit in event.blockedExits) {
+      blockedRoomExits.putIfAbsent(exit.roomId, () => {}).add(exit.direction);
+    }
+    var nextState = state.copyWith(
+      blockedRoomExits: blockedRoomExits,
+      questFlags: {...state.questFlags, event.onceFlag},
+      log: state.logWith(event.log),
+    );
+    for (final spawn in event.spawns) {
+      nextState = _npcInstanceSystem.spawn(
+        nextState,
+        definitionId: spawn.definitionId,
+        roomId: spawn.roomId,
+        count: spawn.count,
+        instancePrefix: spawn.instancePrefix,
+      );
+    }
+    return nextState;
+  }
+
   GameState advance(
     GameState previous,
     GameState next,
     WorldActionType actionType,
   ) {
     final worldTurn = previous.worldTurn + 1;
+    next = _areaLifecycleSystem.advance(previous, next, worldTurn: worldTurn);
     final npcStates = <String, NpcRuntimeState>{};
     final worldMessages = <String>[];
     final activeCombatNpcId = previous.combat?.npcId ?? next.combat?.npcId;
@@ -90,6 +130,81 @@ class WorldSystem {
       worldTurn: worldTurn,
       npcStates: npcStates,
     );
+    for (final corpse in advancedState.corpses.values) {
+      if (corpse.roomId != advancedState.currentRoomId) {
+        continue;
+      }
+      if (corpse.rottensAtTurn == worldTurn) {
+        advancedState = advancedState.copyWith(
+          log: advancedState.logWith('${corpse.victimName}的尸体开始腐烂，发出一股难闻的恶臭。'),
+        );
+      } else if (corpse.skeletonizesAtTurn == worldTurn) {
+        advancedState = advancedState.copyWith(
+          log: advancedState.logWith('腐烂的尸体被风吹干，变成了一具骸骨。'),
+        );
+      }
+    }
+    final decayedCorpses =
+        advancedState.corpses.values
+            .where((corpse) => corpse.decaysAtTurn <= worldTurn)
+            .toList();
+    if (decayedCorpses.isNotEmpty) {
+      final corpses = {...advancedState.corpses};
+      final droppedItemsByRoom = <String, List<String>>{};
+      for (final corpse in decayedCorpses) {
+        corpses.remove(corpse.id);
+        final droppedItems = droppedItemsByRoom.putIfAbsent(
+          corpse.roomId,
+          () => [],
+        );
+        for (final entry in corpse.itemCounts.entries) {
+          for (var index = 0; index < entry.value; index++) {
+            droppedItems.add(entry.key);
+          }
+        }
+      }
+      final roomItemOverrides = {...advancedState.roomItemOverrides};
+      for (final entry in droppedItemsByRoom.entries) {
+        if (entry.value.isEmpty) {
+          continue;
+        }
+        roomItemOverrides[entry.key] = [
+          ..._repository.room(entry.key).visibleItemIds(advancedState),
+          ...entry.value,
+        ];
+      }
+      advancedState = advancedState.copyWith(
+        corpses: corpses,
+        roomItemOverrides: roomItemOverrides,
+      );
+      for (final corpse in decayedCorpses) {
+        if (corpse.roomId == advancedState.currentRoomId) {
+          advancedState = advancedState.copyWith(
+            log: advancedState.logWith('一阵风吹过，把一具枯干的骸骨化成骨灰吹散了。'),
+          );
+        }
+      }
+    }
+    final companion = advancedState.undeadCompanion;
+    if (companion != null) {
+      if (companion.remainingTurns <= 1) {
+        final combat = advancedState.combat;
+        advancedState = advancedState.copyWith(
+          undeadCompanion: null,
+          combat:
+              combat?.ally?.persistent ?? false
+                  ? combat?.copyWith(ally: null)
+                  : combat,
+          log: advancedState.logWith('${companion.name}忽然一阵抽搐，倒在地上化为一滩血水。'),
+        );
+      } else {
+        advancedState = advancedState.copyWith(
+          undeadCompanion: companion.copyWith(
+            remainingTurns: companion.remainingTurns - 1,
+          ),
+        );
+      }
+    }
     for (final message in worldMessages) {
       advancedState = advancedState.copyWith(
         log: advancedState.logWith(message),
@@ -206,13 +321,14 @@ class WorldSystem {
     }
 
     var nextState = state;
-    final npc = _repository.npc(npcId);
+    final definitionId = state.definitionId ?? npcId;
+    final npc = _repository.npc(definitionId);
     var justRespawned = false;
     final respawnAtTurn = state.respawnAtTurn;
     if (state.isDefeated &&
         respawnAtTurn != null &&
         respawnAtTurn <= worldTurn) {
-      final combat = _repository.npc(npcId).combat;
+      final combat = npc.combat;
       nextState = state.copyWith(
         currentHp: combat?.maxHp ?? 0,
         currentEnergy: combat?.maxEnergy ?? 0,
@@ -220,6 +336,10 @@ class WorldSystem {
         currentMana: combat?.maxMana ?? 0,
         isDefeated: false,
         respawnAtTurn: null,
+        hasDroppedLoot: false,
+        itemCounts: _repository.initialNpcItemCounts(definitionId),
+        equippedItemIds: _repository.initialNpcEquippedItemIds(definitionId),
+        inventoryInitialized: true,
       );
       justRespawned = true;
     }

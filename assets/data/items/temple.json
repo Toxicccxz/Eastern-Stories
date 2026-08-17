@@ -92,6 +92,15 @@
     "sellPrice": 10
   },
   {
+    "id": "temple_longsword",
+    "name": "长剑",
+    "description": "一把看起来相当普通的钢制长剑，拿在手中颇有分量。",
+    "equipmentSlot": "weapon",
+    "weaponSkillUsage": "sword",
+    "attackPower": 25,
+    "sellPrice": 40
+  },
+  {
     "id": "temple_wangzhou_sword",
     "name": "王咒剑",
     "description": "一把桃木雕成的古剑，剑身刻着许多难辨的咒文，剑柄处隐约可见“王咒”二字。",
@@ -106,7 +115,7 @@
     "name": "天师道袍",
     "description": "一件茅山天师所穿的道袍，布料沉厚，隐隐有符纹藏在针脚之间。",
     "equipmentSlot": "body",
-    "defensePower": 3,
+    "defensePower": 2,
     "maxInnerPowerBonus": 12,
     "sellPrice": 100
   },

@@ -1,10 +1,14 @@
 import 'dart:math';
 
 import '../models/game_state.dart';
+import '../models/corpse_state.dart';
+import '../models/equipment_slot.dart';
 import '../models/npc_definition.dart';
 import '../models/skill_definition.dart';
 import '../repositories/game_definition_repository.dart';
 import 'equipment_system.dart';
+import 'npc_equipment_system.dart';
+import 'npc_instance_system.dart';
 import 'player_condition_system.dart';
 import 'progression_system.dart';
 import 'skill_progression_system.dart';
@@ -26,9 +30,11 @@ class CombatSystem {
     this._equipmentSystem,
     this._skillProgressionSystem,
     this._skillMappingSystem,
-    this._playerConditionSystem, {
+    this._playerConditionSystem,
+    this._npcEquipmentSystem, {
     RandomIntGenerator? randomIntGenerator,
-  }) : _randomIntGenerator = randomIntGenerator ?? Random().nextInt;
+  }) : _npcInstanceSystem = NpcInstanceSystem(_repository),
+       _randomIntGenerator = randomIntGenerator ?? Random().nextInt;
 
   final GameDefinitionRepository _repository;
   final ProgressionSystem _progressionSystem;
@@ -36,6 +42,8 @@ class CombatSystem {
   final SkillProgressionSystem _skillProgressionSystem;
   final SkillMappingSystem _skillMappingSystem;
   final PlayerConditionSystem _playerConditionSystem;
+  final NpcEquipmentSystem _npcEquipmentSystem;
+  final NpcInstanceSystem _npcInstanceSystem;
   final RandomIntGenerator _randomIntGenerator;
 
   GameState startCombat(GameState state, String npcId) {
@@ -55,20 +63,42 @@ class CombatSystem {
       return _withLog(state, '这里没有这个目标。');
     }
 
-    final npc = _repository.npc(npcId);
+    final npc = _repository.npcInstance(state, npcId);
     final combat = npc.combat;
     if (combat == null) {
       return _withLog(state, '${npc.name}并无敌意。');
     }
 
     final enemyHp = npcState.currentHp <= 0 ? combat.maxHp : npcState.currentHp;
+    final companion = state.undeadCompanion;
     return state.copyWith(
-      combat: CombatState(npcId: npcId, enemyHp: enemyHp),
+      combat: CombatState(
+        npcId: npcId,
+        enemyHp: enemyHp,
+        ally:
+            companion == null
+                ? null
+                : SummonedAllyState(
+                  name: companion.name,
+                  attack: companion.attack,
+                  hp: companion.hp,
+                  maxHp: companion.maxHp,
+                  defense: companion.defense,
+                  attackMessage: '{ally}扑向{enemy}，腐坏的双臂造成{damage}点伤害。',
+                  defeatMessage: '${companion.name}缓缓倒下，化为一滩血水。',
+                  leaveMessage: '',
+                  persistent: true,
+                ),
+      ),
       npcStates: {
         ...state.npcStates,
         npcId: npcState.copyWith(currentHp: enemyHp),
       },
-      log: state.logWith('${npc.name}逼近过来，战斗开始。'),
+      log: state.logWith(
+        companion == null
+            ? '${npc.name}逼近过来，战斗开始。'
+            : '${npc.name}逼近过来，${companion.name}挡在了你的身前。',
+      ),
     );
   }
 
@@ -154,7 +184,10 @@ class CombatSystem {
     }
     final opposedRoll = move.opposedRoll;
     if (opposedRoll != null && _opposedRollFails(preparedState, move)) {
-      final enemyName = _repository.npc(preparedState.combat!.npcId).name;
+      final enemyName =
+          _repository
+              .npcInstance(preparedState, preparedState.combat!.npcId)
+              .name;
       final result = _performEnemyTurn(
         _withLog(
           preparedState,
@@ -192,6 +225,7 @@ class CombatSystem {
         skillLevel,
       ),
       SkillEffectType.selfStatus => _performSelfStatus(preparedState, move),
+      SkillEffectType.animateCorpse => _withLog(preparedState, '战斗中无暇施展驱尸术。'),
     };
     return _skillProgressionSystem.gainExperience(
       result,
@@ -240,7 +274,7 @@ class CombatSystem {
     if (opposedRoll == null || activeCombat == null) {
       return false;
     }
-    final combat = _repository.npc(activeCombat.npcId).combat;
+    final combat = _repository.npcInstance(state, activeCombat.npcId).combat;
     if (combat == null) {
       return true;
     }
@@ -270,12 +304,13 @@ class CombatSystem {
       return _withLog(state, '现在没有敌人。');
     }
 
-    final npc = _repository.npc(activeCombat.npcId);
+    final npc = _repository.npcInstance(state, activeCombat.npcId);
     final combat = npc.combat;
-    final npcState = state.npcStates[activeCombat.npcId];
+    var npcState = state.npcStates[activeCombat.npcId];
     if (combat == null || npcState == null || npcState.isDefeated) {
       return state.copyWith(combat: null);
     }
+    final npcCombatStats = _npcEquipmentSystem.statsFor(state, npc.id);
 
     final stats = _equipmentSystem.statsFor(state);
     final usage = _currentAttackUsage(state);
@@ -289,7 +324,7 @@ class CombatSystem {
             effectiveSkillBonus +
             damageBonus -
             attackPenalty -
-            (combat.defense - defensePenalty))
+            (npcCombatStats.defense - defensePenalty))
         .clamp(1, 999);
     final nextEnemyHp = activeCombat.enemyHp - playerDamage;
     final attackState = _appendAttackLog(
@@ -302,7 +337,7 @@ class CombatSystem {
     );
 
     if (nextEnemyHp <= 0) {
-      return _defeatNpc(attackState, npc.id, npcState, combat);
+      return _defeatNpc(attackState, activeCombat.npcId, npcState, combat);
     }
     return _performEnemyTurn(
       _applyStatusEffectToEnemy(
@@ -320,7 +355,7 @@ class CombatSystem {
     int skillLevel,
   ) {
     final message = move.combatMessage ?? '你凝神守住门户，准备化解来势。';
-    final npcName = _repository.npc(state.combat!.npcId).name;
+    final npcName = _repository.npcInstance(state, state.combat!.npcId).name;
     final prepared = _applyStatusEffectToEnemy(
       _withLog(state, message),
       _resolveStatusEffect(move.statusEffectId, move.statusEffect),
@@ -358,8 +393,8 @@ class CombatSystem {
     if (combat == null) {
       return state;
     }
-    final npc = _repository.npc(combat.npcId);
-    final npcState = state.npcStates[npc.id];
+    final npc = _repository.npcInstance(state, combat.npcId);
+    final npcState = state.npcStates[combat.npcId];
     final definition = npc.combat;
     if (npcState == null || definition == null) {
       return state;
@@ -393,7 +428,7 @@ class CombatSystem {
       log: state.logWith(message),
     );
     if (move.targetResource == CombatResource.hp && nextValue == 0) {
-      return _defeatNpc(nextState, npc.id, nextNpcState, definition);
+      return _defeatNpc(nextState, combat.npcId, nextNpcState, definition);
     }
     return _performEnemyTurn(nextState);
   }
@@ -525,7 +560,7 @@ class CombatSystem {
     final log = _takeLast([
       ...state.log,
       move.combatMessage ?? '你借遁术脱离了战斗。',
-      if (combat.ally case final ally?) ally.leaveMessage,
+      if (combat.ally case final ally? when !ally.persistent) ally.leaveMessage,
     ], 20);
     return state.copyWith(
       currentRoomId: destination.id,
@@ -551,9 +586,9 @@ class CombatSystem {
     if (activeCombat == null) {
       return state;
     }
-    final npc = _repository.npc(activeCombat.npcId);
+    final npc = _repository.npcInstance(state, activeCombat.npcId);
     final combat = npc.combat;
-    final npcState = state.npcStates[activeCombat.npcId];
+    var npcState = state.npcStates[activeCombat.npcId];
     if (combat == null || npcState == null || npcState.isDefeated) {
       return state.copyWith(combat: null);
     }
@@ -576,6 +611,12 @@ class CombatSystem {
     }
 
     final nextRound = activeCombat.round + 1;
+    state = _applyCombatRoundEvents(state, npc, npcState, combat, nextRound);
+    activeCombat = state.combat;
+    npcState = state.npcStates[npc.id];
+    if (activeCombat == null || npcState == null) {
+      return state;
+    }
     if (blockingEffect != null) {
       return state.copyWith(
         npcStates: {
@@ -595,9 +636,13 @@ class CombatSystem {
     final enemyAttackPenalty = _statusAttackPenalty(
       activeCombat.enemyStatusEffects,
     );
+    final npcCombatStats = _npcEquipmentSystem.statsFor(state, npc.id);
+    final ammunitionResult = _consumeNpcAmmunition(state, npc, npcState);
+    state = ammunitionResult.state;
+    final actingNpcState = ammunitionResult.npcState;
     final ally = activeCombat.ally;
     if (ally != null) {
-      final enemyDamage = (combat.attack +
+      final enemyDamage = (npcCombatStats.attack +
               attackBonus -
               enemyAttackPenalty -
               ally.defense)
@@ -614,15 +659,22 @@ class CombatSystem {
       return state.copyWith(
         npcStates: {
           ...state.npcStates,
-          npc.id: npcState.copyWith(currentHp: activeCombat.enemyHp),
+          npc.id: actingNpcState.copyWith(currentHp: activeCombat.enemyHp),
         },
         combat: activeCombat.copyWith(
           round: nextRound,
           ally: allyDefeated ? null : ally.copyWith(hp: nextAllyHp),
         ),
+        undeadCompanion:
+            ally.persistent
+                ? allyDefeated
+                    ? null
+                    : state.undeadCompanion?.copyWith(hp: nextAllyHp)
+                : state.undeadCompanion,
         log: _takeLast([
           ...state.log,
           attackMessage,
+          if (ammunitionResult.depletedMessage case final message?) message,
           if (allyDefeated) ally.defeatMessage,
         ], 20),
       );
@@ -632,7 +684,7 @@ class CombatSystem {
     final playerDefensePenalty = _statusDefensePenalty(
       state.playerStatusEffects,
     );
-    final enemyDamage = (combat.attack +
+    final enemyDamage = (npcCombatStats.attack +
             attackBonus -
             enemyAttackPenalty -
             (stats.defense - playerDefensePenalty) -
@@ -652,10 +704,14 @@ class CombatSystem {
       player: state.player.copyWith(hp: nextPlayerHp),
       npcStates: {
         ...state.npcStates,
-        npc.id: npcState.copyWith(currentHp: nextEnemyHp),
+        npc.id: actingNpcState.copyWith(currentHp: nextEnemyHp),
       },
       combat: activeCombat.copyWith(enemyHp: nextEnemyHp, round: nextRound),
-      log: state.logWith(attackMessage),
+      log: _takeLast([
+        ...state.log,
+        attackMessage,
+        if (ammunitionResult.depletedMessage case final message?) message,
+      ], 20),
     );
     if (usesSpecialMove) {
       nextState = _applyStatusEffectToPlayer(
@@ -674,6 +730,86 @@ class CombatSystem {
     return _recoverFromDefeat(nextState, npc.name);
   }
 
+  GameState _applyCombatRoundEvents(
+    GameState state,
+    NpcDefinition npc,
+    NpcRuntimeState npcState,
+    CombatDefinition combat,
+    int round,
+  ) {
+    var nextState = state;
+    var nextNpcState = npcState;
+    for (final event in combat.roundEvents) {
+      if (event.round != round || nextNpcState.valueFor(event.stateKey) > 0) {
+        continue;
+      }
+      final spawn = _npcInstanceSystem.spawnWithResult(
+        nextState,
+        definitionId: event.spawnNpcId,
+        roomId: nextState.currentRoomId,
+        count: 1,
+        instancePrefix: event.instancePrefix,
+      );
+      nextNpcState = nextNpcState.copyWith(
+        currentHp: nextState.combat?.enemyHp ?? nextNpcState.currentHp,
+        stateValues: {...nextNpcState.stateValues, event.stateKey: 1},
+      );
+      final activeCombat = spawn.state.combat;
+      nextState = spawn.state.copyWith(
+        npcStates: {...spawn.state.npcStates, npc.id: nextNpcState},
+        combat: activeCombat?.copyWith(
+          queuedNpcIds: [
+            ...activeCombat.queuedNpcIds,
+            if (event.queuesForCombat) ...spawn.instanceIds,
+          ],
+        ),
+        log: spawn.state.logWith(event.message),
+      );
+    }
+    return nextState;
+  }
+
+  _NpcAmmunitionResult _consumeNpcAmmunition(
+    GameState state,
+    NpcDefinition npc,
+    NpcRuntimeState npcState,
+  ) {
+    final weaponId = npcState.equippedItemIds[EquipmentSlot.weapon];
+    if (weaponId == null) {
+      return _NpcAmmunitionResult(state: state, npcState: npcState);
+    }
+    final weapon = _repository.item(weaponId);
+    if (weapon.weaponSkillUsage != SkillUsage.throwing) {
+      return _NpcAmmunitionResult(state: state, npcState: npcState);
+    }
+    final quantity = npcState.itemCounts[weaponId] ?? 0;
+    if (quantity <= 0) {
+      return _NpcAmmunitionResult(state: state, npcState: npcState);
+    }
+
+    final itemCounts = {...npcState.itemCounts};
+    final equippedItemIds = {...npcState.equippedItemIds};
+    final remaining = quantity - 1;
+    if (remaining == 0) {
+      itemCounts.remove(weaponId);
+      equippedItemIds.remove(EquipmentSlot.weapon);
+    } else {
+      itemCounts[weaponId] = remaining;
+    }
+    final updatedNpcState = npcState.copyWith(
+      itemCounts: itemCounts,
+      equippedItemIds: equippedItemIds,
+    );
+    return _NpcAmmunitionResult(
+      state: state.copyWith(
+        npcStates: {...state.npcStates, npc.id: updatedNpcState},
+      ),
+      npcState: updatedNpcState,
+      depletedMessage:
+          remaining == 0 ? '${npc.name}手中的${weapon.name}已经用尽。' : null,
+    );
+  }
+
   GameState _performAllyTurn(
     GameState state,
     NpcDefinition npc,
@@ -685,7 +821,8 @@ class CombatSystem {
     if (combat == null || ally == null) {
       return state;
     }
-    final damage = (ally.attack - combatDefinition.defense ~/ 2).clamp(1, 999);
+    final npcCombatStats = _npcEquipmentSystem.statsFor(state, npc.id);
+    final damage = (ally.attack - npcCombatStats.defense ~/ 2).clamp(1, 999);
     final nextEnemyHp = combat.enemyHp - damage;
     final tickedAlly = ally.tick();
     final allyExpires = !ally.lastsForCombat && tickedAlly.remainingRounds <= 0;
@@ -704,7 +841,7 @@ class CombatSystem {
       log: log,
     );
     if (nextEnemyHp <= 0) {
-      return _defeatNpc(nextState, npc.id, npcState, combatDefinition);
+      return _defeatNpc(nextState, combat.npcId, npcState, combatDefinition);
     }
     return nextState;
   }
@@ -734,7 +871,7 @@ class CombatSystem {
       combat: null,
       log: _takeLast([
         ...state.log,
-        if (ally != null) ally.leaveMessage,
+        if (ally != null && !ally.persistent) ally.leaveMessage,
         '你不敌$enemyName，昏迷后被人送回饮风客栈。',
       ], 20),
     );
@@ -778,13 +915,18 @@ class CombatSystem {
       return state;
     }
 
-    final npc = _repository.npc(state.combat!.npcId);
+    final npc = _repository.npcInstance(state, state.combat!.npcId);
     final combat = npc.combat;
     if (combat != null) {
       final attributes = state.player.attributes;
       final escapeAbility =
           attributes.courage + attributes.composure + attributes.karma;
-      final escapeDifficulty = combat.attack * 6 + activeCombat.round * 2;
+      final npcCombatStats = _npcEquipmentSystem.statsFor(
+        state,
+        state.combat!.npcId,
+      );
+      final escapeDifficulty =
+          npcCombatStats.attack * 6 + activeCombat.round * 2;
       if (escapeAbility < escapeDifficulty) {
         return _performEnemyTurn(
           _withLog(state, '你试图避开${npc.name}，却被对方封住了退路。'),
@@ -797,7 +939,7 @@ class CombatSystem {
       log: _takeLast([
         ...state.log,
         '你避开${npc.name}，暂时退到一旁。',
-        if (ally != null) ally.leaveMessage,
+        if (ally != null && !ally.persistent) ally.leaveMessage,
       ], 20),
     );
   }
@@ -808,37 +950,49 @@ class CombatSystem {
     NpcRuntimeState npcState,
     CombatDefinition combat,
   ) {
-    final npc = _repository.npc(npcId);
+    final npc = _repository.npcInstance(state, npcId);
     final room = _repository.room(npcState.roomId);
-    final currentItemIds = room.visibleItemIds(state);
-    final droppedItemIds =
-        npcState.hasDroppedLoot
-            ? const <String>[]
-            : [
-              for (final itemId in combat.dropItemIds)
-                if (!currentItemIds.contains(itemId)) itemId,
-            ];
     final respawnAfterTurns = combat.respawnAfterTurns;
+    final corpseItemCounts = Map<String, int>.from(npcState.itemCounts);
 
-    final ally = state.combat?.ally;
+    final defeatedCombat = state.combat;
+    final ally = defeatedCombat?.ally;
+    final companion = state.undeadCompanion;
+    final corpseId = '${npcId}_${state.worldTurn}_${state.corpses.length}';
     var nextState = state.copyWith(
       combat: null,
       npcStates: {
         ...state.npcStates,
-        npc.id: npcState.copyWith(
+        npcId: npcState.copyWith(
           currentHp: 0,
           isDefeated: true,
           respawnAtTurn:
               respawnAfterTurns == null
                   ? null
                   : state.worldTurn + respawnAfterTurns,
-          hasDroppedLoot: npcState.hasDroppedLoot || droppedItemIds.isNotEmpty,
+          hasDroppedLoot: corpseItemCounts.isNotEmpty,
+          itemCounts: const {},
+          equippedItemIds: const {},
+          inventoryInitialized: true,
         ),
       },
-      roomItemOverrides: {
-        ...state.roomItemOverrides,
-        room.id: [...currentItemIds, ...droppedItemIds],
+      corpses: {
+        ...state.corpses,
+        corpseId: CorpseState(
+          id: corpseId,
+          npcId: npcId,
+          victimName: npc.name,
+          roomId: room.id,
+          rottensAtTurn: state.worldTurn + 12,
+          skeletonizesAtTurn: state.worldTurn + 24,
+          decaysAtTurn: state.worldTurn + 30,
+          itemCounts: corpseItemCounts,
+        ),
       },
+      undeadCompanion:
+          ally?.persistent ?? false
+              ? companion?.copyWith(hp: ally!.hp)
+              : companion,
     );
     nextState = _progressionSystem.awardRewards(
       nextState,
@@ -846,20 +1000,61 @@ class CombatSystem {
       experience: combat.rewardExperience,
       logPrefix: '你击退了${npc.name}',
     );
-    if (ally != null) {
+    if (corpseItemCounts.isNotEmpty) {
+      final dropNames = corpseItemCounts.entries
+          .map(
+            (entry) =>
+                '${_repository.item(entry.key).name}'
+                '${entry.value > 1 ? '×${entry.value}' : ''}',
+          )
+          .join('、');
+      nextState = nextState.copyWith(
+        log: nextState.logWith('${npc.name}的尸体上带着$dropNames。'),
+      );
+    }
+    nextState = _continueQueuedCombat(nextState, defeatedCombat);
+    if (nextState.combat == null && ally != null && !ally.persistent) {
       nextState = nextState.copyWith(log: nextState.logWith(ally.leaveMessage));
     }
+    return nextState;
+  }
 
-    if (droppedItemIds.isEmpty) {
-      return nextState;
+  GameState _continueQueuedCombat(
+    GameState state,
+    CombatState? defeatedCombat,
+  ) {
+    final queuedNpcIds = defeatedCombat?.queuedNpcIds ?? const <String>[];
+    for (var index = 0; index < queuedNpcIds.length; index++) {
+      final npcId = queuedNpcIds[index];
+      final npcState = state.npcStates[npcId];
+      if (npcState == null ||
+          npcState.roomId != state.currentRoomId ||
+          npcState.isDefeated) {
+        continue;
+      }
+      final npc = _repository.npcInstance(state, npcId);
+      final combat = npc.combat;
+      if (combat == null) {
+        continue;
+      }
+      final enemyHp =
+          npcState.currentHp <= 0 ? combat.maxHp : npcState.currentHp;
+      return state.copyWith(
+        combat: CombatState(
+          npcId: npcId,
+          enemyHp: enemyHp,
+          playerStatusEffects: defeatedCombat?.playerStatusEffects ?? const [],
+          queuedNpcIds: queuedNpcIds.skip(index + 1).toList(),
+          ally: defeatedCombat?.ally,
+        ),
+        npcStates: {
+          ...state.npcStates,
+          npcId: npcState.copyWith(currentHp: enemyHp),
+        },
+        log: state.logWith('${npc.name}越过倒下的同伴，接下了这场战斗。'),
+      );
     }
-    final dropNames = droppedItemIds
-        .map(_repository.item)
-        .map((item) => item.name)
-        .join('、');
-    return nextState.copyWith(
-      log: nextState.logWith('${npc.name}留下了$dropNames。'),
-    );
+    return state;
   }
 
   int _damageReduction(GameState state) {
@@ -938,7 +1133,7 @@ class CombatSystem {
       log: _recentLog([...state.log, ...tick.messages]),
     );
     if (nextEnemyHp <= 0) {
-      return _defeatNpc(tickedState, npc.id, npcState, combatDefinition);
+      return _defeatNpc(tickedState, combat.npcId, npcState, combatDefinition);
     }
     return tickedState;
   }
@@ -952,7 +1147,7 @@ class CombatSystem {
     if (tickedState.player.hp > 0) {
       return tickedState;
     }
-    final enemyName = _repository.npc(combat.npcId).name;
+    final enemyName = _repository.npcInstance(tickedState, combat.npcId).name;
     return _recoverFromDefeat(tickedState, enemyName);
   }
 
@@ -1124,4 +1319,16 @@ class _PlayerTurnPreparation {
 
   final GameState state;
   final bool canAct;
+}
+
+class _NpcAmmunitionResult {
+  const _NpcAmmunitionResult({
+    required this.state,
+    required this.npcState,
+    this.depletedMessage,
+  });
+
+  final GameState state;
+  final NpcRuntimeState npcState;
+  final String? depletedMessage;
 }

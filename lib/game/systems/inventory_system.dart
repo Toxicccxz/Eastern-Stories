@@ -55,6 +55,30 @@ class InventorySystem {
     if (!item.canUse) {
       return _withLog(state, '${item.name}现在不能使用。');
     }
+    final roomUse = item.roomUse;
+    if (roomUse != null) {
+      if (state.currentRoomId != roomUse.roomId) {
+        return _withLog(state, '${item.name}在这里没有作用。');
+      }
+      final blockedRoomExits = {
+        for (final entry in state.blockedRoomExits.entries)
+          entry.key: {...entry.value},
+      };
+      for (final exit in roomUse.unblocksExits) {
+        final blockedDirections = blockedRoomExits[exit.roomId];
+        if (blockedDirections == null) {
+          continue;
+        }
+        blockedDirections.remove(exit.direction);
+        if (blockedDirections.isEmpty) {
+          blockedRoomExits.remove(exit.roomId);
+        }
+      }
+      return state.copyWith(
+        blockedRoomExits: blockedRoomExits,
+        log: state.logWith(roomUse.response),
+      );
+    }
     final reducedEffectId = item.reducesStatusEffectId;
     if (reducedEffectId != null &&
         !state.playerStatusEffects.any(

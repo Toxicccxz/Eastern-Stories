@@ -176,6 +176,17 @@
         ]
       },
       {
+        "id": "animate",
+        "name": "驱尸术",
+        "effectType": "animateCorpse",
+        "manaCost": 50,
+        "spiritCost": 30,
+        "minimumSkillLevel": 1,
+        "durationSkillId": "spells",
+        "durationMultiplier": 3,
+        "durationBonus": 30
+      },
+      {
         "id": "astral_vision",
         "name": "阴阳眼",
         "effectType": "selfStatus",

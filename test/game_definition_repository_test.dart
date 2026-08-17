@@ -14,7 +14,7 @@ void main() {
     expect(repository.startingRoomId, 'snow_inn');
     expect(repository.areas, hasLength(15));
     expect(rooms, hasLength(392));
-    expect(repository.items, hasLength(143));
+    expect(repository.items, hasLength(155));
     expect(repository.quests, hasLength(5));
     expect(repository.skills, hasLength(27));
     expect(repository.families, hasLength(4));
@@ -115,6 +115,22 @@ void main() {
             reason: '${npc.id} drops unknown item $itemId',
           );
         }
+      }
+      for (final itemId in npc.inventoryItemIds) {
+        expect(
+          () => repository.item(itemId),
+          returnsNormally,
+          reason: '${npc.id} carries unknown item $itemId',
+        );
+      }
+      for (final entry in npc.equippedItemIds.entries) {
+        final item = repository.item(entry.value);
+        expect(
+          item.equipmentSlot,
+          entry.key,
+          reason: '${npc.id} equips ${item.id} in the wrong slot',
+        );
+        expect(npc.inventoryItemIds, contains(item.id));
       }
       final shop = npc.shop;
       if (shop != null) {

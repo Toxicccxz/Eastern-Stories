@@ -86,6 +86,10 @@ class FamilyTaskSystem {
             currentHp: target.combat!.maxHp,
             isDefeated: false,
             respawnAtTurn: null,
+            hasDroppedLoot: false,
+            itemCounts: _repository.initialNpcItemCounts(targetId),
+            equippedItemIds: _repository.initialNpcEquippedItemIds(targetId),
+            inventoryInitialized: true,
           ),
         };
       }

@@ -1,4 +1,5 @@
 import '../models/game_state.dart';
+import '../models/corpse_state.dart';
 import '../models/skill_definition.dart';
 import '../repositories/game_definition_repository.dart';
 import 'equipment_system.dart';
@@ -75,7 +76,72 @@ class SpellSystem {
           _repository.statusEffectOrNull(move.statusEffectId)?.duration ??
           1;
     }
-    return (state.skillProgress[skillId]?.level ?? 0).clamp(1, 9999);
+    final skillLevel = state.skillProgress[skillId]?.level ?? 0;
+    return (skillLevel * move.durationMultiplier + move.durationBonus).clamp(
+      1,
+      9999,
+    );
+  }
+
+  GameState animateCorpse(
+    GameState state,
+    String skillId,
+    String moveId,
+    String corpseId,
+  ) {
+    if (state.combat != null) {
+      return _withLog(state, '你正忙着战斗，哪有空闲驱动尸体。');
+    }
+    final skill = _repository.skill(skillId);
+    final progress = state.skillProgress[skillId];
+    if (progress == null) {
+      return _withLog(state, '你还没有领会这门武功。');
+    }
+    if (!skill.isBasic && !state.enabledSkillIds.containsValue(skillId)) {
+      return _withLog(state, '你尚未启用${skill.name}。');
+    }
+    final move = skill.moves.where((move) => move.id == moveId).firstOrNull;
+    if (move == null || move.effectType != SkillEffectType.animateCorpse) {
+      return _withLog(state, '${skill.name}中没有驱动尸体的法术。');
+    }
+    if (progress.level < move.minimumSkillLevel) {
+      return _withLog(state, '${skill.name}需要达到 Lv.${move.minimumSkillLevel}。');
+    }
+    final corpse = state.corpses[corpseId];
+    if (corpse == null || corpse.roomId != state.currentRoomId) {
+      return _withLog(state, '这里没有这具尸体。');
+    }
+    if (!corpse.canAnimateAt(state.worldTurn)) {
+      return _withLog(state, '这具尸体只剩枯骨，无法再以法术驱动。');
+    }
+    if (state.undeadCompanion != null) {
+      return _withLog(state, '你已经驱动着一具僵尸。');
+    }
+    if (state.player.mana < move.manaCost) {
+      return _withLog(state, '法力不足，无法施展${move.name}。');
+    }
+    if (state.player.spirit < move.spiritCost) {
+      return _withLog(state, '精神无法集中，无法施展${move.name}。');
+    }
+
+    final corpses = {...state.corpses}..remove(corpseId);
+    final companionName = '${corpse.victimName}的僵尸';
+    return state.copyWith(
+      player: state.player.copyWith(
+        mana: state.player.mana - move.manaCost,
+        spirit: state.player.spirit - move.spiritCost,
+      ),
+      corpses: corpses,
+      undeadCompanion: UndeadCompanionState(
+        name: companionName,
+        attack: 15,
+        hp: 400,
+        maxHp: 400,
+        defense: 6,
+        remainingTurns: _durationFor(state, move),
+      ),
+      log: state.logWith('${corpse.nameAt(state.worldTurn)}忽然动了几下，慢慢地直起身来。'),
+    );
   }
 
   GameState meditate(GameState state) {

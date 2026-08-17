@@ -4,6 +4,8 @@ import 'skill_progress.dart';
 import 'skill_definition.dart';
 import 'innate_attributes.dart';
 import 'inventory_state.dart';
+import 'corpse_state.dart';
+import 'direction.dart';
 
 class GameState {
   const GameState({
@@ -17,11 +19,15 @@ class GameState {
     required this.enabledSkillIds,
     required this.apprenticeship,
     required this.roomItemOverrides,
+    required this.blockedRoomExits,
+    required this.areaResetAtTurns,
     required this.npcStates,
     required this.shopStates,
     required this.questStatuses,
     required this.questFlags,
     required this.playerStatusEffects,
+    required this.corpses,
+    required this.undeadCompanion,
     required this.combat,
     required this.log,
   });
@@ -73,11 +79,15 @@ class GameState {
       enabledSkillIds: const {},
       apprenticeship: null,
       roomItemOverrides: const {},
+      blockedRoomExits: const {},
+      areaResetAtTurns: const {},
       npcStates: npcStates,
       shopStates: shopStates,
       questStatuses: const {},
       questFlags: const {},
       playerStatusEffects: const [],
+      corpses: const {},
+      undeadCompanion: null,
       combat: null,
       log: const ['你在晨雾中醒来，东方故事就此开始。'],
     );
@@ -112,6 +122,19 @@ class GameState {
             (roomId, itemIds) =>
                 MapEntry(roomId, (itemIds as List<Object?>).cast<String>()),
           ),
+      blockedRoomExits:
+          (json['blockedRoomExits'] as Map<String, Object?>? ?? const {}).map(
+            (roomId, directions) => MapEntry(
+              roomId,
+              (directions as List<Object?>)
+                  .cast<String>()
+                  .map(Direction.values.byName)
+                  .toSet(),
+            ),
+          ),
+      areaResetAtTurns: (json['areaResetAtTurns'] as Map<String, Object?>? ??
+              const {})
+          .map((areaId, turn) => MapEntry(areaId, turn as int)),
       npcStates: (json['npcStates'] as Map<String, Object?>? ?? const {}).map(
         (npcId, npcState) => MapEntry(
           npcId,
@@ -129,6 +152,18 @@ class GameState {
       ),
       questFlags: (json['questFlags'] as List<Object?>).cast<String>().toSet(),
       playerStatusEffects: _playerStatusEffectsFromJson(json),
+      corpses: (json['corpses'] as Map<String, Object?>? ?? const {}).map(
+        (corpseId, corpse) => MapEntry(
+          corpseId,
+          CorpseState.fromJson(corpse as Map<String, Object?>),
+        ),
+      ),
+      undeadCompanion:
+          json['undeadCompanion'] == null
+              ? null
+              : UndeadCompanionState.fromJson(
+                json['undeadCompanion'] as Map<String, Object?>,
+              ),
       combat:
           json['combat'] == null
               ? null
@@ -147,11 +182,15 @@ class GameState {
   final Map<SkillUsage, String> enabledSkillIds;
   final ApprenticeshipState? apprenticeship;
   final Map<String, List<String>> roomItemOverrides;
+  final Map<String, Set<Direction>> blockedRoomExits;
+  final Map<String, int> areaResetAtTurns;
   final Map<String, NpcRuntimeState> npcStates;
   final Map<String, ShopRuntimeState> shopStates;
   final Map<String, QuestStatus> questStatuses;
   final Set<String> questFlags;
   final List<StatusEffectState> playerStatusEffects;
+  final Map<String, CorpseState> corpses;
+  final UndeadCompanionState? undeadCompanion;
   final CombatState? combat;
   final List<String> log;
 
@@ -178,6 +217,13 @@ class GameState {
       'apprenticeship': apprenticeship?.toJson(),
       'learnedSkillIds': learnedSkillIds.toList(),
       'roomItemOverrides': roomItemOverrides,
+      'blockedRoomExits': blockedRoomExits.map(
+        (roomId, directions) => MapEntry(
+          roomId,
+          directions.map((direction) => direction.name).toList(),
+        ),
+      ),
+      'areaResetAtTurns': areaResetAtTurns,
       'npcStates': npcStates.map(
         (npcId, npcState) => MapEntry(npcId, npcState.toJson()),
       ),
@@ -191,6 +237,10 @@ class GameState {
       'playerStatusEffects': [
         for (final effect in playerStatusEffects) effect.toJson(),
       ],
+      'corpses': corpses.map(
+        (corpseId, corpse) => MapEntry(corpseId, corpse.toJson()),
+      ),
+      'undeadCompanion': undeadCompanion?.toJson(),
       'combat': combat?.toJson(),
       'log': log,
     };
@@ -210,11 +260,15 @@ class GameState {
     Object? apprenticeship = _unchanged,
     Set<String>? learnedSkillIds,
     Map<String, List<String>>? roomItemOverrides,
+    Map<String, Set<Direction>>? blockedRoomExits,
+    Map<String, int>? areaResetAtTurns,
     Map<String, NpcRuntimeState>? npcStates,
     Map<String, ShopRuntimeState>? shopStates,
     Map<String, QuestStatus>? questStatuses,
     Set<String>? questFlags,
     List<StatusEffectState>? playerStatusEffects,
+    Map<String, CorpseState>? corpses,
+    Object? undeadCompanion = _unchanged,
     Object? combat = _unchanged,
     List<String>? log,
   }) {
@@ -255,11 +309,18 @@ class GameState {
               ? this.apprenticeship
               : apprenticeship as ApprenticeshipState?,
       roomItemOverrides: roomItemOverrides ?? this.roomItemOverrides,
+      blockedRoomExits: blockedRoomExits ?? this.blockedRoomExits,
+      areaResetAtTurns: areaResetAtTurns ?? this.areaResetAtTurns,
       npcStates: npcStates ?? this.npcStates,
       shopStates: shopStates ?? this.shopStates,
       questStatuses: questStatuses ?? this.questStatuses,
       questFlags: questFlags ?? this.questFlags,
       playerStatusEffects: playerStatusEffects ?? this.playerStatusEffects,
+      corpses: corpses ?? this.corpses,
+      undeadCompanion:
+          undeadCompanion == _unchanged
+              ? this.undeadCompanion
+              : undeadCompanion as UndeadCompanionState?,
       combat: combat == _unchanged ? this.combat : combat as CombatState?,
       log: log ?? this.log,
     );
@@ -417,6 +478,7 @@ class FamilyTaskProgress {
 
 class NpcRuntimeState {
   const NpcRuntimeState({
+    this.definitionId,
     required this.roomId,
     required this.currentHp,
     required this.isDefeated,
@@ -431,10 +493,14 @@ class NpcRuntimeState {
     this.isRemoved = false,
     this.patrolStep = 0,
     this.stateValues = const {},
+    this.itemCounts = const {},
+    this.equippedItemIds = const {},
+    this.inventoryInitialized = true,
   });
 
   factory NpcRuntimeState.fromJson(Map<String, Object?> json) {
     return NpcRuntimeState(
+      definitionId: json['definitionId'] as String?,
       roomId: json['roomId'] as String,
       currentHp: json['currentHp'] as int,
       isDefeated: json['isDefeated'] as bool,
@@ -450,9 +516,19 @@ class NpcRuntimeState {
       patrolStep: json['patrolStep'] as int? ?? 0,
       stateValues: (json['stateValues'] as Map<String, Object?>? ?? const {})
           .map((key, value) => MapEntry(key, value as int)),
+      itemCounts: (json['itemCounts'] as Map<String, Object?>? ?? const {}).map(
+        (itemId, quantity) => MapEntry(itemId, quantity as int),
+      ),
+      equippedItemIds:
+          (json['equippedItemIds'] as Map<String, Object?>? ?? const {}).map(
+            (slot, itemId) =>
+                MapEntry(EquipmentSlot.values.byName(slot), itemId as String),
+          ),
+      inventoryInitialized: json.containsKey('itemCounts'),
     );
   }
 
+  final String? definitionId;
   final String roomId;
   final int currentHp;
   final bool isDefeated;
@@ -467,6 +543,9 @@ class NpcRuntimeState {
   final bool isRemoved;
   final int patrolStep;
   final Map<String, int> stateValues;
+  final Map<String, int> itemCounts;
+  final Map<EquipmentSlot, String> equippedItemIds;
+  final bool inventoryInitialized;
 
   int valueFor(String key) => stateValues[key] ?? 0;
 
@@ -492,6 +571,7 @@ class NpcRuntimeState {
 
   Map<String, Object?> toJson() {
     return {
+      'definitionId': definitionId,
       'roomId': roomId,
       'currentHp': currentHp,
       'isDefeated': isDefeated,
@@ -506,10 +586,15 @@ class NpcRuntimeState {
       'isRemoved': isRemoved,
       'patrolStep': patrolStep,
       'stateValues': stateValues,
+      'itemCounts': itemCounts,
+      'equippedItemIds': equippedItemIds.map(
+        (slot, itemId) => MapEntry(slot.name, itemId),
+      ),
     };
   }
 
   NpcRuntimeState copyWith({
+    Object? definitionId = _unchanged,
     String? roomId,
     int? currentHp,
     bool? isDefeated,
@@ -524,8 +609,15 @@ class NpcRuntimeState {
     bool? isRemoved,
     int? patrolStep,
     Map<String, int>? stateValues,
+    Map<String, int>? itemCounts,
+    Map<EquipmentSlot, String>? equippedItemIds,
+    bool? inventoryInitialized,
   }) {
     return NpcRuntimeState(
+      definitionId:
+          definitionId == _unchanged
+              ? this.definitionId
+              : definitionId as String?,
       roomId: roomId ?? this.roomId,
       currentHp: currentHp ?? this.currentHp,
       isDefeated: isDefeated ?? this.isDefeated,
@@ -549,6 +641,9 @@ class NpcRuntimeState {
       isRemoved: isRemoved ?? this.isRemoved,
       patrolStep: patrolStep ?? this.patrolStep,
       stateValues: stateValues ?? this.stateValues,
+      itemCounts: itemCounts ?? this.itemCounts,
+      equippedItemIds: equippedItemIds ?? this.equippedItemIds,
+      inventoryInitialized: inventoryInitialized ?? this.inventoryInitialized,
     );
   }
 }
@@ -727,6 +822,7 @@ class CombatState {
     this.round = 0,
     this.playerStatusEffects = const [],
     this.enemyStatusEffects = const [],
+    this.queuedNpcIds = const [],
     this.ally,
   });
 
@@ -745,6 +841,8 @@ class CombatState {
             in json['enemyStatusEffects'] as List<Object?>? ?? const [])
           StatusEffectState.fromJson(effect as Map<String, Object?>),
       ],
+      queuedNpcIds:
+          (json['queuedNpcIds'] as List<Object?>? ?? const []).cast<String>(),
       ally:
           json['ally'] == null
               ? null
@@ -759,6 +857,7 @@ class CombatState {
   final int round;
   final List<StatusEffectState> playerStatusEffects;
   final List<StatusEffectState> enemyStatusEffects;
+  final List<String> queuedNpcIds;
   final SummonedAllyState? ally;
 
   Map<String, Object?> toJson() {
@@ -772,6 +871,7 @@ class CombatState {
       'enemyStatusEffects': [
         for (final effect in enemyStatusEffects) effect.toJson(),
       ],
+      'queuedNpcIds': queuedNpcIds,
       'ally': ally?.toJson(),
     };
   }
@@ -781,6 +881,7 @@ class CombatState {
     int? round,
     List<StatusEffectState>? playerStatusEffects,
     List<StatusEffectState>? enemyStatusEffects,
+    List<String>? queuedNpcIds,
     Object? ally = _unchanged,
   }) {
     return CombatState(
@@ -789,6 +890,7 @@ class CombatState {
       round: round ?? this.round,
       playerStatusEffects: playerStatusEffects ?? this.playerStatusEffects,
       enemyStatusEffects: enemyStatusEffects ?? this.enemyStatusEffects,
+      queuedNpcIds: queuedNpcIds ?? this.queuedNpcIds,
       ally: ally == _unchanged ? this.ally : ally as SummonedAllyState?,
     );
   }
@@ -805,6 +907,7 @@ class SummonedAllyState {
     required this.defeatMessage,
     required this.leaveMessage,
     this.remainingRounds = 0,
+    this.persistent = false,
   });
 
   factory SummonedAllyState.fromJson(Map<String, Object?> json) {
@@ -818,6 +921,7 @@ class SummonedAllyState {
       defeatMessage: json['defeatMessage'] as String? ?? '${json['name']}消散了。',
       leaveMessage: json['leaveMessage'] as String,
       remainingRounds: json['remainingRounds'] as int? ?? 0,
+      persistent: json['persistent'] as bool? ?? false,
     );
   }
 
@@ -830,6 +934,7 @@ class SummonedAllyState {
   final String defeatMessage;
   final String leaveMessage;
   final int remainingRounds;
+  final bool persistent;
 
   bool get lastsForCombat => remainingRounds == 0;
 
@@ -844,6 +949,7 @@ class SummonedAllyState {
       'defeatMessage': defeatMessage,
       'leaveMessage': leaveMessage,
       'remainingRounds': remainingRounds,
+      'persistent': persistent,
     };
   }
 
@@ -861,6 +967,7 @@ class SummonedAllyState {
       defeatMessage: defeatMessage,
       leaveMessage: leaveMessage,
       remainingRounds: remainingRounds - 1,
+      persistent: persistent,
     );
   }
 
@@ -875,6 +982,7 @@ class SummonedAllyState {
       defeatMessage: defeatMessage,
       leaveMessage: leaveMessage,
       remainingRounds: remainingRounds ?? this.remainingRounds,
+      persistent: persistent,
     );
   }
 }

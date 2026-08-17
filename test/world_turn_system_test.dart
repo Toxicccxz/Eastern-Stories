@@ -69,6 +69,10 @@ void main() {
     expect(controller.state.player.hp, 96);
     expect(controller.state.playerStatusEffects.single.remainingRounds, 2);
     expect(controller.state.npcStates['snow_crazy_dog']?.isDefeated, isFalse);
+    expect(
+      controller.state.npcStates['snow_crazy_dog']?.itemCounts,
+      containsPair('snow_bone', 1),
+    );
   });
 
   test('combat advances world time without ticking conditions twice', () {
@@ -101,6 +105,118 @@ void main() {
 
     expect(controller.state.worldTurn, 1);
     expect(controller.state.playerStatusEffects.single.remainingRounds, 2);
+  });
+
+  test('leaving a resettable area schedules its lifecycle reset', () {
+    final initial = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initial.copyWith(
+        currentRoomId: 'oldpine_north_path1',
+        visitedRoomIds: {...initial.visitedRoomIds, 'oldpine_north_path1'},
+      ),
+    );
+
+    controller.dispatch(const GameAction.move(Direction.north));
+
+    expect(controller.state.currentRoomId, 'snow_east_mountain_road');
+    expect(controller.state.worldTurn, 1);
+    expect(controller.state.areaResetAtTurns['oldpine'], 31);
+  });
+
+  test('area reset restores encounters but keeps permanent story flags', () {
+    final initial = repository.createInitialState();
+    final commander = initial.npcStates['oldpine_commander']!;
+    final gateGuard = initial.npcStates['oldpine_keep_gate_guard']!;
+    final controller = GameController(
+      repository: repository,
+      initialState: initial.copyWith(
+        currentRoomId: 'snow_east_mountain_road',
+        worldTurn: 30,
+        visitedRoomIds: {...initial.visitedRoomIds, 'snow_east_mountain_road'},
+        roomItemOverrides: const {
+          'oldpine_pine1': ['oldpine_short_sword'],
+        },
+        blockedRoomExits: const {
+          'oldpine_keep_yard': {Direction.west},
+          'oldpine_keep_entrance': {Direction.east},
+        },
+        areaResetAtTurns: const {'oldpine': 31},
+        npcStates: {
+          ...initial.npcStates,
+          'oldpine_commander': commander.copyWith(
+            currentHp: 0,
+            isDefeated: true,
+            itemCounts: const {},
+            equippedItemIds: const {},
+          ),
+          'oldpine_keep_gate_guard': gateGuard.copyWith(
+            currentHp: 0,
+            isDefeated: true,
+          ),
+          'oldpine_reset_reinforcement': repository.createNpcInstanceState(
+            'oldpine_keep_yard_guard',
+            'oldpine_keep_yard',
+          ),
+        },
+        questFlags: const {
+          'oldpine_keep_ambush_triggered',
+          'oldpine_skeleton_buried',
+        },
+      ),
+    );
+
+    controller.dispatch(const GameAction.move(Direction.west));
+
+    expect(controller.state.worldTurn, 31);
+    expect(controller.state.areaResetAtTurns, isNot(contains('oldpine')));
+    expect(
+      controller.state.npcStates['oldpine_commander']?.isDefeated,
+      isFalse,
+    );
+    expect(
+      controller.state.npcStates['oldpine_commander']?.itemCounts,
+      containsPair('oldpine_bamboo_pipe', 1),
+    );
+    expect(
+      controller.state.npcStates['oldpine_keep_gate_guard']?.isDefeated,
+      isFalse,
+    );
+    expect(
+      controller.state.npcStates,
+      isNot(contains('oldpine_reset_reinforcement')),
+    );
+    expect(
+      controller.state.blockedRoomExits,
+      isNot(contains('oldpine_keep_yard')),
+    );
+    expect(
+      controller.state.roomItemOverrides,
+      isNot(contains('oldpine_pine1')),
+    );
+    expect(
+      controller.state.questFlags,
+      isNot(contains('oldpine_keep_ambush_triggered')),
+    );
+    expect(controller.state.questFlags, contains('oldpine_skeleton_buried'));
+  });
+
+  test('re-entering an area cancels its pending reset', () {
+    final initial = repository.createInitialState();
+    final controller = GameController(
+      repository: repository,
+      initialState: initial.copyWith(
+        currentRoomId: 'snow_east_mountain_road',
+        worldTurn: 10,
+        visitedRoomIds: {...initial.visitedRoomIds, 'snow_east_mountain_road'},
+        areaResetAtTurns: const {'oldpine': 20},
+      ),
+    );
+
+    controller.dispatch(const GameAction.move(Direction.south));
+
+    expect(controller.state.currentRoomId, 'oldpine_north_path1');
+    expect(controller.state.areaResetAtTurns, isNot(contains('oldpine')));
   });
 
   test('original roaming npc follows its persisted patrol route', () {

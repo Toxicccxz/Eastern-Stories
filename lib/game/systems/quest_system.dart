@@ -23,7 +23,7 @@ class QuestSystem {
   }
 
   List<DialogueOption> dialogueOptionsFor(GameState state, String npcId) {
-    final npc = _repository.npc(npcId);
+    final npc = _repository.npcInstance(state, npcId);
     return [
       for (final option in npc.dialogueOptions)
         if (_canShowDialogueOption(state, npcId, option)) option,
@@ -31,7 +31,7 @@ class QuestSystem {
   }
 
   List<GiveItemOption> giveItemOptionsFor(GameState state, String npcId) {
-    final npc = _repository.npc(npcId);
+    final npc = _repository.npcInstance(state, npcId);
     final npcState = state.npcStates[npcId];
     final options = <GiveItemOption>[];
     for (final option in npc.giveItemOptions) {
@@ -62,12 +62,12 @@ class QuestSystem {
   }
 
   GameState talk(GameState state, String npcId) {
-    final npc = _repository.npc(npcId);
+    final npc = _repository.npcInstance(state, npcId);
     return _withLog(state, '${npc.name}说道：“${npc.greetingFor(state)}”');
   }
 
   GameState selectDialogue(GameState state, String npcId, String optionId) {
-    final npc = _repository.npc(npcId);
+    final npc = _repository.npcInstance(state, npcId);
     final option =
         npc.dialogueOptions.where((item) => item.id == optionId).firstOrNull;
     if (option == null || !_canShowDialogueOption(state, npcId, option)) {
@@ -165,7 +165,7 @@ class QuestSystem {
   }
 
   GameState giveItem(GameState state, String npcId, String itemId) {
-    final npc = _repository.npc(npcId);
+    final npc = _repository.npcInstance(state, npcId);
     final isPresent = _repository
         .visibleNpcsInRoom(state, state.currentRoomId)
         .any((item) => item.id == npcId);

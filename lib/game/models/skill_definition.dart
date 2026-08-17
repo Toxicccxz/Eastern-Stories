@@ -33,6 +33,7 @@ enum SkillEffectType {
   escape,
   resourceDamage,
   selfStatus,
+  animateCorpse,
 }
 
 enum CombatResource { hp, energy, spirit, mana }
@@ -204,6 +205,8 @@ class CombatMoveDefinition {
     this.restoresPlayerResource,
     this.usableOutsideCombat = false,
     this.durationSkillId,
+    this.durationMultiplier = 1,
+    this.durationBonus = 0,
     this.activeFailureMessage,
   });
 
@@ -271,6 +274,8 @@ class CombatMoveDefinition {
               ),
       usableOutsideCombat: json['usableOutsideCombat'] as bool? ?? false,
       durationSkillId: json['durationSkillId'] as String?,
+      durationMultiplier: json['durationMultiplier'] as int? ?? 1,
+      durationBonus: json['durationBonus'] as int? ?? 0,
       activeFailureMessage: json['activeFailureMessage'] as String?,
     );
   }
@@ -302,6 +307,8 @@ class CombatMoveDefinition {
   final CombatResource? restoresPlayerResource;
   final bool usableOutsideCombat;
   final String? durationSkillId;
+  final int durationMultiplier;
+  final int durationBonus;
   final String? activeFailureMessage;
 
   bool get hasFailureRoll => failureRollBelow > 0;

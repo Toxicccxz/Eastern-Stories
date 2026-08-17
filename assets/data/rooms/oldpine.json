@@ -460,6 +460,24 @@
     "mapX": 13,
     "mapY": 4,
     "exits": {"west": "oldpine_keep_yard"},
-    "npcIds": ["oldpine_commander"]
+    "npcIds": ["oldpine_commander"],
+    "entryEvent": {
+      "onceFlag": "oldpine_keep_ambush_triggered",
+      "resetsWithArea": true,
+      "previousRoomId": "oldpine_keep_yard",
+      "log": "你刚越过木桩，身后便有人大喊：把门关上，一个也别放走！轰的一声，寨门已被巨石堵死。",
+      "blockedExits": [
+        {"roomId": "oldpine_keep_yard", "direction": "west"},
+        {"roomId": "oldpine_keep_entrance", "direction": "east"}
+      ],
+      "spawns": [
+        {
+          "definitionId": "oldpine_keep_yard_guard",
+          "roomId": "oldpine_keep_yard",
+          "count": 5,
+          "instancePrefix": "oldpine_keep_reinforcement"
+        }
+      ]
+    }
   }
 ]

@@ -18,7 +18,7 @@ class ApprenticeshipSystem {
         npcState.isRemoved) {
       return _withLog(state, '你想拜师的人不在这里。');
     }
-    final master = _repository.npc(npcId);
+    final master = _repository.npcInstance(state, npcId);
     final familyId = master.familyId;
     final masterGeneration = master.familyGeneration;
     if (!master.canAcceptApprentices ||

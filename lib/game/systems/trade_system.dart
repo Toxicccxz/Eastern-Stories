@@ -13,7 +13,7 @@ class TradeSystem {
       return _withLog(state, '这里没有这位商人。');
     }
 
-    final npc = _repository.npc(npcId);
+    final npc = _repository.npcInstance(state, npcId);
     final product = npc.shop?.product(itemId);
     final shopState = state.shopStates[npcId];
     if (product == null || shopState == null) {

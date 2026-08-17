@@ -4,10 +4,14 @@
     "name": "土匪探哨",
     "description": "年轻探哨满脸匪气，一副百无聊赖的模样，腰间短剑却始终没有离手。",
     "greeting": "土匪探哨斜眼喝道：这条路不是给闲人走的！",
+    "inventoryItemIds": ["oldpine_short_sword"],
+    "equippedItemIds": {"weapon": "oldpine_short_sword"},
     "combat": {
       "maxHp": 42,
       "attack": 6,
       "defense": 2,
+      "usesEquipmentStats": true,
+      "dropItemIds": ["oldpine_short_sword"],
       "rewardExperience": 35,
       "rewardSilver": 3,
       "specialMove": {
@@ -23,10 +27,14 @@
     "name": "疯老头子",
     "description": "疯老头正对着来人龇牙咧嘴，破旧长袍上沾满泥污，眼神里却偶尔闪过骇人的精光。",
     "greeting": "疯老头子含糊笑道：桥下有人，树上也有人，谁都别想走！",
+    "inventoryItemIds": ["oldpine_bagua_robe"],
+    "equippedItemIds": {"body": "oldpine_bagua_robe"},
     "combat": {
       "maxHp": 78,
       "attack": 9,
       "defense": 5,
+      "usesEquipmentStats": true,
+      "dropItemIds": ["oldpine_bagua_robe"],
       "rewardExperience": 100,
       "rewardSilver": 8,
       "specialMove": {
@@ -42,10 +50,25 @@
     "name": "黑衣人",
     "description": "黑衣人藏在古松枝叶间，举止鬼祟，袖中露出几柄寒光闪闪的飞刀。",
     "greeting": "黑衣人冷冷说道：既然看见了我，就别想装作什么都不知道。",
+    "inventoryItemCounts": {
+      "oldpine_throwing_knife": 30,
+      "oldpine_night_clothes": 1,
+      "oldpine_corpse_dust": 30
+    },
+    "equippedItemIds": {
+      "weapon": "oldpine_throwing_knife",
+      "body": "oldpine_night_clothes"
+    },
     "combat": {
       "maxHp": 52,
       "attack": 7,
       "defense": 3,
+      "usesEquipmentStats": true,
+      "dropItemIds": [
+        "oldpine_throwing_knife",
+        "oldpine_night_clothes",
+        "oldpine_corpse_dust"
+      ],
       "rewardExperience": 55,
       "rewardSilver": 6,
       "specialMove": {
@@ -99,20 +122,73 @@
     "name": "高瘦土匪",
     "description": "土匪长得高高瘦瘦，脸色苍白，一副无精打采的模样，手中长剑却磨得很亮。",
     "greeting": "高瘦土匪提剑说道：迷进林子算你倒霉。",
-    "combat": {"maxHp": 40, "attack": 6, "defense": 2, "rewardExperience": 30, "rewardSilver": 6}
+    "inventoryItemIds": ["oldpine_long_sword"],
+    "equippedItemIds": {"weapon": "oldpine_long_sword"},
+    "combat": {
+      "maxHp": 40,
+      "attack": 6,
+      "defense": 2,
+      "usesEquipmentStats": true,
+      "rewardExperience": 30,
+      "rewardSilver": 6,
+      "dropItemIds": ["oldpine_long_sword"]
+    }
   },
   {
     "id": "oldpine_fat_bandit",
     "name": "矮胖土匪",
     "description": "矮胖土匪圆滚滚的眼珠在满脸肥肉中转来转去，始终盯着来人的钱袋。",
     "greeting": "矮胖土匪骂道：把身上的钱通通留下来！",
+    "inventoryItemIds": ["oldpine_short_sword", "oldpine_leather"],
+    "equippedItemIds": {
+      "weapon": "oldpine_short_sword",
+      "body": "oldpine_leather"
+    },
     "combat": {
       "maxHp": 44,
       "attack": 6,
       "defense": 2,
+      "usesEquipmentStats": true,
+      "dropItemIds": ["oldpine_short_sword", "oldpine_leather"],
       "rewardExperience": 30,
       "rewardSilver": 5,
-      "specialMove": {"name": "呼喊同伙", "interval": 3, "damageBonus": 2, "message": "矮胖土匪高声呼喊同伙，趁你分神挥剑砍来。"}
+      "roundEvents": [
+        {
+          "id": "call_for_chief",
+          "round": 3,
+          "message": "矮胖土匪骂道：他妈的，点子爪子太硬……老大！老大！兄弟撑不住啦！一条人影随即从树林间跃出，阴恻恻地笑道：连这几个小角色也打发不了，站开一点！",
+          "spawnNpcId": "oldpine_bandit_chief",
+          "instancePrefix": "oldpine_called_bandit_chief",
+          "queuesForCombat": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "oldpine_bandit_chief",
+    "name": "土匪老大",
+    "description": "这家伙眼神凶恶，一双精光四射的眼珠正盯着来人的脖子，身手显然远胜寻常土匪。",
+    "greeting": "土匪老大阴恻恻地说道：乖乖地躺下吧！",
+    "inventoryItemIds": ["oldpine_blade", "oldpine_leather"],
+    "equippedItemIds": {
+      "weapon": "oldpine_blade",
+      "body": "oldpine_leather"
+    },
+    "combat": {
+      "maxHp": 110,
+      "attack": 12,
+      "defense": 8,
+      "combatExperience": 6000,
+      "usesEquipmentStats": true,
+      "dropItemIds": ["oldpine_blade", "oldpine_leather"],
+      "rewardExperience": 180,
+      "rewardSilver": 30,
+      "specialMove": {
+        "name": "虎吼进身",
+        "interval": 3,
+        "damageBonus": 5,
+        "message": "土匪老大虎吼一声，欺身上前。"
+      }
     }
   },
   {
@@ -127,24 +203,57 @@
     "name": "土匪喽罗",
     "description": "守门喽罗满脸横肉，持短剑挡在枯松枝掩盖的寨门前。",
     "greeting": "守门喽罗喝道：什么人敢闯老松寨！",
-    "combat": {"maxHp": 58, "attack": 7, "defense": 3, "rewardExperience": 50, "rewardSilver": 5}
+    "inventoryItemIds": ["oldpine_short_sword"],
+    "equippedItemIds": {"weapon": "oldpine_short_sword"},
+    "combat": {
+      "maxHp": 58,
+      "attack": 7,
+      "defense": 3,
+      "usesEquipmentStats": true,
+      "rewardExperience": 50,
+      "rewardSilver": 5,
+      "dropItemIds": ["oldpine_short_sword"]
+    }
   },
   {
     "id": "oldpine_keep_yard_guard",
     "name": "土匪喽罗",
     "description": "院内喽罗从沙包石堆后跳出，手中短剑直指闯入者。",
     "greeting": "土匪喽罗大喊：把门关上，一个也别放走！",
-    "combat": {"maxHp": 62, "attack": 8, "defense": 4, "rewardExperience": 55, "rewardSilver": 5}
+    "entryReactions": [
+      {
+        "messages": ["土匪喽罗挥剑扑来，大喊：一个也别放走！"],
+        "startsCombat": true
+      }
+    ],
+    "inventoryItemIds": ["oldpine_short_sword"],
+    "equippedItemIds": {"weapon": "oldpine_short_sword"},
+    "combat": {
+      "maxHp": 62,
+      "attack": 8,
+      "defense": 4,
+      "usesEquipmentStats": true,
+      "rewardExperience": 55,
+      "rewardSilver": 5,
+      "dropItemIds": ["oldpine_short_sword"]
+    }
   },
   {
     "id": "oldpine_bandit_leader",
     "name": "土匪首领",
     "description": "土匪首领眼神凶恶，精光四射的眼珠死死盯着来人的脖子，手中厚背刀带着暗红锈迹。",
     "greeting": "土匪首领阴恻恻地说道：这种三脚猫功夫也敢上老松寨撒野？",
+    "inventoryItemIds": ["oldpine_blade", "oldpine_leather"],
+    "equippedItemIds": {
+      "weapon": "oldpine_blade",
+      "body": "oldpine_leather"
+    },
     "combat": {
       "maxHp": 88,
       "attack": 10,
       "defense": 5,
+      "usesEquipmentStats": true,
+      "dropItemIds": ["oldpine_blade", "oldpine_leather"],
       "rewardExperience": 110,
       "rewardSilver": 30,
       "specialMove": {"name": "毒爪抢攻", "interval": 3, "damageBonus": 4, "message": "土匪首领虎吼一声欺身上前，刀爪并用猛攻你的要害。"}
@@ -155,10 +264,28 @@
     "name": "常老大",
     "description": "老松寨寨主常老大号称“泼风刀王”，身披毛皮，手持长柄大刀，气势远胜寻常土匪。",
     "greeting": "常老大提起大刀冷笑道：能闯到这里，倒有几分本事。",
+    "inventoryItemIds": [
+      "oldpine_glaive",
+      "oldpine_leather",
+      "oldpine_wolfskin_cloak",
+      "oldpine_bamboo_pipe"
+    ],
+    "equippedItemIds": {
+      "weapon": "oldpine_glaive",
+      "body": "oldpine_leather",
+      "outerwear": "oldpine_wolfskin_cloak"
+    },
     "combat": {
       "maxHp": 145,
       "attack": 12,
       "defense": 8,
+      "usesEquipmentStats": true,
+      "dropItemIds": [
+        "oldpine_glaive",
+        "oldpine_leather",
+        "oldpine_wolfskin_cloak",
+        "oldpine_bamboo_pipe"
+      ],
       "rewardExperience": 260,
       "rewardSilver": 50,
       "specialMove": {"name": "泼风刀", "interval": 3, "damageBonus": 6, "message": "常老大舞动长刀，泼风般的刀光封住你四周退路。"}

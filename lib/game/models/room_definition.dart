@@ -18,6 +18,7 @@ class RoomDefinition {
     this.allowsCultivation = false,
     this.allowsCombat = true,
     this.outdoorAreaId,
+    this.entryEvent,
   });
 
   factory RoomDefinition.fromJson(Map<String, Object?> json) {
@@ -41,6 +42,12 @@ class RoomDefinition {
       allowsCultivation: json['allowsCultivation'] as bool? ?? false,
       allowsCombat: json['allowsCombat'] as bool? ?? true,
       outdoorAreaId: json['outdoorAreaId'] as String?,
+      entryEvent:
+          json['entryEvent'] == null
+              ? null
+              : RoomEntryEventDefinition.fromJson(
+                json['entryEvent'] as Map<String, Object?>,
+              ),
     );
   }
 
@@ -58,6 +65,7 @@ class RoomDefinition {
   final bool allowsCultivation;
   final bool allowsCombat;
   final String? outdoorAreaId;
+  final RoomEntryEventDefinition? entryEvent;
 
   bool get isOutdoor => outdoorAreaId != null;
 
@@ -68,7 +76,9 @@ class RoomDefinition {
   Map<Direction, String> availableExits(GameState state) {
     return Map.fromEntries(
       exits.entries.where(
-        (entry) => exitConditions[entry.key]?.isSatisfiedBy(state) ?? true,
+        (entry) =>
+            !(state.blockedRoomExits[id]?.contains(entry.key) ?? false) &&
+            (exitConditions[entry.key]?.isSatisfiedBy(state) ?? true),
       ),
     );
   }
@@ -78,6 +88,78 @@ class RoomDefinition {
       (action) => action.conditions?.isSatisfiedBy(state) ?? true,
     );
   }
+}
+
+class RoomEntryEventDefinition {
+  const RoomEntryEventDefinition({
+    required this.onceFlag,
+    required this.log,
+    this.previousRoomId,
+    this.blockedExits = const [],
+    this.spawns = const [],
+    this.resetsWithArea = false,
+  });
+
+  factory RoomEntryEventDefinition.fromJson(Map<String, Object?> json) {
+    return RoomEntryEventDefinition(
+      onceFlag: json['onceFlag'] as String,
+      log: json['log'] as String,
+      previousRoomId: json['previousRoomId'] as String?,
+      blockedExits: [
+        for (final value in json['blockedExits'] as List<Object?>? ?? const [])
+          RoomExitReference.fromJson(value as Map<String, Object?>),
+      ],
+      spawns: [
+        for (final value in json['spawns'] as List<Object?>? ?? const [])
+          NpcSpawnDefinition.fromJson(value as Map<String, Object?>),
+      ],
+      resetsWithArea: json['resetsWithArea'] as bool? ?? false,
+    );
+  }
+
+  final String onceFlag;
+  final String log;
+  final String? previousRoomId;
+  final List<RoomExitReference> blockedExits;
+  final List<NpcSpawnDefinition> spawns;
+  final bool resetsWithArea;
+}
+
+class RoomExitReference {
+  const RoomExitReference({required this.roomId, required this.direction});
+
+  factory RoomExitReference.fromJson(Map<String, Object?> json) {
+    return RoomExitReference(
+      roomId: json['roomId'] as String,
+      direction: Direction.values.byName(json['direction'] as String),
+    );
+  }
+
+  final String roomId;
+  final Direction direction;
+}
+
+class NpcSpawnDefinition {
+  const NpcSpawnDefinition({
+    required this.definitionId,
+    required this.roomId,
+    required this.count,
+    required this.instancePrefix,
+  });
+
+  factory NpcSpawnDefinition.fromJson(Map<String, Object?> json) {
+    return NpcSpawnDefinition(
+      definitionId: json['definitionId'] as String,
+      roomId: json['roomId'] as String,
+      count: json['count'] as int,
+      instancePrefix: json['instancePrefix'] as String,
+    );
+  }
+
+  final String definitionId;
+  final String roomId;
+  final int count;
+  final String instancePrefix;
 }
 
 class RoomActionDefinition {

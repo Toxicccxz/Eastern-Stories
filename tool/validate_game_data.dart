@@ -45,7 +45,14 @@ const _directions = {
   'enter',
   'out',
 };
-const _equipmentSlots = {'weapon', 'head', 'body', 'feet', 'accessory'};
+const _equipmentSlots = {
+  'weapon',
+  'head',
+  'body',
+  'outerwear',
+  'feet',
+  'accessory',
+};
 const _skillKinds = {'basic', 'special'};
 const _skillUsages = {
   'unarmed',
@@ -72,6 +79,7 @@ const _skillEffectTypes = {
   'escape',
   'resourceDamage',
   'selfStatus',
+  'animateCorpse',
 };
 const _failureRollSources = {'skillLevel', 'maxMana'};
 const _opposedRollTypes = {'spellPowerVsCombatExperience'};
@@ -181,6 +189,10 @@ class GameDataValidator {
 
   void _validateAreas() {
     for (final area in _all('areas')) {
+      _validateOptionalPositiveInt(
+        area.data['resetAfterTurns'],
+        'area "${area.id}".resetAfterTurns',
+      );
       final hasRoom = _all(
         'rooms',
       ).any((room) => room.data['areaId'] == area.id);
@@ -266,6 +278,81 @@ class GameDataValidator {
           _validateOptionalInt(action[field], '$actionContext.$field');
         }
       }
+      final entryEvent = _optionalObject(
+        room.data['entryEvent'],
+        '$context.entryEvent',
+      );
+      if (entryEvent.isNotEmpty) {
+        _validateOptionalBool(
+          entryEvent['resetsWithArea'],
+          '$context.entryEvent.resetsWithArea',
+        );
+        if (entryEvent['resetsWithArea'] == true) {
+          final areaId = room.data['areaId'];
+          final area = _definitions['areas']?[areaId];
+          if (area?.data['resetAfterTurns'] == null) {
+            errors.add(
+              '$context.entryEvent resets with area "$areaId", '
+              'but that area has no resetAfterTurns.',
+            );
+          }
+        }
+        if (entryEvent['onceFlag'] case final value?
+            when value is! String || value.isEmpty) {
+          errors.add('$context.entryEvent.onceFlag must be non-empty text.');
+        }
+        if (entryEvent['log'] case final value?
+            when value is! String || value.isEmpty) {
+          errors.add('$context.entryEvent.log must be non-empty text.');
+        }
+        _requireReference(
+          'rooms',
+          entryEvent['previousRoomId'],
+          '$context.entryEvent.previousRoomId',
+          optional: true,
+        );
+        for (final exit in _objects(
+          entryEvent['blockedExits'],
+          '$context.entryEvent.blockedExits',
+        )) {
+          _requireReference(
+            'rooms',
+            exit['roomId'],
+            '$context.entryEvent blocked exit roomId',
+          );
+          _validateEnum(
+            exit['direction'],
+            _directions,
+            '$context.entryEvent blocked exit direction',
+            'direction',
+          );
+        }
+        for (final spawn in _objects(
+          entryEvent['spawns'],
+          '$context.entryEvent.spawns',
+        )) {
+          _requireReference(
+            'npcs',
+            spawn['definitionId'],
+            '$context.entryEvent spawn definitionId',
+          );
+          _requireReference(
+            'rooms',
+            spawn['roomId'],
+            '$context.entryEvent spawn roomId',
+          );
+          _validateOptionalPositiveInt(
+            spawn['count'],
+            '$context.entryEvent spawn count',
+          );
+          if (spawn['instancePrefix'] case final value?
+              when value is! String || value.isEmpty) {
+            errors.add(
+              '$context.entryEvent spawn instancePrefix must be non-empty text.',
+            );
+          }
+        }
+      }
     }
   }
 
@@ -315,6 +402,10 @@ class GameDataValidator {
         combat['combatExperience'],
         '$context.combat.combatExperience',
       );
+      _validateOptionalBool(
+        combat['usesEquipmentStats'],
+        '$context.combat.usesEquipmentStats',
+      );
       for (final field in [
         'attack',
         'defense',
@@ -350,6 +441,102 @@ class GameDataValidator {
         combat['dropItemIds'],
         '$context.combat.dropItemIds',
       );
+      final roundEventIds = <String>{};
+      for (final event in _objects(
+        combat['roundEvents'],
+        '$context.combat.roundEvents',
+      )) {
+        final eventContext = '$context.combat.roundEvents';
+        final eventId = event['id'];
+        if (eventId is! String || eventId.isEmpty) {
+          errors.add('$eventContext.id must be non-empty text.');
+        } else if (!roundEventIds.add(eventId)) {
+          errors.add('$eventContext contains duplicate id "$eventId".');
+        }
+        if (event['round'] == null) {
+          errors.add('$eventContext.round is required.');
+        } else {
+          _validateOptionalPositiveInt(event['round'], '$eventContext.round');
+        }
+        final message = event['message'];
+        if (message is! String || message.isEmpty) {
+          errors.add('$eventContext.message must be non-empty text.');
+        }
+        _requireReference(
+          'npcs',
+          event['spawnNpcId'],
+          '$eventContext.spawnNpcId',
+        );
+        final instancePrefix = event['instancePrefix'];
+        if (instancePrefix is! String || instancePrefix.isEmpty) {
+          errors.add('$eventContext.instancePrefix must be non-empty text.');
+        }
+        _validateOptionalBool(
+          event['queuesForCombat'],
+          '$eventContext.queuesForCombat',
+        );
+      }
+      final inventoryItemCounts = _optionalObject(
+        npc.data['inventoryItemCounts'],
+        '$context.inventoryItemCounts',
+      );
+      for (final entry in inventoryItemCounts.entries) {
+        _requireReference(
+          'items',
+          entry.key,
+          '$context.inventoryItemCounts.${entry.key}',
+        );
+        _validateOptionalPositiveInt(
+          entry.value,
+          '$context.inventoryItemCounts.${entry.key}',
+        );
+      }
+      final inventoryItemIds =
+          inventoryItemCounts.isNotEmpty
+              ? inventoryItemCounts.keys.toList(growable: false)
+              : npc.data.containsKey('inventoryItemIds')
+              ? _stringList(
+                npc.data['inventoryItemIds'],
+                '$context.inventoryItemIds',
+              )
+              : _stringList(
+                combat['dropItemIds'],
+                '$context.combat.dropItemIds',
+              );
+      _requireReferences(
+        'items',
+        npc.data['inventoryItemIds'],
+        '$context.inventoryItemIds',
+      );
+      final equippedItemIds = _optionalObject(
+        npc.data['equippedItemIds'],
+        '$context.equippedItemIds',
+      );
+      for (final entry in equippedItemIds.entries) {
+        _validateEnum(
+          entry.key,
+          _equipmentSlots,
+          '$context.equippedItemIds.${entry.key}',
+          'equipment slot',
+        );
+        _requireReference(
+          'items',
+          entry.value,
+          '$context.equippedItemIds.${entry.key}',
+        );
+        if (entry.value is String && !inventoryItemIds.contains(entry.value)) {
+          errors.add(
+            '$context equips item "${entry.value}" without carrying it.',
+          );
+        }
+        final item = _definitions['items']?[entry.value];
+        if (item != null && item.data['equipmentSlot'] != entry.key) {
+          errors.add(
+            '$context equips item "${entry.value}" in ${entry.key}, '
+            'but the item uses ${item.data['equipmentSlot']}.',
+          );
+        }
+      }
       final patrol = _optionalObject(npc.data['patrol'], '$context.patrol');
       if (patrol.isNotEmpty) {
         final roomIds = _stringList(
@@ -611,6 +798,40 @@ class GameDataValidator {
         'skill usage',
         optional: true,
       );
+      _validateOptionalBool(
+        item.data['dissolvesCorpse'],
+        '$context.dissolvesCorpse',
+      );
+      final roomUse = _optionalObject(item.data['roomUse'], '$context.roomUse');
+      if (roomUse.isNotEmpty) {
+        _requireReference(
+          'rooms',
+          roomUse['roomId'],
+          '$context.roomUse.roomId',
+        );
+        for (final field in ['label', 'response']) {
+          if (roomUse[field] case final value?
+              when value is! String || value.isEmpty) {
+            errors.add('$context.roomUse.$field must be non-empty text.');
+          }
+        }
+        for (final exit in _objects(
+          roomUse['unblocksExits'],
+          '$context.roomUse.unblocksExits',
+        )) {
+          _requireReference(
+            'rooms',
+            exit['roomId'],
+            '$context.roomUse unblocked exit roomId',
+          );
+          _validateEnum(
+            exit['direction'],
+            _directions,
+            '$context.roomUse unblocked exit direction',
+            'direction',
+          );
+        }
+      }
       for (final field in [
         'attackPower',
         'restoreHp',
@@ -848,6 +1069,14 @@ class GameDataValidator {
           move['durationSkillId'],
           '$moveContext.durationSkillId',
           optional: true,
+        );
+        _validateOptionalPositiveInt(
+          move['durationMultiplier'],
+          '$moveContext.durationMultiplier',
+        );
+        _validateOptionalInt(
+          move['durationBonus'],
+          '$moveContext.durationBonus',
         );
         final activeFailureMessage = move['activeFailureMessage'];
         if (activeFailureMessage != null &&

@@ -20,6 +20,9 @@ sealed class GameAction {
   const factory GameAction.giveItem(String npcId, String itemId) =
       GiveItemAction;
 
+  const factory GameAction.giveInventoryItem(String npcId, String itemId) =
+      GiveInventoryItemAction;
+
   const factory GameAction.pickUp(String itemId) = PickUpAction;
 
   const factory GameAction.equipItem(String itemId) = EquipItemAction;
@@ -76,6 +79,18 @@ sealed class GameAction {
   const factory GameAction.useSkillMove(String skillId, String moveId) =
       UseSkillMoveAction;
 
+  const factory GameAction.animateCorpse(
+    String skillId,
+    String moveId,
+    String corpseId,
+  ) = AnimateCorpseAction;
+
+  const factory GameAction.takeCorpseItem(String corpseId, String itemId) =
+      TakeCorpseItemAction;
+
+  const factory GameAction.dissolveCorpse(String corpseId, String itemId) =
+      DissolveCorpseAction;
+
   const factory GameAction.fleeCombat() = FleeCombatAction;
 
   const factory GameAction.meditate() = MeditateAction;
@@ -121,6 +136,13 @@ class SelectDialogueAction extends GameAction {
 
 class GiveItemAction extends GameAction {
   const GiveItemAction(this.npcId, this.itemId);
+
+  final String npcId;
+  final String itemId;
+}
+
+class GiveInventoryItemAction extends GameAction {
+  const GiveInventoryItemAction(this.npcId, this.itemId);
 
   final String npcId;
   final String itemId;
@@ -260,6 +282,28 @@ class UseSkillMoveAction extends GameAction {
 
   final String skillId;
   final String moveId;
+}
+
+class AnimateCorpseAction extends GameAction {
+  const AnimateCorpseAction(this.skillId, this.moveId, this.corpseId);
+
+  final String skillId;
+  final String moveId;
+  final String corpseId;
+}
+
+class TakeCorpseItemAction extends GameAction {
+  const TakeCorpseItemAction(this.corpseId, this.itemId);
+
+  final String corpseId;
+  final String itemId;
+}
+
+class DissolveCorpseAction extends GameAction {
+  const DissolveCorpseAction(this.corpseId, this.itemId);
+
+  final String corpseId;
+  final String itemId;
 }
 
 class FleeCombatAction extends GameAction {

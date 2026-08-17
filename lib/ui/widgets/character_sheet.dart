@@ -254,6 +254,7 @@ IconData _slotIcon(EquipmentSlot slot) {
     EquipmentSlot.weapon => Icons.gavel,
     EquipmentSlot.head => Icons.face,
     EquipmentSlot.body => Icons.checkroom,
+    EquipmentSlot.outerwear => Icons.layers_outlined,
     EquipmentSlot.feet => Icons.directions_walk,
     EquipmentSlot.accessory => Icons.auto_awesome,
   };

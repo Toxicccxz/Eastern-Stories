@@ -483,7 +483,7 @@ class _InventoryAction extends StatelessWidget {
           controller.dispatch(GameAction.useItem(itemId));
           Navigator.of(context).pop();
         },
-        child: const Text('使用'),
+        child: Text(item.roomUse?.label ?? '使用'),
       );
     } else if (availableCombination != null) {
       primaryAction = FilledButton.tonal(

@@ -2,6 +2,7 @@ import 'world_condition.dart';
 import 'equipment_slot.dart';
 import 'innate_attributes.dart';
 import 'skill_definition.dart';
+import 'room_definition.dart';
 
 class ItemDefinition {
   const ItemDefinition({
@@ -27,6 +28,8 @@ class ItemDefinition {
     this.attributeBonuses = const {},
     this.skillBonuses = const {},
     this.weaponSkillUsage,
+    this.dissolvesCorpse = false,
+    this.roomUse,
     this.studyRequiredCombatExperience = 0,
     this.studySpiritCost = 10,
     this.studyDifficulty = 15,
@@ -69,6 +72,13 @@ class ItemDefinition {
           json['weaponSkillUsage'] == null
               ? null
               : SkillUsage.values.byName(json['weaponSkillUsage'] as String),
+      dissolvesCorpse: json['dissolvesCorpse'] as bool? ?? false,
+      roomUse:
+          json['roomUse'] == null
+              ? null
+              : ItemRoomUseDefinition.fromJson(
+                json['roomUse'] as Map<String, Object?>,
+              ),
       studyRequiredCombatExperience:
           json['studyRequiredCombatExperience'] as int? ?? 0,
       studySpiritCost: json['studySpiritCost'] as int? ?? 10,
@@ -105,6 +115,8 @@ class ItemDefinition {
   final Map<InnateAttribute, int> attributeBonuses;
   final Map<String, int> skillBonuses;
   final SkillUsage? weaponSkillUsage;
+  final bool dissolvesCorpse;
+  final ItemRoomUseDefinition? roomUse;
   final int studyRequiredCombatExperience;
   final int studySpiritCost;
   final int studyDifficulty;
@@ -118,7 +130,34 @@ class ItemDefinition {
       restoreHp > 0 ||
       restoreInnerPower > 0 ||
       appliesStatusEffectId != null ||
-      reducesStatusEffectId != null;
+      reducesStatusEffectId != null ||
+      roomUse != null;
+}
+
+class ItemRoomUseDefinition {
+  const ItemRoomUseDefinition({
+    required this.roomId,
+    required this.label,
+    required this.response,
+    this.unblocksExits = const [],
+  });
+
+  factory ItemRoomUseDefinition.fromJson(Map<String, Object?> json) {
+    return ItemRoomUseDefinition(
+      roomId: json['roomId'] as String,
+      label: json['label'] as String,
+      response: json['response'] as String,
+      unblocksExits: [
+        for (final value in json['unblocksExits'] as List<Object?>? ?? const [])
+          RoomExitReference.fromJson(value as Map<String, Object?>),
+      ],
+    );
+  }
+
+  final String roomId;
+  final String label;
+  final String response;
+  final List<RoomExitReference> unblocksExits;
 }
 
 class ItemCombinationDefinition {

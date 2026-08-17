@@ -31,7 +31,7 @@ class CultivationSystem {
         npcState.isRemoved) {
       return _withLog(state, '传授武学的人不在这里。');
     }
-    final teacher = _repository.npc(npcId);
+    final teacher = _repository.npcInstance(state, npcId);
     final teaching = _teaching(teacher, skillId);
     if (teaching == null) {
       return _withLog(state, '${teacher.name}并不传授这门技艺。');

@@ -29,6 +29,10 @@ class LocationInfoPanel extends StatelessWidget {
         controller.repository.visibleNpcsInRoom(state, room.id).toList();
     final items =
         controller.repository.visibleItemsInRoom(state, room.id).toList();
+    final corpses =
+        state.corpses.values
+            .where((corpse) => corpse.roomId == room.id)
+            .toList();
     final exits = room.availableExits(state);
     final contextualExits =
         exits.entries.where((entry) => !entry.key.isPrimaryMovement).toList();
@@ -88,6 +92,34 @@ class LocationInfoPanel extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           _ChipRow(
+            label: '遗留',
+            emptyText: '无',
+            children: [
+              for (final corpse in corpses)
+                ActionChip(
+                  avatar: const Icon(Icons.person_off_outlined, size: 18),
+                  label: Text(corpse.nameAt(state.worldTurn)),
+                  onPressed: () => _showCorpse(context, controller, corpse.id),
+                ),
+            ],
+          ),
+          if (state.undeadCompanion case final companion?) ...[
+            const SizedBox(height: 8),
+            _ChipRow(
+              label: '随行',
+              emptyText: '无',
+              children: [
+                Chip(
+                  avatar: const Icon(Icons.person_outline, size: 18),
+                  label: Text(
+                    '${companion.name}  ${companion.hp}/${companion.maxHp}',
+                  ),
+                ),
+              ],
+            ),
+          ],
+          const SizedBox(height: 8),
+          _ChipRow(
             label: '行动',
             emptyText: '无',
             children: [
@@ -104,6 +136,19 @@ class LocationInfoPanel extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showCorpse(
+    BuildContext context,
+    GameController controller,
+    String corpseId,
+  ) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _CorpseSheet(controller: controller, corpseId: corpseId),
     );
   }
 
@@ -134,6 +179,9 @@ class LocationInfoPanel extends StatelessWidget {
     final activeFamilyTask = controller.activeFamilyTask();
     final activeTaskProgress = controller.state.apprenticeship?.activeTask;
     final nextFamilyRank = controller.nextFamilyRankFor(npc.id);
+    final npcEquipment =
+        controller.state.npcStates[npc.id]?.equippedItemIds.values ??
+        const <String>[];
 
     showModalBottomSheet<void>(
       context: context,
@@ -154,6 +202,28 @@ class LocationInfoPanel extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(npc.description),
+                if (npcEquipment.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    '穿戴',
+                    style: Theme.of(sheetContext).textTheme.labelLarge,
+                  ),
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: [
+                      for (final itemId in npcEquipment)
+                        Chip(
+                          avatar: const Icon(
+                            Icons.checkroom_outlined,
+                            size: 18,
+                          ),
+                          label: Text(controller.repository.item(itemId).name),
+                        ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 12),
                 if (options.isEmpty)
                   const Text('暂时没有更多话可说。')
@@ -193,6 +263,31 @@ class LocationInfoPanel extends StatelessWidget {
                         Navigator.of(sheetContext).pop();
                       },
                     ),
+                ],
+                if (!controller.state.inventory.isEmpty) ...[
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.of(sheetContext).pop();
+                      Future<void>.delayed(Duration.zero, () {
+                        if (!context.mounted) {
+                          return;
+                        }
+                        showModalBottomSheet<void>(
+                          context: context,
+                          isScrollControlled: true,
+                          showDragHandle: true,
+                          builder:
+                              (_) => _NpcGiveSheet(
+                                controller: controller,
+                                npc: npc,
+                              ),
+                        );
+                      });
+                    },
+                    icon: const Icon(Icons.redeem_outlined),
+                    label: const Text('给予物品'),
+                  ),
                 ],
                 if (teachingSkills.isNotEmpty) ...[
                   const SizedBox(height: 8),
@@ -351,6 +446,204 @@ class LocationInfoPanel extends StatelessWidget {
         '${controller.repository.skill(skill.key).name} Lv.${skill.value}',
     ];
     return '晋升条件：${requirements.join(' · ')}';
+  }
+}
+
+class _CorpseSheet extends StatelessWidget {
+  const _CorpseSheet({required this.controller, required this.corpseId});
+
+  final GameController controller;
+  final String corpseId;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, _) {
+        final state = controller.state;
+        final corpse = state.corpses[corpseId];
+        if (corpse == null) {
+          return const SafeArea(
+            top: false,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 24),
+              child: Text('这里已经没有这具尸体了。'),
+            ),
+          );
+        }
+        final corpseMove = controller.activeCorpseMove();
+        final canAnimate =
+            corpseMove != null &&
+            corpse.canAnimateAt(state.worldTurn) &&
+            state.undeadCompanion == null;
+        final corpseDissolverItemId = _findCorpseDissolverItemId(controller);
+
+        return SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  corpse.nameAt(state.worldTurn),
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 8),
+                Text(corpse.descriptionAt(state.worldTurn)),
+                const SizedBox(height: 16),
+                Text('随身物品', style: Theme.of(context).textTheme.labelLarge),
+                if (corpse.itemCounts.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 8),
+                    child: Text('没有留下可取走的东西。'),
+                  )
+                else
+                  for (final entry in corpse.itemCounts.entries)
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.inventory_2_outlined),
+                      title: Text(controller.repository.item(entry.key).name),
+                      subtitle:
+                          entry.value > 1 ? Text('数量：${entry.value}') : null,
+                      trailing: IconButton(
+                        tooltip: '取走',
+                        icon: const Icon(Icons.download_outlined),
+                        onPressed:
+                            () => controller.dispatch(
+                              GameAction.takeCorpseItem(corpse.id, entry.key),
+                            ),
+                      ),
+                    ),
+                if (corpseMove != null) ...[
+                  const SizedBox(height: 12),
+                  FilledButton.icon(
+                    onPressed:
+                        canAnimate
+                            ? () {
+                              controller.dispatch(
+                                GameAction.animateCorpse(
+                                  corpseMove.skill.id,
+                                  corpseMove.move.id,
+                                  corpse.id,
+                                ),
+                              );
+                              Navigator.of(context).pop();
+                            }
+                            : null,
+                    icon: const Icon(Icons.person_off_outlined),
+                    label: Text(
+                      !corpse.canAnimateAt(state.worldTurn)
+                          ? '骸骨无法驱动'
+                          : state.undeadCompanion != null
+                          ? '已有僵尸随行'
+                          : corpseMove.move.name,
+                    ),
+                  ),
+                ],
+                if (corpseDissolverItemId != null) ...[
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      controller.dispatch(
+                        GameAction.dissolveCorpse(
+                          corpse.id,
+                          corpseDissolverItemId,
+                        ),
+                      );
+                      Navigator.of(context).pop();
+                    },
+                    icon: const Icon(Icons.science_outlined),
+                    label: Text(
+                      '使用${controller.repository.item(corpseDissolverItemId).name}',
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+String? _findCorpseDissolverItemId(GameController controller) {
+  for (final entry in controller.state.inventory.entries) {
+    if (controller.repository.item(entry.key).dissolvesCorpse) {
+      return entry.key;
+    }
+  }
+  return null;
+}
+
+class _NpcGiveSheet extends StatelessWidget {
+  const _NpcGiveSheet({required this.controller, required this.npc});
+
+  final GameController controller;
+  final NpcDefinition npc;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, _) {
+        final entries = controller.state.inventory.entries.toList();
+        final contextualOptions = controller.giveItemOptionsFor(npc.id);
+        return SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '给予${npc.name}',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 8),
+                if (entries.isEmpty)
+                  const Text('身上已经没有可给予的物品。')
+                else
+                  for (final entry in entries)
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.inventory_2_outlined),
+                      title: Text(controller.repository.item(entry.key).name),
+                      subtitle:
+                          entry.value > 1 ? Text('数量：${entry.value}') : null,
+                      trailing: IconButton(
+                        tooltip: '给予',
+                        icon: const Icon(Icons.arrow_forward),
+                        onPressed: () {
+                          GiveItemOption? contextualOption;
+                          for (final option in contextualOptions) {
+                            if (option.itemId == entry.key) {
+                              contextualOption = option;
+                              break;
+                            }
+                          }
+                          if (contextualOption != null) {
+                            controller.dispatch(
+                              GameAction.giveItem(npc.id, entry.key),
+                            );
+                            Navigator.of(context).pop();
+                          } else {
+                            controller.dispatch(
+                              GameAction.giveInventoryItem(npc.id, entry.key),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 

@@ -153,6 +153,25 @@ class GameDefinitionRepository {
   GameState hydrateState(GameState state) {
     final initialNpcStates = _initialNpcStates();
     final npcStates = {...initialNpcStates, ...state.npcStates};
+    for (final entry in npcStates.entries.toList()) {
+      final npcState = entry.value;
+      if (npcState.inventoryInitialized) {
+        continue;
+      }
+      final definitionId = npcState.definitionId ?? entry.key;
+      final initialNpcState = initialNpcStates[definitionId];
+      npcStates[entry.key] = npcState.copyWith(
+        itemCounts:
+            npcState.hasDroppedLoot || npcState.isDefeated
+                ? const {}
+                : initialNpcState?.itemCounts ?? const {},
+        equippedItemIds:
+            npcState.hasDroppedLoot || npcState.isDefeated
+                ? const {}
+                : initialNpcState?.equippedItemIds ?? const {},
+        inventoryInitialized: true,
+      );
+    }
     final shopStates = {..._initialShopStates(), ...state.shopStates};
     final questStatuses = {...state.questStatuses};
     final questFlags = {...state.questFlags};
@@ -207,7 +226,7 @@ class GameDefinitionRepository {
               !entry.value.isDefeated &&
               !entry.value.isRemoved,
         )
-        .map((entry) => npc(entry.key))
+        .map((entry) => npcInstance(state, entry.key))
         .where(
           (npc) =>
               (!npc.isGhost || state.hasAstralVision) &&
@@ -244,6 +263,31 @@ class GameDefinitionRepository {
       throw StateError('Unknown npc id: $id');
     }
     return npc;
+  }
+
+  String npcDefinitionId(GameState state, String instanceId) {
+    return state.npcStates[instanceId]?.definitionId ?? instanceId;
+  }
+
+  NpcDefinition npcInstance(GameState state, String instanceId) {
+    return npc(npcDefinitionId(state, instanceId)).withInstanceId(instanceId);
+  }
+
+  NpcRuntimeState createNpcInstanceState(String definitionId, String roomId) {
+    final definition = npc(definitionId);
+    final combat = definition.combat;
+    return NpcRuntimeState(
+      definitionId: definitionId,
+      roomId: roomId,
+      currentHp: combat?.maxHp ?? 0,
+      currentEnergy: combat?.maxEnergy ?? 0,
+      currentSpirit: combat?.maxSpirit ?? 0,
+      currentMana: combat?.maxMana ?? 0,
+      isDefeated: false,
+      stateValues: definition.initialStateValues,
+      itemCounts: initialNpcItemCounts(definitionId),
+      equippedItemIds: initialNpcEquippedItemIds(definitionId),
+    );
   }
 
   ItemDefinition item(String id) {
@@ -292,19 +336,62 @@ class GameDefinitionRepository {
   }
 
   Map<String, NpcRuntimeState> _initialNpcStates() {
+    final states = <String, NpcRuntimeState>{};
+    for (final room in _rooms.values) {
+      for (final npcId in room.npcIds) {
+        final npc = _npcs[npcId];
+        if (npc == null) {
+          continue;
+        }
+        states[npcId] = NpcRuntimeState(
+          roomId: room.id,
+          currentHp: npc.combat?.maxHp ?? 0,
+          currentEnergy: npc.combat?.maxEnergy ?? 0,
+          currentSpirit: npc.combat?.maxSpirit ?? 0,
+          currentMana: npc.combat?.maxMana ?? 0,
+          isDefeated: false,
+          stateValues: npc.initialStateValues,
+          itemCounts: initialNpcItemCounts(npcId),
+          equippedItemIds: initialNpcEquippedItemIds(npcId),
+        );
+      }
+    }
+    return states;
+  }
+
+  Map<String, int> initialNpcItemCounts(String npcId) {
+    return Map<String, int>.from(npc(npcId).inventoryItemCounts);
+  }
+
+  Map<String, NpcRuntimeState> initialNpcStatesInArea(String areaId) {
+    final roomIds = roomsInArea(areaId).map((room) => room.id).toSet();
     return {
-      for (final room in _rooms.values)
-        for (final npcId in room.npcIds)
-          npcId: NpcRuntimeState(
-            roomId: room.id,
-            currentHp: _npcs[npcId]?.combat?.maxHp ?? 0,
-            currentEnergy: _npcs[npcId]?.combat?.maxEnergy ?? 0,
-            currentSpirit: _npcs[npcId]?.combat?.maxSpirit ?? 0,
-            currentMana: _npcs[npcId]?.combat?.maxMana ?? 0,
-            isDefeated: false,
-            stateValues: _npcs[npcId]?.initialStateValues ?? const {},
-          ),
+      for (final entry in _initialNpcStates().entries)
+        if (roomIds.contains(entry.value.roomId)) entry.key: entry.value,
     };
+  }
+
+  Map<String, ShopRuntimeState> initialShopStatesInArea(String areaId) {
+    final npcIds = initialNpcStatesInArea(areaId).keys.toSet();
+    return {
+      for (final entry in _initialShopStates().entries)
+        if (npcIds.contains(entry.key)) entry.key: entry.value,
+    };
+  }
+
+  Map<EquipmentSlot, String> initialNpcEquippedItemIds(String npcId) {
+    final npcDefinition = npc(npcId);
+    if (npcDefinition.equippedItemIds.isNotEmpty) {
+      return Map<EquipmentSlot, String>.from(npcDefinition.equippedItemIds);
+    }
+    final equipment = <EquipmentSlot, String>{};
+    for (final itemId in npcDefinition.inventoryItemIds) {
+      final slot = item(itemId).equipmentSlot;
+      if (slot != null) {
+        equipment.putIfAbsent(slot, () => itemId);
+      }
+    }
+    return equipment;
   }
 
   Map<String, ShopRuntimeState> _initialShopStates() {

@@ -49,10 +49,23 @@
         "response": "林忌说道：谷衣心法是我茅山派为对抗邪魔外道所创的内功心法。"
       }
     ],
+    "inventoryItemIds": [
+      "temple_wangzhou_sword",
+      "temple_taolord_robe",
+      "temple_trimystic_hat",
+      "temple_cloudy_shoes"
+    ],
+    "equippedItemIds": {
+      "weapon": "temple_wangzhou_sword",
+      "body": "temple_taolord_robe",
+      "head": "temple_trimystic_hat",
+      "feet": "temple_cloudy_shoes"
+    },
     "combat": {
       "maxHp": 180,
       "attack": 22,
       "defense": 18,
+      "usesEquipmentStats": true,
       "rewardExperience": 120,
       "dropItemIds": [
         "temple_wangzhou_sword",
@@ -79,26 +92,70 @@
     "name": "玄真",
     "description": "一个长得眉清目秀的小男孩，正努力地打扫石阶。",
     "greeting": "玄真抱着扫帚说道：山门前要时时扫净，师父说心也该这样。",
-    "combat": {"maxHp": 18, "attack": 3, "defense": 2, "rewardExperience": 4}
+    "inventoryItemIds": [
+      "temple_bamboo_broom",
+      "temple_green_robe",
+      "temple_black_boots"
+    ],
+    "equippedItemIds": {
+      "weapon": "temple_bamboo_broom",
+      "body": "temple_green_robe",
+      "feet": "temple_black_boots"
+    },
+    "combat": {
+      "maxHp": 18,
+      "attack": 3,
+      "defense": 2,
+      "usesEquipmentStats": true,
+      "rewardExperience": 4,
+      "dropItemIds": [
+        "temple_bamboo_broom",
+        "temple_green_robe",
+        "temple_black_boots"
+      ]
+    }
   },
   {
     "id": "temple_little_taoist2",
     "name": "玄和",
     "description": "一个长得眉清目秀的小男孩，正忙着浇花除草。",
     "greeting": "玄和说道：这些花草若没人照看，山风一吹就容易折了。",
-    "combat": {"maxHp": 18, "attack": 3, "defense": 2, "rewardExperience": 4}
+    "inventoryItemIds": ["temple_green_robe", "temple_black_boots"],
+    "equippedItemIds": {
+      "body": "temple_green_robe",
+      "feet": "temple_black_boots"
+    },
+    "combat": {
+      "maxHp": 18,
+      "attack": 3,
+      "defense": 2,
+      "usesEquipmentStats": true,
+      "rewardExperience": 4,
+      "dropItemIds": ["temple_green_robe", "temple_black_boots"]
+    }
   },
   {
     "id": "temple_trainer",
     "name": "僵尸侍者",
     "description": "僵尸侍者着一身黑色道袍，神情木然地侍立在殿中。",
     "greeting": "僵尸侍者冷冷地望着你，似乎只听命于观中长辈。",
+    "inventoryItemIds": [
+      "temple_longsword",
+      "temple_magic_book",
+      "temple_spells_book"
+    ],
+    "equippedItemIds": {"weapon": "temple_longsword"},
     "combat": {
       "maxHp": 58,
       "attack": 10,
       "defense": 7,
+      "usesEquipmentStats": true,
       "rewardExperience": 30,
-      "dropItemIds": ["temple_whisk", "temple_magic_book", "temple_spells_book"],
+      "dropItemIds": [
+        "temple_longsword",
+        "temple_magic_book",
+        "temple_spells_book"
+      ],
       "specialMove": {
         "name": "尸气",
         "interval": 3,
@@ -112,12 +169,15 @@
     "name": "僵尸护法",
     "description": "僵尸护法是茅山派的护法，着一身黑色道袍，气息阴沉。",
     "greeting": "僵尸护法默然站在殿中，空洞的目光扫过你的脸。",
+    "inventoryItemIds": ["temple_longsword"],
+    "equippedItemIds": {"weapon": "temple_longsword"},
     "combat": {
       "maxHp": 76,
       "attack": 13,
       "defense": 9,
+      "usesEquipmentStats": true,
       "rewardExperience": 45,
-      "dropItemIds": ["temple_green_robe"],
+      "dropItemIds": ["temple_longsword"],
       "specialMove": {
         "name": "黑袍突袭",
         "interval": 3,
@@ -131,10 +191,21 @@
     "name": "清虚",
     "description": "一位神色和平的中年道士，正在教授徒弟如何运功导气。",
     "greeting": "清虚说道：运功导气，贵在绵长，不可贪急。",
+    "inventoryItemIds": [
+      "temple_green_robe",
+      "temple_copper_hat",
+      "temple_black_boots"
+    ],
+    "equippedItemIds": {
+      "body": "temple_green_robe",
+      "head": "temple_copper_hat",
+      "feet": "temple_black_boots"
+    },
     "combat": {
       "maxHp": 46,
       "attack": 8,
       "defense": 6,
+      "usesEquipmentStats": true,
       "rewardExperience": 22,
       "dropItemIds": [
         "temple_green_robe",
@@ -148,10 +219,21 @@
     "name": "明心",
     "description": "一位身材魁梧的年轻道士，正在练拳，拳风舞得虎虎生风。",
     "greeting": "明心收拳说道：练拳先练气，气息浮了，拳便散了。",
+    "inventoryItemIds": [
+      "temple_green_robe",
+      "temple_copper_hat",
+      "temple_black_boots"
+    ],
+    "equippedItemIds": {
+      "body": "temple_green_robe",
+      "head": "temple_copper_hat",
+      "feet": "temple_black_boots"
+    },
     "combat": {
       "maxHp": 34,
       "attack": 6,
       "defense": 4,
+      "usesEquipmentStats": true,
       "rewardExperience": 14,
       "dropItemIds": ["temple_green_robe", "temple_copper_hat", "temple_black_boots"]
     }
@@ -161,12 +243,18 @@
     "name": "老道士",
     "description": "一位四处云游的老道士正在灵心观挂单，看他饱经沧桑的脸孔，似乎经历过不少风浪。",
     "greeting": "老道士捻须笑道：行路不难，难的是知道自己为何而行。",
+    "inventoryItemIds": ["temple_whisk", "temple_old_robe"],
+    "equippedItemIds": {
+      "weapon": "temple_whisk",
+      "body": "temple_old_robe"
+    },
     "combat": {
       "maxHp": 28,
       "attack": 5,
       "defense": 4,
+      "usesEquipmentStats": true,
       "rewardExperience": 10,
-      "dropItemIds": ["temple_old_robe"]
+      "dropItemIds": ["temple_whisk", "temple_old_robe"]
     }
   },
   {
@@ -174,10 +262,16 @@
     "name": "清灵",
     "description": "一位神情专注的道士，正轮值看守藏经楼。",
     "greeting": "清灵拦在路旁说道：藏经楼乃本派重地，外客止步。",
+    "inventoryItemIds": ["temple_bagua_robe", "temple_jade_hat"],
+    "equippedItemIds": {
+      "body": "temple_bagua_robe",
+      "head": "temple_jade_hat"
+    },
     "combat": {
       "maxHp": 70,
       "attack": 12,
       "defense": 8,
+      "usesEquipmentStats": true,
       "rewardExperience": 38,
       "dropItemIds": ["temple_bagua_robe", "temple_jade_hat"],
       "specialMove": {
@@ -193,10 +287,16 @@
     "name": "清风",
     "description": "一位神情专注的道士，正轮值看守藏经楼。",
     "greeting": "清风说道：石碑上的字已经写得很清楚了。",
+    "inventoryItemIds": ["temple_bagua_robe", "temple_jade_hat"],
+    "equippedItemIds": {
+      "body": "temple_bagua_robe",
+      "head": "temple_jade_hat"
+    },
     "combat": {
       "maxHp": 68,
       "attack": 12,
       "defense": 8,
+      "usesEquipmentStats": true,
       "rewardExperience": 38,
       "dropItemIds": ["temple_bagua_robe", "temple_jade_hat"],
       "specialMove": {
@@ -212,10 +312,16 @@
     "name": "清平",
     "description": "一位神情专注的道士，正轮值看守藏经楼。",
     "greeting": "清平拦在路旁说道：藏经楼乃本派重地，外客止步。",
+    "inventoryItemIds": ["temple_bagua_robe", "temple_jade_hat"],
+    "equippedItemIds": {
+      "body": "temple_bagua_robe",
+      "head": "temple_jade_hat"
+    },
     "combat": {
       "maxHp": 69,
       "attack": 12,
       "defense": 8,
+      "usesEquipmentStats": true,
       "rewardExperience": 37,
       "dropItemIds": ["temple_bagua_robe", "temple_jade_hat"],
       "specialMove": {
@@ -231,10 +337,16 @@
     "name": "清玄",
     "description": "一位神情专注的道士，正轮值看守藏经楼。",
     "greeting": "清玄低声说道：非茅山弟子，不得擅近藏经楼。",
+    "inventoryItemIds": ["temple_bagua_robe", "temple_jade_hat"],
+    "equippedItemIds": {
+      "body": "temple_bagua_robe",
+      "head": "temple_jade_hat"
+    },
     "combat": {
       "maxHp": 70,
       "attack": 12,
       "defense": 8,
+      "usesEquipmentStats": true,
       "rewardExperience": 38,
       "dropItemIds": ["temple_bagua_robe", "temple_jade_hat"],
       "specialMove": {
@@ -250,10 +362,16 @@
     "name": "清音",
     "description": "一位神情专注的道士，正轮值看守藏经楼。",
     "greeting": "清音望了你一眼，说道：石碑上的规矩已经写得明白。",
+    "inventoryItemIds": ["temple_bagua_robe", "temple_jade_hat"],
+    "equippedItemIds": {
+      "body": "temple_bagua_robe",
+      "head": "temple_jade_hat"
+    },
     "combat": {
       "maxHp": 72,
       "attack": 13,
       "defense": 8,
+      "usesEquipmentStats": true,
       "rewardExperience": 39,
       "dropItemIds": ["temple_bagua_robe", "temple_jade_hat"],
       "specialMove": {
@@ -269,10 +387,16 @@
     "name": "清云",
     "description": "一位神情专注的道士，正轮值看守藏经楼。",
     "greeting": "清云拂袖说道：藏经楼清静之地，莫要在此喧哗。",
+    "inventoryItemIds": ["temple_bagua_robe", "temple_jade_hat"],
+    "equippedItemIds": {
+      "body": "temple_bagua_robe",
+      "head": "temple_jade_hat"
+    },
     "combat": {
       "maxHp": 71,
       "attack": 13,
       "defense": 8,
+      "usesEquipmentStats": true,
       "rewardExperience": 39,
       "dropItemIds": ["temple_bagua_robe", "temple_jade_hat"],
       "specialMove": {

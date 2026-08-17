@@ -24,6 +24,7 @@ void main() {
     final state = GameState.initial(startingRoomId: 'liu_home').copyWith(
       currentRoomId: 'little_garden',
       worldTurn: 9,
+      areaResetAtTurns: const {'oldpine': 42},
       visitedRoomIds: {'liu_home', 'little_garden'},
       inventoryItemIds: ['old_book'],
       equippedWeaponId: 'hengbing_sword',
@@ -64,6 +65,8 @@ void main() {
           followReturnRoomId: 'ice_cave',
           isRemoved: false,
           stateValues: {'trust': 2},
+          itemCounts: {'hengbing_sword': 1},
+          equippedItemIds: {EquipmentSlot.weapon: 'hengbing_sword'},
         ),
       },
       shopStates: {
@@ -75,6 +78,7 @@ void main() {
         npcId: 'white_ice_dragon',
         enemyHp: 12,
         round: 4,
+        queuedNpcIds: ['oldpine_called_bandit_chief_1'],
         ally: SummonedAllyState(
           name: '天甲神兵',
           attack: 20,
@@ -98,6 +102,7 @@ void main() {
     expect(loaded, isNotNull);
     expect(loaded?.currentRoomId, 'little_garden');
     expect(loaded?.worldTurn, 9);
+    expect(loaded?.areaResetAtTurns, {'oldpine': 42});
     expect(loaded?.inventoryItemIds, ['old_book']);
     expect(loaded?.equippedWeaponId, 'hengbing_sword');
     expect(loaded?.equippedItemIds, {EquipmentSlot.weapon: 'hengbing_sword'});
@@ -136,12 +141,19 @@ void main() {
     );
     expect(loaded?.npcStates['white_ice_dragon']?.isRemoved, isFalse);
     expect(loaded?.npcStates['white_ice_dragon']?.stateValues, {'trust': 2});
+    expect(loaded?.npcStates['white_ice_dragon']?.itemCounts, {
+      'hengbing_sword': 1,
+    });
+    expect(loaded?.npcStates['white_ice_dragon']?.equippedItemIds, {
+      EquipmentSlot.weapon: 'hengbing_sword',
+    });
     expect(loaded?.shopStates['meloner']?.stockByItemId, {'water_melon': 3});
     expect(loaded?.questStatuses['old_liu_daughter'], QuestStatus.active);
     expect(loaded?.questFlags, {'flower_girl_found'});
     expect(loaded?.combat?.npcId, 'white_ice_dragon');
     expect(loaded?.combat?.enemyHp, 12);
     expect(loaded?.combat?.round, 4);
+    expect(loaded?.combat?.queuedNpcIds, ['oldpine_called_bandit_chief_1']);
     expect(loaded?.combat?.ally?.name, '天甲神兵');
     expect(loaded?.combat?.ally?.attack, 20);
     expect(loaded?.combat?.ally?.hp, 812);
